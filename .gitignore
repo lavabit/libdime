@@ -1,0 +1,9 @@
+/libdime.a
+/libdime.so
+/lib/.objs/
+/checks/.objs/
+/dime
+/cachedump
+/genrec
+/x
+/dime.check
