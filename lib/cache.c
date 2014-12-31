@@ -1257,6 +1257,12 @@ int _load_cache_contents(void) {
 			// We can only reach this by reading in 0 bytes (EOF).
 			return 1;
 		}
+		
+		// If the objlen we read is 0, we skip forward to read the next length. This helps avoid the NULL pointer dereferencing,
+		// which occurrs if cdata has not yet been allocated. Perhaps we should throw an error. TODO
+		if(!objlen) {
+			continue;
+		}
 
 		if (objlen > clen) {
 			clen = objlen;
