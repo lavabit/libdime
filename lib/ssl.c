@@ -1449,7 +1449,7 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 		if (sresp->certId && sresp->certId->serialNumber) {
 
 			if ((serial = ASN1_INTEGER_to_BN(sresp->certId->serialNumber, NULL))) {
-				fprintf(fp, BN_bn2hex(serial));
+				fprintf(fp, "%s", BN_bn2hex(serial));
 				BN_free(serial);
 			} else {
 				fprintf(fp, "[unknown]");
