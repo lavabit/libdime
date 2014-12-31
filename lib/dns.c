@@ -2623,7 +2623,7 @@ int _compare_rdata(const unsigned char *rdata1, size_t rdlen1, const unsigned ch
 
 	if (rdlen1 < rdlen2) {
 		return -1;
-	} else if (rdlen1 > rdlen1) {
+	} else if (rdlen1 > rdlen2) {
 		return 1;
 	}
 
