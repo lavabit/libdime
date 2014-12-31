@@ -689,6 +689,7 @@ cached_object_t * _add_cached_object_forced(const char *id, cached_store_t *stor
 
 		// We create the new object to replace the old one.
 		if (!(newobj = _create_cached_object(store->dtype, ttl, expiration, data, persists, relaxed))) {
+			_destroy_cache_entry(found);
 			RET_ERROR_PTR(ERR_UNSPEC, "unable to create new cached object");
 		}
 
@@ -859,6 +860,7 @@ cached_object_t * _add_cached_object_cmp_forced(const char *id, const void *key,
 
 		// We create the new object to replace the old one.
 		if (!(newobj = _create_cached_object(store->dtype, ttl, expiration, data, persists, relaxed))) {
+			_destroy_cache_entry(found);
 			RET_ERROR_PTR(ERR_UNSPEC, "unable to create new cached object");
 		}
 
@@ -1269,6 +1271,7 @@ int _load_cache_contents(void) {
 
 			if (!(cdata = realloc(cdata, clen))) {
 				PUSH_ERROR_SYSCALL("realloc");
+				close(cfd);
 				RET_ERROR_INT(ERR_NOMEM, NULL);
 			}
 		}
