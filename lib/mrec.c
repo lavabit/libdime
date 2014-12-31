@@ -301,6 +301,7 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
 
 	if (!(txtcopy = malloc(len+1))) {
 		PUSH_ERROR_SYSCALL("malloc");
+		free(result);
 		RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for DIME record copy");
 	}
 
@@ -676,15 +677,20 @@ dime_record_t * _get_dime_record_from_file(const char *filename, const char *dom
 
 					// TODO: memory leak from result?
 				} else {
+					fclose(fp);
 					RET_ERROR_PTR(ERR_UNSPEC, "could not parse DIME management record");
 				}
 
+				fclose(fp);
+				
 				return result;
 			}
 
 		}
 
  	}
+
+	fclose(fp);
 
 	return result;
 }
