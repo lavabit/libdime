@@ -853,21 +853,25 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 
 	// Now we get the final server response, which is hopefully an "OK" accompanied by a transaction ID.
 	if (!(response = _read_dmtp_line(session, NULL, &rcode, 0))) {
+		free(commit_hash);
 		RET_ERROR_PTR(ERR_UNSPEC, "DATA command failed on remote server");
 	} else if ((rcode < 200) || (rcode >= 300)) {
 		PUSH_ERROR_FMT(ERR_UNSPEC, "DATA command returned error: %u: %s", rcode, response);
+		free(commit_hash);
 		free(response);
 		return NULL;
 	}
 
 	// The first response token should be "CONTINUE".
 	if ((!(token = strtok_r(response, " \t", &tokens))) || (strcasecmp(token, "OK"))) {
+		free(commit_hash);
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "server DATA response continuation was in unexpected format");
 	}
 
 	// The only following mandatory piece of data is the hash.
 	if ((!(token = strtok_r(NULL, " \t", &tokens))) || (*token != '[') || (token[strlen(token)-1] != ']')) {
+		free(commit_hash);
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "server DATA response continuation was in unexpected format");
 	}
@@ -876,6 +880,7 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 
 	if (!(result = strdup(token+1))) {
 		PUSH_ERROR_SYSCALL("strdup");
+		free(commit_hash);
 		free(response);
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for transaction ID returned by DATA command");
 	}
@@ -1484,7 +1489,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
  */
 char * _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode) {
 
-	char *line, *result = NULL;
+	char *line, *result = NULL, *reall_res = NULL;
 	unsigned short rc, firstrc = 0;
 	int of, ml, first = 1;
 	size_t rsize = 1;
@@ -1505,11 +1510,19 @@ char * _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned sho
 		// The result needs to have the new line followed by \n appended to it (if it is not the last line).
 		rsize += strlen(line) + 1;
 
-		if (!(result = realloc(result, rsize))) {
+		if (!(reall_res = realloc(result, rsize))) {
 			PUSH_ERROR_SYSCALL("realloc");
+
+			if(result) {
+				free(result);
+			}
+
 			free(line);
 			RET_ERROR_PTR(ERR_NOMEM, "could not read multiline DMTP response because of memory allocation problem");
 		}
+
+		result = reall_res;
+		reall_res = NULL;
 
 		// We need to make sure our result buffer is null-terminated at least the first time it's allocated.
 		if (first) {

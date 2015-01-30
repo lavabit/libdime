@@ -179,6 +179,8 @@ const char * _get_cache_location(void) {
 		return result;
 	}
 
+	free(cfile);
+
 	// Otherwise get it through the default DIME path.
 	if (!(result = _get_dime_dir_location(".cache"))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not determine default DIME directory path");
@@ -1205,7 +1207,7 @@ int _load_cache_contents(void) {
 
 	cached_store_t *store;
 	cached_object_t *obj;
-	void *cdata = NULL, *udata;
+	void *cdata = NULL, *udata, *reall_res = NULL;
 	const char *cfile;
 	char ttlstr[64], *tstr, *expstr;
 	unsigned char *uptr;
@@ -1269,11 +1271,19 @@ int _load_cache_contents(void) {
 		if (objlen > clen) {
 			clen = objlen;
 
-			if (!(cdata = realloc(cdata, clen))) {
+			if (!(reall_res = realloc(cdata, clen))) {
 				PUSH_ERROR_SYSCALL("realloc");
+
+				if(cdata) {
+					free(cdata);
+				}
+
 				close(cfd);
 				RET_ERROR_INT(ERR_NOMEM, NULL);
 			}
+
+			cdata = reall_res;
+			reall_res = NULL;
 		}
 
 		memset(cdata, 0, objlen);

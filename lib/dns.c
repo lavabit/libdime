@@ -471,14 +471,17 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		if (flags & ~(DNSKEY_RR_FLAG_ZK | DNSKEY_RR_FLAG_SEP)) {
+			fclose(fp);
 			RET_ERROR_INT_FMT(ERR_UNSPEC, "encountered unexpected key flags in DNS key file: %u", flags);
 		}
 
 		if (protocol != DNSKEY_RR_PROTO) {
+			fclose(fp);
 			RET_ERROR_INT_FMT(ERR_UNSPEC, "encountered unexpected protocol in DNS key file: %u", protocol);
 		}
 
 		if (algorithm != NS_ALG_RSASHA1 && algorithm != NS_ALG_RSASHA256 && algorithm != NS_ALG_RSASHA512) {
+			fclose(fp);
 			RET_ERROR_INT_FMT(ERR_UNSPEC, "encountered unexpected algorithm: %u", algorithm);
 		}
 
@@ -487,6 +490,7 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		if (!*lptr++) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "encountered unexpected end of line");
 		}
 
@@ -497,6 +501,7 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		if (!*lptr) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "encountered unexpected end of line");
 		}
 
@@ -507,6 +512,7 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		if (*lptr != ';') {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "encountered unexpected end of line");
 		}
 
@@ -520,10 +526,12 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		if (!(rawkey = _b64decode(optr, strlen(optr), &rawlen))) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "failed to extract base64 encoded public key from root key config file");
 		}
 
 		if (!(pubkey = _get_rsa_dnskey(rawkey, rawlen))) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "failed to extract public key from DNSKEY RR");
 		}
 
@@ -537,11 +545,13 @@ int _load_dnskey_file(const char *filename) {
 		_mem_append(&rdata, &rdlen, rawkey, rawlen);
 
 		if (!(keytag = _get_keytag(rdata, rdlen))) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "could not get tag value for DNSKEY");
 		}
 
 		// The ttl is unlimited and we don't want to save this entry to the cache.
 		if (!(dk = _add_dnskey_entry_rsa (dname, flags, algorithm, pubkey, keytag, rdata, rdlen, 0, 0, 1))) {
+			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "unable to import DNS root key entry");
 		}
 
@@ -1617,7 +1627,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 	dnskey_t *signing_key;
 	const unsigned char *strptr;
 	unsigned char resbuf[4096];
-	char *lname, *result = NULL;;
+	char *lname, *result = NULL;
 	int nread, vval, dnssec_rrs = 0;
 	size_t i, nanswers, nadditional, strsize, rdleft, rsize = 0;
 	uint16_t rrtype, z;
@@ -1669,6 +1679,11 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
+
+			if(result) {
+				free(result);
+			}
+
 			RET_ERROR_PTR(ERR_UNSPEC, "error occurred parsing TXT record answer");
 		}
 
@@ -1761,6 +1776,11 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 
 		if (ns_parserr(&handle, ns_s_ar, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
+
+			if(result) {
+				free(result);
+			}
+
 			RET_ERROR_PTR(ERR_UNSPEC, "error occurred parsing TXT record answer");
 		}
 

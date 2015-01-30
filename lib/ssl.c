@@ -954,7 +954,8 @@ int _verify_certificate_callback(int preverify_ok, X509_STORE_CTX *ctx) {
 	X509 *cert;
 	X509_NAME *xname;
 	char buf[1024], depthstr[16], *cn;
-	int depth, err = -1;
+	// 12/29/2015: depth was uninitialized, -1 seems appropriate but requires review.
+	int depth = -1, err = -1;
 
 	// This function isn't really used anything except facilitating debugging output;
 	// since we call X509_verify_cert() manually we discard the automatic chain verification provided by
