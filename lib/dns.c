@@ -162,7 +162,7 @@ RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
 	}
 
 	if (!(exp = BN_bin2bn(ptr, explen, NULL))) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to read exponent from DNSKEY rdata");
 	}
 
@@ -171,7 +171,7 @@ RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
 
 	// The remainder is the modulus.
 	if (!(mod = BN_bin2bn(ptr, len, NULL))) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		BN_free(exp);
 		RET_ERROR_PTR_FMT(ERR_UNSPEC, "unable to extract modulus from DNSKEY rdata {%u bytes}", (unsigned int)len);
 	}
@@ -182,14 +182,14 @@ RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
 	// The number of bits in the modulus determines the public key size;
 	// RFC 3110 demands that this value should not be less than 512 bits or greater than 4096 bits.
 	if (((keysize = BN_num_bits(mod)) < 512) || (keysize > 4096)) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		BN_free(exp);
 		BN_free(mod);
 		RET_ERROR_PTR(ERR_UNSPEC, "modulus doesn't fall in mandatory length range of 512-4096 bits");
 	}
 
 	if (!(result = RSA_new())) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		BN_free(exp);
 		BN_free(mod);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to allocate new RSA public key holder");
@@ -360,13 +360,13 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 	}
 
 	if (!(pkey = EVP_PKEY_new())) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(hdata);
 		RET_ERROR_INT(ERR_UNSPEC, "an unexpected error occurred while verifying RR signature");
 	}
 
 	if (EVP_PKEY_set1_RSA(pkey, pubkey) != 1) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(hdata);
 		RET_ERROR_INT(ERR_UNSPEC, "could not set key for RR signature verification");
 	}
@@ -382,13 +382,13 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 	}
 
 	if (EVP_VerifyInit(&ctx, digtype) != 1) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(hdata);
 		RET_ERROR_INT(ERR_UNSPEC, "could not set digest for RR signature verification");
 	}
 
 	if (EVP_VerifyUpdate(&ctx, hdata, hlen) != 1) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		free(hdata);
 		RET_ERROR_INT(ERR_UNSPEC, "could not read hash for RR signature verification");
 	}
@@ -403,7 +403,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 		fprintf(stderr, "Signature verification failed (signed = %s, keytag = %u, covered = %u, alg = %u)\n",
 			label, ntohs(rrsigrr->key_tag), ntohs(rrsigrr->covered), rrsigrr->algorithm);
 	} else {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "error verifying RRSIG record");
 	}
 

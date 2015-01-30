@@ -422,7 +422,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 	}
 
 	if (!(cert = SSL_get_peer_certificate(session->con))) {
-		PUSH_ERROR_OPENSSL;
+		PUSH_ERROR_OPENSSL();
 		_dbgprint(1, "DX TLS certificate verification failed: could not get peer certificate.\n");
 		RET_ERROR_INT(ERR_UNSPEC, "could not get peer certificate");
 	}
@@ -1368,7 +1368,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 			if (session->mode == dmtp_mode_dmtp) {
 
 				if (nread < 0) {
-					PUSH_ERROR_OPENSSL;
+					PUSH_ERROR_OPENSSL();
 				}
 
 				_ssl_disconnect(session->con);
@@ -1776,7 +1776,7 @@ int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
 	if (session->con) {
 
 		if ((nwritten = SSL_write(session->con, cmd, strlen(cmd))) <= 0) {
-			PUSH_ERROR_OPENSSL;
+			PUSH_ERROR_OPENSSL();
 		}
 
 	} else if (session->_fd >= 0) {
@@ -1848,7 +1848,7 @@ int _dmtp_write_data(dmtp_session_t *session, void *buf, size_t buflen) {
 		if (session->con) {
 
 			if ((nwritten = SSL_write(session->con, dataptr, buflen)) <= 0) {
-				PUSH_ERROR_OPENSSL;
+				PUSH_ERROR_OPENSSL();
 				RET_ERROR_INT(ERR_UNSPEC, "could not write all data in buffer to remove server");
 			}
 
