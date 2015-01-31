@@ -6,6 +6,7 @@
 #include "misc.h"
 #include "dcrypto.h"
 
+#include <openssl/buffer.h>
 #include <openssl/pem.h>
 
 
@@ -182,55 +183,55 @@ int main(int argc, char *argv[]) {
 	snprintf(dimebuf, sizeof(dimebuf), "ver=%u %s", version, pubkey);
 
 	if (tls_hmac) {
-		strncat(dimebuf, " tls=", sizeof(dimebuf)-1);
-		strncat(dimebuf, tls_hmac, sizeof(dimebuf)-1);
+		BUF_strlcat(dimebuf, " tls=", sizeof(dimebuf));
+		BUF_strlcat(dimebuf, tls_hmac, sizeof(dimebuf));
 	}
 
-	strncat(dimebuf, " pol=", sizeof(dimebuf)-1);
+	BUF_strlcat(dimebuf, " pol=", sizeof(dimebuf));
 
 	switch(msg_policy) {
 		case msg_experimental:
-			strncat(dimebuf, "experimental", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "experimental", sizeof(dimebuf));
 			break;
 		case msg_mixed:
-			strncat(dimebuf, "mixed", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "mixed", sizeof(dimebuf));
 			break;
 		case msg_strict:
-			strncat(dimebuf, "strict", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
 			break;
 	}
 
 	if (syndicates) {
-		strncat(dimebuf, " syn=", sizeof(dimebuf)-1);
-		strncat(dimebuf, syndicates, sizeof(dimebuf)-1);
+		BUF_strlcat(dimebuf, "syn=", sizeof(dimebuf));
+		BUF_strlcat(dimebuf, syndicates, sizeof(dimebuf));
 	}
 
 	if (dx) {
-		strncat(dimebuf, dx, sizeof(dimebuf)-1);
+		BUF_strlcat(dimebuf, dx, sizeof(dimebuf));
 	}
 
 	if (expiry) {
-		strncat(dimebuf, " exp=", sizeof(dimebuf)-1);
-		strncat(dimebuf, expiry, sizeof(dimebuf)-1);
+		BUF_strlcat(dimebuf, " exp=", sizeof(dimebuf));
+		BUF_strlcat(dimebuf, expiry, sizeof(dimebuf));
 	}
 
-	strncat(dimebuf, " sub=", sizeof(dimebuf)-1);
+	BUF_strlcat(dimebuf, " sub=", sizeof(dimebuf));
 
 	switch(sub_policy) {
 		case sub_strict:
-			strncat(dimebuf, "strict", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
 			break;
 		case sub_relaxed:
-			strncat(dimebuf, "relaxed", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "relaxed", sizeof(dimebuf));
 			break;
 		case sub_explicit:
-			strncat(dimebuf, "explicit", sizeof(dimebuf)-1);
+			BUF_strlcat(dimebuf, "explicit", sizeof(dimebuf));
 			break;
 	}
 
 	// Now we need to break this up into suitably sized chunks (TXT records longer than 255 characters must consist of
 	// multiple TXT records that are concatenated together.
-	if (strlen(dimebuf) <= 255) { 
+	if (strlen(dimebuf) <= 255) {
 		printf("%s\n", dimebuf);
 	} else {
 		i = 0;
