@@ -107,7 +107,7 @@ signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache)
 		_signet_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
 	} else if (is_org) {
-		_dbgprint(1, "Org signet passed POK comparison.\n");
+		_dbgprint(1, "Org signet validation succeeded for: %s\n", name);
 	} else if (!is_org && (_signet_full_verify(result, org_signet, NULL) != SS_FULL)) {
 		_destroy_dmtp_session(session);
 		_signet_destroy(result);
