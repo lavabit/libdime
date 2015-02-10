@@ -1,0 +1,5 @@
+
+CC	= gcc
+INC 	= -I../include -I../../libcommon/include -I../../libcommon/providers/sources/donna
+LIBS	= ../../libcommon/libcommon.a -lz
+CFLAGS	= -Werror -Wall -ggdb

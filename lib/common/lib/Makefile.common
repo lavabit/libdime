@@ -1,0 +1,6 @@
+CC		=  gcc
+LIBS 		= ../libcommon.a -lz -lresolv
+INC		= -I../include
+CFLAGS		= -Wall -Werror -ggdb
+OBJDIRNAME	= .objs
+DEPDIRNAME	= .deps

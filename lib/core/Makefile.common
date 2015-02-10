@@ -1,0 +1,4 @@
+
+CC	= gcc
+INC 	= -I../../include/core
+CFLAGS	= -Wall -Werror -g3

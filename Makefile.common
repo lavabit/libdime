@@ -1,8 +1,0 @@
-
-CC		=  gcc
-#LIBS = -lssl -lcrypto -lresolv
-LIBS		= ../../libcommon/libcommon.a -lz -lresolv
-LIBCOMMON	= ../../libcommon/libcommon.a
-INC		= -I../include -I../../libsignet/include -I../../libcommon/include -I../../libcommon/providers/sources/donna
-SSLINC		= -I ../../libcommon/providers/sources/openssl/include/
-CFLAGS		= -Wall -Werror -ggdb
