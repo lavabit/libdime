@@ -3,7 +3,7 @@
 ARCHIVE			:= libcommon.a
 
 # The list of include paths
-INCLUDES		:= -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl
+INCLUDES		:= -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
 # Defines
 DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
