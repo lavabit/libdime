@@ -1,4 +1,4 @@
-#include "../dime/ssl.h"
+#include "signet-resolver/signet-ssl.h"
 
 
 int ssl_initialize(void) {

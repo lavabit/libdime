@@ -1,9 +1,9 @@
-#include "../dime/mrec.h"
+#include "signet-resolver/mrec.h"
 
-#include "../dime/cache.h"
-#include "../dime/dns.h"
-#include "misc.h"
-#include "error.h"
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dns.h"
+#include "common/misc.h"
+#include "common/error.h"
 
 
 /**

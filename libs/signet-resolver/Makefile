@@ -1,6 +1,6 @@
 
 # Module name
-ARCHIVE			:= libsignet.a
+ARCHIVE			:= libsignet-resolver.a
 
 # The list of include paths
 INCLUDES		:= -I../../include/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
@@ -10,11 +10,16 @@ DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Source files
 SRCFILES := \
-general.c \
-keys_pub.c \
-keys.c \
-signet_pub.c \
-signet.c
+cache_pub.c \
+cache.c \
+dmtp_pub.c \
+dmtp.c \
+dns_pub.c \
+dns.c \
+mrec_pub.c \
+mrec.c \
+ssl_pub.c \
+ssl.c
 
 # Compilation and Linker Flags
 CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD 

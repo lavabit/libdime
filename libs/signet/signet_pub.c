@@ -1,5 +1,5 @@
-#include "../signet/signet.h"
-#include "error.h"
+#include "signet/signet.h"
+#include "common/error.h"
 
 
 /* Create a new signet and keysfile */

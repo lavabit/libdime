@@ -13,32 +13,34 @@ libcore			:= $(DIME_PROJECT_ROOT)/libs/core
 libcommon		:= $(DIME_PROJECT_ROOT)/libs/common
 libsignet		:= $(DIME_PROJECT_ROOT)/libs/signet
 libsignet-resolver	:= $(DIME_PROJECT_ROOT)/libs/signet-resolver
-libs			:= $(libsignet-resolver) $(libsignet)
+libs			:= 
 
 # Foreign Dependencies
 libdonna		:= $(DIME_PROJECT_ROOT)/deps/sources/donna
 libopenssl		:= $(DIME_PROJECT_ROOT)/deps/sources/openssl
-foreign			:= $(libopenssl) $(libdonna)
+foreign			:= # $(libopenssl) $(libdonna)
 
 
-.PHONY: all clean $(libcore) $(libcommon)
+.PHONY: all clean $(libcore) $(libcommon) $(libsignet) $(libsignet-resolver)
 
-all: $(libcore) $(libcommon)
+all: $(libcore) $(libcommon) $(libsignet) $(libsignet-resolver)
 
 clean:
-	$(MAKE) --directory=$(libcore) clean
+	$(MAKE) --directory=$(libsignet-resolver) clean
+	$(MAKE) --directory=$(libsignet) clean
 	$(MAKE) --directory=$(libcommon) clean
+	$(MAKE) --directory=$(libcore) clean
 
-$(libcommon) $(libcore):
-	$(MAKE) --directory=$@ $(TARGET)
+$(libsignet-resolver) $(libsignet) $(libcommon) $(libcore):
+	$(MAKE) --jobs=8 --directory=$@ $(TARGET)
 	$(if $(TARGET), $(MAKE) $(TARGET))
 
 	
-$(tools): $(libs)
+#$(tools): $(libs)
 
-$(libs): $(libsignet-resolver)
+#$(libs): $(libsignet-resolver)
 
-$(libsignet-resolver): $(libsignet)
+#$(libsignet-resolver):
 
 #$(libsignet): $(libcommon)
 

@@ -1,4 +1,3 @@
-#include "../dime/cache.h"
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -6,13 +5,14 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#include "../../signet/signet/keys.h"
-#include "../../signet/signet/signet.h"
-#include "../dime/dns.h"
-#include "../dime/mrec.h"
-#include "../dime/ssl.h"
-#include "misc.h"
-#include "error.h"
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dns.h"
+#include "signet-resolver/mrec.h"
+#include "signet-resolver/signet-ssl.h"
+#include "signet/keys.h"
+#include "signet/signet.h"
+#include "common/misc.h"
+#include "common/error.h"
 
 
 

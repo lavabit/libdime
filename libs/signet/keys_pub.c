@@ -1,4 +1,4 @@
-#include "../signet/keys.h"
+#include "signet/keys.h"
 
 int keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 	PUBLIC_FUNC_IMPL(keys_to_file, type, sign_key, enc_key, filename);

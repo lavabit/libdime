@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include "error.h"
+#include "common/error.h"
 
 
 #define CACHE_PERM_LOAD		0x1

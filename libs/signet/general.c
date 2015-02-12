@@ -1,5 +1,6 @@
-#include "../signet/general.h"
 #include <stdio.h>
+
+#include "signet/general.h"
 
 #define SKEY_EMPTY {     0,	0,     0, 0, 0, 0,       0, NULL, NULL }
 #define SKEY_SIZE1 {     0,     1,     0, 0, 1, 0, UNICODE, NULL, NULL }

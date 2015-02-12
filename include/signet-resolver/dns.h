@@ -11,9 +11,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include <openssl/ssl.h>
-#include <openssl/rsa.h>
-#include <openssl/err.h>
+
+#include "openssl/ssl.h"
+#include "openssl/rsa.h"
+#include "openssl/err.h"
 
 #include "error.h"
 

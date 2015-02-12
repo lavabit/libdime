@@ -1,7 +1,7 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include "../signet/general.h"
+#include "signet/general.h"
 
 #define EC_PRIVKEY_SIZE		510
 

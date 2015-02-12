@@ -2,12 +2,13 @@
 #define SSL_H
 
 #include <unistd.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-#include <openssl/ocsp.h>
 
-#include "error.h"
+#include "openssl/ssl.h"
+#include "openssl/err.h"
+#include "openssl/rand.h"
+#include "openssl/ocsp.h"
+
+#include "common/error.h"
 
 
 #define CA_FILE			"cacert.pem"

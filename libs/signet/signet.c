@@ -1,4 +1,4 @@
-#include "../signet/signet.h"
+#include "signet/signet.h"
 
 /* Create new signet and load signet from file */
 

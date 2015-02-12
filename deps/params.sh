@@ -10,4 +10,4 @@ M_ARCHIVES="$M_ROOT/archives"
 M_PATCHES="$M_ROOT/patches"
 M_SOURCES="$M_ROOT/sources"
 
-M_LDPATH="$M_SOURCES/openssl/engines/:$M_SOURCES/openssl/"
+M_LDPATH="$M_SOURCES/zlib/:$M_SOURCES/openssl/engines/:$M_SOURCES/openssl/"

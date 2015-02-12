@@ -5,11 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <openssl/rsa.h>
 
-#include "dcrypto.h"
-
-#include "error.h"
+#include "openssl/rsa.h"
+#include "common/dcrypto.h"
+#include "common/error.h"
 
 
 #define DIME_VERSION_NO			1

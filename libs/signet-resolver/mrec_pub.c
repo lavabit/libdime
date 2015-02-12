@@ -1,4 +1,4 @@
-#include "../dime/mrec.h"
+#include "signet-resolver/mrec.h"
 
 void destroy_dime_record(dime_record_t *record) {
 	PUBLIC_FUNC_IMPL(destroy_dime_record, record);

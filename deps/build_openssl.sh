@@ -86,7 +86,6 @@ zlib() {
 			zlib "zlib-prep"
 			zlib "zlib-configure"
 			zlib "zlib-build"
-			zlib "zlib-check"
 		;;
 		*)
 			printf "\nUnrecognized request.\n"
@@ -109,7 +108,7 @@ openssl() {
 			# http://cvs.openssl.org/chngview?cn=19998
 			cd "$M_SOURCES/openssl"; error
 			if [[ $OPENSSL == "openssl-1.0.0b" ]]; then	cat "$M_PATCHES/openssl/1.0.0b_SSL_server_fix.patch" | patch -p1 --batch ; error; fi
-			if [[ $OPENSSL == "openssl-1.0.1i" ]]; then	cat "$M_PATCHES/openssl/checkhost.patch" | patch -p1 --batch ; error; fi
+			cat "$M_PATCHES/openssl/checkhost.patch" | patch -p1 --batch ; error
 		;;
 		openssl-configure)
 			# OpenSSL does not use environment variables to pickup additional compiler flags
@@ -141,7 +140,6 @@ openssl() {
 			openssl "openssl-prep"
 			openssl "openssl-configure"
 			openssl "openssl-build"
-			openssl "openssl-check"
 		;;
 		*)
 			printf "\nUnrecognized request.\n"
@@ -180,7 +178,6 @@ donna() {
 			donna "donna-prep"
 			donna "donna-configure"
 			donna "donna-build"
-			donna "donna-check"
 		;;
 		*)
 			printf "\nUnrecognized request.\n"
@@ -189,7 +186,7 @@ donna() {
 	esac
 }
 
-openssl openssl-extract
-openssl openssl-prep
-openssl openssl-configure
-openssl openssl-build
+zlib zlib
+donna donna
+openssl openssl
+
