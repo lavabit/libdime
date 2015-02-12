@@ -13,23 +13,23 @@ libcore			:= $(DIME_PROJECT_ROOT)/libs/core
 libcommon		:= $(DIME_PROJECT_ROOT)/libs/common
 libsignet		:= $(DIME_PROJECT_ROOT)/libs/signet
 libsignet-resolver	:= $(DIME_PROJECT_ROOT)/libs/signet-resolver
-libs			:= $(libsignet-resolver) $(libsignet) $(libcommon)
+libs			:= $(libsignet-resolver) $(libsignet)
 
 # Foreign Dependencies
-libdonna		:= $(DIME_PROJECT_ROOT)/deps/donna
-libopenssl		:= $(DIME_PROJECT_ROOT)/deps/openssl
+libdonna		:= $(DIME_PROJECT_ROOT)/deps/sources/donna
+libopenssl		:= $(DIME_PROJECT_ROOT)/deps/sources/openssl
 foreign			:= $(libopenssl) $(libdonna)
 
 
-.PHONY: all clean $(libcore)
+.PHONY: all clean $(libcore) $(libcommon)
 
-all: $(libcore)
+all: $(libcore) $(libcommon)
 
 clean:
 	$(MAKE) --directory=$(libcore) clean
+	$(MAKE) --directory=$(libcommon) clean
 
-
-$(libcore):
+$(libcommon) $(libcore):
 	$(MAKE) --directory=$@ $(TARGET)
 	$(if $(TARGET), $(MAKE) $(TARGET))
 
@@ -40,9 +40,9 @@ $(libs): $(libsignet-resolver)
 
 $(libsignet-resolver): $(libsignet)
 
-$(libsignet): $(libcommon)
+#$(libsignet): $(libcommon)
 
-$(libcommon): $(foreign)
+#$(libcommon): $(foreign)
 
 
 

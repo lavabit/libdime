@@ -6,12 +6,13 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <time.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
-#include <openssl/sha.h>
-#include <openssl/rsa.h>
-#include <openssl/bn.h>
+
+#include "openssl/bio.h"
+#include "openssl/evp.h"
+#include "openssl/buffer.h"
+#include "openssl/sha.h"
+#include "openssl/rsa.h"
+#include "openssl/bn.h"
 
 #include "error.h"
 

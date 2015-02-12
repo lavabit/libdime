@@ -1,10 +1,10 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
-#include <openssl/obj_mac.h>
-#include <openssl/ec.h>
-#include <openssl/ecdsa.h>
-#include <openssl/pem.h>
+#include "openssl/obj_mac.h"
+#include "openssl/ec.h"
+#include "openssl/ecdsa.h"
+#include "openssl/pem.h"
 
 #include "error.h"
 #include "ed25519.h"

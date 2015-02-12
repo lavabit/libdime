@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <netdb.h>
 
-#include <openssl/err.h>
-#include <openssl/ssl.h>
+#include "openssl/err.h"
+#include "openssl/ssl.h"
 
 #include "error.h"
 #include "misc.h"
