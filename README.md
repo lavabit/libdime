@@ -3,7 +3,7 @@ DIME
 This project holds the DIME libraries and related command line utilities.
 
 Dependencies
-=========
+---------
 
 System:  
 c dl rt pthread resolv
@@ -15,7 +15,7 @@ Unit Tests:
 python check 
 
 Directories
-=========
+---------
 
 libs/  
   The DIME libraries
@@ -54,7 +54,7 @@ include/
   The header files provided by the library components. 
     
 Compiling
-=========
+---------
 
 From the "deps" directory:  
 
@@ -82,7 +82,7 @@ make signet
 make dime  
 
 Video
-=========
+---------
 
 An old/outdated video showing the components and command-line tools:  
 
