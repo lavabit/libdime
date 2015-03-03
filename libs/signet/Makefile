@@ -1,27 +1,38 @@
 
-# Module name
+# Library Name
 ARCHIVE			:= libsignet.a
+
+
+# Source files
+SRCFILES := general.c keys_pub.c keys.c signet_pub.c signet.c
+
 
 # The list of include paths
 INCLUDES		:= -I../../include/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
+
+
+
+
+
+
+########################################################
+# You shouldn't need to edit anything below this line. #
+########################################################
+
+
 # Defines
 DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
 
-# Source files
-SRCFILES := \
-general.c \
-keys_pub.c \
-keys.c \
-signet_pub.c \
-signet.c
+# Compiler Flags
+CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
 
-# Compilation and Linker Flags
-CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD 
+# Archiver Flags
 ARFLAGS			:= rcs 
 
 # External programs
 AR			:= ar
+LD			:= gcc
 CC			:= gcc
 MV			:= mv --force
 RM			:= rm --force

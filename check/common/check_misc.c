@@ -45,12 +45,12 @@ START_TEST(check_base64_macros)
 	ck_assert_uint_eq(44, B64_ENCODED_LEN(31));
 	ck_assert_uint_eq(40, B64_ENCODED_LEN(10 + 10 + 10));
 
-	ck_assert_uint_eq(0, BASE64_DECODED_LEN(0));
-	ck_assert_uint_eq(1, BASE64_DECODED_LEN(2));
-	ck_assert_uint_eq(2, BASE64_DECODED_LEN(3));
-	ck_assert_uint_eq(3, BASE64_DECODED_LEN(4));
-	ck_assert_uint_eq(57, BASE64_DECODED_LEN(76));
-	ck_assert_uint_eq(30 + 30 + 30, BASE64_DECODED_LEN(40 + 40 + 40));
+	ck_assert_uint_eq(0, B64_DECODED_LEN(0));
+	ck_assert_uint_eq(1, B64_DECODED_LEN(2));
+	ck_assert_uint_eq(2, B64_DECODED_LEN(3));
+	ck_assert_uint_eq(3, B64_DECODED_LEN(4));
+	ck_assert_uint_eq(57, B64_DECODED_LEN(76));
+	ck_assert_uint_eq(30 + 30 + 30, B64_DECODED_LEN(40 + 40 + 40));
 }
 END_TEST
 

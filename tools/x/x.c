@@ -1,11 +1,11 @@
-#include "../../lib/dime/dime/cache.h"
-#include "../../lib/dime/dime/dmtp.h"
-#include "../../lib/dime/dime/dns.h"
-#include "../../lib/dime/dime/mrec.h"
-#include "../../lib/dime/dime/ssl.h"
-#include "network.h"
-#include "misc.h"
-#include "error.h"
+#include "dime/cache.h"
+#include "dime/dmtp.h"
+#include "dime/dns.h"
+#include "dime/mrec.h"
+#include "dime/ssl.h"
+#include "common/network.h"
+#include "common/misc.h"
+#include "common/error.h"
 
 
 

@@ -1,14 +1,29 @@
 
-# Library Name
-ARCHIVE			:= libsignet-resolver.a
+# Tool name
+TOOL			:= dmtp
 
+# Source files
+SRCFILES := dmtp.c
 
-# Source Files
-SRCFILES := cache_pub.c cache.c dmtp_pub.c dmtp.c dns_pub.c dns.c mrec_pub.c mrec.c ssl_pub.c ssl.c
+# Static Library Locations
+DIMEDIR			:= ../../libs/
+DEPSDIR			:= ../../deps/sources/
 
+# Static Library Archives
+STATIC			:= $(DEPSDIR)zlib/libz.a
+STATIC			+= $(DEPSDIR)openssl/libcrypto.a 
+STATIC			+= $(DEPSDIR)openssl/libssl.a
+STATIC			+= $(DEPSDIR)donna/ed25519.o
+STATIC			+= $(DIMEDIR)core/libcore.a
+STATIC			+= $(DIMEDIR)common/libcommon.a 
+STATIC			+= $(DIMEDIR)signet/libsignet.a
+STATIC			+= $(DIMEDIR)signet-resolver/libsignet-resolver.a 
 
-# The list of include paths
-INCLUDES		:= -I../../include/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
+# Dynamic Libraries
+DYNAMIC			:= -lc -lrt -ldl -lpthread -lresolv
+ 
+# Include paths
+INCLUDES		:= -I../../include/ -I../../include/core/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
 
 
@@ -22,13 +37,13 @@ INCLUDES		:= -I../../include/ -I../../include/common/ -I../../deps/sources/donna
 
 
 # Defines
-DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
+DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
-# Compiler Flags
-CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+# Compilation 
+CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD 
 
-# Archiver Flags 
-ARFLAGS			:= rcs 
+# Linker Flags
+LDFLAGS			:= -rdynamic
 
 # External programs
 AR			:= ar
@@ -67,23 +82,21 @@ TARGETGOAL		= $(.DEFAULT_GOAL)
 endif
 
 # Shortcuts
-.PHONY: all clean libs $(basename $(ARCHIVE))
-all: $(ARCHIVE)
-libs: $(ARCHIVE)
-$(basename $(ARCHIVE)): $(ARCHIVE)
+.PHONY: all clean libs $(TOOL)
+all: $(TOOL)
+libs: $(TOOL)
 
 # Delete the archive along with the generated object and dependency files
 clean:
-	@$(RM) $(ARCHIVE) $(OBJFILES) $(DEPFILES)
+	@$(RM) $(TOOL) $(OBJFILES) $(DEPFILES)
 	@for d in $(sort $(dir $(OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
-# Construct the static archive file
-$(ARCHIVE): $(OBJFILES)
+# Construct the binary executable file
+$(TOOL): $(OBJFILES)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
-	@$(AR) $(ARFLAGS) $@ $(OBJFILES)
-	@$(RANLIB) $@
+	@$(LD) $(LDFLAGS) --output='$@' $(OBJFILES) -Wl,--start-group $(STATIC) -Wl,--end-group $(DYNAMIC)
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 # Object files

@@ -1,8 +1,10 @@
+
 #include <unistd.h>
 
-#include "../../lib/signet/signet/keys.h"
-#include "misc.h"
-#include "dcrypto.h"
+#include "signet/keys.h"
+
+#include "common/misc.h"
+#include "common/dcrypto.h"
 
 
 

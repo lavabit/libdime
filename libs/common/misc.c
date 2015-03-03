@@ -585,7 +585,7 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	new_len = BASE64_DECODED_LEN(len);
+	new_len = B64_DECODED_LEN(len);
 
 	if (!(result = malloc(new_len))) {
 		PUSH_ERROR_SYSCALL("malloc");

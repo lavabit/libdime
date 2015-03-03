@@ -1,21 +1,20 @@
-#include "../../lib/dime/dime/dmtp.h"
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 
-#include "../../lib/dime/dime/cache.h"
-#include "../../lib/dime/dime/dns.h"
-#include "../../lib/dime/dime/mrec.h"
-#include "../../lib/dime/dime/ssl.h"
-#include "../../lib/signet/signet/keys.h"
-#include "misc.h"
-#include "network.h"
-#include "error.h"
 
-#include "dmsg.h"
 
+#include "signet-resolver/dmtp.h"
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dns.h"
+#include "signet-resolver/mrec.h"
+#include "signet-resolver/signet-ssl.h"
+
+#include "signet/keys.h"
+
+#include "common/misc.h"
+#include "common/network.h"
+#include "common/error.h"
+
+#include "dmessage/dmessage.h"
 
 
 void usage(const char *progname);
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]) {
 	dime_record_t *drec;
 	dmtp_session_t *session;
 //	signet_t *signet, *org_signet;
-	dmime_message_t *encrypted;
+	dmap_msg_t *encrypted;
 	ED25519_KEY *signkey = NULL;
 	struct stat sb;
 	void *fbuf;

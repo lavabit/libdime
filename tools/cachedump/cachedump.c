@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../lib/dime/dime/cache.h"
-#include "../../lib/dime/dime/dns.h"
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dns.h"
 
 
 void usage(const char *progname) {

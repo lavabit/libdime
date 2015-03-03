@@ -1,13 +1,16 @@
-#include "network.h"
-#include "misc.h"
-#include "dcrypto.h"
+
 
 #include <openssl/buffer.h>
 #include <openssl/pem.h>
-#include "../../lib/dime/dime/cache.h"
-#include "../../lib/dime/dime/dmtp.h"
-#include "../../lib/dime/dime/mrec.h"
-#include "../../lib/dime/dime/ssl.h"
+
+#include "common/network.h"
+#include "common/misc.h"
+#include "common/dcrypto.h"
+
+#include "dime/cache.h"
+#include "dime/dmtp.h"
+#include "dime/mrec.h"
+#include "dime/ssl.h"
 
 
 void usage(const char *progname) {

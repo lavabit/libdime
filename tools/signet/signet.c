@@ -1,7 +1,8 @@
 
 #include <unistd.h>
 #include <getopt.h>
-#include "../../lib/signet/signet/signet.h"
+
+#include "signet/signet.h"
 
 
 

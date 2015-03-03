@@ -1,12 +1,15 @@
-#include "../../lib/dime/dime/cache.h"
-#include "../../lib/dime/dime/dmtp.h"
-#include "../../lib/dime/dime/dns.h"
-#include "../../lib/dime/dime/mrec.h"
-#include "../../lib/dime/dime/ssl.h"
-#include "../../lib/signet/signet/keys.h"
-#include "misc.h"
-#include "network.h"
-#include "error.h"
+
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dmtp.h"
+#include "signet-resolver/dns.h"
+#include "signet-resolver/mrec.h"
+#include "signet-resolver/signet-ssl.h"
+
+#include "signet/keys.h"
+#include "signet/signet.h"
+
+#include "common/misc.h"
+#include "common/network.h"
 
 
 
