@@ -31,7 +31,7 @@ foreign			:= # $(libopenssl) $(libdonna)
 
 .PHONY: all clean $(libcore) $(libcommon) $(libsignet) $(libsignet-resolver) $(libs) $(dime) $(signet) $(tools) $(legacy-tools)
 
-all: $(libs) $(tools) $(legacy-tools)
+all: $(libs) $(tools)
 
 clean:
 	$(MAKE) --directory=$(cachedump) clean
@@ -49,6 +49,11 @@ clean:
 $(dime) $(signet) $(libsignet-resolver) $(libsignet) $(libcommon) $(libcore):
 	$(MAKE) --jobs=8 --directory=$@ $(TARGET)
 	$(if $(TARGET), $(MAKE) $(TARGET))
+
+$(cachedump) $(dmtp) $(ed25519) $(genrec) $(x):
+	$(MAKE) --jobs=8 --directory=$@ $(TARGET)
+	$(if $(TARGET), $(MAKE) $(TARGET))
+
 
 libsignet-resolver: libsignet $(libsignet-resolver)
 libsignet: libcommon $(libsignet)

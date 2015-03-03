@@ -82,9 +82,9 @@ TARGETGOAL		= $(.DEFAULT_GOAL)
 endif
 
 # Shortcuts
-.PHONY: all clean libs $(TOOL)
+.PHONY: all clean tools
 all: $(TOOL)
-libs: $(TOOL)
+tools: $(TOOL)
 
 # Delete the archive along with the generated object and dependency files
 clean:
