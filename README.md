@@ -1,86 +1,90 @@
-The DIME libraries and related command line utilities.
+DIME
+=========
+This project holds the DIME libraries and related command line utilities.
+
+Dependencies
 =========
 
-System Dependencies:
+System:  
 c dl rt pthread resolv
 
-Bundled Dependancies:
+Bundled:  
 zlib openssl donna
 
-Unit Test Dependancies:
+Unit Tests:  
 python check 
 
 Directories
 =========
 
-libs/
+libs/  
   The DIME libraries
   
-  core/
+  core/  
     Various string and other data manipulation functions take from the magma core component.
     
-  common/
+  common/  
     Error handling, network and cryptographic functionality common to the remaining DIME libraries. 
     
-  signet/
+  signet/  
     Signet data format handlier, including creation, signing, parsing and validating. 
     
-  signet-resolver/
+  signet-resolver/  
     Logic retrieve and a management record and then an org or user signet, including relevant validation logic.
     
-tools/
+tools/  
   The command line utilities.
   
-  dime/
+  dime/  
     Generate a DIME message and send it.
     
-  signet/
+  signet/  
     Generate, sign, view and verify a signet.
     
-res/
+res/  
   Resource files used by the different components and utilities. 
 
-docs/
+docs/  
   Various related documents.
   
-checks/
+checks/  
   Unit tests (eventually).
   
-include/
+include/  
   The header files provided by the library components. 
     
 Compiling
 =========
 
-From the "deps" directory:
+From the "deps" directory:  
 
-build.sh zlib
-build.sh donna
-build.sh openssl
+build.sh zlib  
+build.sh donna  
+build.sh openssl  
 
-Then from the main project directory:
+Then from the main project directory:  
 
-make all
+make all  
 
-or
+or  
 
-make libs
-make tools
-make clean
+make libs  
+make tools  
+make clean  
 
-The specific make targets:
+The specific make targets:  
 
-make libcore
-make libcommon
-make libsignet
-make libsignet-resolver
-make signet
-make dime
+make libcore  
+make libcommon  
+make libsignet  
+make libsignet-resolver  
+make signet  
+make dime  
 
 Video
 =========
 
-An old/outdated video showing the components and command-line tools: 
+An old/outdated video showing the components and command-line tools:  
 
 https://darkmail.info/downloads/dime-library-cli-demo.mp4
 
