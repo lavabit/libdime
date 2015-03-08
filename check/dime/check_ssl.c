@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "../../check/dime/check_dime.h"
-#include "../../lib/dime/dime/ssl.h"
+#include "../../include/signet-resolver/signet-ssl.h"
 
 
 

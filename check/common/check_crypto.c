@@ -4,7 +4,7 @@
  #include <openssl/ec.h>
 
 #include "../../check/common/check_common.h"
-#include "crypto.h"
+#include "dcrypto.h"
 #include "misc.h"
 
 

@@ -1,22 +1,5 @@
-include ../Makefile.common
+checks_SOURCES		= check_signet.c
+checks_CFLAGS		= $(LIBSIGNETRESOLVER_CFLAGS) $(LIBDIME_CFLAGS) $(LIBSIGNET_CFLAGS) $(LIBCOMMON_CFLAGS) $(DONNA_CFLAGS) $(OPENSSL_CFLAGS)
+checks_LDADD		= $(LIBSIGNETRESOLVER_LIBS) $(LIBDIME_LIBS) $(LIBSIGNET_LIBS) $(LIBCOMMON_LIBS) $(DONNA_LIBS) $(OPENSSL_LIBS)
 
-LIBS := -lcheck $(LIBS)
-
-all:	build runcheck
-
-signet.check:	build
-
-build:	check_signet.c
-	$(CC) $(CFLAGS) $(INC) -o ../signet.check check_signet.c ../libsignet.a $(LIBS)
-
-runcheck:
-	@echo Running check...
-	@../signet.check
-
-clean:
-	@echo Cleaning up the checks...
-	@if test -f ../signet.check; then \
-		echo "rm ../signet.check"; rm ../signet.check; \
-	fi
-
-.PHONY:	all build runcheck clean
+include ../checkdir.mk

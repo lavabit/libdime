@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../check-compat.h"
 #include "../../check/common/check_common.h"
 #include "misc.h"
 

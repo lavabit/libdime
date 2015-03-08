@@ -1,5 +1,5 @@
 #include "../../check/signet/check_signet.h"
-#include "../../lib/signet/signet/signet.h"
+#include "../../include/signet/signet.h"
 
 START_TEST (check_signet_modification) 
 {

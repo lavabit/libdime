@@ -8,10 +8,10 @@
 #include <openssl/rand.h>
 
 #include <check.h>
-
+#include "../check-compat.h"
 #include "../../check/common/check_crypto.h"
 #include "../../check/common/check_misc.h"
-#include "libcommon.h"
+#include "check_common.h"
 
 #include "error.h"
 
