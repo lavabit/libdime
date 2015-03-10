@@ -439,7 +439,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	ASN1_GENERALIZEDTIME *revtime, *thisupd, *nextupd;
 	X509_STORE *store;
 	X509 *cert, *pcert, *issuer = NULL;
-	cached_object_t *cached_ocsp;
+	cached_object_t *cached_ocsp = NULL;
 	BIO *bsock, *dbgbio;
 	struct tm tt;
 	time_t expiration;
@@ -610,6 +610,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	}
 
 	// Should we support multiple values?
+	purl = NULL;
 	for (i = 0; i < sk_OPENSSL_STRING_num(ocspst); i++) {
 		purl = strdup(sk_OPENSSL_STRING_value(ocspst, i));
 		break;
@@ -618,12 +619,12 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	// There's probably a more aptly named function somewhere?
 	X509_email_free(ocspst);
 
-	_dbgprint(4, "Found OCSP url in certificate file: %s\n", purl);
-
 	if (!purl) {
 		PUSH_ERROR_SYSCALL("strdup");
 		RET_ERROR_INT(ERR_NOMEM, "OCSP validation failed because of memory allocation problem");
 	}
+
+	_dbgprint(4, "Found OCSP url in certificate file: %s\n", purl);
 
 	// Parse the OCSP server URI from the certificate into its respective fields.
 	// TODO: There is a memory leak here resulting from these parsed parameters from OCSP_parse_url().

@@ -919,10 +919,6 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
  * @param	outbuf	a buffer that will contain the output of the hash operation (the caller is responsible for
  * 			allocating the correct amount of space).
  * @return	0 on success or < 0 if an error was encountered.
- *
- *
- *
- *
  */
 int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
 
@@ -936,10 +932,6 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if ((nbits != 160) && (nbits != 256) && (nbits != 512)) {
-		RET_ERROR_INT(ERR_BAD_PARAM, "SHA multi-buffer hash requested against unsupported bit size");
-	}
-
 	switch(nbits) {
 		case 160:
 			res = SHA1_Init(&ctx160);
@@ -950,6 +942,8 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 		case 512:
 			res = SHA512_Init(&ctx512);
 			break;
+		default:
+			RET_ERROR_INT(ERR_BAD_PARAM, "SHA multi-buffer hash requested against unsupported bit size");
 	}
 
 	if (!res) {

@@ -116,7 +116,7 @@ int_t spool_mktemp(int_t spool, chr_t *prefix) {
 
 	int_t fd = -1;
 	time_t now;
-	stringer_t *path, *template, *base = NULL;
+	stringer_t *path, *template = NULL, *base = NULL;
 
 	if (!prefix) prefix = "magma";
 

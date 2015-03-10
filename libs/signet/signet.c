@@ -2869,7 +2869,7 @@ signet_field_t * _signet_field_destroy(signet_field_t *field) {
 
 int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 
-	char *name, *nbuf, *data;
+	char *name, *nbuf, *data = NULL;
 	const char *png_name = "PNG file";
 
 	if(!fp || !field) {
@@ -2912,6 +2912,7 @@ int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 			memcpy(data, field->signet->data+field->data_offset, field->data_size);
 			break;
 		case HEX:								// TODO
+			break;
 		case B64:
 
 			if(!(data = _b64encode_nopad(field->signet->data+field->data_offset, (size_t)field->data_size))) {
@@ -2938,7 +2939,7 @@ int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 		nbuf = name;
 	}
 
-	fprintf(fp, "%-25.25s -> %-90.90s\n", nbuf, data);
+	fprintf(fp, "%-25.25s -> %-90.90s\n", nbuf, data ? data : "(null)");
 	free(name);
 	free(data);
 

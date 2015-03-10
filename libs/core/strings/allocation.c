@@ -413,7 +413,6 @@ stringer_t * st_append_opts(size_t align, stringer_t *s, stringer_t *append) {
  */
 stringer_t * st_alloc_opts(uint32_t opts, size_t len) {
 
-	int handle;
 	void *joint;
 	stringer_t *result = NULL;
 	void (*release)(void *buffer) = opts & SECURE ? &mm_sec_free : &mm_free;
@@ -506,6 +505,7 @@ stringer_t * st_alloc_opts(uint32_t opts, size_t len) {
 			len = align(magma.page_length, len ? len + 1 : 0);
 
 			//Then truncate the file to ensure it matches the memory map size.
+			int handle = -1;
 			if (len && (handle = spool_mktemp(MAGMA_SPOOL_DATA, "mapped")) != -1 && ftruncate64(handle, len) == 0 && (result = allocate(sizeof(mapped_t))) &&
 					(joint = mmap64(NULL, len,	PROT_WRITE | PROT_READ, opts & SECURE ? MAP_PRIVATE | MAP_LOCKED : MAP_PRIVATE, handle, 0)) != MAP_FAILED) {
 				mm_set(joint, 0, len);
