@@ -64,4 +64,3 @@ libs: $(libsignet-resolver) $(libsignet) $(libcommon) $(libcore)
 dime: libs $(dime)
 signet: libs $(signet)
 tools: $(dime) $(signet)
-
