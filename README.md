@@ -27,8 +27,7 @@ libs/signet-resolver/ | Logic retrieve and a management record and then an org o
 tools/ | The command line utilities.
 tools/dime/ | Generate a DIME message and send it.
 tools/signet/ | Generate, sign, view and verify a signet.
-tools/res/ | Resource files used by the different components and utilities.
-docs/ | Various related documents.
+res/ | Resource files used by the different components and utilities.
 checks/ | Unit tests (eventually).
 include/ | The header files provided by the library components.
 
