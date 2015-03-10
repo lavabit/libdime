@@ -24,7 +24,7 @@
 typedef struct {
 	ed25519_secret_key private;
 	ed25519_public_key public;
-} ED25519_KEY; 
+} ED25519_KEY;
 
 
 // Initializion and finalization routines.

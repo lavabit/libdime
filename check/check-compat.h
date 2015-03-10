@@ -17,8 +17,8 @@
   uintmax_t _ck_y = (Y); \
   ck_assert_msg(_ck_x OP _ck_y, "Assertion '" #X " " #OP " " #Y "' failed: "#X"==%d, "#Y"==%d", _ck_x, _ck_y); \
 } while (0)
-#define ck_assert_uint_eq(X, Y) ck_assert_uint(X, ==, Y) 
-#define ck_assert_uint_ne(X, Y) ck_assert_uint(X, !=, Y) 
+#define ck_assert_uint_eq(X, Y) ck_assert_uint(X, ==, Y)
+#define ck_assert_uint_ne(X, Y) ck_assert_uint(X, !=, Y)
 #define ck_assert_uint_lt(X, Y) ck_assert_uint(X, <, Y)
 #define ck_assert_uint_le(X, Y) ck_assert_uint(X, <=, Y)
 #define ck_assert_uint_gt(X, Y) ck_assert_uint(X, >, Y)

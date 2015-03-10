@@ -35,7 +35,7 @@ typedef struct cached_object {
 	time_t timestamp;			// The UTC timestamp for when this object was cached. Used with ttl.
 	unsigned char id[32];			// The identifier of the cached item as a SHA-256 hash.
 	cached_data_type_t dtype;		// The type of the cached data being stored.
-	unsigned long ttl;			// Optional time-to-live in seconds. 
+	unsigned long ttl;			// Optional time-to-live in seconds.
 	time_t expiration;			// The time when the record will expire, in UTC.
 	int relaxed;				// Whether or not the cache follows a relaxed eviction policy
 	void *data;				// The data associated with the cached object.

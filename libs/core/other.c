@@ -20,7 +20,7 @@ uint64_t _rand_get_uint64(void) {
 	}
 
 	result = rand_r(&rand_ctx);
-	result = result << 32; 
+	result = result << 32;
 	result = result | rand_r(&rand_ctx);
 
 	return result;

@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 		close(fd);
 		exit(EXIT_FAILURE);
 	}
- 
+
 	if ((fbuf = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == (void *)-1) {
 		perror("mmap");
 		close(fd);
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
 		dump_error_stack();
 	} else if (_verbose >= 5) {
 			dbgprint(5, "Loaded object cache; dumping contents:\n");
-			_dump_cache(cached_data_unknown, 1, 1); 
+			_dump_cache(cached_data_unknown, 1, 1);
 	}
 
 	printf("Querying DIME management record for: %s\n", destination);
@@ -181,10 +181,10 @@ int main(int argc, char *argv[]) {
 			exit(EXIT_FAILURE);
 	}
 
-/*	if (save_cache_contents() < 0) { 
+/*	if (save_cache_contents() < 0) {
 		fprintf(stderr, "Error: unable to save cache contents to disk.\n");
 		dump_error_stack();
-	} 
+	}
 	*/
 
 	if (family == AF_INET) {
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Establishing connection to DX server...\n");
 		session = dmtp_connect(destination, family);
 	}
- 
+
 	if (!session) {
 		fprintf(stderr, "Error: could not connect to DX server.\n");
 		dump_error_stack();
@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
 
 	close(fd);
 
-	printf("Done.\n"); 
+	printf("Done.\n");
 
 	return 0;
 }

@@ -169,7 +169,7 @@ unsigned char * _ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *ke
 
 	*siglen = bsize;
 
-	return buf;	
+	return buf;
 }
 
 

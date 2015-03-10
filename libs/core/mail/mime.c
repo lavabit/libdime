@@ -1202,7 +1202,7 @@ stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, strin
 	}
 
 	//if (!(result = st_merge("nnsnsnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\nTo: ",
-	//		to, "\r\nSubject: ", subject, "\r\n", firsthead))) { 
+	//		to, "\r\nSubject: ", subject, "\r\n", firsthead))) {
 	if (!(result = st_merge("nnsnsssnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\n",
 				str_to, str_cc, str_bcc, "Subject: ", subject, "\r\n", firsthead))) {
 		log_error("Unable to allocate space for smtp envelope.");

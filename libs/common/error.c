@@ -348,7 +348,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
 	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
 
-	
+
 /**
  * @brief	Populate a new entry on the error stack.
  * @param	errptr

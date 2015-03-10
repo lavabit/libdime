@@ -27,11 +27,11 @@
 #include "common/dcrypto.h"
 
 
-typedef enum 
+typedef enum
 {
 SIGNET_TYPE_ERROR,
 SIGNET_TYPE_ORG = 1,
-SIGNET_TYPE_USER, 
+SIGNET_TYPE_USER,
 SIGNET_TYPE_SSR
 } signet_type_t;
 
@@ -135,7 +135,7 @@ SIGNET_USER_PHOTO,			/* User photo*/
 SIGNET_USER_CORE_SIG, 			/* Final Organizational Signature*/
 SIGNET_USER_ID,				/* User Signet ID */
 SIGNET_USER_FULL_SIG			/* Org Signature following the ID field */
-} SIGNET_USER_FIELD_T; 
+} SIGNET_USER_FIELD_T;
 
 
 typedef enum
@@ -172,7 +172,7 @@ SIGNET_SOK_ALL	  = 0x00000111		/* This key can only be used for signing signets 
 } sok_flag_t;
 
 
-typedef enum 
+typedef enum
 {
 SS_UNKNOWN = 0,				/* Invalid signet, state unknown/currently unclassified */
 SS_MALFORMED, 				/* Invalid signet, it either doesn't fit the field format or has multiple unique fields */
@@ -187,9 +187,9 @@ SS_FULL, 				/* Valid signet with ID and organizational-final-signature */
 
 typedef enum 				/* Currently barely used, meant to classify signet field data types*/
 {
-B64, 
-HEX, 
-PNG, 
+B64,
+HEX,
+PNG,
 UNICODE
 } field_data_t;
 
@@ -204,7 +204,7 @@ typedef struct {
 	unsigned char bytes_name_size;	/* Is this a defined field */
 	unsigned char bytes_data_size;	/* Number of bytes for this */
 	uint32_t data_size;    	    	/* data_size = 0 indicates the size being variable */
-	
+
 	field_data_t data_type;		/* Dump format for the field */
 
 	char* name;
@@ -217,7 +217,7 @@ typedef struct {
 typedef struct Field {
 
 	const signet_t * signet;
-	signet_field_key_t * key;	
+	signet_field_key_t * key;
 	unsigned char flags;
 	unsigned char name_size;
 	unsigned int data_size;

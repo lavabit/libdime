@@ -14,7 +14,7 @@
  23 int do_x509_validation(X509 *cert, STACK_OF(X509) *chain);
  25 int do_ocsp_validation(SSL *connection, int *fallthrough);
  26 char * get_cert_subject_cn(X509 *cert);
- 27 
+ 27
  29 int _validate_self_signed(X509 *cert);
  32 X509_STORE * _get_cert_store(void);
  33 int _verify_certificate_callback(int ok, X509_STORE_CTX *ctx);
@@ -36,7 +36,7 @@ struct wildcard_test wildcard_tests[] = {
 	{ 1, "abc.google.com",      "*.google.com" },
 	{ 1, "abc.def.google.com",  "*.google.com" },
 	{ 0, "google.com",          "*.google.com" }
-};		
+};
 
 
 START_TEST (check_domain_wildcard)

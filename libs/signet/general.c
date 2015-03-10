@@ -5,7 +5,7 @@
 #define SKEY_EMPTY {     0,	0,     0, 0, 0, 0,       0, NULL, NULL }
 #define SKEY_SIZE1 {     0,     1,     0, 0, 1, 0, UNICODE, NULL, NULL }
 #define SKEY_SIZE2 {     0,     1,     0, 0, 2, 0, UNICODE, NULL, NULL }
- 
+
 signet_field_key_t signet_org_field_keys[256] = {
 //	{ .required .unique .flags .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
 /*0*/	SKEY_EMPTY,
@@ -41,7 +41,7 @@ signet_field_key_t signet_org_field_keys[256] = {
 /*140*/ SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1,
 /*150*/ SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1, SKEY_SIZE1,
 /*160*/ {     0,     1,     0, 0, 2,  0, UNICODE,                          "Website", "Organization Website." },
-/*161*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, 
+/*161*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*170*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*180*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*190*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
@@ -122,7 +122,7 @@ signet_field_key_t signet_user_field_keys[256] = {
 /*200*/ {     0,     1,     0, 0, 2,  0, UNICODE,                "Alternate-Address", "User alternate email address, semicolon used as optional separator." },
 /*201*/ {     0,     1,     0, 0, 2,  0, UNICODE,                           "Resume", "User resume." },
 /*202*/ {     0,     0,     0, 0, 2,  0, UNICODE,                     "Endorsements", "User endorsements." },
-/*203*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, 
+/*203*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*210*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*220*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
 /*230*/ SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2, SKEY_SIZE2,
@@ -202,7 +202,7 @@ int _write_pem_data(const char *b64_data, const char *tag, const char *filename)
 	fprintf(fp, "-----BEGIN %s-----\n", tag);
 
 	for(i = 0; i < data_size; ++i) {
-		
+
 		if(i % 128 == 0 && i) {
 			fprintf(fp, "\n");
 		}

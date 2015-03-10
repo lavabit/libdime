@@ -1,7 +1,7 @@
 #include "../../check/signet/check_signet.h"
 #include "../../include/signet/signet.h"
 
-START_TEST (check_signet_modification) 
+START_TEST (check_signet_modification)
 {
 	char *phone1 = "1SOMENUMBER", *phone2 = "15124123529", *name1 = "check undef", *data1 = "undef data", *name2 = "check name", *data2 = "check check";
 	size_t data_size;
@@ -32,7 +32,7 @@ START_TEST (check_signet_modification)
 	ck_assert_msg(!(_signet_remove_undef_name(signet, strlen(name1), (unsigned char *)name1)), "could not remove undefined field by name.\n");
 
 	ck_assert_msg((data = _signet_fetch_undef_name(signet, strlen(name2), (unsigned char *)name2, &data_size)) != NULL, "could not retrieve undefined field.\n");
-	 
+
 	ck_assert_msg(!(memcmp(data, (unsigned char *)data2, data_size)), "undefined field was corrupted by the deletion of the previous field.\n");
 
 	free(data);
@@ -105,7 +105,7 @@ START_TEST (check_signet_parsing)
 	_signet_destroy(sigtwo);
 
 	ck_assert_msg((b64_sigone = _signet_serialize_b64(sigone)) != NULL, "could not serialize signet to base64.\n");
-	
+
 	ck_assert_msg((sigtwo = _signet_deserialize_b64(b64_sigone)) != NULL, "could not deserialize signet from base64.\n");
 
 	ck_assert_msg((b64_sigtwo = _signet_serialize_b64(sigtwo)) != NULL, "could not serialize signet to base64 the second time.\n");
@@ -133,7 +133,7 @@ START_TEST (check_signet_parsing)
 END_TEST
 
 START_TEST (check_signet_signing)
-{	
+{
 	int i = 0;
 	char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
 	unsigned char **org_signet_sign_keys;
@@ -141,15 +141,15 @@ START_TEST (check_signet_signing)
 	signet_t *org_signet, *user_signet, *newuser_signet;
 
 	_crypto_init();
-//create org signet and keys file	
-	ck_assert_msg((org_signet = _signet_new_keysfile(SIGNET_TYPE_ORG, org_keys)) != NULL, "could not create new signet with keys.\n"); 
+//create org signet and keys file
+	ck_assert_msg((org_signet = _signet_new_keysfile(SIGNET_TYPE_ORG, org_keys)) != NULL, "could not create new signet with keys.\n");
 //retrieve org private signing key
 	ck_assert_msg((orgkey = keys_file_fetch_sign_key(org_keys)) != NULL, "could not fetch ed25519 signing key.\n");
 //sign org core signature
 	ck_assert_msg(!(_signet_sign_core_sig(org_signet, orgkey)), "could not sign org signet core.\n");
 //retrieve the list of all org signet-signing keys
 	ck_assert_msg((org_signet_sign_keys = _signet_get_signet_sign_keys(org_signet)) != NULL, "could not retrieve signing keys.\n");
-//verify that the org core signet is valid 
+//verify that the org core signet is valid
 	ck_assert_msg(_signet_full_verify(org_signet, NULL, (const unsigned char **)org_signet_sign_keys) == SS_CORE, "could not verify core org signet.\n");
 //set a signet id (domain) to the org signet
 	ck_assert_msg(!(_signet_set_id(org_signet, "test.com")), "could not set org signet id.\n");
@@ -181,7 +181,7 @@ START_TEST (check_signet_signing)
 	ck_assert_msg(_signet_full_verify(user_signet, org_signet, NULL) == SS_FULL, "could not verify full user signet.\n");
 //create new ssr and keys file
 	ck_assert_msg((newuser_signet = signet_new_keysfile(SIGNET_TYPE_SSR, newuser_keys)) != NULL, "could not create new ssr with keys.\n");
-//sign the new ssr with a chain of custody signature using the user's old signing key 
+//sign the new ssr with a chain of custody signature using the user's old signing key
 	ck_assert_msg(!(_signet_sign_coc_sig(newuser_signet, userkey)), "could not sign chain of custody signature.\n");
 //get user's old public signing key from user's old signet
 	ck_assert_msg((userpubkey = _signet_get_signkey(user_signet)) != NULL, "could not retrieve public signing key from the old user signet.\n");
@@ -200,9 +200,9 @@ START_TEST (check_signet_signing)
 	_signet_sign_full_sig(newuser_signet, orgkey);
 //confirm that the new signet is now a valid full signet
 	ck_assert_msg(_signet_full_verify(newuser_signet, org_signet, NULL) == SS_FULL, "could not verify new user signet as full signet.\n");
-	
+
 	i = 0;
-	
+
 	while(org_signet_sign_keys[i]) {
 		free(org_signet_sign_keys[i]);
 		++i;

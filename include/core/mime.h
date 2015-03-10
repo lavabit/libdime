@@ -1,4 +1,4 @@
-#ifndef MAGMA_CORE_MIME_H 
+#ifndef MAGMA_CORE_MIME_H
 #define MAGMA_CORE_MIME_H
 
 // Email message types.

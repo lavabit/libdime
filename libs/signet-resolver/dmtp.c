@@ -52,7 +52,7 @@ signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache)
 		_clear_error_stack();
 	}
 
-	// If not, we have to do a lookup via DMTP. 
+	// If not, we have to do a lookup via DMTP.
 	if (!(session = _dmtp_connect(org, 0))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to connect to DX server");
 	}
@@ -184,17 +184,17 @@ dmtp_session_t * _dmtp_connect(const char *domain, int force_family) {
 	// 1. The DIME management record has a dx field and we will connect to this server on the standard DMTP port.
 	// 2. There is no dx field but the domain has an MX record. We will attempt to connect to this host first
 	//    over standard DMTP, and then fall back to dual mode on the SMTP port if unsuccessful.
-	// 3. There is no DX field or MX record for the domain. We make an attempt to connect to the standard DMTP port. 
-	
+	// 3. There is no DX field or MX record for the domain. We make an attempt to connect to the standard DMTP port.
+
 	// Case 1: Our record has a DX field.
 	if (drec->dx) {
-		i = 1;	
+		i = 1;
 		dxptr = drec->dx;
 
 		/* We must try each possible DX server in order. */
 		while (*dxptr) {
 			_dbgprint(1, "Attempting DMTP connection to DIME record-supplied DX server #%u at %s:%u ...\n", i, *dxptr, DMTP_PORT);
-			
+
 			if ((result = _dx_connect_standard(*dxptr, domain, force_family, drec))) {
 				break;
 			}
@@ -436,7 +436,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 	// TODO:
 	// Do we want to verify the self signed certificate using _validate_self_signed even if it matches the TLS signature
 	// in order to confirm that it's well formed?
-	
+
 	// The TLS certificate comparison will only take place if the DIME record has a TLS signature field (it's optional).
 	if (session->drec->tlssig) {
 		memset(hashbuf, 0, sizeof(hashbuf));
@@ -895,7 +895,7 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 /**
  * @brief	Verify whether a named user or org signet is current or not, given both its name and fingerprint.
  * @param	session		a pointer to the DMTP session across which the VRFY command will be issued.
- * @param	signame		the name of the user or organizational signet to be verified. 
+ * @param	signame		the name of the user or organizational signet to be verified.
  * @param	fingerprint	the fingerprint of the signet to be checked for updates.
  * @param	newprint	an optional pointer to a string which will be updated to point to the latest
  * 				fingerprint of the specified signet, if it is out of date.
@@ -1107,7 +1107,7 @@ char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret) {
 		free(response);
 		return NULL;
 	}
-		
+
 	return response;
 }
 
@@ -1168,7 +1168,7 @@ dmtp_mode_t _dmtp_get_mode(dmtp_session_t *session) {
 		return dmtp_mode_unknown;
 	}
 
-	// There should be one and ONLY one more response parameter. 
+	// There should be one and ONLY one more response parameter.
 	token = strtok_r(NULL, " \t", &tokens);
 
 	if (!token || strtok_r(NULL, " \t", &tokens)) {
@@ -1274,7 +1274,7 @@ char * _dmtp_help(dmtp_session_t *session) {
 /**
  * @brief	Terminate an active DMTP session by issuing the QUIT command.
  * @param	session		a pointer to the DMTP session across which the QUIT command will be issued.
- * @param	do_close	
+ * @param	do_close
  *
  *
  *
@@ -1327,7 +1327,7 @@ int _dmtp_quit(dmtp_session_t *session, int do_close) {
 /**
  * @brief	Read a CR/LF-terminated line of input from an active DMTP session.
  * @param	session		a pointer to the DMTP session from which the response line will be read.
- * @param	overflow	an optional pointer to a variable that will be set if the read operation 
+ * @param	overflow	an optional pointer to a variable that will be set if the read operation
  * 				exceeds the size of the internal line buffer.
  * @param	rcode		an optional pointer to a variable that will receive the numeric response
  * 				code of the DMTP reply that was just received.
@@ -1407,7 +1407,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 
 			break;
 		}
-		
+
 		// We did get some data. But is it enough for a full line?
 		//
 		// This should never happen but you can never be too safe.
@@ -1482,7 +1482,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
  * @note	A multiline response is designated by the presence of a hyphen between the response code and the
  * 		respones text. A regular response, or the final line of a multiline response will instead have a space.
  * @param	session		a pointer to the DMTP session from which the response line(s) will be read.
- * @param	overflow	an optional pointer to a variable that will be set if the read operation 
+ * @param	overflow	an optional pointer to a variable that will be set if the read operation
  * 				exceeds the size of the internal line buffer.
  * @param	rcode		an optional pointer to a variable that will receive the numeric response
  * 				code of the DMTP reply that was just received.
@@ -1506,7 +1506,7 @@ char * _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned sho
 			free(line);
 			free(result);
 			RET_ERROR_PTR(ERR_BAD_PARAM, "multiline DMTP response returned unexpected response code");
-		} 
+		}
 
 		// The result needs to have the new line followed by \n appended to it (if it is not the last line).
 		rsize += strlen(line) + 1;

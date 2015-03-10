@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
 		dump_error_stack();
 	} else if (_verbose >= 5) {
 			dbgprint(5, "Loaded object cache; dumping contents:\n");
-			_dump_cache(cached_data_unknown, 1, 1); 
+			_dump_cache(cached_data_unknown, 1, 1);
 	}
 
 	if ((obj = find_cached_object(signame, &(cached_stores[cached_data_signet])))) {
@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
 			dump_error_stack();
 
 			// ?? Keep this?
-			if (save_cache_contents() < 0) { 
+			if (save_cache_contents() < 0) {
 				fprintf(stderr, "Error: unable to save cache contents to disk.\n");
 				dump_error_stack();
 			}
@@ -295,7 +295,7 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	if (save_cache_contents() < 0) { 
+	if (save_cache_contents() < 0) {
 		fprintf(stderr, "Error: unable to save cache contents to disk.\n");
 		dump_error_stack();
 	}
@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Establishing connection to DX server...\n");
 		session = dmtp_connect(domain, family);
 	}
- 
+
 	if (!session) {
 		fprintf(stderr, "Error: could not connect to DX server.\n");
 		dump_error_stack();
@@ -356,10 +356,10 @@ int main(int argc, char *argv[]) {
 	printf("MODE returned %d\n", dmtp_get_mode(session));
 	printf("NOOP returned %d\n", dmtp_noop(session));
 	printf("RSET returned %d\n", dmtp_reset(session));
-	printf("Done.\n"); 
+	printf("Done.\n");
 
 printf("XXX: aborting\n");
-	_dump_cache(cached_data_unknown, 1); 
+	_dump_cache(cached_data_unknown, 1);
 exit(0); */
 
 	// Depending on the command line options supplied, there's 3 things we can do: signet resolution, signet verification, or signet history.
@@ -466,7 +466,7 @@ exit(0); */
 		exit(EXIT_FAILURE);
 	}
 
-	if (save_cache_contents() < 0) { 
+	if (save_cache_contents() < 0) {
 		fprintf(stderr, "Error: unable to save cache contents to disk.\n");
 		dump_error_stack();
 	}
@@ -477,7 +477,7 @@ exit(0); */
 
 /*	printf("Entering loop...\n");
 	_ssl_fd_loop(session->con);
-	printf("Exited loop.. Terminating.\n"); */ 
+	printf("Exited loop.. Terminating.\n"); */
 
 /*	if (_verbose >= 2) {
 		dump_dnskey_entries();

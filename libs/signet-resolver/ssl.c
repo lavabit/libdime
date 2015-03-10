@@ -104,7 +104,7 @@ SSL_CTX * _ssl_get_client_context(void) {
 		PUSH_ERROR_OPENSSL();
 		_dmtp_ssl_client_ctx = NULL;
 		RET_ERROR_PTR(ERR_UNSPEC, "could not set mandatory DMTP SSL context options");
-	} 
+	}
 
 	// Probably don't want SSL_VERIFY_PEER
 	// Set the callback verification that will be set if there's a self-signed certificate, etc.
@@ -233,7 +233,7 @@ void _ssl_disconnect(SSL *handle) {
 
 	SSL_free(handle);
 	_dbgprint(4, "SSL session and underlying socket was terminated.\n");
-	
+
 	return;
 }
 
@@ -289,7 +289,7 @@ int _do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to load lookup chain file: %s", _ca_file);
 	}  */
 
-	// TODO: temporarily disabled... does this go back in?	
+	// TODO: temporarily disabled... does this go back in?
 /*	if((res = X509_load_crl_file(lookup, _crl_file, X509_FILETYPE_PEM)) < 1) {
 		PUSH_ERROR_OPENSSL();
 		X509_STORE_free(store);
@@ -517,9 +517,9 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 		}
 
 		// Skip nonce check.
-		if (!(store = _get_cert_store())) { 
+		if (!(store = _get_cert_store())) {
 			OCSP_BASICRESP_free(basic);
-			RET_ERROR_INT(ERR_UNSPEC, "unable to verify OCSP response because of certificate store error"); 
+			RET_ERROR_INT(ERR_UNSPEC, "unable to verify OCSP response because of certificate store error");
 		}
 
 		if ((ret = OCSP_basic_verify(basic, certstack, store, 0)) <= 0) {
@@ -600,7 +600,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 
 	if ((!(ocspst = X509_get1_ocsp(cert))) || (!sk_OPENSSL_STRING_num(ocspst))) {
 		// Could not get OCSP URI from certificate.
-	
+
 		if (fallthrough) {
 			*fallthrough = 1;
 		}
@@ -626,7 +626,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	}
 
 	// Parse the OCSP server URI from the certificate into its respective fields.
-	// TODO: There is a memory leak here resulting from these parsed parameters from OCSP_parse_url(). 
+	// TODO: There is a memory leak here resulting from these parsed parameters from OCSP_parse_url().
 	if (!OCSP_parse_url(purl, &phost, &pport, &ppath, &pssl)) {
 		PUSH_ERROR_OPENSSL();
 		free(purl);
@@ -832,7 +832,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 
 		return 0;
 	}
-		
+
 	//
 	// TODO: OPENSSL_free on phost, pport, ppath, etc.
 
@@ -910,12 +910,12 @@ char * _get_cert_subject_cn(X509 *cert) {
 	if (!cert) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
- 
+
 	if (!(xname = X509_get_subject_name(cert))) {
 		PUSH_ERROR_OPENSSL();
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to get certificate subject common name");
 	}
- 
+
 	if ((idxnid = X509_NAME_get_index_by_NID(xname, NID_commonName, -1)) != -1) {
 
 		if ((xne = X509_NAME_get_entry(xname, idxnid))) {
@@ -967,7 +967,7 @@ int _verify_certificate_callback(int preverify_ok, X509_STORE_CTX *ctx) {
 		fprintf(stderr, "Error: unable to get x509 certificate in verification callback.\n");
 		return 1;
 	}
- 
+
 	if (!(xname = X509_get_subject_name(cert))) {
 		ERR_print_errors_fp(stderr);
 		fprintf(stderr, "Error: unable to get x509 certificate subject name in verification callback.\n");
@@ -984,7 +984,7 @@ int _verify_certificate_callback(int preverify_ok, X509_STORE_CTX *ctx) {
 	if (depth >= 0) {
 		snprintf(depthstr, sizeof(depthstr), "%u", depth);
 	}
- 
+
 	if ((cn = _get_cert_subject_cn(cert))) {
 		_dbgprint(1, "Attempting validation in x509 certificate chain: %s (level %s); verified = %s / %d\n", cn, depthstr, (preverify_ok ? "yes" : "no"), err);
 		free(cn);
@@ -1176,7 +1176,7 @@ void _ssl_fd_loop(SSL *connection) {
 		FD_SET(STDIN_FILENO, &xfds);
 		FD_SET(ssl_fd, &rfds);
 		FD_SET(ssl_fd, &xfds);
-	
+
 		if (select(ssl_fd+1, &rfds, NULL, &xfds, NULL) < 0) {
 			perror("select");
 			return;
@@ -1204,7 +1204,7 @@ void _ssl_fd_loop(SSL *connection) {
 				fprintf(stderr, "[Unable to write all data to SSL buffer]\n");
 				return;
 			}
-				
+
 		}
 
 		if (FD_ISSET(ssl_fd, &xfds)) {
@@ -1360,7 +1360,7 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 	STACK_OF(OCSP_SINGLERESP) *respstack;
 	BIGNUM *serial;
 	BIO *bio;
-	int rcode; 
+	int rcode;
 
 	if (!response) {
 		fprintf(stderr, "Error: could not dump null OCSP response.\n");

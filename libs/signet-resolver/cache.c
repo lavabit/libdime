@@ -128,8 +128,8 @@ char * _get_dime_dir_location(const char *suffix) {
 			free(cdir);
 			RET_ERROR_PTR(ERR_UNSPEC, "error looking up user DIME storage directory");
 		}
-		
-	// Make sure it's actually a directory.	
+
+	// Make sure it's actually a directory.
 	} else if (!S_ISDIR(sb.st_mode)) {
 		free(cdir);
 		RET_ERROR_PTR(ERR_UNSPEC, "~/.dime exists but it is not a directory");
@@ -166,7 +166,7 @@ const char * _get_cache_location(void) {
 
 		return result;
 	}
-	
+
 
 	// Before we calculate the default cache file path, check to see if it's been set from the environment.
 	if ((cfile = getenv("DIME_CACHE_FILE"))) {
@@ -389,7 +389,7 @@ cached_object_t * _find_cached_object(const char *oid, cached_store_t *store) {
 			if (!ptr) {
 				RET_ERROR_PTR(ERR_UNSPEC, "unable to create deep copy of cloned object");
 			}
-				
+
 			return ptr;
 		}
 
@@ -440,7 +440,7 @@ cached_object_t * _find_cached_object_cmp(const void *key, cached_store_t *store
 			if (!ptr) {
 				RET_ERROR_PTR(ERR_UNSPEC, "unable to create deep copy of cloned object");
 			}
-		
+
 			return ptr;
 		}
 
@@ -456,7 +456,7 @@ cached_object_t * _find_cached_object_cmp(const void *key, cached_store_t *store
 /**
  * @brief	Check by a cached object's hashed id to see if it already exists in a cached object store.
  * @param	store	a pointer to the cached store in which to search for the cached object.
- * @param	hashid	the (already) hashed unique id of the object to be located in the cache. 
+ * @param	hashid	the (already) hashed unique id of the object to be located in the cache.
  * @return	1 if the object described was present in the cache, 0 if it was not, or -1 on error.
  */
 int _cached_object_exists(const unsigned char *hashid, cached_store_t *store) {
@@ -549,7 +549,7 @@ int _cached_object_exists_cmp(const void *key, cached_store_t *store, cached_sto
  * @param	ttl		an optional time-to-live value for the cached object, in seconds.
  * @param	expiration	an optional expiration date for the cached object, as a UTC time.
  * @param	data		a pointer to the object-specific data to be associated with the cache entry.
- * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.	
+ * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.
  * @param	relaxed		if set, use a relaxed cache policy; this ensures that even if the entry's TTL has
  * 				expired, if its absolute (UTC) expiration has not been reached, it will not be
  * 				evicted from the cache, but will delivery a refresh notification to the caller.
@@ -1043,7 +1043,7 @@ cached_object_t * _clone_cached_object(const cached_object_t *obj) {
 			RET_ERROR_PTR(ERR_UNSPEC, "failed to clone object data");
 		}
 
-			
+
 	} else {
 
 		if (!(data = store->serialize(obj->data, &dsize))) {
@@ -1058,7 +1058,7 @@ cached_object_t * _clone_cached_object(const cached_object_t *obj) {
 		}
 
 		free(data);
-	
+
 	}
 
 	return result;
@@ -1262,7 +1262,7 @@ int _load_cache_contents(void) {
 			// We can only reach this by reading in 0 bytes (EOF).
 			return 1;
 		}
-		
+
 		// If the objlen we read is 0, we skip forward to read the next length. This helps avoid the NULL pointer dereferencing,
 		// which occurrs if cdata has not yet been allocated. Perhaps we should throw an error. TODO
 		if(!objlen) {
@@ -1315,7 +1315,7 @@ int _load_cache_contents(void) {
 		if (objlen < chdr_size) {
 			fprintf(stderr, "Error reading in cached object data; unexpected small entry size.\n");
 			continue;
-		} 
+		}
 
 		// Create a new cached object and copy the header information in from the file.
 		if (!(obj = malloc(sizeof(cached_object_t)))) {

@@ -6,8 +6,8 @@
 # Defines
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
-# Compilation 
-CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD 
+# Compilation
+CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
 
 # Linker Flags
 LDFLAGS			:= -rdynamic
@@ -37,7 +37,7 @@ NORMAL			:= $$(tput sgr0)
 OBJDIR			= .objs
 DEPDIR			= .deps
 
-# Build the list of object and dependancy files using the list of source files 
+# Build the list of object and dependancy files using the list of source files
 OBJFILES		= $(patsubst %.c,$(OBJDIR)/%.o,$(SRCFILES))
 DEPFILES		= $(patsubst %.c,$(DEPDIR)/%.d,$(SRCFILES))
 

@@ -29,7 +29,7 @@ START_TEST (check_ec_signatures)
 		for (j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 			rdata = gen_random_data(last_min, dlens[i], &rsize);
 			ck_assert_msg((rdata != NULL), "EC signature/verification check failed: could not generate random data.\n");
-	
+
 			sigdata = ec_sign_data(rdata, rsize, key, &siglen);
 			ck_assert_msg((sigdata != NULL), "EC signature/verification check failed: could not sign data.\n");
 			ck_assert_msg((siglen > 0), "EC signature/verification check failed: signature result had bad length.\n");

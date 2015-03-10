@@ -41,7 +41,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 	}
 
 	serial_size = KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1 + enc_size;
-	
+
 	if(!(serial_keys = malloc(serial_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
 		_secure_wipe(serial_sign, ED25519_KEY_SIZE);
@@ -76,7 +76,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 		RET_ERROR_INT(ERR_UNSPEC, "could not store keys in PEM file.");
 	}
 
-	_secure_wipe(b64_keys, strlen(b64_keys));	
+	_secure_wipe(b64_keys, strlen(b64_keys));
 	free(b64_keys);
 
 	return 0;

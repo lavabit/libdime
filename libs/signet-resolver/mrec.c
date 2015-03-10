@@ -92,7 +92,7 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 			sub_string = "[unknown]";
 			break;
 	}
-			
+
 
 	fprintf(fp, "--- DIME management record for: --- hashed ---\n");
 	fprintf(fp, "------ version   : %u\n", drec->version);
@@ -268,7 +268,7 @@ void * _serialize_dime_record_cb(void *record, size_t *outlen) {
 			free(buf);
 		}
 
-		RET_ERROR_PTR(ERR_NOMEM, "unable to serialize DIME record");	
+		RET_ERROR_PTR(ERR_NOMEM, "unable to serialize DIME record");
 	}
 
 	return buf;
@@ -575,7 +575,7 @@ dime_record_t * _get_dime_record(const char *domain, unsigned long *ttl, int use
 	if ((result = _parse_dime_record(txtans, strlen(txtans))) && use_cache) {
 		free(txtans);
 		result->validated = validated;
-	
+
 		if (!(cloned = _add_cached_object(domain, &(cached_stores[cached_data_drec]), (ttl ? *ttl : 0), result->expiry, result, 1, 1))) {
 			RET_ERROR_PTR(ERR_UNSPEC, NULL);
 		}
@@ -682,7 +682,7 @@ dime_record_t * _get_dime_record_from_file(const char *filename, const char *dom
 				}
 
 				fclose(fp);
-				
+
 				return result;
 			}
 

@@ -215,10 +215,10 @@ RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
  * 		where RRSIG_RDATA is the wire format of the RRSIG RDATA with the signer's name in canonical form and NO signature field
  * 		RR(s) is the RRset of all matching RR's.
  * 		RR(x): owner | type | class | ttl (original ttl) | rdlen | rdata
- 
+
  *			These fields of each RR and the RRSIG RR must match: owner, class, type=covered, ttl=original ttl
  *		The RRSET must be in canonical order, and the DNS names in the RDATA must be in canonical form.
- 
+
  *		Each domain name in an RR must be fully expanded and qualified, and in lowercase.
  *		Finally, the RR's need to be sorted in canonical order.
  * @param	label		a pointer to the label of the RRSIG record being verified.
@@ -587,7 +587,7 @@ int _load_dnskey_file(const char *filename) {
  * 		In the end, a DNSKEY can only be considered if its validated flag has been set, or
  * 		a key by which it has been signed has also been validated. Only the keys supplied from
  * 		the function _load_dnskey_file() carry the validation flag by default.
- * @param	dk	a pointer to the DNSKEY to be validated. 
+ * @param	dk	a pointer to the DNSKEY to be validated.
  * @return	-1 on general error, 0 if the specified key could not be validated, or 1 if it is.
  */
 int _is_validated_key(dnskey_t *dk) {
@@ -609,7 +609,7 @@ int _is_validated_key(dnskey_t *dk) {
 	// If this key isn't validated and isn't backed up by any DS records, it's a failure.
 	else if (!dk->signkeys) {
 		return 0;
-	} 
+	}
 
 	for (dkptr = dk->signkeys; *dkptr; dkptr++) {
 
@@ -632,7 +632,7 @@ int _is_validated_key(dnskey_t *dk) {
 				}
 
 			}
-		
+
 		}
 
 	}
@@ -841,7 +841,7 @@ ds_t * _add_ds_entry(char *label, unsigned int keytag, unsigned char algorithm, 
 
 	memset(cacheid, 0, cidlen);
 	snprintf(cacheid, cidlen, "%s-%u-%u-%u", label, keytag, algorithm, digest_type);
- 
+
 	// Our newly created object doubles as the comparator key.
 	if (!(result = _add_cached_object_cmp(cacheid, ds, &(cached_stores[cached_data_ds]), ttl, 0, ds, 1, 0, _ds_comparator))) {
 		_destroy_ds(ds);
@@ -933,9 +933,9 @@ ds_t * _get_ds_by_dnskey(const dnskey_t *key) {
 		cmp.diglen = SHA_160_SIZE;
 	} else if (key->algorithm == NS_ALG_RSASHA256) {
 		cmp.digest_type = DNSSEC_DIGEST_SHA256;
-		cmp.diglen = SHA_256_SIZE; 
+		cmp.diglen = SHA_256_SIZE;
 	} else {
-		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not map DNSKEY to DS record of unsupported digest type {alg = %u}", key->algorithm); 
+		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not map DNSKEY to DS record of unsupported digest type {alg = %u}", key->algorithm);
 	}
 
 	if (_compute_dnskey_sha_hash(key, cmp.diglen*8, hashbuf) < 0) {
@@ -1375,7 +1375,7 @@ void * _lookup_dnskey(char *label) {
 		_dbgprint(2, "Parsing DNSKEY lookup request answer #%u/%u - rr name: [%s], type %u, class %u, ttl %u, rdlen %u\n",
 			i+1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
 		//_dump_buf((char *)ns_rr_rdata(rr), ns_rr_rdlen(rr));
-		
+
 		if ((dnskey = _add_dnskey_entry(ns_rr_name(rr), ns_rr_rdata(rr), ns_rr_rdlen(rr), ns_rr_ttl(rr)))) {
 
 			if (!(allkeys = _ptr_chain_add(allkeys, dnskey))) {
@@ -1386,7 +1386,7 @@ void * _lookup_dnskey(char *label) {
 		}
 
 	}
-	
+
 	// For the second pass, we see if the RRSIGs over the DNSKEYs check out.
 	for(i = 0; i < nanswers; i++) {
 
@@ -1615,7 +1615,7 @@ void * _lookup_ds(char *label) {
  * @param	qstring		a pointer to a null-terminated string containing the DNS query string.
  * @param	ttl		if not NULL, an optional pointer to a value that will store the TTL of the retrieved record on success.
  * @param	validated
- * @return	
+ * @return
  *
  *
  *
@@ -1729,7 +1729,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 
 				_fixup_dnskey_validation();
 			}
-			
+
 		} else if (rrtype == ns_t_txt) {
 
 			if (!(result = malloc(rdleft+1))) {
@@ -2005,7 +2005,7 @@ mx_record_t ** _get_mx_records(const char *qstring) {
 
 			rptr++;
 		}
-		
+
 	}
 
 	return result;
@@ -2038,8 +2038,8 @@ int _initialize_resolver(void) {
 
 	_dbgprint(5, "Resolver options: retransmit: %u, retry: %u, options: %lu, nscount: %u, id: %u\n", _res.retrans, _res.retry, _res.options, _res.nscount, _res.id);
 
-	_res.options |= (RES_USE_INET6 | RES_USE_DNSSEC); 
-//	_res.options &= ~(/*RES_USEVC |*/ RES_STAYOPEN | RES_DEFNAMES | RES_DNSRCH); 
+	_res.options |= (RES_USE_INET6 | RES_USE_DNSSEC);
+//	_res.options &= ~(/*RES_USEVC |*/ RES_STAYOPEN | RES_DEFNAMES | RES_DNSRCH);
 
 	// TODO: We probably want the CD bit set but not sure how to do this.
 	// res_nmkquery
@@ -2105,7 +2105,7 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 
 	fprintf(fp, "--- DNSKEY: [%s]: keytag = %u, alg = %u, zone = %u, sep = %u, rdlen = %u, has_ds = %s, signed by %s, validated = %s\n",
 		key->label, key->keytag, key->algorithm, key->is_zone, key->is_sep,
-		(unsigned int)key->rdlen, dsbuf, (signbuf ? signbuf : "[error]"), (_is_validated_key(key) == 1 ? "yes" : "no")); 
+		(unsigned int)key->rdlen, dsbuf, (signbuf ? signbuf : "[error]"), (_is_validated_key(key) == 1 ? "yes" : "no"));
 
 	// First check to see if we're attached to any DS records. If so, dump the corresponding hashes.
 	if (key->dse) {
@@ -2135,7 +2135,7 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 			default:
 				break;
 		}
-			
+
 	}
 
 	if (h160) {
@@ -2287,7 +2287,7 @@ void * _serialize_ds_record_cb(void *record, size_t *outlen) {
 		!_mem_append(&buf, outlen, &(ds->digest_type), sizeof(ds->digest_type)) ||
 		!_mem_append(&buf, outlen, (unsigned char *)&(ds->keytag), sizeof(ds->keytag)) ||
 		!_mem_append_serialized(&buf, outlen, ds->digest, ds->diglen) ||
-		!_mem_append(&buf, outlen, &(ds->validated), sizeof(ds->validated))) { 
+		!_mem_append(&buf, outlen, &(ds->validated), sizeof(ds->validated))) {
 		RET_ERROR_PTR(ERR_NOMEM, "unable to deserialize DS record");
 	}
 
@@ -2365,7 +2365,7 @@ void * _deserialize_dnskey_record_cb(void *data, size_t len) {
 		_destroy_dnskey(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize DNSKEY record from persistent cache");
 	}
-		
+
 
 	// TODO: validation function?
 	// TODO: link up dse field to DS key
@@ -2488,7 +2488,7 @@ void _fixup_ds_links(void) {
 /*	cached_store_t *store = &(cached_stores[cached_data_dnskey]);
 	cached_object_t *ptr = store->head;
 	dnskey_t *key; */
-	
+
 
 //printf("XXX: fixing up ds links\n");
 
@@ -2522,7 +2522,7 @@ void _fixup_dnskey_validation(void) {
 
 	_lock_cache_store(store);
 	ptr = store->head;
-	
+
 	while (ptr) {
 		key = (dnskey_t *)ptr->data;
 
@@ -2536,7 +2536,7 @@ void _fixup_dnskey_validation(void) {
 				}
 			// Otherwise it shouldn't be persisted in any case if it's not validated.
 			} else {
-				ptr->persists = 0;	
+				ptr->persists = 0;
 			}
 		// If the key was already validated and it's cacheable, make certain that it is persisted.
 		} else if (key && key->validated && key->do_cache) {

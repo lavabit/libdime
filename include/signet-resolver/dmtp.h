@@ -34,7 +34,7 @@ typedef struct {
 	dmtp_mode_t mode;	// The current mode of this connection (if made through dual mode).
 	unsigned int active;	// Boolean flag: whether or not this session is active.
 
-	int _fd;		
+	int _fd;
 	unsigned char _inbuf[DMTP_LINE_BUF_SIZE+1];
 	size_t _inpos;
 } dmtp_session_t;
@@ -84,7 +84,7 @@ PUBLIC_FUNC_DECL(char *,           dmtp_help,             dmtp_session_t *sessio
 PUBLIC_FUNC_DECL(int,              dmtp_quit,             dmtp_session_t *session, int do_close);
 
 
-// Internal network and parsing functions. 
+// Internal network and parsing functions.
 char *       _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline);
 char *       _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode);
 char *       _parse_line_code(const char *line, unsigned short *rcode, int *multiline);
