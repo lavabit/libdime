@@ -61,7 +61,7 @@ stringer_t * base64_encode_opts(stringer_t *s, uint32_t opts, bool_t modified) {
 stringer_t * base64_encode_st(stringer_t *s, stringer_t *output) {
 
 	uchr_t *p, *o;
-	size_t len, new_len, written = 0;
+	size_t len, new_len;
 	uint32_t opts = 0;
 	int_t c1, c2, c3, cur_line = 0;
 	stringer_t *result;
@@ -105,14 +105,12 @@ stringer_t * base64_encode_st(stringer_t *s, stringer_t *output) {
 		*o++ = mappings.base64.characters[c3 & 0x3F];
 
 		cur_line += 4;
-		written += 4;
 
 		// If we go over the line length.
 		if (cur_line > BASE64_LINE_WRAP_LENGTH) {
 			*o++ = '\r';
 			*o++ = '\n';
 			cur_line = 0;
-			written += 2;
 		}
 	}
 
@@ -122,7 +120,6 @@ stringer_t * base64_encode_st(stringer_t *s, stringer_t *output) {
 	case 0:
 		*o++ = '\r';
 		*o++ = '\n';
-		written += 2;
 		break;
 
 	case 1:
@@ -133,7 +130,6 @@ stringer_t * base64_encode_st(stringer_t *s, stringer_t *output) {
 		*o++ = '=';
 		*o++ = '\r';
 		*o++ = '\n';
-		written += 6;
 		break;
 
 	case 2:
@@ -145,7 +141,6 @@ stringer_t * base64_encode_st(stringer_t *s, stringer_t *output) {
 		*o++ = '=';
 		*o++ = '\r';
 		*o++ = '\n';
-		written += 6;
 		break;
 
 	default:
@@ -174,7 +169,7 @@ stringer_t * base64_encode_mod(stringer_t *s, stringer_t *output) {
 	uchr_t *p, *o;
 	stringer_t *result;
 	uint32_t opts = 0;
-	size_t len, new_len, written = 0;
+	size_t len, new_len;
 	int_t c1, c2, c3;
 
 	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
@@ -215,8 +210,6 @@ stringer_t * base64_encode_mod(stringer_t *s, stringer_t *output) {
 		*o++ = mappings.base64_mod.characters[((c1 << 4) | (c2 >> 4)) & 0x3F];
 		*o++ = mappings.base64_mod.characters[((c2 << 2) | (c3 >> 6)) & 0x3F];
 		*o++ = mappings.base64_mod.characters[c3 & 0x3F];
-
-		written += 4;
 	}
 
 	// Encode the remaining one or two characters in the input buffer
@@ -226,7 +219,6 @@ stringer_t * base64_encode_mod(stringer_t *s, stringer_t *output) {
 		c1 = (*p++) & 0xFF;
 		*o++ = mappings.base64_mod.characters[(c1 & 0xFC) >> 2];
 		*o++ = mappings.base64_mod.characters[((c1 & 0x03) << 4)];
-		written += 2;
 		break;
 
 	case 2:
@@ -235,7 +227,6 @@ stringer_t * base64_encode_mod(stringer_t *s, stringer_t *output) {
 		*o++ = mappings.base64_mod.characters[(c1 & 0xFC) >> 2];
 		*o++ = mappings.base64_mod.characters[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
 		*o++ = mappings.base64_mod.characters[((c2 & 0x0F) << 2)];
-		written += 3;
 		break;
 	}
 
