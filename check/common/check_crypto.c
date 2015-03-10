@@ -1,13 +1,11 @@
-#include "../../check/common/check_crypto.h"
-
 #include <stdio.h>
- #include <openssl/ec.h>
+#include <openssl/ec.h>
 
-#include "../../check/common/check_common.h"
+#include "check_crypto.h"
+#include "../check-compat.h"
+#include "check_common.h"
 #include "dcrypto.h"
 #include "misc.h"
-
-
 
 START_TEST (check_ec_signatures)
 {
@@ -211,10 +209,9 @@ END_TEST
 
 Suite * suite_check_crypto(void) {
 
-	Suite *s;
 	TCase *tc;
 
-	s = suite_create("crypto");
+	Suite *s = suite_create("crypto");
 	testcase(s, tc, "EC Serialization/Deserialization", check_ec_serialization);
 	testcase(s, tc, "EC Key Load From File", load_ec_key_file);
 	testcase(s, tc, "EC Signing/Verification", check_ec_signatures);

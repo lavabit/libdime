@@ -1,10 +1,6 @@
-#include <stdio.h>
-
-#include "../../check/dime/check_dime.h"
+#include "../check-compat.h"
+#include "check_dime.h"
 #include "../../include/signet-resolver/signet-ssl.h"
-
-
-
 
 /* void ssl_initialize(void);
  19 void ssl_shutdown(void);
@@ -25,49 +21,21 @@
  38 void * _deserialize_ocsp_response_cb(void *data, size_t len);
  39 void * _serialize_ocsp_response_cb(void *record, size_t *outlen); */
 
-struct wildcard_test {
-	unsigned int matches;
-	char *domain;
-	char *pattern;
-};
-
-struct wildcard_test wildcard_tests[] = {
-	{ 1, "www.google.com",      "www.google.com" },
-	{ 1, "abc.google.com",      "*.google.com" },
-	{ 1, "abc.def.google.com",  "*.google.com" },
-	{ 0, "google.com",          "*.google.com" }
-};
-
-
 START_TEST (check_domain_wildcard)
 {
-
-	size_t i;
-	int res;
-
-	fprintf(stderr, "Checking domain wildcard check / _domain_wildcard_check():\n");
-
-	for (i = 0; i < sizeof(wildcard_tests)/sizeof(struct wildcard_test); i++) {
-		res = _domain_wildcard_check(wildcard_tests[i].pattern, wildcard_tests[i].domain);
-		ck_assert_msg(res == wildcard_tests[i].matches, "Wildcard test failed: \"%s\" matched against pattern \"%s\"; expected %u.\n",
-			wildcard_tests[i].domain, wildcard_tests[i].pattern, wildcard_tests[i].matches);
-	}
-
-	fprintf(stderr, "Domain wildcard check ended.\n");
+	ck_assert_int_eq(1, _domain_wildcard_check("www.google.com", "www.google.com"));
+	ck_assert_int_eq(1, _domain_wildcard_check("*.google.com", "abc.google.com"));
+	ck_assert_int_eq(1, _domain_wildcard_check("*.google.com", "abc.def.google.com"));
+	ck_assert_int_eq(0, _domain_wildcard_check("*.google.com", "google.com"));
 }
 END_TEST
 
 
 Suite * suite_check_ssl(void) {
 
-	Suite *s;
 	TCase *tc;
 
-	s = suite_create("ssl");
+	Suite *s = suite_create("ssl");
 	testcase(s, tc, "Domain Wildcard Check", check_domain_wildcard);
-/*	tcase = tcase_create("core");
-	tcase_add_test(tcase, test_name);
-	suite_add_tcase(s, tcase); */
-
 	return s;
 }

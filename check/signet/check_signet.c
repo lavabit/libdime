@@ -1,9 +1,9 @@
-#include "../../check/signet/check_signet.h"
+#include "check_signet.h"
 #include "../../include/signet/signet.h"
 
 START_TEST (check_signet_modification)
 {
-	char *phone1 = "1SOMENUMBER", *phone2 = "15124123529", *name1 = "check undef", *data1 = "undef data", *name2 = "check name", *data2 = "check check";
+	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529", *name1 = "check undef", *data1 = "undef data", *name2 = "check name", *data2 = "check check";
 	size_t data_size;
 	unsigned char *data;
 	signet_t *signet;
@@ -134,7 +134,6 @@ END_TEST
 
 START_TEST (check_signet_signing)
 {
-	int i = 0;
 	char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
 	unsigned char **org_signet_sign_keys;
 	ED25519_KEY *orgkey, *userkey, *userpubkey;
@@ -201,11 +200,8 @@ START_TEST (check_signet_signing)
 //confirm that the new signet is now a valid full signet
 	ck_assert_msg(_signet_full_verify(newuser_signet, org_signet, NULL) == SS_FULL, "could not verify new user signet as full signet.\n");
 
-	i = 0;
-
-	while(org_signet_sign_keys[i]) {
+	for (size_t i = 0; org_signet_sign_keys[i]; i++) {
 		free(org_signet_sign_keys[i]);
-		++i;
 	}
 
 	free(org_signet_sign_keys);
@@ -220,10 +216,9 @@ END_TEST
 
 Suite * suite_check_signet(void) {
 
-	Suite *s;
 	TCase *tc;
 
-	s = suite_create("signet");
+	Suite *s = suite_create("signet");
 	testcase(s, tc, "check signet creation and field modification", check_signet_modification);
 	testcase(s, tc, "check signet parsing, serialization, deserialization", check_signet_parsing);
 	testcase(s, tc, "check signet signing and verification", check_signet_signing);
@@ -232,50 +227,12 @@ Suite * suite_check_signet(void) {
 }
 
 
-START_TEST (test_name)
-{
-        printf("Testing 1!\n");
-        printf("Testing 2!\n");
-}
-END_TEST
+int main(void) {
 
+	SRunner *sr = srunner_create(suite_check_signet());
 
-Suite * test_suite(void) {
-
-        Suite *s;
-        TCase *tcase;
-
-        s = suite_create("test");
-
-        tcase = tcase_create("core");
-
-        tcase_add_test(tcase, test_name);
-        suite_add_tcase(s, tcase);
-
-        return s;
-}
-
-
-int main(int argc, char *argv[]) {
-
-        SRunner *sr;
-
-        sr = srunner_create(test_suite());
-        srunner_add_suite(sr, suite_check_signet());
-
-        fprintf(stderr, "Running tests ...\n");
-
-        srunner_run_all(sr, CK_SILENT);
-        //srunner_run_all(sr, CK_NORMAL);
-        //nr_failed = srunner_ntests_failed(sr);
-        // CK_VERBOSE
-        srunner_print(sr, CK_VERBOSE);
-        srunner_free(sr);
-
-        fprintf(stderr, "Finished.\n");
-
-        //ck_assert
-        //ck_assert_msg
-
-        return 0;
+	srunner_run_all(sr, CK_ENV);
+	int nr_failed = srunner_ntests_failed(sr);
+	srunner_free(sr);
+	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

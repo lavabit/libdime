@@ -1,11 +1,8 @@
 #include <stdio.h>
 
 #include "../check-compat.h"
-#include "../../check/common/check_common.h"
+#include "check_common.h"
 #include "misc.h"
-
-
-
 
 /* 24 void set_dbg_level(unsigned int level);
  25 unsigned int get_dbg_level(void);
@@ -58,10 +55,9 @@ END_TEST
 
 Suite * suite_check_misc(void) {
 
-	Suite *s;
 	TCase *tc;
 
-	s = suite_create("misc");
+	Suite *s = suite_create("misc");
 	testcase(s, tc, "Debug Level Check", check_debug_level);
 	testcase(s, tc, "Base64 Macros", check_base64_macros);
 

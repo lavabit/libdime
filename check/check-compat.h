@@ -1,3 +1,6 @@
+#ifndef DIME_CHECK_COMPAT_H
+#define DIME_CHECK_COMPAT_H
+
 #include <check.h>
 #include <stdint.h>
 #include <inttypes.h>
@@ -32,5 +35,7 @@
 
 #define ck_assert_ptr_eq(X, Y) _ck_assert_ptr(X, ==, Y)
 #define ck_assert_ptr_ne(X, Y) _ck_assert_ptr(X, !=, Y)
+
+#endif
 
 #endif

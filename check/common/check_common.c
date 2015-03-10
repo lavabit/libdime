@@ -124,18 +124,15 @@ Suite * test_suite(void) {
 }
 
 
-int main(int argc, char *argv[]) {
+int main(void) {
 
 	SRunner *sr = srunner_create(test_suite());
 	srunner_add_suite(sr, suite_check_misc());
 	srunner_add_suite(sr, suite_check_crypto());
 	srunner_add_suite(sr, suite_check_error());
 
-	fprintf(stderr, "Running tests ...\n");
-
 	srunner_run_all(sr, CK_ENV);
 	int nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
-
-	return nr_failed == 0;
+	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
