@@ -9,9 +9,10 @@
 
 #include <check.h>
 #include "../check-compat.h"
-#include "../../check/common/check_crypto.h"
-#include "../../check/common/check_misc.h"
+#include "check_crypto.h"
+#include "check_misc.h"
 #include "check_common.h"
+#include "check_error.h"
 
 #include "error.h"
 
@@ -125,18 +126,16 @@ Suite * test_suite(void) {
 
 int main(int argc, char *argv[]) {
 
-	SRunner *sr;
-	int nr_failed;
-
-	sr = srunner_create(test_suite());
+	SRunner *sr = srunner_create(test_suite());
 	srunner_add_suite(sr, suite_check_misc());
 	srunner_add_suite(sr, suite_check_crypto());
+	srunner_add_suite(sr, suite_check_error());
 
 	fprintf(stderr, "Running tests ...\n");
 
 	srunner_run_all(sr, CK_ENV);
-	nr_failed = srunner_ntests_failed(sr);
+	int nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
 
-	return nr_failed != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+	return nr_failed == 0;
 }
