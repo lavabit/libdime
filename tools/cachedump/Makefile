@@ -1,9 +1,9 @@
 
 # Tool name
-TOOL			:= dime
+TOOL			:= cachedump
 
 # Source files
-SRCFILES := dime.c
+SRCFILES		:= cachedump.c
 
 # Static Library Locations
 DIMEDIR			:= ../../libs/

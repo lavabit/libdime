@@ -46,8 +46,8 @@ endif
 all: $(check_PROGRAMS) run-checks
 
 clean:
-	rm -rf $(OBJDIRNAME) $(DEPDIRNAME)
-	rm -f $(check_PROGRAMS)
+	@rm -rf $(OBJDIRNAME) $(DEPDIRNAME)
+	@rm -f $(check_PROGRAMS)
 
 $(check_PROGRAMS): $(OBJFILES)
 	$(CC) -o $@ $(OBJFILES) $(LIBS)
@@ -64,7 +64,7 @@ $(OBJDIRNAME)/%.o : %.c | $(OBJDIRNAME) $(DEPDIRNAME)
 		rm -f $(df).d.tmp
 	$(RUN)$(CC) $(CFLAGS) $(ALL_INC_CCOPT) -fPIC -c $< -o $@
 
-run-checks:
+run-checks: $(check_PROGRAMS)
 	./$(check_PROGRAMS)
 
 -include $(DEPFILES)
