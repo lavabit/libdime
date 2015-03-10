@@ -1,5 +1,3 @@
-
-
 #include <openssl/buffer.h>
 #include <openssl/pem.h>
 
@@ -7,10 +5,10 @@
 #include "common/misc.h"
 #include "common/dcrypto.h"
 
-#include "dime/cache.h"
-#include "dime/dmtp.h"
-#include "dime/mrec.h"
-#include "dime/ssl.h"
+#include "signet-resolver/cache.h"
+#include "signet-resolver/dmtp.h"
+#include "signet-resolver/mrec.h"
+#include "signet-resolver/signet-ssl.h"
 
 
 void usage(const char *progname) {
