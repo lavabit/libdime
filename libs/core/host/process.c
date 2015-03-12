@@ -58,7 +58,7 @@ int_t process_kill(stringer_t *name, int_t signal, int_t wait) {
 	 * @warning Check to see if the victims are dead. Note that if a process ID is reused before we detect
 	 * detect the victim's death the new process will be signaled inadvertently.
 	 */
-	for (uint_t i = 0; i < wait && matches != exited; i++) {
+	for (int_t i = 0; i < wait && matches != exited; i++) {
 		for (uint_t j = 0; j < matches; j++) {
 			if (killed[j] != -1 && kill(killed[j], 0) && errno == ESRCH) {
 				log_pedantic("%.*s (%i) killed", st_length_int(name), st_char_get(name), killed[j]);

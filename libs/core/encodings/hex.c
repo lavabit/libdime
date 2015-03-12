@@ -205,7 +205,7 @@ stringer_t * hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	}
 
 	// First pass happens regardless.
-	for (int i = 0; i < pass_len; i++) {
+	for (size_t i = 0; i < pass_len; i++) {
 
 		if (chr_printable(*iptr) || (*iptr == '\r') || (*iptr == '\n') || (*iptr == '\t')) {
 			*rptr++ = *iptr++;
@@ -227,7 +227,7 @@ stringer_t * hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 		*rptr++ = ' ';
 		iptr = st_char_get(input) + st_length_get(input) - (maxlen / 2);
 
-		for (int i = 0; i < pass_len; i++) {
+		for (size_t i = 0; i < pass_len; i++) {
 
 			if (chr_printable(*iptr) || (*iptr == '\r') || (*iptr == '\n') || (*iptr == '\t')) {
 				*rptr++ = *iptr++;

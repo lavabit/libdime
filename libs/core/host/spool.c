@@ -180,7 +180,7 @@ int_t spool_mktemp(int_t spool, chr_t *prefix) {
  * @param	the ftw type flag of the specified file (only FTW_F is handled).
  * @return	This function always returns 0.
  */
-int_t spool_check_file(const char *file, const struct stat *info, int type) {
+int_t spool_check_file(const char *file, const struct stat *info __attribute__((__unused__)), int type) {
 
 	// Development builds should overlook the ".empty" files used to force Mercurial into creating the spool directory structure.
 #ifdef MAGMA_PEDANTIC

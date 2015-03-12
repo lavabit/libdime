@@ -55,7 +55,7 @@ void st_trim(stringer_t *string) {
 	if (start == end) {
 		st_length_set(string, 0);
 	}
-	else if (end - start != st_length_get(string)) {
+	else if (start + st_length_get(string) != end) {
 		mm_move(st_char_get(string), start, end - start);
 		st_length_set(string, end - start);
 		mm_wipe(st_char_get(string) + st_length_get(string), st_avail_get(string) - st_length_get(string));
@@ -154,7 +154,7 @@ placer_t pl_trim_end(placer_t place) {
 	while (trim == true && start != end) {
 
 		trim = false;
-		for (int_t i = 0; trim == false && i < trim_chars_len; i++) {
+		for (size_t i = 0; trim == false && i < trim_chars_len; i++) {
 			if (*(end - 1) == trim_chars[i])
 				trim = true;
 		}
