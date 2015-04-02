@@ -6,13 +6,12 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <time.h>
-
-#include "openssl/bio.h"
-#include "openssl/evp.h"
-#include "openssl/buffer.h"
-#include "openssl/sha.h"
-#include "openssl/rsa.h"
-#include "openssl/bn.h"
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/buffer.h>
+#include <openssl/sha.h>
+#include <openssl/rsa.h>
+#include <openssl/bn.h>
 
 #include "error.h"
 
@@ -29,7 +28,9 @@
 #define SHA_512_B64_SIZE	86
 
 #define B64_ENCODED_LEN(len)	((((len) + (((len) % 3) ? (3 - ((len) % 3)) : 0)) / 3) * 4)
-#define B64_DECODED_LEN(len)	((len) * 3/4)
+#ifndef BASE64_DECODED_LEN
+#define BASE64_DECODED_LEN(len)	((len) * 3/4)
+#endif
 
 
 typedef struct {
@@ -46,9 +47,9 @@ PUBLIC_FUNC_DECL(void,            set_dbg_level,             unsigned int level)
 PUBLIC_FUNC_DECL(unsigned int,    get_dbg_level,             void);
 
 // Network order encoding operations.
-PUBLIC_FUNC_DECL(uint32_t,        int_no_get_4b,             void *buf);
-PUBLIC_FUNC_DECL(uint32_t,        int_no_get_3b,             void *buf);
-PUBLIC_FUNC_DECL(uint16_t,        int_no_get_2b,             void *buf);
+PUBLIC_FUNC_DECL(uint32_t,        int_no_get_4b,             const void *buf);
+PUBLIC_FUNC_DECL(uint32_t,        int_no_get_3b,             const void *buf);
+PUBLIC_FUNC_DECL(uint16_t,        int_no_get_2b,             const void *buf);
 PUBLIC_FUNC_DECL(void,            int_no_put_4b,             void *buf, uint32_t val);
 PUBLIC_FUNC_DECL(void,            int_no_put_3b,             void *buf, uint32_t val);
 PUBLIC_FUNC_DECL(void,            int_no_put_2b,             void *buf, uint16_t val);
@@ -82,6 +83,7 @@ PUBLIC_FUNC_DECL(void,            dump_buf_outer,            const unsigned char
 PUBLIC_FUNC_DECL_VA(void,         dbgprint,                  unsigned int dbglevel, const char *fmt);
 
 // File I/O helpers.
+PUBLIC_FUNC_DECL(int, write_pem_data, const char *b64_data, const char *tag, const char *filename);
 PUBLIC_FUNC_DECL(unsigned char *, read_file_data,            const char *filename, size_t *fsize);
 PUBLIC_FUNC_DECL(char *,          read_pem_data,             const char *pemfile, const char *tag, int nospace);
 

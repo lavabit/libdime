@@ -1,30 +1,34 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
-#include "openssl/obj_mac.h"
-#include "openssl/ec.h"
-#include "openssl/ecdsa.h"
-#include "openssl/pem.h"
+#include <openssl/obj_mac.h>
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <openssl/pem.h>
 
 #include "error.h"
 #include "ed25519.h"
 
 
-#define AES_256_PADDING_SIZE	16
+#define AES_256_PADDING_SIZE		16
+#define AES_256_KEY_SIZE		32
+#define AES_256_KEK_SIZE		48
 
-#define EC_SIGNING_CURVE	NID_secp384r1
-#define EC_ENCRYPT_CURVE	NID_secp384r1
+#define EC_SIGNING_CURVE	NID_secp256k1
+#define EC_ENCRYPT_CURVE	NID_secp256k1
 
-#define ED25519_KEY_SIZE	32
-#define ED25519_KEY_B64_SIZE	43
-#define ED25519_SIG_SIZE	64
-#define ED25519_SIG_B64_SIZE	86
+#define ED25519_KEY_SIZE		32
+#define ED25519_KEY_B64_SIZE		43
+#define ED25519_SIG_SIZE		64
+#define ED25519_SIG_B64_SIZE		86
+#define EC_PRIVKEY_SIZE			279
+#define EC_PUBKEY_SIZE			65
 
 // Wrappers around ED25519 functions
 typedef struct {
 	ed25519_secret_key private;
 	ed25519_public_key public;
-} ED25519_KEY;
+} ED25519_KEY; 
 
 
 // Initializion and finalization routines.
@@ -32,7 +36,8 @@ PUBLIC_FUNC_DECL(int,             crypto_init,              void);
 PUBLIC_FUNC_DECL(void,            crypto_shutdown,          void);
 
 // Generating, loading, and freeing elliptical curve keys.
-PUBLIC_FUNC_DECL(EC_KEY *,        load_ec_privkey,          const char *filename, const EC_GROUP **gptr);
+PUBLIC_FUNC_DECL(EC_KEY *,        load_ec_privkey,          const char *filename);
+PUBLIC_FUNC_DECL(EC_KEY *,        load_ec_pubkey,           const char *filename);
 PUBLIC_FUNC_DECL(EC_KEY *,        generate_ec_keypair,      int signing);
 PUBLIC_FUNC_DECL(void,            free_ec_key,              EC_KEY *key);
 
@@ -44,7 +49,7 @@ PUBLIC_FUNC_DECL(int,             verify_ec_sha_signature,  const unsigned char 
 
 // Other EC-related routines.
 PUBLIC_FUNC_DECL(void *,          ecies_env_derivation,     const void *input, size_t ilen, void *output, size_t *olen);
-PUBLIC_FUNC_DECL(int,             compute_ec_ephemeral_aes256_key, EC_KEY *key, EC_KEY *ephemeral, unsigned char *keybuf);
+PUBLIC_FUNC_DECL(int,             compute_aes256_kek, 	    EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf);
 
 // EC key serialization/deserialization.
 PUBLIC_FUNC_DECL(unsigned char *, serialize_ec_pubkey,      EC_KEY *key, size_t *outsize);

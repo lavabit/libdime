@@ -12,7 +12,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 
 	char *b64_keys = NULL;
 	size_t serial_size = 0, enc_size = 0;
-	unsigned char *serial_keys = NULL, *serial_enc = NULL, serial_sign[ED25519_KEY_SIZE];
+	unsigned char *serial_keys = NULL, *serial_enc = NULL, serial_sign[ED25519_KEY_SIZE], sign_fid, enc_fid;
 	dime_number_t number;
 
 	if(!sign_key || !enc_key || !filename) {
@@ -23,9 +23,13 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 
 		case KEYS_TYPE_ORG:
 			number = DIME_ORG_KEYS;
+			sign_fid = KEYS_ORG_PRIVATE_POK;
+			enc_fid = KEYS_ORG_PRIVATE_ENC;
 			break;
 		case KEYS_TYPE_USER:
 			number = DIME_USER_KEYS;
+			sign_fid = KEYS_USER_PRIVATE_SIGN;
+			enc_fid = KEYS_USER_PRIVATE_ENC;
 			break;
 		default:
 			RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -41,7 +45,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 	}
 
 	serial_size = KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1 + enc_size;
-
+	
 	if(!(serial_keys = malloc(serial_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
 		_secure_wipe(serial_sign, ED25519_KEY_SIZE);
@@ -54,10 +58,10 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 	_int_no_put_2b(serial_keys, (uint16_t)number);
 	_int_no_put_3b(serial_keys+2, (uint32_t)(serial_size - KEYS_HEADER_SIZE));
 
-	serial_keys[KEYS_HEADER_SIZE] = 1;
+	serial_keys[KEYS_HEADER_SIZE] = sign_fid;
 	memcpy(serial_keys+KEYS_HEADER_SIZE+1, serial_sign, ED25519_KEY_SIZE);
 	_secure_wipe(serial_sign, ED25519_KEY_SIZE);
-	serial_keys[KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE] = 2;
+	serial_keys[KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE] = enc_fid;
 	memcpy(serial_keys+KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1, serial_enc, enc_size);
 	_secure_wipe(serial_enc, enc_size);
 	free(serial_enc);
@@ -76,7 +80,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 		RET_ERROR_INT(ERR_UNSPEC, "could not store keys in PEM file.");
 	}
 
-	_secure_wipe(b64_keys, strlen(b64_keys));
+	_secure_wipe(b64_keys, strlen(b64_keys));	
 	free(b64_keys);
 
 	return 0;

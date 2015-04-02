@@ -4,9 +4,8 @@
 #include <stdarg.h>
 #include <netdb.h>
 
-#include <openssl/buffer.h>
-#include "openssl/err.h"
-#include "openssl/ssl.h"
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 
 #include "error.h"
 #include "misc.h"
@@ -309,7 +308,7 @@ errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname
 	while (ERR_peek_error_line_data(&ssl_filename, &ssl_line, &ssl_data, &ssl_flags)) {
 
 		if (!first_pass) {
-			BUF_strlcat(auxmsg, " | ", sizeof(auxmsg));
+			strncat(auxmsg, " | ", sizeof(auxmsg)-1);
 		} else {
 			first_pass = 0;
 		}
@@ -321,8 +320,8 @@ errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname
 		ERR_error_string_n(ERR_get_error(), tmpbuf2, sizeof(tmpbuf2));
 
 		// Combine the two error strings and add them to the buffer.
-		BUF_strlcat(auxmsg, tmpbuf2, sizeof(auxmsg));
-		BUF_strlcat(auxmsg, tmpbuf, sizeof(auxmsg));
+		strncat(auxmsg, tmpbuf2, sizeof(auxmsg)-1);
+		strncat(auxmsg, tmpbuf, sizeof(auxmsg)-1);
 	}
 
 	return (_push_error_stack(filename, funcname, lineno, errcode, xerrno, auxmsg));
@@ -349,7 +348,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
 	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
 
-
+	
 /**
  * @brief	Populate a new entry on the error stack.
  * @param	errptr

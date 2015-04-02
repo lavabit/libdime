@@ -20,15 +20,16 @@ legacy-tools		:= $(cachedump) $(dmtp) $(ed25519) $(genrec) $(x)
 libcore			:= $(DIME_PROJECT_ROOT)/libs/core
 libcommon		:= $(DIME_PROJECT_ROOT)/libs/common
 libsignet		:= $(DIME_PROJECT_ROOT)/libs/signet
+libdmessage		:= $(DIME_PROJECT_ROOT)/libs/dmessage
 libsignet-resolver	:= $(DIME_PROJECT_ROOT)/libs/signet-resolver
-libs			:= $(libcore) $(libcommon) $(libsignet) $(libsignet-resolver)
+libs			:= $(libcore) $(libcommon) $(libsignet) $(libdmessage) $(libsignet-resolver)
 
 # Foreign Dependencies
 libdonna		:= $(DIME_PROJECT_ROOT)/deps/sources/donna
 libopenssl		:= $(DIME_PROJECT_ROOT)/deps/sources/openssl
 foreign			:= # $(libopenssl) $(libdonna)
 
-checks			:= $(DIME_PROJECT_ROOT)/check/common $(DIME_PROJECT_ROOT)/check/dime $(DIME_PROJECT_ROOT)/check/signet
+checks			:= $(DIME_PROJECT_ROOT)/check/common $(DIME_PROJECT_ROOT)/check/dime $(DIME_PROJECT_ROOT)/check/signet $(DIME_PROJECT_ROOT)/check/dmessage
 
 .PHONY: all check clean $(libs) $(tools) $(legacy-tools) $(checks)
 
@@ -46,6 +47,7 @@ check: $(checks)
 $(checks): all
 
 libsignet-resolver: libsignet $(libsignet-resolver)
+libdmessage: libsignet $(libdmessage)
 libsignet: libcommon $(libsignet)
 libcommon: libcore $(libcommon)
 libcore: $(libcore)

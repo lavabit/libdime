@@ -14,7 +14,7 @@
 /*PUBLIC FUNCTIONS*/
 
 /* Create a new signet and keysfile */
-PUBLIC_FUNC_DECL(signet_t *, 	   signet_new_keysfile,		signet_type_t type, 	 char *keysfile);
+PUBLIC_FUNC_DECL(signet_t *, 	   signet_new_keysfile,		signet_type_t type, 	 char *keysfile);	
 
 /* Loading signet from and saving to file */
 PUBLIC_FUNC_DECL(signet_t *,	   signet_from_file,		const char *filename);
@@ -24,11 +24,11 @@ PUBLIC_FUNC_DECL(int,		   signet_to_file,		signet_t *signet, 	 const char *filen
 PUBLIC_FUNC_DECL(signet_t *, 	   signet_deserialize,		const unsigned char *in, size_t len);
 PUBLIC_FUNC_DECL(signet_t *, 	   signet_deserialize_b64,	const char *b64_in);
 
-PUBLIC_FUNC_DECL(void, 	       	   signet_destroy,		signet_t* signet);
+PUBLIC_FUNC_DECL(void, 	       	   signet_destroy,		signet_t* signet);						
 
 /* Serializing signet into binary and b64 */
-PUBLIC_FUNC_DECL(unsigned char *,  signet_serialize,		signet_t *signet, 	 uint32_t *serial_size);
-PUBLIC_FUNC_DECL(char *, 	   signet_serialize_b64,	signet_t *signet);
+PUBLIC_FUNC_DECL(unsigned char *,  signet_serialize,		signet_t *signet, 	 uint32_t *serial_size);			
+PUBLIC_FUNC_DECL(char *, 	   signet_serialize_b64,	signet_t *signet);				
 
 /* Dumps signet into the file descriptor */
 PUBLIC_FUNC_DECL(void, 		   signet_dump,			FILE *fp, 		 signet_t* signet);
@@ -43,6 +43,7 @@ PUBLIC_FUNC_DECL(signet_type_t,	   signet_get_type,		const signet_t *signet);
 PUBLIC_FUNC_DECL(unsigned char *,  signet_fetch_fid_num,	const signet_t *signet, unsigned char fid, 	unsigned int num,          size_t *data_size);
 PUBLIC_FUNC_DECL(unsigned char *,  signet_fetch_undef_name,	const signet_t *signet, size_t name_len,        const unsigned char *name, size_t *data_size);
 PUBLIC_FUNC_DECL(ED25519_KEY *,	   signet_get_signkey,		const signet_t *signet);
+PUBLIC_FUNC_DECL(EC_KEY *,	   signet_get_enckey,		const signet_t *signet);
 PUBLIC_FUNC_DECL(unsigned char **, signet_get_msg_sign_keys,	const signet_t *signet);
 PUBLIC_FUNC_DECL(unsigned char **, signet_get_signet_sign_keys,	const signet_t *signet);
 

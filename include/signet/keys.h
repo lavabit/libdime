@@ -3,8 +3,6 @@
 
 #include "signet/general.h"
 
-#define EC_PRIVKEY_SIZE		510
-
 
 /* PUBLIC FUNCTIONS */
 

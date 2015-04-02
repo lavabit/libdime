@@ -14,15 +14,15 @@ void int_no_put_2b(void *buf, uint16_t val) {
 	PUBLIC_FUNC_IMPL(int_no_put_2b, buf, val);
 }
 
-uint32_t int_no_get_4b(void *buf) {
+uint32_t int_no_get_4b(const void *buf) {
 	PUBLIC_FUNC_IMPL(int_no_get_4b, buf);
 }
 
-uint32_t int_no_get_3b(void *buf) {
+uint32_t int_no_get_3b(const void *buf) {
 	PUBLIC_FUNC_IMPL(int_no_get_3b, buf);
 }
 
-uint16_t int_no_get_2b(void *buf) {
+uint16_t int_no_get_2b(const void *buf) {
 	PUBLIC_FUNC_IMPL(int_no_get_2b, buf);
 }
 

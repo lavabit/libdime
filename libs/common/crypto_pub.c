@@ -42,8 +42,12 @@ EC_KEY * deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signi
 	PUBLIC_FUNC_IMPL(deserialize_ec_privkey, buf, blen, signing);
 }
 
-EC_KEY * load_ec_privkey(const char *filename, const EC_GROUP **gptr) {
-	PUBLIC_FUNC_IMPL(load_ec_privkey, filename, gptr);
+EC_KEY * load_ec_privkey(const char *filename) {
+	PUBLIC_FUNC_IMPL(load_ec_privkey, filename);
+}
+
+EC_KEY * load_ec_pubkey(const char *filename) {
+	PUBLIC_FUNC_IMPL(load_ec_pubkey, filename);
 }
 
 EC_KEY * generate_ec_keypair(int signing) {
@@ -78,8 +82,8 @@ void * ecies_env_derivation(const void *input, size_t ilen, void *output, size_t
 	PUBLIC_FUNC_IMPL(ecies_env_derivation, input, ilen, output, olen);
 }
 
-int compute_ec_ephemeral_aes256_key(EC_KEY *key, EC_KEY *ephemeral, unsigned char *keybuf) {
-	PUBLIC_FUNC_IMPL(compute_ec_ephemeral_aes256_key, key, ephemeral, keybuf);
+int compute_aes256_kek(EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf) {
+	PUBLIC_FUNC_IMPL(compute_aes256_kek, public_key, private_key, keybuf);
 }
 
 int get_random_bytes(void *buf, size_t len) {

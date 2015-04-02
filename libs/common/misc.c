@@ -5,9 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
-
-#include "openssl/x509.h"
-#include "openssl/err.h"
+#include <openssl/x509.h>
+#include <openssl/err.h>
 
 #include "misc.h"
 #include "error.h"
@@ -163,7 +162,7 @@ void _int_no_put_2b(void *buf, uint16_t val) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 4 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_4b(void *buf) {
+uint32_t _int_no_get_4b(const void *buf) {
 
 	uint32_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -186,7 +185,7 @@ uint32_t _int_no_get_4b(void *buf) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 3 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_3b(void *buf) {
+uint32_t _int_no_get_3b(const void *buf) {
 
 	uint32_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -208,7 +207,7 @@ uint32_t _int_no_get_3b(void *buf) {
  * @param	buf	a pointer to the data buffer from which the bytes will be read.
  * @return	the value of the first 2 bytes in the buffer in host byte order.
  */
-uint16_t _int_no_get_2b(void *buf) {
+uint16_t _int_no_get_2b(const void *buf) {
 
 	uint16_t result = 0;
 	unsigned char *sptr = (unsigned char *)buf;
@@ -332,7 +331,7 @@ int __str_printf(char **sbuf, char *fmt, va_list ap) {
 		if (*sbuf) {
 			free(*sbuf);
 		}
-
+		
 		va_end(copy);
 		RET_ERROR_INT(ERR_NOMEM, "unable to reallocate more space for string");
 	}
@@ -585,7 +584,7 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	new_len = B64_DECODED_LEN(len);
+	new_len = BASE64_DECODED_LEN(len);
 
 	if (!(result = malloc(new_len))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -593,13 +592,13 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 	}
 
 	memset(result, 0, new_len);
-
+	
 	o = result;
 	p = buf;
-
+	
 	// Get four characters at a time from the input buffer and decode them.
 	for (i = 0; i < len; i++) {
-
+	
 		// Only process legit base64 characters.
 		if ((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '+' || *p == '/') {
 
@@ -692,7 +691,7 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 
 		written += 4;
 	}
-
+	
 	// Encode the remaining one or two characters in the input buffer
 	switch (len % 3) {
 		case 0:
@@ -919,6 +918,10 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
  * @param	outbuf	a buffer that will contain the output of the hash operation (the caller is responsible for
  * 			allocating the correct amount of space).
  * @return	0 on success or < 0 if an error was encountered.
+ *
+ *
+ *
+ *
  */
 int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
 
@@ -932,6 +935,10 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
+	if ((nbits != 160) && (nbits != 256) && (nbits != 512)) {
+		RET_ERROR_INT(ERR_BAD_PARAM, "SHA multi-buffer hash requested against unsupported bit size");
+	}
+
 	switch(nbits) {
 		case 160:
 			res = SHA1_Init(&ctx160);
@@ -943,7 +950,8 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 			res = SHA512_Init(&ctx512);
 			break;
 		default:
-			RET_ERROR_INT(ERR_BAD_PARAM, "SHA multi-buffer hash requested against unsupported bit size");
+			RET_ERROR_INT(ERR_UNSPEC, "invalid number of bits for SHA hash");
+			break;
 	}
 
 	if (!res) {
@@ -1016,7 +1024,7 @@ RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 	// If this first byte is > 0, then it's the entire length as a one byte field.
 	// Otherwise, if it's zero, the following 2 bytes store the exponent length.
 	if (!*data) {
-
+ 
 		if (left < sizeof(explen)) {
 			RET_ERROR_PTR(ERR_UNSPEC, "RSA key buffer underflow");
 		}
@@ -1184,6 +1192,52 @@ int _is_buf_zeroed(void *buf, size_t len) {
 
 
 /**
+ * @brief	Create a pem file with specified tags and filename.
+ * @param	b64_data	Null terminated base64 encoded data.
+ * @param	tag		Null terminated ASCII string containing the desired PEM tag.
+ * @param	filename	Null terminated string containing the desired filename.
+ * @return	0 on success, -1 on failure.
+ */
+int _write_pem_data(const char *b64_data, const char *tag, const char *filename) {
+
+	FILE *fp;
+	char fbuf[BUFSIZ];
+	size_t data_size;
+	unsigned int i;
+
+	if(!b64_data || !tag || !filename) {
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	} else if(!strlen(filename) || !strlen(tag) || !(data_size = strlen(b64_data))) {
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	}
+
+	if(!(fp = fopen(filename, "w"))) {
+		PUSH_ERROR_SYSCALL("fopen");
+		RET_ERROR_INT_FMT(ERR_UNSPEC, "could not open file for writing: %s", filename);
+	}
+	setbuf(fp, fbuf);
+
+	fprintf(fp, "-----BEGIN %s-----\n", tag);
+
+	for(i = 0; i < data_size; ++i) {
+		
+		if(i % 128 == 0 && i) {
+			fprintf(fp, "\n");
+		}
+
+		fprintf(fp, "%c", b64_data[i]);
+	}
+
+	fprintf(fp, "\n-----END %s-----\n", tag);
+	fclose(fp);
+	_secure_wipe(fbuf, sizeof(fbuf));
+
+	return 0;
+}
+
+
+
+/**
  * @brief	Read the raw contents of a file into a buffer.
  * @param	filename	a null-terminated string with the name of the file to have its contents read into memory.
  * @param	fsize		a pointer to a variable that will receive the length, in bytes, of the read data.
@@ -1231,8 +1285,8 @@ unsigned char * _read_file_data(const char *filename, size_t *fsize) {
 	}
 
 	*fsize = sb.st_size;
-
-	return result;
+		
+	return result;	
 }
 
 
@@ -1277,7 +1331,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 				ptr++;
 			}
-
+			
 			if (!_str_printf(&result, line)) {
 				fclose(fp);
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for PEM file contents");
