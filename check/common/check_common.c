@@ -7,14 +7,9 @@
 #include <sys/types.h>
 #include <openssl/rand.h>
 
-#include <check.h>
-
-#include "check_misc.h"
-#include "check_crypto.h"
-
 #include "check_common.h"
 
-#include "error.h"
+#include "common/error.h"
 
 /* FIXME TODO pt -- should we move it to common/error.h or lb/error.h ?" */
 

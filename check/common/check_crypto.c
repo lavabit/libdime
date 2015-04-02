@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <openssl/ec.h>
 
-#include "dcrypto.h"
-#include "misc.h"
+#include "common/dcrypto.h"
+#include "common/misc.h"
 
 #include "check_common.h"
-#include "check_crypto.h"
 
 
 START_TEST (check_ec_signatures)

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "misc.h"
+#include "common/misc.h"
 
 #include "check_common.h"
 

@@ -1,9 +1,17 @@
-#include <check.h>
+#ifndef DIME_CHECK_COMMON_H
+#define DIME_CHECK_COMMON_H
+
+#include "../check-compat.h"
 
 #define RUN_TEST_CASE_TIMEOUT	100
 
+#define N_SERIALIZATION_TESTS	20
+#define N_SIGNATURE_TIER_TESTS	5
 
-#define testcase(s, tc, name, func) tcase_add_test((tc = tcase_create(name)), func); tcase_set_timeout(tc, RUN_TEST_CASE_TIMEOUT); suite_add_tcase(s, tc)
-
+Suite * suite_check_crypto(void);
+Suite * suite_check_error(void);
+Suite * suite_check_misc(void);
 
 unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outlen);
+
+#endif

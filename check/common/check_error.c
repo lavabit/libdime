@@ -8,10 +8,8 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-#include <check.h>
-#include "../check-compat.h"
 #include "check_common.h"
-#include "error.h"
+#include "common/error.h"
 
 #define ERRMSG "error:02001002:system library:fopen:No such file or directory:filename:100"
 #define SEP " | "

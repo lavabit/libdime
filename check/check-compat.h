@@ -6,7 +6,8 @@
 #include <inttypes.h>
 
 /* check <= 0.9.9 doesn't have many of the nice convenience functions. */
-#if CHECK_MAJOR_VERSION * 10000 + CHECK_MINOR_VERSION * 100 + CHECK_PATCH_VERSION < 0 * 10000 + 9 * 100 + 10 * 1
+
+#if CHECK_MAJOR_VERSION * 10000 + CHECK_MINOR_VERSION * 100 + CHECK_PATCH_VERSION < 0 * 10000 + 9 * 100 + 1 * 10
 
 #undef _ck_assert_int
 #define _ck_assert_int(X, OP, Y) do { \
