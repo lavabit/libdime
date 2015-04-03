@@ -5,9 +5,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
 
+#include "openssl/err.h"
+#include "openssl/rand.h"
 #include "check_common.h"
 #include "common/error.h"
 
