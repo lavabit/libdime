@@ -6,13 +6,13 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <time.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
-#include <openssl/sha.h>
-#include <openssl/rsa.h>
-#include <openssl/bn.h>
 
+#include "openssl/bio.h"
+#include "openssl/evp.h"
+#include "openssl/buffer.h"
+#include "openssl/sha.h"
+#include "openssl/rsa.h"
+#include "openssl/bn.h"
 #include "error.h"
 
 
@@ -28,9 +28,8 @@
 #define SHA_512_B64_SIZE	86
 
 #define B64_ENCODED_LEN(len)	((((len) + (((len) % 3) ? (3 - ((len) % 3)) : 0)) / 3) * 4)
-#ifndef BASE64_DECODED_LEN
-#define BASE64_DECODED_LEN(len)	((len) * 3/4)
-#endif
+#define B64_DECODED_LEN(len)	((len) * 3/4)
+
 
 
 typedef struct {
