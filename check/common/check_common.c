@@ -5,7 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <openssl/rand.h>
+#include "openssl/rand.h"
 
 #include "check_common.h"
 
