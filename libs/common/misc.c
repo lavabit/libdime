@@ -5,9 +5,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
-#include <openssl/x509.h>
-#include <openssl/err.h>
 
+#include "openssl/x509.h"
+#include "openssl/err.h"
 #include "misc.h"
 #include "error.h"
 
@@ -331,7 +331,7 @@ int __str_printf(char **sbuf, char *fmt, va_list ap) {
 		if (*sbuf) {
 			free(*sbuf);
 		}
-		
+
 		va_end(copy);
 		RET_ERROR_INT(ERR_NOMEM, "unable to reallocate more space for string");
 	}
@@ -584,7 +584,7 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	new_len = BASE64_DECODED_LEN(len);
+	new_len = B64_DECODED_LEN(len);
 
 	if (!(result = malloc(new_len))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -592,13 +592,13 @@ unsigned char * _b64decode(const char *buf, size_t len, size_t *outlen) {
 	}
 
 	memset(result, 0, new_len);
-	
+
 	o = result;
 	p = buf;
-	
+
 	// Get four characters at a time from the input buffer and decode them.
 	for (i = 0; i < len; i++) {
-	
+
 		// Only process legit base64 characters.
 		if ((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '+' || *p == '/') {
 
@@ -691,7 +691,7 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 
 		written += 4;
 	}
-	
+
 	// Encode the remaining one or two characters in the input buffer
 	switch (len % 3) {
 		case 0:
@@ -1024,7 +1024,7 @@ RSA * _decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 	// If this first byte is > 0, then it's the entire length as a one byte field.
 	// Otherwise, if it's zero, the following 2 bytes store the exponent length.
 	if (!*data) {
- 
+
 		if (left < sizeof(explen)) {
 			RET_ERROR_PTR(ERR_UNSPEC, "RSA key buffer underflow");
 		}
@@ -1285,8 +1285,8 @@ unsigned char * _read_file_data(const char *filename, size_t *fsize) {
 	}
 
 	*fsize = sb.st_size;
-		
-	return result;	
+
+	return result;
 }
 
 
@@ -1331,7 +1331,7 @@ char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 				ptr++;
 			}
-			
+
 			if (!_str_printf(&result, line)) {
 				fclose(fp);
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for PEM file contents");
