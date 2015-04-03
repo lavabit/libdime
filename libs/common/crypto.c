@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
+#include "openssl/bio.h"
+#include "openssl/ssl.h"
+#include "openssl/err.h"
+#include "openssl/rand.h"
 
 #include "dcrypto.h"
 #include "misc.h"
@@ -169,7 +169,7 @@ unsigned char * _ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *ke
 
 	*siglen = bsize;
 
-	return buf;	
+	return buf;
 }
 
 
