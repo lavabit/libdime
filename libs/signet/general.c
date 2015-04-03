@@ -5,7 +5,7 @@
 #define SKEY_EMPTY {     0,	0,     0, 0, 0, 0,       0, NULL, NULL }
 #define SKEY_SIZE1 {     0,     1,     0, 0, 1, 0, UNICODE, NULL, NULL }
 #define SKEY_SIZE2 {     0,     1,     0, 0, 2, 0, UNICODE, NULL, NULL }
- 
+
 signet_field_key_t signet_org_field_keys[256] = {
 //	{ .required .unique .flags .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
 /*0*/	SKEY_EMPTY,
