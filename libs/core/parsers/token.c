@@ -307,7 +307,10 @@ int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint
 	bool_t found;
 
 	// We can't search NULL pointers or empty strings.
-	if (!value || mm_empty(block, length) || mm_empty(token, toklen)) {
+	if (!value) {
+		return -1;
+	}
+	if (mm_empty(block, length) || mm_empty(token, toklen)) {
 		*value = pl_null();
 		return -1;
 	}
