@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <openssl/ec.h>
 
+#include "openssl/ec.h"
 #include "common/dcrypto.h"
 #include "common/misc.h"
 
