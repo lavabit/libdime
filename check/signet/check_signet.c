@@ -134,7 +134,6 @@ END_TEST
 
 START_TEST (check_signet_signing)
 {	
-	size_t i = 0;
 	char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
 	unsigned char **org_signet_sign_keys;
 	ED25519_KEY *orgkey, *userkey, *userpubkey;
@@ -207,7 +206,7 @@ START_TEST (check_signet_signing)
 	_signet_sign_full_sig(newuser_signet, orgkey);
 //confirm that the new signet is now a valid full signet
 	ck_assert_msg(_signet_full_verify(newuser_signet, org_signet, NULL) == SS_FULL, "could not verify new user signet as full signet.\n");
-	
+
 	for (size_t i = 0; org_signet_sign_keys[i]; i++) {
 		free(org_signet_sign_keys[i]);
 	}
