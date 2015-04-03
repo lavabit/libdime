@@ -3337,6 +3337,7 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 	if(!(decrypted = _dmsg_decrypt_chunk(msg->origin_full_sig, actor, kek))) {
 		free(data);
 		_free_ed25519_key(signkey);
+		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt chunk");
 	}
 
 	if(!(signature = _dmsg_get_chunk_data(decrypted, &sig_size)) || (sig_size != ED25519_SIG_SIZE)) {
