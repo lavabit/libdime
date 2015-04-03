@@ -119,7 +119,7 @@ Suite * test_suite(void) {
 }
 
 
-int main(int argc, char *argv[]) {
+int main(void) {
 
 	SRunner *sr;
 	int nr_failed;
