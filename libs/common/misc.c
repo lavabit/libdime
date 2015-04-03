@@ -658,7 +658,7 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 	unsigned char *o;
 	const unsigned char *p;
 	char *result;
-	size_t new_len, written = 0, i;
+	size_t new_len, i;
 	unsigned char c1, c2, c3;
 
 	if (!buf || !len) {
@@ -688,8 +688,6 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 		*o++ = _base64_chars[((c1 << 4) | (c2 >> 4)) & 0x3F];
 		*o++ = _base64_chars[((c2 << 2) | (c3 >> 6)) & 0x3F];
 		*o++ = _base64_chars[c3 & 0x3F];
-
-		written += 4;
 	}
 
 	// Encode the remaining one or two characters in the input buffer
@@ -702,7 +700,6 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 			*o++ = _base64_chars[((c1 & 0x03) << 4)];
 			*o++ = '=';
 			*o++ = '=';
-			written += 4;
 			break;
 		case 2:
 			c1 = (*p++) & 0xFF;
@@ -711,7 +708,6 @@ char * _b64encode(const unsigned char *buf, size_t len) {
 			*o++ = _base64_chars[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
 			*o++ = _base64_chars[((c2 & 0x0F) << 2)];
 			*o++ = '=';
-			written += 4;
 			break;
 		default:
 			free(result);
