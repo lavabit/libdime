@@ -1,13 +1,6 @@
 #include <stdlib.h>
 #include "checks.h"
 
-void suite_add_test(Suite *s, const char *name, TFun func) {
-
-	TCase *tc = tcase_create(name);
-	tcase_add_test(tc, func);
-	suite_add_tcase(s, tc);
-}
-
 int main(void) {
 
 	SRunner *sr = srunner_create(suite_check_classify());

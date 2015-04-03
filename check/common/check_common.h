@@ -1,7 +1,7 @@
 #ifndef DIME_CHECK_COMMON_H
 #define DIME_CHECK_COMMON_H
 
-#include "../check-compat.h"
+#include "../check-dime.h"
 
 #define RUN_TEST_CASE_TIMEOUT	100
 

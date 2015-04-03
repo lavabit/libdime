@@ -1,4 +1,4 @@
-#include "signet.h"
+#include "signet/signet.h"
 #include "check_signet.h"
 
 START_TEST (check_signet_modification) 

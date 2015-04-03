@@ -19,6 +19,8 @@ LIBSIGNET_CFLAGS	=
 LIBSIGNET_LIBS		= ../../libs/signet/libsignet.a
 LIBSIGNETRESOLVER_CFLAGS =
 LIBSIGNETRESOLVER_LIBS	= ../../libs/signet-resolver/libsignet-resolver.a
+LIBDMESSAGE_CFLAGS	=
+LIBDMESSAGE_LIBS	= ../../libs/dmessage/libdmessage.a
 
 # implementation
 

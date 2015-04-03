@@ -54,15 +54,10 @@ START_TEST(check_base64_macros)
 }
 END_TEST
 
-
 Suite * suite_check_misc(void) {
 
-	Suite *s;
-	TCase *tc;
-
-	s = suite_create("misc");
-	testcase(s, tc, "Debug Level Check", check_debug_level);
-	testcase(s, tc, "Base64 Macros", check_base64_macros);
-
+	Suite *s = suite_create("misc");
+	suite_add_testfunc(s, check_debug_level);
+	suite_add_testfunc(s, check_base64_macros);
 	return s;
 }

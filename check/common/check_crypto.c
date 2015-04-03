@@ -301,16 +301,12 @@ END_TEST
 
 Suite * suite_check_crypto(void) {
 
-	Suite *s;
-	TCase *tc;
-
-	s = suite_create("crypto");
-	testcase(s, tc, "EC Serialization/Deserialization", check_ec_serialization);
-	testcase(s, tc, "EC Key Load From File", load_ec_key_file);
-	testcase(s, tc, "EC Signing/Verification", check_ec_signatures);
-	testcase(s, tc, "EC SHA Signing/Verification", check_ec_sha_signatures);
-	testcase(s, tc, "ECDH Key Derivation Function", check_ecdh_kdf);
-	testcase(s, tc, "ed25519 Signing/Verification", check_ed25519_signatures);
-
+	Suite *s = suite_create("crypto");
+	suite_add_test(s, "EC Serialization/Deserialization", check_ec_serialization);
+	suite_add_test(s, "EC Key Load From File", load_ec_key_file);
+	suite_add_test(s, "EC Signing/Verification", check_ec_signatures);
+	suite_add_test(s, "EC SHA Signing/Verification", check_ec_sha_signatures);
+	suite_add_test(s, "ECDH Key Derivation Function", check_ecdh_kdf);
+	suite_add_test(s, "ed25519 Signing/Verification", check_ed25519_signatures);
 	return s;
 }
