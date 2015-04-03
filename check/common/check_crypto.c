@@ -3,7 +3,6 @@
 #include "openssl/ec.h"
 #include "common/dcrypto.h"
 #include "common/misc.h"
-
 #include "check_common.h"
 
 
