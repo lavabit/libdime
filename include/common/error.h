@@ -63,7 +63,7 @@ struct errinfo {
 	unsigned int errcode;
 	int xerrno;
 	char auxmsg[384];
-} __attribute__ ((__packed__)); 
+} __attribute__ ((__packed__));
 
 typedef struct errinfo errinfo_t;
 
