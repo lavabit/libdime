@@ -7,7 +7,6 @@
 #include "openssl/buffer.h"
 #include "openssl/err.h"
 #include "openssl/ssl.h"
-
 #include "error.h"
 #include "misc.h"
 
