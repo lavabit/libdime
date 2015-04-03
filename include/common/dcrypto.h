@@ -1,11 +1,10 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
-#include <openssl/obj_mac.h>
-#include <openssl/ec.h>
-#include <openssl/ecdsa.h>
-#include <openssl/pem.h>
-
+#include "openssl/obj_mac.h"
+#include "openssl/ec.h"
+#include "openssl/ecdsa.h"
+#include "openssl/pem.h"
 #include "error.h"
 #include "ed25519.h"
 
@@ -28,7 +27,7 @@
 typedef struct {
 	ed25519_secret_key private;
 	ed25519_public_key public;
-} ED25519_KEY; 
+} ED25519_KEY;
 
 
 // Initializion and finalization routines.
