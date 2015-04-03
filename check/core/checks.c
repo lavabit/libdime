@@ -6,6 +6,7 @@ int main(void) {
 	SRunner *sr = srunner_create(suite_check_classify());
 	srunner_add_suite(sr, suite_check_compare());
 	srunner_add_suite(sr, suite_check_memory());
+	srunner_add_suite(sr, suite_check_host_folder());
 
 	srunner_run_all(sr, CK_ENV);
 	int nr_failed = srunner_ntests_failed(sr);
