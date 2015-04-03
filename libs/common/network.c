@@ -1,7 +1,8 @@
+#include <errno.h>
+
 #include "network.h"
 #include "misc.h"
 
-#include <errno.h>
 
 
 /**
@@ -27,7 +28,7 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = force_family ? force_family : AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	
+
 	if ((result = getaddrinfo(hostname, pstr, &hints, &address))) {
 //		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
 		RET_ERROR_INT(ERR_UNSPEC, "failed to resolve host address");
