@@ -126,6 +126,7 @@ int main(void) {
 	sr = srunner_create(test_suite());
 	srunner_add_suite(sr, suite_check_misc());
 	srunner_add_suite(sr, suite_check_crypto());
+	srunner_add_suite(sr, suite_check_error());
 
 	fprintf(stderr, "Running tests ...\n");
 
