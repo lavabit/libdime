@@ -1,7 +1,7 @@
 #include "signet/signet.h"
 #include "check_signet.h"
 
-START_TEST (check_signet_modification) 
+START_TEST (check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529", *name1 = "check undef", *data1 = "undef data", *name2 = "check name", *data2 = "check check";
 	size_t data_size;
@@ -105,7 +105,7 @@ START_TEST (check_signet_parsing)
 	_signet_destroy(sigtwo);
 
 	ck_assert_msg((b64_sigone = _signet_serialize_b64(sigone)) != NULL, "could not serialize signet to base64.\n");
-	
+
 	ck_assert_msg((sigtwo = _signet_deserialize_b64(b64_sigone)) != NULL, "could not deserialize signet from base64.\n");
 
 	ck_assert_msg((b64_sigtwo = _signet_serialize_b64(sigtwo)) != NULL, "could not serialize signet to base64 the second time.\n");
