@@ -4,9 +4,9 @@
 #include <stdarg.h>
 #include <netdb.h>
 
-#include <openssl/buffer.h>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
+#include "openssl/buffer.h"
+#include "openssl/err.h"
+#include "openssl/ssl.h"
 
 #include "error.h"
 #include "misc.h"
@@ -349,7 +349,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
 	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
 
-	
+
 /**
  * @brief	Populate a new entry on the error stack.
  * @param	errptr
