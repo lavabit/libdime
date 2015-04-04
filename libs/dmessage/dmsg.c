@@ -1497,10 +1497,14 @@ int _dmsg_add_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, 
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize dmime message");
 	}
 
+	fprintf(stderr, "");
+
 	if(_ed25519_sign_data(data, data_size, signkey, sigbuf)) {
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "could not sign dmime message");
 	}
+
+	free(data);
 
 	if(!(message->author_full_sig = _dmsg_create_message_chunk(CHUNK_TYPE_SIG_AUTHOR_FULL, sigbuf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not not create author full signature chunk");

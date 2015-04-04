@@ -208,23 +208,23 @@ Suite * suite_check_dmsg(void) {
 
 int main(int argc, char *argv[]) {
 
-        SRunner *sr;
+SRunner *sr;
 
-        sr = srunner_create(suite_check_dmsg());
+sr = srunner_create(suite_check_dmsg());
 
-        fprintf(stderr, "Running tests ...\n");
+	fprintf(stderr, "Running tests ...\n");
 
 	srunner_set_fork_status (sr, CK_NOFORK);
-        srunner_run_all(sr, CK_SILENT);
+	srunner_run_all(sr, CK_SILENT);
         //srunner_run_all(sr, CK_NORMAL);
         //nr_failed = srunner_ntests_failed(sr);
         // CK_VERBOSE
-        srunner_print(sr, CK_VERBOSE);
-        srunner_free(sr);
+	srunner_print(sr, CK_VERBOSE);
+	srunner_free(sr);
 
-        fprintf(stderr, "Finished.\n");
+	fprintf(stderr, "Finished.\n");
         //ck_assert
         //ck_assert_msg
 
-        return 0;
+	return 0;
 }
