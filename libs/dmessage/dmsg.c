@@ -2004,8 +2004,7 @@ dmime_message_t * _dmsg_bin_to_msg(const unsigned char *in, size_t insize) {
 	}
 
 	if(result->ephemeral && result->origin && result->destination && result->common_headers && 
-	   result->author_tree_sig && result->author_full_sig && result->origin_full_sig && 
-	   (result->origin_meta_bounce_sig || result->origin_display_bounce_sig)) { 
+	   result->author_tree_sig && result->author_full_sig && result->origin_full_sig) {
 
 		result->state = MESSAGE_STATE_COMPLETE;
 
