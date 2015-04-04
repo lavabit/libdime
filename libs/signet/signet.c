@@ -1249,8 +1249,10 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 	}
 
 	at += keys[fid].bytes_data_size;
-	memcpy(signet->data+at, data, data_size);
-	at += data_size;
+	if (data != NULL) {
+		memcpy(signet->data+at, data, data_size);
+		at += data_size;
+	}
 
 	if((res = _signet_fid_exists(signet, fid)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error searching for field in signet");
