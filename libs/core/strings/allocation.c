@@ -128,7 +128,6 @@ stringer_t * st_merge_opts(uint32_t opts, chr_t *format, ...) {
 #endif
 
 	// Iterate through and calculate the combined length of the input strings.
-	cursor = format;
 	va_start(list, format);
 	for (cursor = format; *cursor; cursor++) {
 		if (*cursor == 's') {
@@ -154,7 +153,6 @@ stringer_t * st_merge_opts(uint32_t opts, chr_t *format, ...) {
 	}
 
 	// Iterate through a second time and copy the bytes into the output buffer.
-	cursor = format;
 	va_start(list, format);
 
 	for (cursor = format; *cursor; cursor++) {
