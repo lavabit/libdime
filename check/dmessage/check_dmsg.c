@@ -121,6 +121,7 @@ START_TEST (check_message_encryption)
 
 	_dmsg_dump_object(at_orig);
 
+	dump_error_stack();
 	//Add origin signatures and serialize the message again
 	_dmsg_sign_origin_sig_chunks(message, (META_BOUNCE | DISPLAY_BOUNCE), &orig_kek, orig_signkey);
 	from_orig_bin = _dmsg_msg_to_bin(message, 0b00011111, 0, &from_orig_size);
@@ -136,8 +137,10 @@ START_TEST (check_message_encryption)
 	at_dest->signet_recipient = signet_recp;
 	at_dest->destination = st_import(dest, strlen(dest));
 	at_dest->signet_destination = signet_dest;
-	_dmsg_msg_to_object_as_orig(at_dest, message, &dest_kek);
+	_dmsg_msg_to_object_as_dest(at_dest, message, &dest_kek);
 	_dmsg_dump_object(at_dest);
+
+	dump_error_stack();
 
 	//Serialize the message again
 	from_dest_bin = _dmsg_msg_to_bin(message, 0b00011111, 0, &from_dest_size);
@@ -153,9 +156,10 @@ START_TEST (check_message_encryption)
 	at_recp->signet_origin = signet_orig;
 	at_recp->signet_destination = signet_dest;
 	at_recp->signet_recipient = signet_recp;
-	_dmsg_msg_to_object_as_orig(at_recp, message, &recp_kek);
+	_dmsg_msg_to_object_as_recp(at_recp, message, &recp_kek);
 	_dmsg_dump_object(at_recp);
-	
+
+	dump_error_stack();	
 
 	//destroy everything
 	_signet_destroy(signet_auth);

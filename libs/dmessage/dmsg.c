@@ -668,8 +668,8 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 
 	dmime_chunk_key_t *key;
 	dmime_keyslot_t *keyslot, temp;
-	int slot_count = 0, res;
-	size_t data_size;
+	int slot_count = 0;
+	size_t data_size, res;
 	unsigned char *outbuf;
 
 	if(!chunk || !keks) {
@@ -714,7 +714,7 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 	if((res = _encrypt_aes_256(outbuf, &(chunk->data[0]), data_size, temp.aes_key, temp.iv)) < 0) {
 		_secure_wipe((unsigned char *)&temp, sizeof(temp));
 		RET_ERROR_INT(ERR_UNSPEC, "error encrypting data");
-	} else if((size_t)res != data_size) {
+	} else if(res != data_size) {
 		RET_ERROR_INT(ERR_UNSPEC, "encrypted an unexpected number of bytes");
 	}
 
@@ -2095,8 +2095,8 @@ dmime_message_chunk_t * _dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_
 	dmime_encrypted_payload_t payload;
 	dmime_keyslot_t *keyslot_enc, keyslot_dec;
 	dmime_message_chunk_t *result;
-	int keyslot_num, res;
-	size_t payload_size;
+	int keyslot_num;
+	size_t payload_size, res;
 	unsigned char *data;
 
 	if(!chunk || !kek) {
@@ -2183,7 +2183,7 @@ dmime_message_chunk_t * _dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_
 		_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "an error occurred while decrypting a chunk payload");
-	} else if((size_t)res != payload_size) {
+	} else if(res != payload_size) {
 		_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "decrypted an unexpected number of bytes");
@@ -2337,7 +2337,7 @@ dmime_object_t * _dmsg_msg_to_object_envelope(const dmime_message_t *msg, dmime_
  * @brief	Verify chunk plaintext signature using the author's signet.
  * @param	chunk		Pointer to a dmime message chunk, the plaintext signature of which will be verified.
  * @param	signet		Author's signet used to verify signature.
- * @return	0 if signature is valid, all other values indicate an error or an invalid signature.
+ * @return	1 if signature is valid, 0 if invalid, -1 if validation failed as a result of an error.
  */
 int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet) {
 
@@ -2347,6 +2347,10 @@ int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet)
 
 	if(!chunk || !signet) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	}
+
+	if(chunk->state == MESSAGE_CHUNK_STATE_ENCRYPTED) {
+		RET_ERROR_INT(ERR_UNSPEC, "can not verify plaintext signature of an encrypted chunk");
 	}
 
 	if(!(sig = _dmsg_get_chunk_plaintext_sig(chunk))) {
@@ -2377,11 +2381,9 @@ int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet)
 
 	if(result < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "an error occurred while verifying plaintext signature"); 
-	} else if(!result) {
-		RET_ERROR_INT(ERR_UNSPEC, "the signature was invalid");
 	}
 
-	return 0;
+	return result;
 }
 
 
@@ -2398,6 +2400,7 @@ int _dmsg_msg_to_object_origin(dmime_object_t *object, const dmime_message_t *ms
 	dmime_actor_t actor;
 	dmime_envelope_object_t *parsed;
 	dmime_message_chunk_t *decrypted;
+	int res;
 	signet_t *auth_split_signet;
 	size_t size;
 	unsigned char *chunk_data;
@@ -2436,11 +2439,18 @@ int _dmsg_msg_to_object_origin(dmime_object_t *object, const dmime_message_t *ms
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt origin chunk");
 	}
 
-	if(_dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
+	res = _dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+	if(res < 0) {
 		_dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not verify origin chunk signature");
+		RET_ERROR_INT(ERR_UNSPEC, "error during validation of origin chunk signature");
+	} else if (!res) {
+		_dmsg_destroy_message_chunk(decrypted);
+		free(dest_fp_b64);
+		free(auth_signet_b64);
+		RET_ERROR_INT(ERR_UNSPEC, "origin chunk plaintext signature is invalid");
 	}
 
 	if(!(chunk_data = _dmsg_get_chunk_data(decrypted, &size))) {
@@ -2503,6 +2513,7 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
 	dmime_actor_t actor;
 	dmime_envelope_object_t *parsed;
 	dmime_message_chunk_t *decrypted;
+	int res;
 	signet_t *recp_split_signet;
 	size_t size;
 	unsigned char *chunk_data;
@@ -2541,11 +2552,21 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt destination chunk");
 	}
 
-	if(actor != id_destination && _dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
-		_dmsg_destroy_message_chunk(decrypted);
-		free(orig_fp_b64);
-		free(recp_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not verify destination chunk signature");
+	if(actor != id_destination) {
+		res = _dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+		if(res < 0) {
+			_dmsg_destroy_message_chunk(decrypted);
+			free(orig_fp_b64);
+			free(recp_signet_b64);
+			RET_ERROR_INT(ERR_UNSPEC, "error during validation of destination chunk signature");
+		} else if(!res) {
+			_dmsg_destroy_message_chunk(decrypted);
+			free(orig_fp_b64);
+			free(recp_signet_b64);
+			RET_ERROR_INT(ERR_UNSPEC, "destination chunk plaintext signature is invalid");
+		}
+
 	}
 
 	if(!(chunk_data = _dmsg_get_chunk_data(decrypted, &size))) {
@@ -2600,7 +2621,7 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
  * @param	object		Dmime object containing the ids and signets that the specified actor requires in order to complete message decryption and verification.
  * @param	msg		Dmime message containing the signature chunks to be verified.
  * @param	kek		The current actor's key encryption key.
- * @return	0 on success, all other return values indicate failure.
+ * @return	0 on success, any other value indicates failure.
  */
 int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek) {
 
@@ -2675,7 +2696,7 @@ int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t
 	_dmsg_destroy_message_chunk(decrypted);
 	free(data);
 
-	if(result) {
+	if(result < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error verifying author full signature");
 	} else if(!result) {
 		RET_ERROR_INT(ERR_UNSPEC, "author full signature is invalid");
@@ -2696,7 +2717,7 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 
 	dmime_actor_t actor;
 	dmime_message_chunk_t *decrypted;
-	//int i;
+	int res;
 	size_t data_size;
 	unsigned char *data;
 
@@ -2716,9 +2737,14 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
-	if(_dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
+	res = _dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+	if(res < 0) {
 		_dmsg_destroy_message_chunk(decrypted);
-		RET_ERROR_INT(ERR_UNSPEC, "the plaintext chunk signature is invalid");
+		RET_ERROR_INT(ERR_UNSPEC, "error during validation of common headers chunk signature");
+	} else if(!res) {
+		_dmsg_destroy_message_chunk(decrypted);
+		RET_ERROR_INT(ERR_UNSPEC, "common headers chunk plaintext signature is invalid");
 	}
 
 	if(!(data = _dmsg_get_chunk_data(decrypted, &data_size))) {
@@ -2753,7 +2779,7 @@ int _dmsg_msg_to_object_other_headers(dmime_object_t *object, const dmime_messag
 
 	dmime_actor_t actor;
 	dmime_message_chunk_t *decrypted;
-	//int i;
+	int res;
 	size_t data_size;
 	unsigned char *data;
 
@@ -2773,9 +2799,14 @@ int _dmsg_msg_to_object_other_headers(dmime_object_t *object, const dmime_messag
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
-	if(_dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
+	res =_dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+	if(res < 0) {
 		_dmsg_destroy_message_chunk(decrypted);
-		RET_ERROR_INT(ERR_UNSPEC, "the plaintext chunk signature is invalid");
+		RET_ERROR_INT(ERR_UNSPEC, "error during validation of other headers chunk signature");
+	} else if(!res) {
+		_dmsg_destroy_message_chunk(decrypted);
+		RET_ERROR_INT(ERR_UNSPEC, "other headers chunk plaintext signature is invalid");
 	}
 
 	if(!(data = _dmsg_get_chunk_data(decrypted, &data_size))) {
@@ -2848,7 +2879,7 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 	dmime_actor_t actor;
 	dmime_message_chunk_t *decrypted;
 	dmime_object_chunk_t *chunk, *last = NULL;
-	int i = 0;
+	int i = 0, res;
 	unsigned char *data;
 	size_t data_size;
 
@@ -2877,10 +2908,16 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 				RET_ERROR_INT(ERR_UNSPEC, "could not decrypt display chunk");
 			}
 
-			if(_dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
+			res = _dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+			if(res < 0) {
 				_dmsg_destroy_object_chunk_list(object->display);
 				_dmsg_destroy_message_chunk(decrypted);
-				RET_ERROR_INT(ERR_UNSPEC, "could not verify signature chunk");
+				RET_ERROR_INT(ERR_UNSPEC, "error during validation of display chunk signature");
+			} else if(!res) {
+				_dmsg_destroy_object_chunk_list(object->display);
+				_dmsg_destroy_message_chunk(decrypted);
+				RET_ERROR_INT(ERR_UNSPEC, "display chunk plaintext signature is invalid");
 			}
 
 			if(!(data = _dmsg_get_chunk_data(decrypted, &data_size))) {
@@ -2918,27 +2955,29 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 		
 			if(!(decrypted = _dmsg_decrypt_chunk(msg->attach[i], actor, kek))) {
 				_dmsg_destroy_object_chunk_list(object->attach);
-				_dmsg_destroy_object_chunk_list(object->display);
 				RET_ERROR_INT(ERR_UNSPEC, "could not decrypt display chunk");
 			}
 
-			if(_dmsg_verify_chunk_signature(decrypted, object->signet_author)) {
+			res = _dmsg_verify_chunk_signature(decrypted, object->signet_author);
+
+			if(res < 0) {
 				_dmsg_destroy_object_chunk_list(object->attach);
-				_dmsg_destroy_object_chunk_list(object->display);
 				_dmsg_destroy_message_chunk(decrypted);
-				RET_ERROR_INT(ERR_UNSPEC, "could not verify signature chunk");
+				RET_ERROR_INT(ERR_UNSPEC, "error during validation of attachment chunk signature");
+			} else if(!res) {
+				_dmsg_destroy_object_chunk_list(object->attach);
+				_dmsg_destroy_message_chunk(decrypted);
+				RET_ERROR_INT(ERR_UNSPEC, "attachment chunk plaintext signature is invalid");
 			}
 
 			if(!(data = _dmsg_get_chunk_data(decrypted, &data_size))) {
 				_dmsg_destroy_object_chunk_list(object->attach);
-				_dmsg_destroy_object_chunk_list(object->display);
 				_dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not retrieve decrypted display chunk data");
 			}
 
 			if(!(chunk = _dmsg_create_object_chunk(decrypted->type, data, data_size, _dmsg_get_chunk_flags(decrypted)))) {
 				_dmsg_destroy_object_chunk_list(object->attach);
-				_dmsg_destroy_object_chunk_list(object->display);
 				_dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not create an object chunk with the contents from the message chunk");
 			}
@@ -3291,9 +3330,12 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 		_dmsg_destroy_message_chunk(decrypted);
 		free(data);
 
-		if(result) {
+		if(result < 0) {
 			_free_ed25519_key(signkey);
-			RET_ERROR_INT(ERR_UNSPEC, "the origin meta bounce signature could not be validated successfully");
+			RET_ERROR_INT(ERR_UNSPEC, "error during validation of meta bounce origin signature");
+		} else if(!result) {
+			_free_ed25519_key(signkey);
+			RET_ERROR_INT(ERR_UNSPEC, "meta bounce origin signature is invalid");
 		}
 
 	}
@@ -3352,8 +3394,10 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 	free(data);
 	_free_ed25519_key(signkey);
 
-	if(result) {
-		RET_ERROR_INT(ERR_UNSPEC, "the origin full signature was not validated successfully");
+	if(result < 0) {
+		RET_ERROR_INT(ERR_UNSPEC, "error during validation of display bounce origin signature");
+	} else if(!result) {
+		RET_ERROR_INT(ERR_UNSPEC, "display bounce origin signature is invalid");
 	}
 
 	return 0;

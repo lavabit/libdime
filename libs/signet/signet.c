@@ -2102,10 +2102,6 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 
 		if(res < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "error occurred while verifying signature"); 
-		} else if (res == 0) {
-			RET_ERROR_INT(ERR_UNSPEC, "the signature is invalid");
-		} else if (res != 1) {
-			RET_ERROR_INT(ERR_UNSPEC, "unexpected return value from verify function");
 		}
 
 		return res;
