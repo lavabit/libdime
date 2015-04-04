@@ -23,8 +23,7 @@
  */
 size_t st_vsprint(stringer_t *s, chr_t *format, va_list args) {
 
-	int_t length;
-	size_t avail;
+	size_t avail, length;
 	uint32_t opts = *((uint32_t *)s);
 
 #ifdef MAGMA_PEDANTIC

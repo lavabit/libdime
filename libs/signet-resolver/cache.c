@@ -1115,7 +1115,7 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 
 				if (!ptr->ttl) {
 					snprintf(ttlstr, sizeof(ttlstr), "[no ttl]");
-				} else if ((ptr->timestamp + ptr->ttl) > now) {
+				} else if ((time_t)(ptr->timestamp + ptr->ttl) > now) {
 					snprintf(ttlstr, sizeof(ttlstr), "%lu seconds", (unsigned long)(ptr->timestamp + ptr->ttl - now));
 				} else {
 					snprintf(ttlstr, sizeof(ttlstr), "expired %lu seconds ago", (unsigned long)(now - (ptr->timestamp + ptr->ttl)));
@@ -1357,7 +1357,7 @@ int _load_cache_contents(void) {
 			snprintf(ttlstr, sizeof(ttlstr), "error [original = %lu]", (unsigned long)obj->ttl);
 		} else {
 
-			if ((obj->timestamp + obj->ttl) > now) {
+			if ((time_t)(obj->timestamp + obj->ttl) > now) {
 				snprintf(ttlstr, sizeof(ttlstr), "%lu seconds", (unsigned long)(obj->timestamp + obj->ttl - now));
 			} else {
 				snprintf(ttlstr, sizeof(ttlstr), "expired %lu seconds ago", (unsigned long)(now - (obj->timestamp + obj->ttl)));
@@ -1472,8 +1472,9 @@ int _save_cache_contents(void) {
 				} else {
 					objlen = chdr_size + clen;
 
-					if ((write (cfd, &objlen, sizeof(objlen)) != sizeof(objlen)) || (write(cfd, towrite, chdr_size) != chdr_size) ||
-						(write(cfd, cdata, clen) != clen)) {
+					if ((size_t)write(cfd, &objlen, sizeof(objlen)) != sizeof(objlen)
+							|| (size_t)write(cfd, towrite, chdr_size) != chdr_size
+							|| (size_t)write(cfd, cdata, clen) != clen) {
 						PUSH_ERROR_SYSCALL("write");
 						_unlock_cache_store(&(cached_stores[i]));
 						free(cdata);
@@ -2115,7 +2116,7 @@ int _is_object_expired(cached_object_t *obj, int *refresh) {
 
 	// If our cache eviction is relaxed, that means that a TTL expiration is ignored if and only if
 	// an expiration time for the object is set, and that time has not yet been reached.
-	if (obj->ttl && (obj->timestamp + obj->ttl) <= now) {
+	if (obj->ttl && (time_t)(obj->timestamp + obj->ttl) <= now) {
 
 		if (!obj->relaxed || !obj->expiration) {
 			return 1;

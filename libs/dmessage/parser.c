@@ -51,9 +51,8 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 
 	dmime_envelope_object_t *result;
 	char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
-	int at = 0;
 	unsigned char *start;
-	size_t string_size = 0;
+	size_t string_size = 0, at = 0;
 
 	if(!in || !insize) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -94,7 +93,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 	start = (unsigned char *)(in + at);
 
 	while(at < insize && in[at] != '>') {
-		
+
 		if(!isprint(in[at])) {
 			_dmsg_destroy_envelope_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");

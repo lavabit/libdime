@@ -504,7 +504,8 @@ int _count_ptr_chain(void *buf) {
 void * _ptr_chain_clone(void *buf) {
 
 	unsigned char **result, **inptr = (unsigned char **)buf;
-	size_t i, nitems, totsize;
+	size_t totsize;
+	int nitems;
 
 	if (!buf) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -525,7 +526,7 @@ void * _ptr_chain_clone(void *buf) {
 
 	memset(result, 0, totsize);
 
-	for(i = 0; i < nitems; i++) {
+	for (int i = 0; i < nitems; i++) {
 		result[i] = inptr[i];
 	}
 
@@ -754,8 +755,6 @@ void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
 	}
 
 	fprintf(stderr, "|\n");
-
-	return;
 }
 
 
@@ -807,8 +806,6 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
 	}
 
 	fprintf(stderr, "|\n");
-
-	return;
 }
 
 
@@ -836,15 +833,13 @@ void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
  */
 void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
 
-	size_t i;
-
-	if (_verbose < dbglevel) {
+	if ((unsigned int)_verbose < dbglevel) {
 		return;
 	}
 
 	if (dbglevel) {
 
-		for (i = 0; i < dbglevel; i++) {
+		for (unsigned int i = 0; i < dbglevel; i++) {
 			fprintf(stderr, "-");
 		}
 
@@ -1294,7 +1289,7 @@ unsigned char * _read_file_data(const char *filename, size_t *fsize) {
  * @param	nospace		if set, strip all whitespace from the PEM file content.
  * @return	a pointer to a buffer containing the contents of the specified PEM file tag, or NULL on failure.
  */
-char * _read_pem_data(const char *pemfile, const char *tag, int nospace) {
+char * _read_pem_data(const char *pemfile, const char *tag, int nospace __attribute__((__unused__))) {
 
 	FILE *fp;
 	const char *hyphens = "-----", *begin = "BEGIN ", *end = "END ";

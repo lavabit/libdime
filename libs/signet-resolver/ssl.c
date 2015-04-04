@@ -1156,7 +1156,7 @@ void _ssl_fd_loop(SSL *connection) {
 
 	fd_set rfds, xfds;
 	char buf[1024];
-	size_t nread, nwritten;
+	ssize_t nread, nwritten;
 	int ssl_fd;
 
 	if ((ssl_fd = SSL_get_rfd(connection)) < 0) {
@@ -1516,15 +1516,17 @@ void * _serialize_ocsp_response_cb(void *record, size_t *outlen) {
 
 	OCSP_RESPONSE *response = (OCSP_RESPONSE *)record;
 	unsigned char *buf = NULL;
+	int res;
 
 	if (!record || !outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if ((*outlen = i2d_OCSP_RESPONSE(response, &buf)) < 0) {
+	if ((res = i2d_OCSP_RESPONSE(response, &buf)) < 0) {
 		PUSH_ERROR_OPENSSL();
 		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize OCSP response message");
 	}
 
+	*outlen = res;
 	return buf;
 }

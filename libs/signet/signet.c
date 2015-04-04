@@ -670,7 +670,7 @@ signet_type_t _signet_get_type(const signet_t *signet) {
 */
 unsigned char * _signet_fetch_fid_num(const signet_t *signet, unsigned char fid, uint32_t num, size_t *out_len) {
 
-	int i, res;
+	int res;
 	unsigned char *data;
 	signet_field_t *field, *temp;
 
@@ -690,7 +690,7 @@ unsigned char * _signet_fetch_fid_num(const signet_t *signet, unsigned char fid,
 
 	temp = field;
 
-	for(i = 1; i < num; ++i) {
+	for(uint32_t i = 1; i < num; ++i) {
 		temp = temp->next;
 
 		if(!temp) {
@@ -890,7 +890,7 @@ EC_KEY * 	_signet_get_enckey(const signet_t *signet) {
 */
 unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
 
-	int i, j, res;
+	int res;
 	size_t kbuflen, key_size, num_keys = 1;
 	unsigned char **keys;
 	signet_field_t *field = NULL, *temp;
@@ -942,12 +942,12 @@ unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
 
 	memset(keys, 0, kbuflen);
 
-	for(i = 0; i < num_keys; ++i) {
+	for(size_t i = 0; i < num_keys; ++i) {
 
 		if(!(keys[i] = malloc(key_size))) {
 			PUSH_ERROR_SYSCALL("malloc");
 
-			for(j = 0; j < i; ++j) {
+			for(size_t j = 0; j < i; ++j) {
 				free(keys[j]);
 			}
 
@@ -966,7 +966,7 @@ unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
 	temp = _signet_fid_create(signet, SIGNET_ORG_POK);
 	memcpy(keys[0], &(temp->signet->data[temp->data_offset]), key_size);
 	_signet_fid_destroy(temp);
-	i = 1;
+	size_t i = 1;
 	temp = field;
 
 	while(temp) {
@@ -994,7 +994,7 @@ unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
 */
 unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
 
-	int i, j, res;
+	int res;
 	size_t kbuflen, key_size, num_keys = 1;
 	unsigned char **keys;
 	signet_field_t *field = NULL, *temp;
@@ -1045,12 +1045,12 @@ unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
 
 	memset(keys, 0, kbuflen);
 
-	for(i = 0; i < num_keys; ++i) {
+	for(size_t i = 0; i < num_keys; ++i) {
 
 		if(!(keys[i] = malloc(key_size))) {
 			PUSH_ERROR_SYSCALL("malloc");
 
-			for(j = 0; j < i; ++j) {
+			for(size_t j = 0; j < i; ++j) {
 				free(keys[j]);
 			}
 
@@ -1069,7 +1069,7 @@ unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
 	temp = _signet_fid_create(signet, SIGNET_ORG_POK);
 	memcpy(keys[0], &(temp->signet->data[temp->data_offset]), key_size);
 	_signet_fid_destroy(temp);
-	i = 1;
+	size_t i = 1;
 	temp = field;
 
 	while(temp) {
@@ -1318,8 +1318,8 @@ int _signet_add_field_string(signet_t *signet, unsigned char fid, const char *na
 int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 
 	int num_fields, res;
-	size_t field_size;
-	unsigned int i, offset;
+	int field_size;
+	unsigned int offset;
 	signet_field_t *field, *temp;
 
 	if(!signet) {
@@ -1346,7 +1346,7 @@ int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 
 	temp = field;
 
-	for(i = 1; i < num; ++i) {
+	for(int i = 1; i < num; ++i) {
 
 		if(!temp) {
 			_signet_fid_destroy(field);
@@ -1369,7 +1369,7 @@ int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 		signet->fields[fid] = 0;
 	}
 
-	for(i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -2372,7 +2372,6 @@ int _signet_check_length(const unsigned char* in, uint32_t slen) {
 int _signet_parse_fields(signet_t* signet) {
 
 	uint32_t field_size, name_size;
-	unsigned char i;
 	unsigned int at = 0;
 	signet_field_key_t key, *keys;
 
@@ -2397,7 +2396,7 @@ int _signet_parse_fields(signet_t* signet) {
 
 	}
 
-	for(i=0; i<SIGNET_FID_MAX + 1; ++i) {
+	for(int i=0; i<SIGNET_FID_MAX + 1; ++i) {
 
 		if(at == signet->size){
 			break;
@@ -2513,8 +2512,7 @@ int _signet_parse_fields(signet_t* signet) {
 int _signet_fid_size(const signet_t *signet, unsigned char fid) {
 
 	int res;
-	unsigned char i;
-	uint32_t end, start;
+	size_t start, end;
 
 	if(!signet) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -2529,7 +2527,7 @@ int _signet_fid_size(const signet_t *signet, unsigned char fid) {
 	start = signet->fields[fid] - 1;
 	end = signet->size;
 
-	for(i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -2542,7 +2540,7 @@ int _signet_fid_size(const signet_t *signet, unsigned char fid) {
 		}
 	}
 
-	if((end - start) < 0) {
+	if(end < start) {
 		RET_ERROR_INT(ERR_UNSPEC, "signet is corrupted");
 	}
 

@@ -1024,7 +1024,7 @@ char * _dmtp_history(dmtp_session_t *session, const char *signame, const char *s
 }
 
 
-char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret) {
+char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribute__((__unused__))) {
 
 	const char *stats_cmd = "STATS\r\n";
 	char *response, *rptr, *endptr, *nonce_req = NULL;
@@ -1276,14 +1276,9 @@ char * _dmtp_help(dmtp_session_t *session) {
  * @param	session		a pointer to the DMTP session across which the QUIT command will be issued.
  * @param	do_close
  *
- *
- *
- *
- *
- *
  * @return	-1 on failure or 0 if the command was successfully executed.
  */
-int _dmtp_quit(dmtp_session_t *session, int do_close) {
+int _dmtp_quit(dmtp_session_t *session, int do_close __attribute__((__unused__))) {
 
 	const char *quit_cmd = "QUIT\r\n";
 	char *response;
@@ -1411,7 +1406,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 		// We did get some data. But is it enough for a full line?
 		//
 		// This should never happen but you can never be too safe.
-		if (nread > nleft) {
+		if ((size_t)nread > nleft) {
 			RET_ERROR_PTR(ERR_UNSPEC, "unexpected error occurred in SSL line read operation");
 		}
 
@@ -1651,7 +1646,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
 	memset(cmdbuf, 0, sizeof(cmdbuf));
 	snprintf(cmdbuf, sizeof(cmdbuf), "STARTTLS <%s> MODE=DMTPv1\r\n", dxname);
 
-	if (send(session->_fd, cmdbuf, strlen(cmdbuf), 0) != strlen(cmdbuf)) {
+	if ((size_t)send(session->_fd, cmdbuf, strlen(cmdbuf), 0) != strlen(cmdbuf)) {
 		RET_ERROR_CUST(dmtp_mode_unknown, ERR_UNSPEC, "unable to issue STARTTLS command to DMTP server");
 	}
 
@@ -1790,7 +1785,7 @@ int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
 		RET_ERROR_INT(ERR_UNSPEC, "unable to issue command; session was in a bad state");
 	}
 
-	if (nwritten != strlen(cmd)) {
+	if ((size_t)nwritten != strlen(cmd)) {
 		RET_ERROR_INT(ERR_UNSPEC, "unable to issue DMTP command");
 	}
 

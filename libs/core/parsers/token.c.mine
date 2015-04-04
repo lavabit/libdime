@@ -351,28 +351,13 @@ int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint
  */
 bool_t pl_skip_characters (placer_t *place, char *skipchars, size_t nchars) {
 
-	char *ptr = pl_char_get(*place);
-
-	if (pl_empty(*place)) {
-		return false;
-	}
-
-	for (size_t i = 0; i < place->length; i++, ptr++) {
-
-		for (size_t j = 0; j <= nchars; j++) {
-
-			// We went through all the skip characters without finding something... so this is where we return.
-			if (j == nchars) {
-				place->data = (char *) place->data + i;
-				place->length -= i;
-				return true;
-			}
-
-			if (*ptr == skipchars[j])
-				break;
-
+	const char *str = pl_char_get(*place);
+	for (size_t i = 0; i < place->length; i++) {
+		if (memchr(skipchars, str[i], nchars) == NULL) {
+			place->data = (char *) place->data + i;
+			place->length -= i;
+			return true;
 		}
-
 	}
 
 	return false;
@@ -387,25 +372,12 @@ bool_t pl_skip_characters (placer_t *place, char *skipchars, size_t nchars) {
  */
 bool_t pl_skip_to_characters (placer_t *place, char *skiptochars, size_t nchars) {
 
-	char *ptr = pl_char_get(*place);
-
-	if (pl_empty(*place)) {
-		return false;
-	}
-
-	for (size_t i = 0; i < place->length; i++, ptr++) {
-
-		for (size_t j = 0; j < nchars; j++) {
-
-			// We went through all the skip characters without finding something... so this is where we return.
-			if (*ptr == skiptochars[j]) {
-				place->data = (char *) place->data + i;
-				place->length -= i;
-				return true;
-			}
-
-		}
-
+	const char *str = pl_char_get(*place);
+	for (size_t i = 0; i < place->length; i++) {
+		if (memchr(skiptochars, str[i], nchars) != NULL) {
+			place->data = (char *) place->data + i;
+			place->length -= i;
+			return true;
 	}
 
 	return false;
@@ -420,27 +392,12 @@ bool_t pl_skip_to_characters (placer_t *place, char *skiptochars, size_t nchars)
  */
 bool_t pl_shrink_before_characters (placer_t *place, char *shrinkchars, size_t nchars) {
 
-	char *ptr = pl_char_get(*place) + pl_length_get(*place) - 1;
-
-	if (pl_empty(*place)) {
-		return false;
-	}
-
-	for (size_t i = 0; i < place->length; i++, ptr--) {
-
-		for (size_t j = 0; j <= nchars; j++) {
-
-				// We went through all the skip characters without finding something... so this is where we return.
-				if (j == nchars) {
-					place->length -= i;
-					return true;
-				}
-
-				if (*ptr == shrinkchars[j])
-					break;
-
+	const char *str = pl_char_get(*place);
+	for (size_t i = place->length; i-- > 0;) {
+		if (memchr(shrinkchars, end[i], nchars) != NULL) {
+			place->length -= i;
+			return true;
 		}
-
 	}
 
 	return false;
@@ -472,7 +429,7 @@ bool_t pl_get_embraced (placer_t str, placer_t *out, unsigned char opening, unsi
 
 	ptr++;
 
-	for (size_t i = 1; i < str.length; i++, ptr++) {
+	for (int i = 1; i < str.length; i++, ptr++) {
 
 		if (*ptr == closing) {
 

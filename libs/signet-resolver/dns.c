@@ -1280,7 +1280,7 @@ int _validate_rrsig_rr(char *label, ns_msg *dhandle, unsigned short covered, con
 
 	// Right now, strptr and rdleft are updated to point to the end of the key tag.
 	// The only fields left in the rdata are the signer's name and signature.
-	if (lsignlen >= rdleft) {
+	if ((size_t)lsignlen >= rdleft) {
 		RET_ERROR_INT(ERR_UNSPEC, "error parsing signer name label");
 	}
 
@@ -1440,7 +1440,6 @@ void * _lookup_dnskey(char *label) {
 /**
  * @brief	Lookup the DS record for a specified domain.
  * @param	label	a null-terminated string containing the name of the domain to have its DS record queried.
- * @return	This function returns no value.
  */
 void * _lookup_ds(char *label) {
 
@@ -1522,7 +1521,7 @@ void * _lookup_ds(char *label) {
 		}
 
 		// Make sure that the digest length (at rdata+4) is exactly as long as it should be
-		if (ns_rr_rdlen(rr) - 4 != hsize/8) {
+		if (ns_rr_rdlen(rr) - 4U != hsize/8) {
 			_dbgprint(1, "Error: DS record contained a digest of unexpected length.\n");
 			continue;
 		}
