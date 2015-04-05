@@ -100,10 +100,11 @@ START_TEST (check_message_encryption)
 	draft->display = _dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
 
 	_dmsg_dump_object(draft);
+	fprintf(stderr, "\n\n");
 
 	// turn object into message by encrypting and serialize
 	message = _dmsg_object_to_msg(draft, auth_signkey);
-	from_auth_bin = _dmsg_msg_to_bin(message, 0b00011111, 0, &from_auth_size);
+	from_auth_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_auth_size);
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the origin
 	_dmsg_destroy_msg(message);
@@ -120,11 +121,11 @@ START_TEST (check_message_encryption)
 	_dmsg_msg_to_object_as_orig(at_orig, message, &orig_kek);
 
 	_dmsg_dump_object(at_orig);
+	fprintf(stderr, "\n\n");
 
-	dump_error_stack();
 	//Add origin signatures and serialize the message again
 	_dmsg_sign_origin_sig_chunks(message, (META_BOUNCE | DISPLAY_BOUNCE), &orig_kek, orig_signkey);
-	from_orig_bin = _dmsg_msg_to_bin(message, 0b00011111, 0, &from_orig_size);
+	from_orig_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_orig_size);
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the destination
 	_dmsg_destroy_msg(message);
@@ -139,11 +140,10 @@ START_TEST (check_message_encryption)
 	at_dest->signet_destination = signet_dest;
 	_dmsg_msg_to_object_as_dest(at_dest, message, &dest_kek);
 	_dmsg_dump_object(at_dest);
-
-	dump_error_stack();
+	fprintf(stderr, "\n\n");
 
 	//Serialize the message again
-	from_dest_bin = _dmsg_msg_to_bin(message, 0b00011111, 0, &from_dest_size);
+	from_dest_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_dest_size);
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the recipient
 	_dmsg_destroy_msg(message);
@@ -158,8 +158,7 @@ START_TEST (check_message_encryption)
 	at_recp->signet_recipient = signet_recp;
 	_dmsg_msg_to_object_as_recp(at_recp, message, &recp_kek);
 	_dmsg_dump_object(at_recp);
-
-	dump_error_stack();	
+	fprintf(stderr, "\n\n");
 
 	//destroy everything
 	_signet_destroy(signet_auth);

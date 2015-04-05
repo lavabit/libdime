@@ -57,6 +57,10 @@ void	_dmsg_destroy_msg(dmime_message_t *msg) {
 		free(msg->tracing);
 	}
 
+	if(msg->ephemeral) {
+		_dmsg_destroy_message_chunk(msg->ephemeral);
+	}
+
 	if(msg->origin) {
 		_dmsg_destroy_message_chunk(msg->origin);
 	}
@@ -463,21 +467,6 @@ int _dmsg_sign_chunk(dmime_message_chunk_t *chunk, ED25519_KEY *signkey) {
 	if(_ed25519_sign_data(data, data_size, signkey, signature)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not sign the payload data");
 	}
-
-/*
-	fprintf(stderr, "type: %u, signature: %u data: %u\n", (unsigned int)chunk->type, _int_no_get_4b(signature), _int_no_get_4b(data));
-
-	if(chunk->type == 4) {
-
-		fprintf(stderr, "type:4 full chunk: ");
-
-		for(i = 0; i < 20; ++i) {
-			fprintf(stderr, "%u ", _int_no_get_4b(&(chunk->type) + (4*i)));
-		}
-
-		fprintf(stderr, "\n");
-	}
-*/
 
 	chunk->state = MESSAGE_CHUNK_STATE_SIGNED;
 
@@ -1249,7 +1238,7 @@ unsigned char * _dmsg_serialize_sections(const dmime_message_t *msg, unsigned ch
 */
 size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last) {
 
-	size_t size = 0;
+	size_t size = 0, temp;
 	unsigned int i;
 
 	if(!msg) {
@@ -1260,35 +1249,35 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 		RET_ERROR_UINT(ERR_UNSPEC, "invalid chunk type bounds");
 	}
 
-	if(msg->ephemeral && (first <= CHUNK_TYPE_EPHEMERAL && CHUNK_TYPE_EPHEMERAL <= last)) {
+	if(msg->ephemeral && (first <= CHUNK_TYPE_EPHEMERAL) && (CHUNK_TYPE_EPHEMERAL <= last)) {
 		size += msg->ephemeral->serial_size;
 	}
 
-	if(msg->origin && (first <= CHUNK_TYPE_ORIGIN && CHUNK_TYPE_ORIGIN <= last)) {
+	if(msg->origin && (first <= CHUNK_TYPE_ORIGIN) && (CHUNK_TYPE_ORIGIN <= last)) {
 		size += msg->origin->serial_size;
 	}
 
-	if(msg->destination && (first <= CHUNK_TYPE_DESTINATION && CHUNK_TYPE_DESTINATION <= last)) {
+	if(msg->destination && (first <= CHUNK_TYPE_DESTINATION) && (CHUNK_TYPE_DESTINATION <= last)) {
 		size += msg->destination->serial_size;
 	}
 
-	if(msg->common_headers && (first <= CHUNK_TYPE_META_COMMON && CHUNK_TYPE_META_COMMON <= last)) {
+	if(msg->common_headers && (first <= CHUNK_TYPE_META_COMMON) && (CHUNK_TYPE_META_COMMON <= last)) {
 		size += msg->common_headers->serial_size;
 	}
 
-	if(msg->other_headers && (first <= CHUNK_TYPE_META_OTHER && CHUNK_TYPE_META_OTHER <= last)) {
+	if(msg->other_headers && (first <= CHUNK_TYPE_META_OTHER) && (CHUNK_TYPE_META_OTHER <= last)) {
 		size += msg->other_headers->serial_size;
 	}
 
 	i = 0;
 
-	if(first <= CHUNK_TYPE_DISPLAY_CONTENT && CHUNK_TYPE_DISPLAY_CONTENT <= last && msg->display) {
+	if((first <= CHUNK_TYPE_DISPLAY_CONTENT) && (CHUNK_TYPE_DISPLAY_CONTENT <= last) && msg->display) {
 
 		while(msg->display[i]) {
-			last = size;		// last is used to check for size overflow
+			temp = size;		// last is used to check for size overflow
 			size += msg->display[i++]->serial_size;
 
-			if(last > size) {
+			if(temp > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
 
@@ -1298,13 +1287,13 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 
 	i = 0;
 
-	if(first <= CHUNK_TYPE_ATTACH_CONTENT && CHUNK_TYPE_ATTACH_CONTENT <= last && msg->attach) {
+	if((first <= CHUNK_TYPE_ATTACH_CONTENT) && (CHUNK_TYPE_ATTACH_CONTENT <= last) && msg->attach) {
 
 		while(msg->attach[i]) {
-			last = size;
+			temp = size;
 			size += msg->attach[i++]->serial_size;
 
-			if(last > size) {
+			if(temp > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
 
@@ -1312,23 +1301,23 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 
 	}
 
-	if(msg->author_tree_sig && (first <= CHUNK_TYPE_SIG_AUTHOR_TREE && CHUNK_TYPE_SIG_AUTHOR_TREE <= last)) {
+	if(msg->author_tree_sig && (first <= CHUNK_TYPE_SIG_AUTHOR_TREE) && (CHUNK_TYPE_SIG_AUTHOR_TREE <= last)) {
 		size += msg->author_tree_sig->serial_size;
 	}
 
-	if(msg->author_full_sig && (first <= CHUNK_TYPE_SIG_AUTHOR_FULL && CHUNK_TYPE_SIG_AUTHOR_FULL <= last)) {
+	if(msg->author_full_sig && (first <= CHUNK_TYPE_SIG_AUTHOR_FULL) && (CHUNK_TYPE_SIG_AUTHOR_FULL <= last)) {
 		size += msg->author_full_sig->serial_size;
 	}
 
-	if(msg->origin_meta_bounce_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE && CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE <= last)) {
+	if(msg->origin_meta_bounce_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE) && (CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE <= last)) {
 		size += msg->origin_meta_bounce_sig->serial_size;
 	}
 
-	if(msg->origin_display_bounce_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE && CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE <= last)) {
+	if(msg->origin_display_bounce_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE) && (CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE <= last)) {
 		size += msg->origin_display_bounce_sig->serial_size;
 	}
 
-	if(msg->origin_full_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_FULL && CHUNK_TYPE_SIG_ORIGIN_FULL <= last)) {
+	if(msg->origin_full_sig && (first <= CHUNK_TYPE_SIG_ORIGIN_FULL) && (CHUNK_TYPE_SIG_ORIGIN_FULL <= last)) {
 		size += msg->origin_full_sig->serial_size;
 	}
 
@@ -1373,34 +1362,34 @@ unsigned char * _dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_t
 	memset(result, 0, total_size);
 	*outsize = total_size;
 
-	if(msg->ephemeral && (CHUNK_TYPE_EPHEMERAL <= last && first <= CHUNK_TYPE_EPHEMERAL)) {
+	if(msg->ephemeral && (CHUNK_TYPE_EPHEMERAL <= last) && (first <= CHUNK_TYPE_EPHEMERAL)) {
 		memcpy(result + at, &(msg->ephemeral->type), msg->ephemeral->serial_size);
 		at += msg->ephemeral->serial_size;
 	}
 
-	if(msg->origin && (CHUNK_TYPE_ORIGIN <= last && first <= CHUNK_TYPE_ORIGIN)) {
+	if(msg->origin && (CHUNK_TYPE_ORIGIN <= last) && (first <= CHUNK_TYPE_ORIGIN)) {
 		memcpy(result + at, &(msg->origin->type), msg->origin->serial_size);
 		at += msg->origin->serial_size;
 	}
 
-	if(msg->destination && (CHUNK_TYPE_DESTINATION <= last && first <= CHUNK_TYPE_DESTINATION)) {
+	if(msg->destination && (CHUNK_TYPE_DESTINATION <= last) && (first <= CHUNK_TYPE_DESTINATION)) {
 		memcpy(result + at, &(msg->destination->type), msg->destination->serial_size);
 		at += msg->destination->serial_size;
 	}
 
-	if(msg->common_headers && (CHUNK_TYPE_META_COMMON <= last && first <= CHUNK_TYPE_META_COMMON)) {
+	if(msg->common_headers && (CHUNK_TYPE_META_COMMON <= last) && (first <= CHUNK_TYPE_META_COMMON)) {
 		memcpy(result + at, &(msg->common_headers->type), msg->common_headers->serial_size);
 		at += msg->common_headers->serial_size;
 	}
 
-	if(msg->other_headers && (CHUNK_TYPE_META_OTHER <= last && first <= CHUNK_TYPE_META_OTHER)) {
+	if(msg->other_headers && (CHUNK_TYPE_META_OTHER <= last) && (first <= CHUNK_TYPE_META_OTHER)) {
 		memcpy(result + at, &(msg->other_headers->type), msg->other_headers->serial_size);
 		at += msg->other_headers->serial_size;
 	}
 
 	i = 0;
 	
-	if(CHUNK_TYPE_DISPLAY_CONTENT <= last && first <= CHUNK_TYPE_DISPLAY_CONTENT && msg->display) {
+	if((CHUNK_TYPE_DISPLAY_CONTENT <= last) && (first <= CHUNK_TYPE_DISPLAY_CONTENT) && msg->display) {
 
 		while(msg->display[i]) {
 			memcpy(result + at, &(msg->display[i]->type), msg->display[i]->serial_size);
@@ -1411,7 +1400,7 @@ unsigned char * _dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_t
 		
 	i = 0;
 
-	if(CHUNK_TYPE_ATTACH_CONTENT <= last && first <= CHUNK_TYPE_ATTACH_CONTENT && msg->attach) {
+	if((CHUNK_TYPE_ATTACH_CONTENT <= last) && (first <= CHUNK_TYPE_ATTACH_CONTENT) && msg->attach) {
 
 		while(msg->attach[i]) {
 			memcpy(result + at, &(msg->attach[i]->type), msg->attach[i]->serial_size);
@@ -1422,27 +1411,27 @@ unsigned char * _dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_t
 
 	memset(result + at, 0, ED25519_SIG_SIZE+5);
 
-	if(msg->author_tree_sig && (CHUNK_TYPE_SIG_AUTHOR_TREE <= last && first <= CHUNK_TYPE_SIG_AUTHOR_TREE)) {
+	if(msg->author_tree_sig && (CHUNK_TYPE_SIG_AUTHOR_TREE <= last) && (first <= CHUNK_TYPE_SIG_AUTHOR_TREE)) {
 		memcpy(result + at, &(msg->author_tree_sig->type), msg->author_tree_sig->serial_size);
 		at += msg->author_tree_sig->serial_size;
 	}
 
-	if(msg->author_full_sig && (CHUNK_TYPE_SIG_AUTHOR_FULL <= last && first <= CHUNK_TYPE_SIG_AUTHOR_FULL)) {
+	if(msg->author_full_sig && (CHUNK_TYPE_SIG_AUTHOR_FULL <= last) && (first <= CHUNK_TYPE_SIG_AUTHOR_FULL)) {
 		memcpy(result + at, &(msg->author_full_sig->type), msg->author_full_sig->serial_size);
 		at += msg->author_full_sig->serial_size;
 	}
 
-	if(msg->origin_meta_bounce_sig && (CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE <= last && first <= CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE)) {
+	if(msg->origin_meta_bounce_sig && (CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE <= last) && (first <= CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE)) {
 		memcpy(result + at, &(msg->origin_meta_bounce_sig->type), msg->origin_meta_bounce_sig->serial_size);
 		at += msg->origin_meta_bounce_sig->serial_size;
 	}
 
-	if(msg->origin_display_bounce_sig && (CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE <= last && first <= CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE)) {
+	if(msg->origin_display_bounce_sig && (CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE <= last) && (first <= CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE)) {
 		memcpy(result + at, &(msg->origin_display_bounce_sig->type), msg->origin_display_bounce_sig->serial_size);
 		at += msg->origin_display_bounce_sig->serial_size;
 	}
 
-	if(msg->origin_full_sig && (CHUNK_TYPE_SIG_ORIGIN_FULL <= last && first <= CHUNK_TYPE_SIG_ORIGIN_FULL)) {
+	if(msg->origin_full_sig && (CHUNK_TYPE_SIG_ORIGIN_FULL <= last) && (first <= CHUNK_TYPE_SIG_ORIGIN_FULL)) {
 		memcpy(result + at, &(msg->origin_full_sig->type), msg->origin_full_sig->serial_size);
 		at += msg->origin_full_sig->serial_size;
 	}
@@ -1496,8 +1485,6 @@ int _dmsg_add_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, 
 	if(!(data = _dmsg_serialize_chunks(message, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_AUTHOR_TREE, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize dmime message");
 	}
-
-	fprintf(stderr, "");
 
 	if(_ed25519_sign_data(data, data_size, signkey, sigbuf)) {
 		free(data);
@@ -2242,6 +2229,7 @@ void _dmsg_destroy_object(dmime_object_t *object) {
 		st_cleanup(object->other_headers);
 		_dmsg_destroy_object_chunk_list(object->display);
 		_dmsg_destroy_object_chunk_list(object->attach);
+		free(object);
 	}
 
 	return;
@@ -2364,22 +2352,6 @@ int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet)
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk padded data");
 	}
 
-/*
-
-	fprintf(stderr, "type: %u, signature: %u data: %u\n", (unsigned int)chunk->type, _int_no_get_4b(sig), _int_no_get_4b(data));
-
-	if(chunk->type == 4) {
-
-		fprintf(stderr, "type:4 full chunk: ");
-
-		for(i = 0; i < 20; ++i) {
-			fprintf(stderr, "%u ", _int_no_get_4b(&(chunk->type) + (4*i)));
-		}
-
-		fprintf(stderr, "\n");
-	}
-*/
-
 	result = _signet_verify_message_sig(signet, sig, data, data_size); 
 
 	if(result < 0) {
@@ -2499,6 +2471,8 @@ int _dmsg_msg_to_object_origin(dmime_object_t *object, const dmime_message_t *ms
 		RET_ERROR_INT(ERR_UNSPEC, "the object destination id does not match the message destination id");
 	}
 
+	_dmsg_destroy_envelope_object(parsed);
+
 	return 0;
 }
 
@@ -2615,6 +2589,8 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
 		RET_ERROR_INT(ERR_UNSPEC, "the object origin id does not match the message origin id");
 	}
 
+	_dmsg_destroy_envelope_object(parsed);
+
 	return 0;
 }
 
@@ -2649,7 +2625,6 @@ int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t
 	if(!(data = _dmsg_tree_sig_data(msg, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not computer tree sig data");
 	}
-
 
 	if(!(decrypted = _dmsg_decrypt_chunk(msg->author_tree_sig, actor, kek))) {
 		free(data);
@@ -2736,7 +2711,7 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the actor signets have been loaded");
 	}
 
-	if(!(decrypted = _dmsg_decrypt_chunk(object->common_headers, actor, kek))) {
+	if(!(decrypted = _dmsg_decrypt_chunk(msg->common_headers, actor, kek))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
@@ -2798,7 +2773,7 @@ int _dmsg_msg_to_object_other_headers(dmime_object_t *object, const dmime_messag
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the actor signets have been loaded");
 	}
 
-	if(!(decrypted = _dmsg_decrypt_chunk(object->other_headers, actor, kek))) {
+	if(!(decrypted = _dmsg_decrypt_chunk(msg->other_headers, actor, kek))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
@@ -2826,7 +2801,7 @@ int _dmsg_msg_to_object_other_headers(dmime_object_t *object, const dmime_messag
 
 	}
 */
-	object->common_headers = st_import(data, data_size);
+	object->other_headers = st_import(data, data_size);
 	_dmsg_destroy_message_chunk(decrypted);
 
 	return 0;
@@ -3367,9 +3342,11 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 		_dmsg_destroy_message_chunk(decrypted);
 		free(data);
 
-		if(result) {
+		if(result < 0) {
 			_free_ed25519_key(signkey);
-			RET_ERROR_INT(ERR_UNSPEC, "the origin display bounce signature could not be validated successfully");
+			RET_ERROR_INT(ERR_UNSPEC, "error during validation of origin display bounce signaure");
+		} else if(!result) {
+			RET_ERROR_INT(ERR_UNSPEC, "origin display bounce signature is invalid");
 		}
 
 	}
@@ -3420,7 +3397,7 @@ int _dmsg_msg_to_object_as_dest(dmime_object_t *obj, const dmime_message_t *msg,
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!msg->state != MESSAGE_STATE_COMPLETE) {
+	if(msg->state != MESSAGE_STATE_COMPLETE) {
 		RET_ERROR_INT(ERR_UNSPEC, "the specified dmime message is not complete");
 	}
 
@@ -3440,10 +3417,6 @@ int _dmsg_msg_to_object_as_dest(dmime_object_t *obj, const dmime_message_t *msg,
 
 	// TODO this needs to be changed for when not the entire message was downloaded. Author/Recipient needs to be able to request the combined hashes of all the chunks from their domain to verify the tree signature, but the full author signature can't always be verified.
 	// TODO Technically author/recipients should only have to verify the tree signature.
-	if(_dmsg_verify_author_sig_chunks(obj, msg, kek)) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
-	}
- 
 	if(_dmsg_verify_origin_sig_chunks(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not verify origin signature chunks");
 	} 
@@ -3467,7 +3440,7 @@ int _dmsg_msg_to_object_as_recp(dmime_object_t *obj, const dmime_message_t *msg,
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!msg->state != MESSAGE_STATE_COMPLETE) {
+	if(msg->state != MESSAGE_STATE_COMPLETE) {
 		RET_ERROR_INT(ERR_UNSPEC, "the specified dmime message is not complete");
 	}
 
@@ -3489,14 +3462,6 @@ int _dmsg_msg_to_object_as_recp(dmime_object_t *obj, const dmime_message_t *msg,
 		RET_ERROR_INT(ERR_UNSPEC, "could not load destination chunk contents");
 	}
 
-	// TODO this needs to be changed for when not the entire message was downloaded. Author/Recipient needs to be able to request the combined hashes of all the chunks from their domain to verify the tree signature, but the full author signature can't always be verified.
-	// TODO Technically author/recipients should only have to verify the tree signature.
-	if(_dmsg_verify_author_sig_chunks(obj, msg, kek)) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not verify recipient signature chunks");
-	} 
-
-	// TODO This has similar issue as above. technically these signatures are only for the destination to verify UNLESS it's a bounce and then the appropriate bounce signature needs to be verified by the recipient. How do we know if it's a bounce?!
-	// TODO UPDATE: bounces will have a different magic number, we need to add a discriminator to dmime_message_t structure.
 	if(_dmsg_verify_origin_sig_chunks(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not verify recipient signature chunks");
 	}
