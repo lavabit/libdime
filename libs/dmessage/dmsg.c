@@ -658,7 +658,8 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 	dmime_chunk_key_t *key;
 	dmime_keyslot_t *keyslot, temp;
 	int slot_count = 0;
-	size_t data_size, res;
+	size_t data_size;
+	int res;
 	unsigned char *outbuf;
 
 	if(!chunk || !keks) {
@@ -703,7 +704,7 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 	if((res = _encrypt_aes_256(outbuf, &(chunk->data[0]), data_size, temp.aes_key, temp.iv)) < 0) {
 		_secure_wipe((unsigned char *)&temp, sizeof(temp));
 		RET_ERROR_INT(ERR_UNSPEC, "error encrypting data");
-	} else if(res != data_size) {
+	} else if((size_t)res != data_size) {
 		RET_ERROR_INT(ERR_UNSPEC, "encrypted an unexpected number of bytes");
 	}
 
@@ -2086,7 +2087,8 @@ dmime_message_chunk_t * _dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_
 	dmime_keyslot_t *keyslot_enc, keyslot_dec;
 	dmime_message_chunk_t *result;
 	int keyslot_num;
-	size_t payload_size, res;
+	size_t payload_size;
+	int res;
 	unsigned char *data;
 
 	if(!chunk || !kek) {
@@ -2173,7 +2175,7 @@ dmime_message_chunk_t * _dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_
 		_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "an error occurred while decrypting a chunk payload");
-	} else if(res != payload_size) {
+	} else if((size_t)res != payload_size) {
 		_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "decrypted an unexpected number of bytes");
