@@ -7,7 +7,7 @@
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compilation
-CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+CFLAGS			:= -Wall -Wextra -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
 
 # Linker Flags
 LDFLAGS			:= -rdynamic

@@ -30,7 +30,7 @@ CHECK_LIBS	:= $(shell pkg-config --libs check)
 check_PROGRAMS	= checks
 CC		=  gcc
 LIBS 		= $(checks_LDADD) $(CHECK_LIBS) -lz -lresolv
-CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) -Wall -Werror -ggdb -Os -I../../include -std=gnu99
+CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) -Wall -Wextra -Werror -ggdb -Os -I../../include -std=gnu99
 SRCFILES	= $(checks_SOURCES)
 OBJDIRNAME	= .objs
 DEPDIRNAME	= .deps

@@ -7,7 +7,7 @@
 DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compiler Flags
-CFLAGS			:= -Wall -Werror -std=gnu99 -fPIC -Os -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+CFLAGS			:= -Wall -Wextra -Werror -std=gnu99 -fPIC -Os -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
 
 # Archiver Flags
 ARFLAGS			:= rcs
