@@ -24,13 +24,16 @@ LIBDMESSAGE_LIBS	= ../../libs/dmessage/libdmessage.a
 
 # implementation
 
+topdir = $(dir $(lastword $(MAKEFILE_LIST)))
+include $(topdir)/config.mk
+
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
 
 check_PROGRAMS	= checks
 CC		=  gcc
 LIBS 		= $(checks_LDADD) $(CHECK_LIBS) -lz -lresolv
-CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) -Wall -Wextra -Werror -ggdb -Os -I../../include -std=gnu99
+CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) $(CWARNS) -ggdb -Os -I../../include -std=gnu99
 SRCFILES	= $(checks_SOURCES)
 OBJDIRNAME	= .objs
 DEPDIRNAME	= .deps

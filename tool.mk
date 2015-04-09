@@ -1,13 +1,11 @@
-########################################################
-# You shouldn't need to edit anything below this line. #
-########################################################
-
+topdir = $(dir $(lastword $(MAKEFILE_LIST)))
+include $(topdir)/config.mk
 
 # Defines
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compilation
-CFLAGS			:= -Wall -Wextra -Werror -std=gnu99 -fPIC -O0 -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+CFLAGS			:= $(CWARNS) -std=gnu99 -fPIC -Os -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
 
 # Linker Flags
 LDFLAGS			:= -rdynamic
