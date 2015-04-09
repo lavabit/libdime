@@ -1428,7 +1428,7 @@ int _signet_remove_undef_name(signet_t *signet, size_t name_len, const unsigned 
 		RET_ERROR_INT(ERR_UNSPEC, "field id not found in signet");
 	}
 
-	if((num_fields = _signet_get_count_fid(signet, fid) < 0)) {
+	if((num_fields = _signet_get_count_fid(signet, fid)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not calculate field count for signet");
 	}
 
