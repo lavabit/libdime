@@ -80,7 +80,7 @@ int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if ((oflags = fcntl(fd, F_GETFL, NULL) < 0)) {
+	if ((oflags = fcntl(fd, F_GETFL, NULL)) < 0) {
 		PUSH_ERROR_SYSCALL("fcntl");
 		RET_ERROR_INT(ERR_UNSPEC, "unable to get socket blocking mode");
 	}
