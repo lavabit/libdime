@@ -3,15 +3,15 @@
 
 
 void int_no_put_4b(void *buf, uint32_t val) {
-	PUBLIC_FUNC_IMPL(int_no_put_4b, buf, val);
+	PUBLIC_FUNC_IMPL_VOID(int_no_put_4b, buf, val);
 }
 
 void int_no_put_3b(void *buf, uint32_t val) {
-	PUBLIC_FUNC_IMPL(int_no_put_3b, buf, val);
+	PUBLIC_FUNC_IMPL_VOID(int_no_put_3b, buf, val);
 }
 
 void int_no_put_2b(void *buf, uint16_t val) {
-	PUBLIC_FUNC_IMPL(int_no_put_2b, buf, val);
+	PUBLIC_FUNC_IMPL_VOID(int_no_put_2b, buf, val);
 }
 
 uint32_t int_no_get_4b(const void *buf) {
@@ -46,11 +46,11 @@ char * hex_encode(const unsigned char *buf, size_t len) {
 }
 
 void set_dbg_level(unsigned int level) {
-	PUBLIC_FUNC_IMPL(set_dbg_level, level);
+	PUBLIC_FUNC_IMPL_VOID(set_dbg_level, level);
 }
 
 unsigned int get_dbg_level(void) {
-	PUBLIC_FUNC_IMPL(get_dbg_level);
+	PUBLIC_FUNC_IMPL(get_dbg_level,);
 }
 
 int str_printf(char **sbuf, char *fmt, ...) {
@@ -62,7 +62,7 @@ size_t mem_append(unsigned char **buf, size_t *blen, const unsigned char *data, 
 }
 
 void ptr_chain_free(void *buf) {
-	PUBLIC_FUNC_IMPL(ptr_chain_free, buf);
+	PUBLIC_FUNC_IMPL_VOID(ptr_chain_free, buf);
 }
 
 void * ptr_chain_add(void *buf, const void *addr) {
@@ -82,11 +82,11 @@ char * get_chr_date(time_t time, int local) {
 }
 
 void dump_buf(const unsigned char *buf, size_t len, int all_hex) {
-	PUBLIC_FUNC_IMPL(dump_buf, buf, len, all_hex);
+	PUBLIC_FUNC_IMPL_VOID(dump_buf, buf, len, all_hex);
 }
 
 void dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
-	PUBLIC_FUNC_IMPL(dump_buf_outer, buf, len, nouter, all_hex);
+	PUBLIC_FUNC_IMPL_VOID(dump_buf_outer, buf, len, nouter, all_hex);
 }
 
 void dbgprint(unsigned int dbglevel, const char *fmt, ...) {
@@ -126,5 +126,5 @@ char * read_pem_data(const char *pemfile, const char *tag, int nospace) {
 }
 
 void secure_wipe(void *buf, size_t len) {
-	PUBLIC_FUNC_IMPL(secure_wipe, buf, len);
+	PUBLIC_FUNC_IMPL_VOID(secure_wipe, buf, len);
 }

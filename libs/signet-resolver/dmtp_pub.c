@@ -10,7 +10,7 @@ dmtp_session_t * dmtp_connect(const char *domain, int force_family) {
 }
 
 void destroy_dmtp_session(dmtp_session_t *session) {
-	PUBLIC_FUNC_IMPL(destroy_dmtp_session, session);
+	PUBLIC_FUNC_IMPL_VOID(destroy_dmtp_session, session);
 }
 
 dmtp_session_t * dx_connect_standard(const char *host, const char *domain, int force_family, dime_record_t *dimerec) {

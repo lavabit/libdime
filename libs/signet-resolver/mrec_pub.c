@@ -1,7 +1,7 @@
 #include "signet-resolver/mrec.h"
 
 void destroy_dime_record(dime_record_t *record) {
-	PUBLIC_FUNC_IMPL(destroy_dime_record, record);
+	PUBLIC_FUNC_IMPL_VOID(destroy_dime_record, record);
 }
 
 dime_record_t * parse_dime_record(const char *txt, size_t len) {

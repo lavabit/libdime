@@ -28,7 +28,7 @@ signet_t * 		signet_deserialize_b64(const char *b64_in) {
 }
 
 void 			signet_destroy(signet_t *signet) {
-	PUBLIC_FUNC_IMPL(signet_destroy, signet);
+	PUBLIC_FUNC_IMPL_VOID(signet_destroy, signet);
 }
 
 
@@ -189,4 +189,3 @@ int			signet_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
 int			signet_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
 	PUBLIC_FUNC_IMPL(signet_sign_coc_sig, signet, key);
 }
-

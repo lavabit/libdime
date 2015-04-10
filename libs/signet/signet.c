@@ -204,7 +204,7 @@ signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create new signet");
 	}
 
-	data_size = (size_t) _int_no_get_3b((void *)in+2);
+	data_size = (size_t) _int_no_get_3b(in + 2);
 
 	if(!(signet->data = malloc(data_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -2350,7 +2350,7 @@ int _signet_check_length(const unsigned char* in, uint32_t slen) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	signet_length = _int_no_get_3b((void *)in+2);
+	signet_length = _int_no_get_3b(in + 2);
 
 	if ((slen - SIGNET_HEADER_SIZE) != signet_length) {
 		RET_ERROR_INT(ERR_UNSPEC, "input length did not match signet");

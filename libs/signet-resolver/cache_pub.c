@@ -6,7 +6,7 @@ void * get_cache_obj_data(cached_object_t *object) {
 }
 
 void destroy_cache_entry(cached_object_t *entry) {
-	PUBLIC_FUNC_IMPL(destroy_cache_entry, entry);
+	PUBLIC_FUNC_IMPL_VOID(destroy_cache_entry, entry);
 }
 
 cached_object_t * find_cached_object(const char *oid, cached_store_t *store) {
@@ -50,11 +50,11 @@ int remove_cached_object_cmp(const void *key, cached_store_t *store, cached_stor
 }
 
 int load_cache_contents(void) {
-	PUBLIC_FUNC_IMPL(load_cache_contents);
+	PUBLIC_FUNC_IMPL(load_cache_contents,);
 }
 
 int save_cache_contents(void) {
-	PUBLIC_FUNC_IMPL(save_cache_contents);
+	PUBLIC_FUNC_IMPL(save_cache_contents,);
 }
 
 char * get_dime_dir_location(const char *suffix) {
@@ -62,7 +62,7 @@ char * get_dime_dir_location(const char *suffix) {
 }
 
 const char * get_cache_location(void) {
-	PUBLIC_FUNC_IMPL(get_cache_location);
+	PUBLIC_FUNC_IMPL(get_cache_location,);
 }
 
 int set_cache_location(const char *path) {

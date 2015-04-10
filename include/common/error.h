@@ -25,9 +25,10 @@
 #define PUBLIC_FUNC_PROLOGUE()		{ _clear_error_stack(); }
 
 #define PUBLIC_FUNC_IMPL(x, ...)		PUBLIC_FUNC_PROLOGUE(); return(_ ## x(__VA_ARGS__))
+#define PUBLIC_FUNC_IMPL_VOID(x, ...)		PUBLIC_FUNC_PROLOGUE(); _ ## x(__VA_ARGS__)
 #define PUBLIC_FUNC_IMPL_VA1(x,p1)		PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p1); __ ## x(p1, ap); va_end(ap); return; }
 #define PUBLIC_FUNC_IMPL_VA1_RET(ret, x,p1)	PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p1); result = __ ## x(p1, ap); va_end(ap); return result; }
-#define PUBLIC_FUNC_IMPL_VA2(x,p1,p2, ...)	PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p2); __ ## x(p1, p2, ap); va_end(ap); return; }
+#define PUBLIC_FUNC_IMPL_VA2(x,p1,p2)	PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p2); __ ## x(p1, p2, ap); va_end(ap); return; }
 #define PUBLIC_FUNC_IMPL_VA2_RET(ret, x,p1,p2)	PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p2); result =  __ ## x(p1, p2, ap); va_end(ap); return result; }
 
 #define PUBLIC_FUNC_DECL(ret, x, ...)		ret x(__VA_ARGS__); \
@@ -35,8 +36,7 @@
 
 #define PUBLIC_FUNC_DECL_VA(ret, x, ...)	ret x(__VA_ARGS__, ...); \
 						ret _ ## x(__VA_ARGS__, ...); \
-						ret __ ## x(__VA_ARGS__, va_list ap);
-
+						ret __ ## x(__VA_ARGS__, va_list ap)
 
 #define ERR_SYSCALL		1
 #define ERR_OPENSSL		2

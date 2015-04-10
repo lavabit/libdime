@@ -29,11 +29,11 @@ ds_t * get_ds_by_dnskey(const dnskey_t *key) {
 }
 
 void destroy_dnskey(dnskey_t *key) {
-	PUBLIC_FUNC_IMPL(destroy_dnskey, key);
+	PUBLIC_FUNC_IMPL_VOID(destroy_dnskey, key);
 }
 
 void destroy_ds(ds_t *ds) {
-	PUBLIC_FUNC_IMPL(destroy_ds, ds);
+	PUBLIC_FUNC_IMPL_VOID(destroy_ds, ds);
 }
 
 int validate_rrsig_rr(char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey) {
@@ -53,7 +53,7 @@ char * get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 }
 
 void free_mx_records(mx_record_t **mxs) {
-	PUBLIC_FUNC_IMPL(free_mx_records, mxs);
+	PUBLIC_FUNC_IMPL_VOID(free_mx_records, mxs);
 }
 
 mx_record_t ** get_mx_records(const char *qstring) {

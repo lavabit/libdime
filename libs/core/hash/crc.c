@@ -25,24 +25,25 @@ extern const uint32_t hash_crc32_table[8][256];
 extern const uint64_t hash_crc64_table[4][256];
 
 /**
- * @brief	Update a 64-bit CRC value with a check of additional data.
+ * @brief	Update a 32-bit CRC value with a check of additional data.
  * @param	buffer	a pointer to the data to be checked.
  * @param	length	the length, in bytes, of the input buffer.
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 32-bit CRC value of the specified data.
  */
-uint32_t hash_crc32_update(void *buffer, size_t length, uint32_t crc) {
-	uint8_t *limit;
+uint32_t hash_crc32_update(void *buf, size_t length, uint32_t crc) {
+	const uint8_t *buffer = buf;
+	const uint8_t *limit;
 	uint32_t holder;
 	crc = ~crc;
 	if (length > 8) {
 		while ((uintptr_t)(buffer) & 7) {
-			crc = hash_crc32_table[0][*((uint8_t *)buffer++) ^ A(crc)] ^ S8(crc);
+			crc = hash_crc32_table[0][*buffer++ ^ A(crc)] ^ S8(crc);
 			--length;
 		}
 		limit = buffer + (length & ~(size_t)(7));
 		length &= (size_t)(7);
-		while (((uint8_t *)buffer) < limit) {
+		while (buffer < limit) {
 			crc ^= *(uint32_t *)(buffer);
 			buffer += 4;
 			crc = hash_crc32_table[7][A(crc)] ^ hash_crc32_table[6][B(crc)] ^ hash_crc32_table[5][C(crc)] ^ hash_crc32_table[4][D(crc)];
@@ -75,9 +76,9 @@ uint32_t hash_crc32(void *buffer, size_t length) {
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 64-bit CRC value of the specified data.
  */
-uint64_t hash_crc64_update(void *buffer, size_t length, uint64_t crc) {
-
-	uint8_t *limit;
+uint64_t hash_crc64_update(void *buf, size_t length, uint64_t crc) {
+	const uint8_t *buffer = buf;
+	const uint8_t *limit;
 	uint32_t holder;
 	crc = ~crc;
 	if (length > 4) {

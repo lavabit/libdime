@@ -2,15 +2,15 @@
 
 
 int ssl_initialize(void) {
-	PUBLIC_FUNC_IMPL(ssl_initialize);
+	PUBLIC_FUNC_IMPL(ssl_initialize,);
 }
 
 void ssl_shutdown(void) {
-	PUBLIC_FUNC_IMPL(ssl_shutdown);
+	PUBLIC_FUNC_IMPL_VOID(ssl_shutdown,);
 }
 
 SSL_CTX * ssl_get_client_context(void) {
-	PUBLIC_FUNC_IMPL(ssl_get_client_context);
+	PUBLIC_FUNC_IMPL(ssl_get_client_context,);
 }
 
 SSL * ssl_starttls(int fd) {
@@ -22,7 +22,7 @@ SSL * ssl_connect_host(const char *hostname, unsigned short port, int force_fami
 }
 
 void ssl_disconnect(SSL *handle) {
-	PUBLIC_FUNC_IMPL(ssl_disconnect, handle);
+	PUBLIC_FUNC_IMPL_VOID(ssl_disconnect, handle);
 }
 
 int do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {

@@ -48,7 +48,7 @@ void stacker_free(stacker_t *stack) {
  * @param	free_function	if not NULL, a pointer to a function that will be used to free the data underlying each node in the stacked list.
  * @return	NULL on failure, or a pointer to the newly created stack list on success.
  */
-stacker_t * stacker_alloc(void *free_function) {
+stacker_t * stacker_alloc(void (*free_function)(void *)) {
 
 	stacker_t *result;
 

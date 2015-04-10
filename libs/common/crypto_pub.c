@@ -3,11 +3,11 @@
 
 
 int crypto_init(void) {
-	PUBLIC_FUNC_IMPL(crypto_init);
+	PUBLIC_FUNC_IMPL(crypto_init,);
 }
 
 void crypto_shutdown(void) {
-	PUBLIC_FUNC_IMPL(crypto_shutdown);
+	PUBLIC_FUNC_IMPL_VOID(crypto_shutdown,);
 }
 
 int verify_ec_signature(const unsigned char *hash, size_t hlen, const unsigned char *sig, size_t slen, EC_KEY *key) {
@@ -55,11 +55,11 @@ EC_KEY * generate_ec_keypair(int signing) {
 }
 
 void free_ec_key(EC_KEY *key) {
-	PUBLIC_FUNC_IMPL(free_ec_key, key);
+	PUBLIC_FUNC_IMPL_VOID(free_ec_key, key);
 }
 
 ED25519_KEY * generate_ed25519_keypair(void) {
-	PUBLIC_FUNC_IMPL(generate_ed25519_keypair);
+	PUBLIC_FUNC_IMPL(generate_ed25519_keypair,);
 }
 
 int ed25519_sign_data(const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf) {
@@ -71,7 +71,7 @@ int ed25519_verify_sig(const unsigned char *data, size_t dlen, ED25519_KEY *key,
 }
 
 void free_ed25519_key(ED25519_KEY *key) {
-	PUBLIC_FUNC_IMPL(free_ed25519_key, key);
+	PUBLIC_FUNC_IMPL_VOID(free_ed25519_key, key);
 }
 
 ED25519_KEY * load_ed25519_privkey(const char *filename) {

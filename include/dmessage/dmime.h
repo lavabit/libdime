@@ -200,41 +200,26 @@ typedef struct __attribute__ ((packed)) {
 	unsigned char data[];
 } dmime_message_chunk_t;
 
-// FIXME perhaps the inner struct can be changed into a single array of pointers. But maybe not. If you read this and have an opinion on this, leave it commented below.
 typedef struct {
 	// DIME magic number for current version of dmime messages
 	dime_number_t dime_num;
 	// message size
 	uint32_t size;
-	struct __attribute__ ((packed)) {
-		// tracing
-		dmime_tracing_t *tracing;
-		// ephemeral chunk
-		dmime_message_chunk_t *ephemeral;
-		// origin chunk
-		dmime_message_chunk_t *origin;
-		// destination chunk
-		dmime_message_chunk_t *destination;
-		// common headers chunk
-		dmime_message_chunk_t *common_headers;
-		// other headers chunk
-		dmime_message_chunk_t *other_headers;
-		// pointer to an array of display chunks terminated by a NULL pointer
-		dmime_message_chunk_t **display;
-		// pointer to an array of attachment  chunks terminated by a NULL pointer
-		dmime_message_chunk_t **attach;
-		// author tree sig chunk
-		dmime_message_chunk_t *author_tree_sig;
-		// author full sig chunk
-		dmime_message_chunk_t *author_full_sig;
-		// origin meta bounce sig chunk
-		dmime_message_chunk_t *origin_meta_bounce_sig;
-		// origin display bounce sig chunk
-		dmime_message_chunk_t *origin_display_bounce_sig;
-		// origin full sig chunk
-		dmime_message_chunk_t *origin_full_sig;
-	};
-	//state
+	dmime_tracing_t *tracing;
+	dmime_message_chunk_t *ephemeral;
+	dmime_message_chunk_t *origin;
+	dmime_message_chunk_t *destination;
+	dmime_message_chunk_t *common_headers;
+	dmime_message_chunk_t *other_headers;
+	// pointer to an array of display chunks terminated by a NULL pointer
+	dmime_message_chunk_t **display;
+	// pointer to an array of attachment chunks terminated by a NULL pointer
+	dmime_message_chunk_t **attach;
+	dmime_message_chunk_t *author_tree_sig;
+	dmime_message_chunk_t *author_full_sig;
+	dmime_message_chunk_t *origin_meta_bounce_sig;
+	dmime_message_chunk_t *origin_display_bounce_sig;
+	dmime_message_chunk_t *origin_full_sig;
 	dmime_message_state_t state;
 } dmime_message_t;
 
