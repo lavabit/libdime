@@ -205,21 +205,35 @@ typedef struct {
 	dime_number_t dime_num;
 	// message size
 	uint32_t size;
-	dmime_tracing_t *tracing;
-	dmime_message_chunk_t *ephemeral;
-	dmime_message_chunk_t *origin;
-	dmime_message_chunk_t *destination;
-	dmime_message_chunk_t *common_headers;
-	dmime_message_chunk_t *other_headers;
-	// pointer to an array of display chunks terminated by a NULL pointer
-	dmime_message_chunk_t **display;
-	// pointer to an array of attachment chunks terminated by a NULL pointer
-	dmime_message_chunk_t **attach;
-	dmime_message_chunk_t *author_tree_sig;
-	dmime_message_chunk_t *author_full_sig;
-	dmime_message_chunk_t *origin_meta_bounce_sig;
-	dmime_message_chunk_t *origin_display_bounce_sig;
-	dmime_message_chunk_t *origin_full_sig;
+	struct __attribute__ ((packed)) {
+		// tracing
+		dmime_tracing_t *tracing;
+		// ephemeral chunk
+		dmime_message_chunk_t *ephemeral;
+		// origin chunk
+		dmime_message_chunk_t *origin;
+		// destination chunk
+		dmime_message_chunk_t *destination;
+		// common headers chunk
+		dmime_message_chunk_t *common_headers;
+		// other headers chunk
+		dmime_message_chunk_t *other_headers;
+		// pointer to an array of display chunks terminated by a NULL pointer
+		dmime_message_chunk_t **display;
+		// pointer to an array of attachment  chunks terminated by a NULL pointer
+		dmime_message_chunk_t **attach;
+		// author tree sig chunk
+		dmime_message_chunk_t *author_tree_sig;
+		// author full sig chunk
+		dmime_message_chunk_t *author_full_sig;
+		// origin meta bounce sig chunk
+		dmime_message_chunk_t *origin_meta_bounce_sig;
+		// origin display bounce sig chunk
+		dmime_message_chunk_t *origin_display_bounce_sig;
+		// origin full sig chunk
+		dmime_message_chunk_t *origin_full_sig;
+	};
+	//state
 	dmime_message_state_t state;
 } dmime_message_t;
 
@@ -238,6 +252,27 @@ typedef struct object_chunk {
 } dmime_object_chunk_t;
 
 
+/*header parsing */
+typedef enum {
+	HEADER_TYPE_NONE = 0,
+	HEADER_TYPE_DATE,
+	HEADER_TYPE_TO,
+	HEADER_TYPE_CC,
+	HEADER_TYPE_FROM,
+	HEADER_TYPE_ORGANIZATION,
+	HEADER_TYPE_SUBJECT
+} dmime_header_type_t;
+
+typedef struct {
+	int required;
+	char *label;
+	size_t label_length;
+} dmime_header_key_t;
+
+typedef stringer_t ** dmime_common_headers_t;
+
+extern dmime_header_key_t dmime_header_keys[7];
+
 typedef struct {
 	// The current actor on the object.
 	dmime_actor_t actor;
@@ -253,7 +288,7 @@ typedef struct {
 	signet_t *signet_origin;
 	signet_t *signet_destination;
 	// Common headers.
-	stringer_t *common_headers;
+	dmime_common_headers_t common_headers;
 	// Other headers
 	stringer_t *other_headers;
 	// display and attachment chunks

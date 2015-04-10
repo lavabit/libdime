@@ -242,12 +242,18 @@ dmime_message_chunk_t * _dmsg_encode_destination(dmime_object_t *object) {
 dmime_message_chunk_t * _dmsg_encode_common_headers(dmime_object_t *object) {
 
 	dmime_message_chunk_t *result;
+	size_t data_size;
+	unsigned char *data;
 
 	if(!object) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(result = _dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, (unsigned char *) st_data_get(object->common_headers), st_length_get(object->common_headers), DEFAULT_CHUNK_FLAGS))) {
+	if(!(data = _dmsg_format_common_headers(object->common_headers, &data_size))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not format common headers data");
+	}
+
+	if(!(result = _dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
@@ -2227,7 +2233,7 @@ void _dmsg_destroy_object(dmime_object_t *object) {
 		st_cleanup(object->recipient);
 		st_cleanup(object->origin);
 		st_cleanup(object->destination);
-		st_cleanup(object->common_headers);
+		_dmsg_destroy_common_headers(object->common_headers);
 		st_cleanup(object->other_headers);
 		_dmsg_destroy_object_chunk_list(object->display);
 		_dmsg_destroy_object_chunk_list(object->attach);
@@ -2731,17 +2737,11 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 		_dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
-/*//TODO content check
-	for(i = 0; i < data_size; ++i) {
 
-		if(!isprint(data[i]) && !isspace(data[i])) {
-			_dmsg_destroy_message_chunk(decrypted);
-			RET_ERROR_INT(ERR_UNSPEC, "invalid characters in the metadata chunk");
-		}
-
+	if(!(object->common_headers = _dmsg_parse_common_headers(data, data_size))) {
+		RET_ERROR_INT(ERR_UNSPEC, "could not parse common headers chunk data");
 	}
-*/	
-	object->common_headers = st_import(data, data_size);
+
 	_dmsg_destroy_message_chunk(decrypted);
 
 	return 0;
@@ -3520,7 +3520,15 @@ int _dmsg_dump_object(dmime_object_t *object) {
 	}
 
 	if((object->actor == id_author) || (object->actor == id_recipient)) {
-		printf("Common Headers:\n %.*s\n", (int)st_length_get(object->common_headers), (char *)st_data_get(object->common_headers));
+
+		for(unsigned int i = 1; i < 7; ++i) {
+
+			if(object->common_headers[i-1]) {
+				printf("%s%.*s\r\n", dmime_header_keys[i].label, (int)st_length_get(object->common_headers[i-1]), (char *)st_data_get(object->common_headers[i-1]));
+			}
+
+		}
+
 		printf("Other Headers :\n %.*s\n", (int)st_length_get(object->other_headers), (char *)st_data_get(object->other_headers));
 		display = object->display;
 

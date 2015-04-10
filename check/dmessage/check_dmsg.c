@@ -8,7 +8,11 @@ START_TEST (check_message_encryption)
 	ED25519_KEY *auth_signkey, *orig_signkey, *dest_signkey, *recp_signkey;
 	char *auth = "ivan@darkmail.info", *orig = "darkmail.info", *dest = "lavabit.com", *recp = "ryan@lavabit.com";
 	char *auth_keys = "auth.keys", *orig_keys = "orig.keys", *dest_keys = "dest.keys", *recp_keys = "recp.keys";
-	char *common_headers = "To: Ryan<ryan@lavabit.com>\r\nFrom: Ivan<ivan@darkmail.info>\r\nSubject: Mr.Watson - Come here - I want to see you\r\n";
+	char *common_date = "12 minutes ago";
+	char *common_to = "Ryan <ryan@lavabit.com>";
+	char *common_from = "Ivan <ivan@darkmail.info>";
+	char *common_subject = "Mr.Watson - Come here - I want to see you";
+	char *common_organization = "Lavabit";
 	char *other_headers = "SECRET METADATA\r\n";
 	char *display = "This is a test\r\nCan you read this?\r\n";
 	dmime_kek_t orig_kek, dest_kek, recp_kek;
@@ -86,6 +90,9 @@ START_TEST (check_message_encryption)
 	draft = malloc(sizeof(dmime_object_t));
 	memset(draft, 0, sizeof(dmime_object_t));
 
+	draft->common_headers = malloc(6 * sizeof(stringer_t *));
+	memset(draft->common_headers, 0, 6);
+
 	draft->actor = id_author;
 	draft->author = st_import(auth, strlen(auth));
 	draft->recipient = st_import(recp, strlen(recp));
@@ -95,7 +102,11 @@ START_TEST (check_message_encryption)
 	draft->signet_origin = signet_orig;
 	draft->signet_destination = signet_dest;
 	draft->signet_recipient = signet_recp;
-	draft->common_headers = st_import(common_headers, strlen(common_headers));
+	draft->common_headers[HEADER_TYPE_DATE-1] = st_import(common_date, strlen(common_date));
+	draft->common_headers[HEADER_TYPE_FROM-1] = st_import(common_from, strlen(common_from));
+	draft->common_headers[HEADER_TYPE_ORGANIZATION-1] = st_import(common_organization, strlen(common_organization));
+	draft->common_headers[HEADER_TYPE_SUBJECT] = st_import(common_subject, strlen(common_subject));
+	draft->common_headers[HEADER_TYPE_TO] = st_import(common_to, strlen(common_to));
 	draft->other_headers = st_import(other_headers, strlen(other_headers));
 	draft->display = _dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
 
