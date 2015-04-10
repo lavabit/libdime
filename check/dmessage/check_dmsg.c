@@ -186,12 +186,8 @@ START_TEST (check_message_encryption)
 	free(from_auth_bin);
 	free(from_orig_bin);
 	free(from_dest_bin);
-	
 }
 END_TEST
-
-
-
 
 Suite * suite_check_dmsg(void) {
 
@@ -204,26 +200,12 @@ Suite * suite_check_dmsg(void) {
 	return s;
 }
 
+int main(void) {
 
-int main(int argc, char *argv[]) {
-
-SRunner *sr;
-
-sr = srunner_create(suite_check_dmsg());
-
-	fprintf(stderr, "Running tests ...\n");
-
+	SRunner *sr = srunner_create(suite_check_dmsg());
 	srunner_set_fork_status (sr, CK_NOFORK);
-	srunner_run_all(sr, CK_SILENT);
-        //srunner_run_all(sr, CK_NORMAL);
-        //nr_failed = srunner_ntests_failed(sr);
-        // CK_VERBOSE
-	srunner_print(sr, CK_VERBOSE);
+	srunner_run_all(sr, CK_ENV);
+	int nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
-
-	fprintf(stderr, "Finished.\n");
-        //ck_assert
-        //ck_assert_msg
-
-	return 0;
+	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
