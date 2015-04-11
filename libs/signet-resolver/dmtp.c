@@ -456,7 +456,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 			// we're not exactly sure which is the correct one.
 			while (*pokptr) {
 				// Set up a dummy key for signature validation.
-				memcpy(key.public, *pokptr, sizeof(key.public));
+				memcpy(key.public_key, *pokptr, sizeof(key.public_key));
 
 				if ((vres = _ed25519_verify_sig(hashbuf, SHA_512_SIZE, &key, *tlsptr)) == 1) {
 					tlsmatch = 1;

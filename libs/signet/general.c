@@ -192,7 +192,7 @@ ED25519_KEY * _deserialize_ed25519_pubkey(const unsigned char *serial_pubkey) {
 	}
 
 	memset(key, 0, sizeof(ED25519_KEY));
-	memcpy(key->public, serial_pubkey, ED25519_KEY_SIZE);
+	memcpy(key->public_key, serial_pubkey, ED25519_KEY_SIZE);
 
 	return key;
 }
@@ -217,8 +217,8 @@ ED25519_KEY * _deserialize_ed25519_privkey(const unsigned char * serial_privkey)
 	}
 
 	memset(key, 0, sizeof(ED25519_KEY));
-	memcpy(key->private, serial_privkey, ED25519_KEY_SIZE);
-	ed25519_publickey(key->private, key->public);
+	memcpy(key->private_key, serial_privkey, ED25519_KEY_SIZE);
+	ed25519_publickey(key->private_key, key->public_key);
 
 	return key;
 }

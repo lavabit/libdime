@@ -78,7 +78,7 @@ signet_t * _signet_new_keysfile(signet_type_t type, char *keysfile) {		//TODO cu
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create signet object");
 	}
 
-	if(_signet_add_field(signet, sign_fid, 0, NULL, ED25519_KEY_SIZE, (const unsigned char *)sign_key->public, 0) < 0) {
+	if(_signet_add_field(signet, sign_fid, 0, NULL, ED25519_KEY_SIZE, (const unsigned char *)sign_key->public_key, 0) < 0) {
 		_free_ed25519_key(sign_key);
 		free(ser_enc_pubkey);
 		_signet_destroy(signet);

@@ -171,7 +171,7 @@ bool_t inx_replace(inx_t *inx, multi_t key, void *data) {
 	bool_t result;
 
 #ifdef MAGMA_PEDANTIC
-	if (!inx || !(inx->delete) || !(inx->insert)) {
+	if (!inx || !(inx->delete_entry) || !(inx->insert)) {
 		log_pedantic("Invalid index or function pointer.");
 		return false;
 	}
@@ -179,7 +179,7 @@ bool_t inx_replace(inx_t *inx, multi_t key, void *data) {
 
 	inx_auto_write(inx);
 	// Delete the existing record, if there is one.
-	inx->delete(inx, key);
+	inx->delete_entry(inx, key);
 	// Insert the new record.
 	result = inx->insert(inx, key, data);
 	inx_auto_unlock(inx);
@@ -199,14 +199,14 @@ bool_t inx_delete(inx_t *inx, multi_t key) {
 	bool_t result;
 
 #ifdef MAGMA_PEDANTIC
-	if (!inx || !(inx->delete)) {
+	if (!inx || !(inx->delete_entry)) {
 		log_pedantic("Invalid index or function pointer.");
 		return false;
 	}
 #endif
 
 	inx_auto_write(inx);
-	result = inx->delete(inx, key);
+	result = inx->delete_entry(inx, key);
 	inx_auto_unlock(inx);
 
 	return result;

@@ -44,7 +44,7 @@ typedef enum {
 
 typedef M_POOL_STATUS status_t;
 
-typedef struct {
+typedef struct stacker_node_t {
 	void *data;
 	struct stacker_node_t *next;
 } stacker_node_t;

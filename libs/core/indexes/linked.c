@@ -476,7 +476,7 @@ inx_t * linked_alloc(uint64_t options, void *data_free) {
 
 	result->find = linked_find;
 	result->insert = linked_insert;
-	result->delete = linked_delete;
+	result->delete_entry = linked_delete;
 
 	result->cursor_free = (void (*)(void *))&linked_cursor_free;
 	result->cursor_reset = (void (*)(void *))&linked_cursor_reset;

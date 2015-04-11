@@ -514,7 +514,7 @@ inx_t * hashed_alloc(uint64_t options, void *data_free) {
 
 	result->find = hashed_find;
 	result->insert = hashed_insert;
-	result->delete = hashed_delete;
+	result->delete_entry = hashed_delete;
 
 	result->cursor_free = (void (*)(void *))&hashed_cursor_free;
 	result->cursor_reset = (void (*)(void *))&hashed_cursor_reset;

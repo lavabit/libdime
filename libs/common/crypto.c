@@ -521,14 +521,14 @@ ED25519_KEY * _generate_ed25519_keypair(void) {
 
 	memset(result, 0, sizeof(ED25519_KEY));
 
-	if (RAND_bytes(result->private, sizeof(result->private)) != 1) {
+	if (RAND_bytes(result->private_key, sizeof(result->private_key)) != 1) {
 		PUSH_ERROR_OPENSSL();
 		_secure_wipe(result, sizeof(ED25519_KEY));
 		free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not generate ed25519 secret key");
 	}
 
-	ed25519_publickey(result->private, result->public);
+	ed25519_publickey(result->private_key, result->public_key);
 
 	return result;
 }
@@ -548,7 +548,7 @@ int _ed25519_sign_data(const unsigned char *data, size_t dlen, ED25519_KEY *key,
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	ed25519_sign(data, dlen, key->private, key->public, sigbuf);
+	ed25519_sign(data, dlen, key->private_key, key->public_key, sigbuf);
 
 	return 0;
 }
@@ -570,7 +570,7 @@ int _ed25519_verify_sig(const unsigned char *data, size_t dlen, ED25519_KEY *key
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	result = ed25519_sign_open(data, dlen, key->public, sigbuf);
+	result = ed25519_sign_open(data, dlen, key->public_key, sigbuf);
 
 	if (!result) {
 		return 1;
@@ -640,10 +640,10 @@ ED25519_KEY * _load_ed25519_privkey(const char *filename) {
 	}
 
 	memset(result, 0, sizeof(ED25519_KEY));
-	memcpy(result->private, keydata, sizeof(result->private));
+	memcpy(result->private_key, keydata, sizeof(result->private_key));
 	_secure_wipe(keydata, klen);
 	free(keydata);
-	ed25519_publickey(result->private, result->public);
+	ed25519_publickey(result->private_key, result->public_key);
 
 	return result;
 }

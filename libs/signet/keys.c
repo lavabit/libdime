@@ -37,7 +37,7 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 
 	}
 
-	memcpy(serial_sign, sign_key->private, ED25519_KEY_SIZE);
+	memcpy(serial_sign, sign_key->private_key, ED25519_KEY_SIZE);
 
 	if(!(serial_enc = _serialize_ec_privkey(enc_key, &enc_size))) {
 		_secure_wipe(serial_sign, ED25519_KEY_SIZE);

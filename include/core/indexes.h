@@ -48,7 +48,7 @@ typedef struct {
 	void (*index_free)(void *index);
 	void (*index_truncate)(void *index);
 
-	bool_t (*delete)(void *index, multi_t envelope);
+	bool_t (*delete_entry)(void *index, multi_t envelope);
 	bool_t (*insert)(void *index, multi_t envelope, void *data);
 
 	void * (*find)(void *index, multi_t envelope);
