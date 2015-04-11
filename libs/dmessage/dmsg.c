@@ -1,5 +1,6 @@
-
 #include "dmessage/dmsg.h"
+
+dmime_header_key_t dmime_header_keys[7];
 
 /*
  * @brief	Takes a dmime object and determines the state it is in.
