@@ -34,7 +34,7 @@ void mm_cleanup(void *block) {
  * @param	len		the length, in bytes, of the memory block.
  * @result	false if block is NULL or len is 0; true otherwise.
  */
-bool_t mm_empty(void *block, size_t len) {
+bool_t mm_empty(const void *block, size_t len) {
 
 	if(!block || !len) {
 		return true;

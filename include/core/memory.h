@@ -33,7 +33,7 @@ void *   mm_alloc(size_t len);
 void     mm_cleanup(void *block);
 void *   mm_copy(void *dst, const void *src, size_t len);
 void *   mm_dupe(void *block, size_t len);
-bool_t   mm_empty(void *block, size_t len);
+bool_t   mm_empty(const void *block, size_t len);
 void     mm_free(void *block);
 void *   mm_move(void *dst, void *src, size_t len);
 void *   mm_set(void *block, int_t set, size_t len);

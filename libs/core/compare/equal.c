@@ -20,10 +20,10 @@
  * @param	len	the length, in bytes, of the comparison that is to take place.
  * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
-int_t mm_cmp_cs_eq(void *a, void *b, size_t len) {
+int_t mm_cmp_cs_eq(const void *a, const void *b, size_t len) {
 	bool_t ae, be;
 	int_t result = 0;
-	uchr_t *aptr = a, *bptr = b;
+	const uchr_t *aptr = a, *bptr = b;
 
 	// Setup
 	ae = mm_empty(a, len);
@@ -55,10 +55,10 @@ int_t mm_cmp_cs_eq(void *a, void *b, size_t len) {
  * @param	len	the length, in bytes, of the comparison that is to take place.
  * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
-int_t mm_cmp_ci_eq(void *a, void *b, size_t len) {
+int_t mm_cmp_ci_eq(const void *a, const void *b, size_t len) {
 	bool_t ae, be;
 	int_t result = 0;
-	uchr_t *aptr = a, *bptr = b;
+	const uchr_t *aptr = a, *bptr = b;
 
 	// Setup
 	ae = mm_empty(a, len);
