@@ -1,35 +1,33 @@
-
 # This must be run first. It stores the absolute path to the DIME directory. 
-DIME_PROJECT_ROOT 	:= $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-DIME_PROJECT_OUTPUT 	:= $(DIME_PROJECT_ROOT)/output
+topdir 	:= $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 # Tools
-dime			:= $(DIME_PROJECT_ROOT)/tools/dime
-signet			:= $(DIME_PROJECT_ROOT)/tools/signet
+dime			:= $(topdir)/tools/dime
+signet			:= $(topdir)/tools/signet
 tools			:= $(signet) $(dime)
 
 # Legacy Tools
-cachedump		:= $(DIME_PROJECT_ROOT)/tools/cachedump
-dmtp			:= $(DIME_PROJECT_ROOT)/tools/dmtp
-ed25519			:= $(DIME_PROJECT_ROOT)/tools/ed25519
-genrec			:= $(DIME_PROJECT_ROOT)/tools/genrec
-x			:= $(DIME_PROJECT_ROOT)/tools/x
+cachedump		:= $(topdir)/tools/cachedump
+dmtp			:= $(topdir)/tools/dmtp
+ed25519			:= $(topdir)/tools/ed25519
+genrec			:= $(topdir)/tools/genrec
+x			:= $(topdir)/tools/x
 legacy-tools		:= $(cachedump) $(dmtp) $(ed25519) $(genrec) $(x)
 
 # Libraries
-libcore			:= $(DIME_PROJECT_ROOT)/libs/core
-libcommon		:= $(DIME_PROJECT_ROOT)/libs/common
-libsignet		:= $(DIME_PROJECT_ROOT)/libs/signet
-libdmessage		:= $(DIME_PROJECT_ROOT)/libs/dmessage
-libsignet-resolver	:= $(DIME_PROJECT_ROOT)/libs/signet-resolver
+libcore			:= $(topdir)/libs/core
+libcommon		:= $(topdir)/libs/common
+libsignet		:= $(topdir)/libs/signet
+libdmessage		:= $(topdir)/libs/dmessage
+libsignet-resolver	:= $(topdir)/libs/signet-resolver
 libs			:= $(libcore) $(libcommon) $(libsignet) $(libdmessage) $(libsignet-resolver)
 
 # Foreign Dependencies
-libdonna		:= $(DIME_PROJECT_ROOT)/deps/sources/donna
-libopenssl		:= $(DIME_PROJECT_ROOT)/deps/sources/openssl
+libdonna		:= $(topdir)/deps/sources/donna
+libopenssl		:= $(topdir)/deps/sources/openssl
 foreign			:= # $(libopenssl) $(libdonna)
 
-checks			:= $(DIME_PROJECT_ROOT)/check/common $(DIME_PROJECT_ROOT)/check/dime $(DIME_PROJECT_ROOT)/check/signet $(DIME_PROJECT_ROOT)/check/dmessage
+checks			:= $(topdir)/check/common $(topdir)/check/dime $(topdir)/check/signet $(topdir)/check/dmessage
 
 .PHONY: all check clean $(libs) $(tools) $(legacy-tools) $(checks)
 
