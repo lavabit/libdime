@@ -234,53 +234,11 @@ Suite * suite_check_signet(void) {
 	return s;
 }
 
-
-START_TEST (test_name)
-{
-        printf("Testing 1!\n");
-        printf("Testing 2!\n");
-}
-END_TEST
-
-
-Suite * test_suite(void) {
-
-        Suite *s;
-        TCase *tcase;
-
-        s = suite_create("test");
-
-        tcase = tcase_create("core");
-
-        tcase_add_test(tcase, test_name);
-        suite_add_tcase(s, tcase);
-
-        return s;
-}
-
-
 int main(void) {
 
-	int nr_failed;
-        SRunner *sr;
-
-        sr = srunner_create(test_suite());
-        srunner_add_suite(sr, suite_check_signet());
-
-        fprintf(stderr, "Running tests ...\n");
-
-        srunner_run_all(sr, CK_SILENT);
-        //srunner_run_all(sr, CK_NORMAL);
-        //nr_failed = srunner_ntests_failed(sr);
-        // CK_VERBOSE
-        srunner_print(sr, CK_VERBOSE);
-        nr_failed = srunner_ntests_failed(sr);
-        srunner_free(sr);
-
-        fprintf(stderr, "Finished.\n");
-
-        //ck_assert
-        //ck_assert_msg
-
-       	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+	SRunner *sr = srunner_create(suite_check_signet());
+	srunner_run_all(sr, CK_ENV);
+	int nr_failed = srunner_ntests_failed(sr);
+	srunner_free(sr);
+	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

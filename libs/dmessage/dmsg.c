@@ -1519,7 +1519,7 @@ int _dmsg_add_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, 
  * @param	keks		Pointer to a set of key encryption keys used to encrypt the keyslots.
  * @return	0 on success, all other values indicate failure.
 */
-int _dmsg_add_origin_sig_chunks(dmime_message_t *message, dmime_kekset_t *keks) {
+static int _dmsg_add_origin_sig_chunks(dmime_message_t *message, dmime_kekset_t *keks) {
 
 	unsigned char blank_buf[ED25519_SIG_SIZE];
 

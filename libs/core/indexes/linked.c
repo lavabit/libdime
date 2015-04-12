@@ -36,7 +36,7 @@ typedef struct {
  * @param	element		the index of the data element to be retrieved. Must be set to zero.
  * @return	NULL on failure, or a pointer to the specified linked list record's data on success.
  */
-void * linked_record_get_data(linked_record_t *record, size_t element) {
+static void *linked_record_get_data(linked_record_t *record, size_t element) {
 
 	#ifdef MAGMA_PEDANTIC
 	if (!record) log_pedantic("The index pointer is invalid.");
@@ -51,7 +51,7 @@ void * linked_record_get_data(linked_record_t *record, size_t element) {
  * @param	record	a pointer to the linked list record to be queried.
  * @return	an empty multi-type key on failure, or the specified record's multi-type key value on success.
  */
-multi_t linked_record_get_key(linked_record_t *record) {
+static multi_t linked_record_get_key(linked_record_t *record) {
 
 	#ifdef MAGMA_PEDANTIC
 	if (!record) log_pedantic("The index pointer is invalid.");
@@ -69,7 +69,7 @@ multi_t linked_record_get_key(linked_record_t *record) {
  * @param	record	a pointer to the linked list record to be freed.
  * @return	This function returns no value.
  */
-void linked_record_free(inx_t *index, linked_record_t *record) {
+static void linked_record_free(inx_t *index, linked_record_t *record) {
 
 	#ifdef MAGMA_PEDANTIC
 	if (!index) log_pedantic("The index pointer is invalid.");
@@ -90,7 +90,7 @@ void linked_record_free(inx_t *index, linked_record_t *record) {
  * @param	data	a pointer to the data to be associated with the record.
  * @return	a pointer to the newly allocated and initialized linked record object.
  */
-linked_record_t * linked_record_alloc(multi_t key, void *data) {
+static linked_record_t * linked_record_alloc(multi_t key, void *data) {
 
 	linked_record_t *record;
 
@@ -109,7 +109,7 @@ linked_record_t * linked_record_alloc(multi_t key, void *data) {
  * @param	key		a multi-type key value to be searched against the contents of the inx object.
  * @return	NULL on failure or if the record cannot be found, or a pointer to the data of the matching record on success.
  */
-void * linked_find(void *inx, multi_t key) {
+static void *linked_find(void *inx, multi_t key) {
 
 	inx_t *index = inx;
 	linked_node_t *node;
@@ -139,7 +139,7 @@ void * linked_find(void *inx, multi_t key) {
  * @return	true on success or false on failure.
  */
 // Find a record and remove it from the linked list.
-bool_t linked_delete(void *inx, multi_t key) {
+static bool_t linked_delete(void *inx, multi_t key) {
 
 	inx_t *index = inx;
 	linked_node_t *node;
@@ -185,8 +185,7 @@ bool_t linked_delete(void *inx, multi_t key) {
  * @param	data	a pointer to the data that will be associated with the new record.
  * @return	true on success or false on failure.
  */
-// Append something to the linked list.
-bool_t linked_insert(void *inx, multi_t key, void *data) {
+static bool_t linked_insert(void *inx, multi_t key, void *data) {
 
 	inx_t *index = inx;
 	linked_node_t *holder, *node;
@@ -221,12 +220,9 @@ bool_t linked_insert(void *inx, multi_t key, void *data) {
 /**
  * @brief	Get the current node pointed to by a linked list cursor.
  * @param	cursor	a pointer to the linked list cursor to be queried.
- *
- *
- *
  * @return	a pointer to the current node indicated by the specified linked list cursor.
  */
-linked_node_t * linked_cursor_active(linked_cursor_t *cursor) {
+static linked_node_t *linked_cursor_active(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 	uint64_t position = 0;
@@ -283,7 +279,7 @@ linked_node_t * linked_cursor_active(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor to be queried.
  * @return	a pointer to the next node of the linked list cursor.
  */
-linked_node_t * linked_cursor_next(linked_cursor_t *cursor) {
+static linked_node_t *linked_cursor_next(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 
@@ -305,7 +301,7 @@ linked_node_t * linked_cursor_next(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor to be queried.
  * @return	NULL on failure, or the data of the linked list cursor's next record on success.
  */
-void * linked_cursor_value_next(linked_cursor_t *cursor) {
+static void *linked_cursor_value_next(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 
@@ -320,7 +316,7 @@ void * linked_cursor_value_next(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor to be queried.
  * @return	NULL on failure, or a pointer to the data of the linked list cursor's current record.
  */
-void * linked_cursor_value_active(linked_cursor_t *cursor) {
+static void *linked_cursor_value_active(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 
@@ -335,7 +331,7 @@ void * linked_cursor_value_active(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor to be queried.
  * @return	an empty multi-type key on failure, or the linked list cursor's next record key on success.
  */
-multi_t linked_cursor_key_next(linked_cursor_t *cursor) {
+static multi_t linked_cursor_key_next(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 
@@ -351,7 +347,7 @@ multi_t linked_cursor_key_next(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor to be queried.
  * @return	an empty multi-type key on failure, or the current linked list cursor's record key on success.
  */
-multi_t linked_cursor_key_active(linked_cursor_t *cursor) {
+static multi_t linked_cursor_key_active(linked_cursor_t *cursor) {
 
 	linked_node_t *node;
 
@@ -367,7 +363,7 @@ multi_t linked_cursor_key_active(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor object to be reset.
  * @return	This function returns no value.
  */
-void linked_cursor_reset(linked_cursor_t *cursor) {
+static void linked_cursor_reset(linked_cursor_t *cursor) {
 
 	if (cursor) {
 		cursor->node = NULL;
@@ -382,7 +378,7 @@ void linked_cursor_reset(linked_cursor_t *cursor) {
  * @param	cursor	a pointer to the linked list cursor object to be freed.
  * @return	This function returns no value.
  */
-void linked_cursor_free(linked_cursor_t *cursor) {
+static void linked_cursor_free(linked_cursor_t *cursor) {
 
 	if (cursor) {
 		mm_free(cursor);
@@ -396,7 +392,7 @@ void linked_cursor_free(linked_cursor_t *cursor) {
  * @param	inx		a pointer the linked list object to be traversed by the cursor.
  * @return	NULL on failure, or a cursor pointing to the head of the linked list on success.
  */
-void * linked_cursor_alloc(inx_t *inx) {
+static void *linked_cursor_alloc(inx_t *inx) {
 
 	linked_cursor_t *cursor;
 
@@ -415,7 +411,7 @@ void * linked_cursor_alloc(inx_t *inx) {
  * @param	inx		a pointer to the linked list object to have all of its records truncated.
  * @return	This function returns no value.
  */
-void linked_truncate(void *inx) {
+static void linked_truncate(void *inx) {
 
 	inx_t *index = inx;
 	linked_node_t *node, *next;
@@ -443,7 +439,7 @@ void linked_truncate(void *inx) {
  * @param	inx		a pointer to the linked list object to be freed.
  * @result	This function returns no value.
  */
-void linked_free(void *inx) {
+static void linked_free(void *inx) {
 
 	inx_t *index = inx;
 

@@ -106,7 +106,7 @@ bool_t mm_sec_secured(void *block) {
  * @param	chunk	the input secure chunk.
  * @return	a pointer to the next chunk of secure memory, or NULL on failure or if the end of the slab is reached.
  */
-secured_t * mm_sec_chunk_next(secured_t *chunk) {
+static secured_t *mm_sec_chunk_next(secured_t *chunk) {
 
 	secured_t *next;
 
@@ -122,7 +122,7 @@ secured_t * mm_sec_chunk_next(secured_t *chunk) {
  * @param	chunk	the input secure chunk.
  * @return	a pointer to the previous chunk of secure memory, or NULL on failure or if the beginning of the slab is reached.
  */
-secured_t * mm_sec_chunk_prev(secured_t *chunk) {
+static secured_t *mm_sec_chunk_prev(secured_t *chunk) {
 
 	secured_t *prev, *next;
 
@@ -138,7 +138,7 @@ secured_t * mm_sec_chunk_prev(secured_t *chunk) {
 }
 
 // If an adjacent region is available, merge them together.
-void mm_sec_chunk_merge(secured_t *chunk) {
+static void mm_sec_chunk_merge(secured_t *chunk) {
 
 	secured_t *prev, *next;
 
@@ -158,7 +158,7 @@ void mm_sec_chunk_merge(secured_t *chunk) {
 }
 
 // Locates a properly sized chunk of memory and reserves it.
-secured_t * mm_sec_chunk_new(secured_t *block, size_t size) {
+static secured_t *mm_sec_chunk_new(secured_t *block, size_t size) {
 
 	bool_t loop = true;
 	secured_t *chunk, *split;

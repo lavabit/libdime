@@ -42,7 +42,7 @@ typedef struct {
  * @param	key			a multi-type key with the value to be looked up; numbers and strings are supported.
  * @return	the number of the hash bucket corresponding to the specified key.
  */
-uint32_t hashed_bucket(uint32_t buckets, multi_t key) {
+static uint32_t hashed_bucket(uint32_t buckets, multi_t key) {
 
 	uint32_t result = 0, count;
 
@@ -72,7 +72,7 @@ uint32_t hashed_bucket(uint32_t buckets, multi_t key) {
  * @param	data	a pointer to a data buffer associated with the key.
  * @return	NULL on failure, or a pointer to the newly allocated hashed bucket object on success.
  */
-hashed_bucket_t * hashed_bucket_alloc(multi_t key, void *data) {
+static hashed_bucket_t *hashed_bucket_alloc(multi_t key, void *data) {
 
 	hashed_bucket_t *bucket;
 
@@ -87,7 +87,7 @@ hashed_bucket_t * hashed_bucket_alloc(multi_t key, void *data) {
 }
 
 // Gets the bucket from the list.
-hashed_bucket_t * hashed_bucket_get_ptr(hashed_index_t *hashed, uint32_t num) {
+static hashed_bucket_t *hashed_bucket_get_ptr(hashed_index_t *hashed, uint32_t num) {
 
 	hashed_bucket_t *result = NULL;
 
@@ -105,7 +105,7 @@ hashed_bucket_t * hashed_bucket_get_ptr(hashed_index_t *hashed, uint32_t num) {
 }
 
 // Sets the bucket on the list.
-void hashed_bucket_set_ptr(hashed_index_t *hashed, uint32_t num, hashed_bucket_t *bucket) {
+static void hashed_bucket_set_ptr(hashed_index_t *hashed, uint32_t num, hashed_bucket_t *bucket) {
 
 	if (num < hashed->buckets) {
 		*(hashed_bucket_t **)((chr_t *)hashed + sizeof(hashed_index_t) + (sizeof(hashed_bucket_t *) * num)) = bucket;
@@ -121,7 +121,7 @@ void hashed_bucket_set_ptr(hashed_index_t *hashed, uint32_t num, hashed_bucket_t
 }
 
 // Tacks on a bucket at the end.
-void hashed_bucket_add(hashed_bucket_t *bucket, hashed_bucket_t *new) {
+static void hashed_bucket_add(hashed_bucket_t *bucket, hashed_bucket_t *new) {
 
 	if (bucket == NULL) {
 		//lavalog(LOG_DEBUG, LOG_FRAMEWORK, "Passed a NULL pointer.");
@@ -138,7 +138,7 @@ void hashed_bucket_add(hashed_bucket_t *bucket, hashed_bucket_t *new) {
 }
 
 // Add a data item to the list.
-bool_t hashed_insert(void *inx, multi_t key, void *data) {
+static bool_t hashed_insert(void *inx, multi_t key, void *data) {
 
 	uint32_t num;
 	inx_t *index = inx;
@@ -175,7 +175,7 @@ bool_t hashed_insert(void *inx, multi_t key, void *data) {
 }
 
 // Searches a bucket list for the key.
-void * hashed_bucket_find_key(hashed_bucket_t *bucket, multi_t key) {
+static void *hashed_bucket_find_key(hashed_bucket_t *bucket, multi_t key) {
 
 	void *data = NULL;
 
@@ -190,7 +190,7 @@ void * hashed_bucket_find_key(hashed_bucket_t *bucket, multi_t key) {
 }
 
 // Gets a data item, or returns NULL.
-void * hashed_find(void *inx, multi_t key) {
+static void *hashed_find(void *inx, multi_t key) {
 
 	uint32_t num;
 	void *data = NULL;
@@ -218,7 +218,7 @@ void * hashed_find(void *inx, multi_t key) {
 	return data;
 }
 
-bool_t hashed_delete(void *inx, multi_t key) {
+static bool_t hashed_delete(void *inx, multi_t key) {
 
 	uint32_t num;
 	inx_t *index = inx;
@@ -276,7 +276,7 @@ bool_t hashed_delete(void *inx, multi_t key) {
 
 /// BUG: It's a little unclear what's happening, but when this function gets called, the serials don't match, and the count is greater than the number of available
 /// data buckets, because a bucket has been removed, the cursor will get stuck returning the last item endlessly (I think).
-hashed_bucket_t * hashed_cursor_active(hashed_cursor_t *cursor) {
+static hashed_bucket_t * hashed_cursor_active(hashed_cursor_t *cursor) {
 
 	uint64_t count = 0;
 	hashed_bucket_t *bucket = NULL, *loop;
@@ -324,7 +324,7 @@ hashed_bucket_t * hashed_cursor_active(hashed_cursor_t *cursor) {
 	return bucket;
 }
 
-hashed_bucket_t * hashed_cursor_next(hashed_cursor_t *cursor) {
+static hashed_bucket_t * hashed_cursor_next(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket = NULL;
 
@@ -348,7 +348,7 @@ hashed_bucket_t * hashed_cursor_next(hashed_cursor_t *cursor) {
 	return bucket;
 }
 
-void * hashed_cursor_value_next(hashed_cursor_t *cursor) {
+static void *hashed_cursor_value_next(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket;
 
@@ -359,7 +359,7 @@ void * hashed_cursor_value_next(hashed_cursor_t *cursor) {
 
 }
 
-void * hashed_cursor_value_active(hashed_cursor_t *cursor) {
+static void *hashed_cursor_value_active(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket;
 
@@ -369,7 +369,7 @@ void * hashed_cursor_value_active(hashed_cursor_t *cursor) {
 	return NULL;
 }
 
-multi_t hashed_cursor_key_next(hashed_cursor_t *cursor) {
+static multi_t hashed_cursor_key_next(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket;
 
@@ -379,7 +379,7 @@ multi_t hashed_cursor_key_next(hashed_cursor_t *cursor) {
 	return mt_get_null();
 }
 
-multi_t hashed_cursor_key_active(hashed_cursor_t *cursor) {
+static multi_t hashed_cursor_key_active(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket;
 
@@ -389,7 +389,7 @@ multi_t hashed_cursor_key_active(hashed_cursor_t *cursor) {
 	return mt_get_null();
 }
 
-void hashed_cursor_reset(hashed_cursor_t *cursor) {
+static void hashed_cursor_reset(hashed_cursor_t *cursor) {
 
 	if (cursor) {
 		cursor->bucket = NULL;
@@ -399,7 +399,7 @@ void hashed_cursor_reset(hashed_cursor_t *cursor) {
 	return;
 }
 
-void hashed_cursor_free(hashed_cursor_t *cursor) {
+static void hashed_cursor_free(hashed_cursor_t *cursor) {
 
 	if (cursor) {
 		mm_free(cursor);
@@ -408,7 +408,7 @@ void hashed_cursor_free(hashed_cursor_t *cursor) {
 	return;
 }
 
-void * hashed_cursor_alloc(inx_t *inx) {
+static void *hashed_cursor_alloc(inx_t *inx) {
 
 	hashed_cursor_t *cursor;
 
@@ -422,7 +422,7 @@ void * hashed_cursor_alloc(inx_t *inx) {
 	return cursor;
 }
 
-void hashed_free(void *inx) {
+static void hashed_free(void *inx) {
 
 	uint32_t num;
 	inx_t *index = inx;
@@ -455,7 +455,7 @@ void hashed_free(void *inx) {
 	return;
 }
 
-void hashed_truncate(void *inx) {
+static void hashed_truncate(void *inx) {
 
 	uint32_t num;
 	inx_t *index = inx;

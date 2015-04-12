@@ -8,6 +8,7 @@
 #define N_SERIALIZATION_TESTS	20
 #define N_SIGNATURE_TIER_TESTS	5
 
+Suite * suite_check_errorapi(void);
 Suite * suite_check_crypto(void);
 Suite * suite_check_error(void);
 Suite * suite_check_misc(void);

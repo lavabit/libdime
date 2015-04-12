@@ -101,18 +101,12 @@ START_TEST(errinfo_test)
 END_TEST
 #endif /* ERROR_API_FINISHED */
 
-Suite * test_suite(void) {
+Suite * suite_check_errorapi(void) {
 
-	Suite *s;
-	TCase *tcase;
-
-	s = suite_create("test");
-	tcase = tcase_create("core");
-
+	Suite *s = suite_create("error-api");
 #ifdef ERROR_API_FINISHED
-	tcase_add_test(tcase, errinfo_test);
+	suite_add_testfunc(s, errinfo_test);
 #endif /* ERROR_API_FINISHED */
-	suite_add_tcase(s, tcase);
 
 	return s;
 }
@@ -123,7 +117,7 @@ int main(void) {
 	SRunner *sr;
 	int nr_failed;
 
-	sr = srunner_create(test_suite());
+	sr = srunner_create(suite_check_errorapi());
 	srunner_add_suite(sr, suite_check_misc());
 	srunner_add_suite(sr, suite_check_crypto());
 	srunner_add_suite(sr, suite_check_error());

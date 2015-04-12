@@ -77,6 +77,7 @@ PUBLIC_FUNC_DECL(char *,           dmtp_history,          dmtp_session_t *sessio
 PUBLIC_FUNC_DECL(char *,           dmtp_stats,            dmtp_session_t *session, const unsigned char *secret);
 
 // Dual mode/SMTP helper commands.
+PUBLIC_FUNC_DECL(dmtp_mode_t,      dmtp_str_to_mode,      const char *modestr);
 PUBLIC_FUNC_DECL(dmtp_mode_t,      dmtp_get_mode,         dmtp_session_t *session);
 PUBLIC_FUNC_DECL(int,              dmtp_noop,             dmtp_session_t *session);
 PUBLIC_FUNC_DECL(int,              dmtp_reset,            dmtp_session_t *session);

@@ -107,21 +107,6 @@ void ns_free(chr_t *s) {
 }
 
 /**
- * @brief	A checked null-terminated string free front-end function.
- * @see		ns_free()
- * @param	s	the null-terminated string to be freed.
- * @result	This function returns no value.
- */
-void ns_cleanup(chr_t *s) {
-
-	if (s) {
-		ns_free(s);
-	}
-
-	return;
-}
-
-/**
  * @brief	Duplicate a null-terminated string.
  * @param	s	the null-terminated string to be duplicated.
  * @result	NULL on failure, or a pointer to a copy of the input string.

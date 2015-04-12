@@ -11,7 +11,7 @@
  * @param	name	Tool name.
  * @return	void.
 */
-void usage(const char * name) {
+static void usage(const char *name) {
 
 	fprintf(stderr, "\nUsage: %s <-g signet_id> <-s signet_id> <-d signet_filename> [-o output_filename] [-k keys_filename] [-r ssr_filename] [-c custody_filename] <-x signet_type\n", name);
 	fprintf(stderr, "  --generate|-g   Uses provided signet id to generate a signet or SSR (signet signing request) and a keys files, may be used with a -c option to create an SSR for rotation of user signets.\n");
@@ -33,7 +33,7 @@ void usage(const char * name) {
  * @param	exit_failure	if set, forcibly exit the program on user input failure.
  * @return	1 if the user input line was successfully retrieved or 0 on failure.
 */
-int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int exit_failure) {
+static int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int exit_failure) {
 
 	if(!buf || !bufsize ) {
 		fprintf(stderr, "Error: No buffer specified, or buffer size is 0.\n");
@@ -78,7 +78,7 @@ int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int exit_fai
  * 				If NULL, no chain of custody signing occurs, if not NULL and desired signet is an org signet, returns an error.
  * @return	void.
 */
-void generate_signet(const char * signet_name, const char * signet_file, const char * keys_file, const char * old_keys) {
+static void generate_signet(const char * signet_name, const char * signet_file, const char * keys_file, const char * old_keys) {
 
 	char *domain, wizard_string[256], *signet_f = NULL, *keys_f = NULL;
 	int keys_alloc = 0, signet_alloc = 0;
@@ -266,7 +266,7 @@ void generate_signet(const char * signet_name, const char * signet_file, const c
  * @param	signet_file	Filename for the output signet, if NULL default name based on signet_name is used.
  * @return	void.
 */
-void sign_signet(const char *signet_name, const char *ssr_f, const char *keys_f, const char *signet_file) {
+static void sign_signet(const char *signet_name, const char *ssr_f, const char *keys_f, const char *signet_file) {
 
 	int signet_alloc = 0;
 	char *signet_f = NULL, wizard_string[256], *domain = NULL;
@@ -388,7 +388,7 @@ void sign_signet(const char *signet_name, const char *ssr_f, const char *keys_f,
  * @param	signet_f	Filename of the signet to be dumped.
  * @return	void.
 */
-void dump_signet(const char * signet_file) {			// TODO needs to dump in HEX format rather than b64
+static void dump_signet(const char * signet_file) {			// TODO needs to dump in HEX format rather than b64
 
 	char *fingerprint, *signet_f = NULL;
 	signet_type_t type;
@@ -438,7 +438,7 @@ void dump_signet(const char * signet_file) {			// TODO needs to dump in HEX form
  * @param	type	Signet type to be examined.
  * @return	void.
 */
-void examine_signet(signet_type_t type) {
+static void examine_signet(signet_type_t type) {
 
 	char *strtype;
 	int i;

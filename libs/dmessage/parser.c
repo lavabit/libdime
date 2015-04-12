@@ -1,4 +1,5 @@
 #include "dmessage/dmime.h"
+#include "dmessage/dmsg.h"
 
 /*
  * @brief	Destroys a dmime_common_headers_t structure.
