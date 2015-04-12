@@ -68,10 +68,10 @@ $(ARCHIVE): $(OBJFILES)
 
 # Object files
 $(OBJDIR)/%.o: %.c
-	@echo 'Building' $(YELLOW)$<$(NORMAL)
+	@echo 'Compiling' $(YELLOW)$<$(NORMAL)
 	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
-	@$(CC) $(CFLAGS) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
+	@$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
 # If we've already generated dependency files, use them to see if a rebuild is required
 -include $(DEPFILES)

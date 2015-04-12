@@ -10,4 +10,6 @@ SRCFILES := crypto_pub.c crypto.c error.c misc_pub.c misc.c network_pub.c networ
 # The list of include paths
 INCLUDES		:= -I../../include/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
+CFLAGS.misc.c = -Wno-format-nonliteral
+
 include ../../library.mk

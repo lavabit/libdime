@@ -19,4 +19,6 @@ type.c
 # The list of include paths
 INCLUDES		:= -I../../include/ -I../../include/core/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
+CFLAGS.parsers/time.c = -Wno-format-nonliteral
+
 include ../../library.mk
