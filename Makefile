@@ -27,7 +27,7 @@ libdonna		:= $(topdir)/deps/sources/donna
 libopenssl		:= $(topdir)/deps/sources/openssl
 foreign			:= # $(libopenssl) $(libdonna)
 
-checks			:= $(topdir)/check/common $(topdir)/check/dime $(topdir)/check/signet $(topdir)/check/dmessage
+checks			:= $(topdir)/check/common $(topdir)/check/core $(topdir)/check/dime $(topdir)/check/signet $(topdir)/check/dmessage
 
 .PHONY: all check clean $(libs) $(tools) $(legacy-tools) $(checks)
 
