@@ -37,13 +37,16 @@
 
 typedef struct {
 	struct {
-		chr_t characters[32], values[128];
+		chr_t characters[32];
+		uchr_t values[128];
 	} zbase32;
 	struct {
-		chr_t characters[64], values[128];
+		chr_t characters[64];
+		uchr_t values[128];
 	} base64;
 	struct {
-		chr_t characters[64], values[128];
+		chr_t characters[64];
+		uchr_t values[128];
 	} base64_mod;
 } mappings_t;
 
