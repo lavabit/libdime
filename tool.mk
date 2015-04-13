@@ -1,5 +1,5 @@
 topdir = $(dir $(lastword $(MAKEFILE_LIST)))
-include $(topdir)/config.mk
+include $(topdir)/common.mk
 
 # Defines
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
@@ -19,17 +19,6 @@ RM			:= rm --force
 RMDIR			:= rmdir --parents --ignore-fail-on-non-empty
 MKDIR			:= mkdir --parents
 RANLIB			:= ranlib
-
-# Text coloring
-RED			:= $$(tput setaf 1)
-BLUE			:= $$(tput setaf 4)
-GREEN			:= $$(tput setaf 2)
-WHITE			:= $$(tput setaf 7)
-YELLOW			:= $$(tput setaf 3)
-
-# Text weighting
-BOLD			:= $$(tput bold)
-NORMAL			:= $$(tput sgr0)
 
 # Hidden directories for generated files
 OBJDIR			= .objs

@@ -25,7 +25,7 @@ LIBDMESSAGE_LIBS	= ../../libs/dmessage/libdmessage.a
 # implementation
 
 topdir = $(dir $(lastword $(MAKEFILE_LIST)))
-include $(topdir)/config.mk
+include $(topdir)/common.mk
 
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
@@ -55,7 +55,7 @@ $(OBJDIRNAME) $(DEPDIRNAME):
 	@test -d $@ || mkdir $@
 
 $(OBJDIRNAME)/%.o : %.c | $(OBJDIRNAME) $(DEPDIRNAME)
-	@echo Compiling $<
+	@echo Compiling $(YELLOW)$<$(NORMAL)
 	$(RUN)$(CC) -M -MF $(df).d.tmp $(CFLAGS) $(ALL_INC_CCOPT) -fPIC -c $<
 	@sed -e 's,^\($*\)\.o,$(OBJDIRNAME)/\1.o,' < $(df).d.tmp > $(df).d; \
 	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
