@@ -251,14 +251,16 @@ typedef struct object_chunk {
 
 
 /*header parsing */
+#define DMIME_NUM_COMMON_HEADERS     7
+
 typedef enum {
-	HEADER_TYPE_NONE = 0,
-	HEADER_TYPE_DATE,
+	HEADER_TYPE_DATE = 0,
 	HEADER_TYPE_TO,
 	HEADER_TYPE_CC,
 	HEADER_TYPE_FROM,
 	HEADER_TYPE_ORGANIZATION,
-	HEADER_TYPE_SUBJECT
+	HEADER_TYPE_SUBJECT,
+	HEADER_TYPE_NONE
 } dmime_header_type_t;
 
 typedef struct {
@@ -267,9 +269,11 @@ typedef struct {
 	size_t label_length;
 } dmime_header_key_t;
 
-typedef stringer_t ** dmime_common_headers_t;
+typedef struct {
+	stringer_t * headers[DMIME_NUM_COMMON_HEADERS];
+} dmime_common_headers_t;
 
-extern dmime_header_key_t dmime_header_keys[7];
+extern dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS];
 
 typedef struct {
 	// The current actor on the object.
@@ -286,7 +290,7 @@ typedef struct {
 	signet_t *signet_origin;
 	signet_t *signet_destination;
 	// Common headers.
-	dmime_common_headers_t common_headers;
+	dmime_common_headers_t *common_headers;
 	// Other headers
 	stringer_t *other_headers;
 	// display and attachment chunks

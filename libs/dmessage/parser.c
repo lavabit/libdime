@@ -1,22 +1,42 @@
 #include "dmessage/dmime.h"
 #include "dmessage/dmsg.h"
 
+
+/*
+ * @brief	Allocates memory for an empty dmime_common_headers_t type.
+ * @return	dmime_common_headers_t type.
+ */
+dmime_common_headers_t * _dmsg_create_common_headers(void) {
+
+	dmime_common_headers_t *result;
+
+	if(!(result = malloc(sizeof(dmime_common_headers_t)))) {
+		PUSH_ERROR_SYSCALL("malloc");
+		RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for parsed common headers");
+	}
+
+	memset(result, 0, sizeof(dmime_common_headers_t));
+
+	return result;
+}
+
+
 /*
  * @brief	Destroys a dmime_common_headers_t structure.
  * @param	obj		Headers to be destroyed.
  * @return	void.
  */
-void _dmsg_destroy_common_headers(dmime_common_headers_t obj) {
+void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
 
 	if(!obj) {
 		return;
 	}
 
-	for(unsigned int i = 0; i < 6; ++i) {
+	for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
 
-		if(obj[i]) {
-			_secure_wipe(st_data_get(obj[i]), st_length_get(obj[i]));
-			st_cleanup(obj[i]);
+		if(obj->headers[i]) {
+			_secure_wipe(st_data_get(obj->headers[i]), st_length_get(obj->headers[i]));
+			st_cleanup(obj->headers[i]);
 		}
 
 	}
@@ -31,7 +51,7 @@ void _dmsg_destroy_common_headers(dmime_common_headers_t obj) {
  * @param	outsize	Stores the size of the output array.
  * @return	Returns the array of ASCII characters (not terminated by '\0') as pointer to unsigned char.
  */
-unsigned char * _dmsg_format_common_headers(dmime_common_headers_t obj, size_t *outsize) {
+unsigned char * _dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *outsize) {
 
 	size_t size = 0, at = 0;
 	unsigned char *result;
@@ -40,13 +60,15 @@ unsigned char * _dmsg_format_common_headers(dmime_common_headers_t obj, size_t *
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	for(unsigned int i = 0; i < 6; ++i) {
+	for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
 
-		if(!obj[i] && dmime_header_keys[i+1].required) {
+		if(!obj->headers[i] && dmime_header_keys[i].required) {
 			RET_ERROR_PTR(ERR_UNSPEC, "a required common header field is missing");
 		}
 
-		size += dmime_header_keys[i+1].label_length + st_length_get(obj[i]) + 2;
+		if(dmime_header_keys[i].label && obj->headers[i]) {
+			size += dmime_header_keys[i].label_length + st_length_get(obj->headers[i]) + 2;
+		}
 	}
 
 	if(!(result = malloc(size))) {
@@ -56,13 +78,13 @@ unsigned char * _dmsg_format_common_headers(dmime_common_headers_t obj, size_t *
 
 	memset(result, 0, size);
 
-	for(unsigned int i = 0; i < 6; ++i) {
+	for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
 
-		if(obj[i]) {
-			memcpy(result+at, (unsigned char *)dmime_header_keys[i+1].label, dmime_header_keys[i+1].label_length);
-			at += dmime_header_keys[i+1].label_length;
-			memcpy(result+at, st_data_get(obj[i]), st_length_get(obj[i]));
-			at += st_length_get(obj[i]);
+		if(obj->headers[i] && dmime_header_keys[i].label) {
+			memcpy(result+at, (unsigned char *)dmime_header_keys[i].label, dmime_header_keys[i].label_length);
+			at += dmime_header_keys[i].label_length;
+			memcpy(result+at, st_data_get(obj->headers[i]), st_length_get(obj->headers[i]));
+			at += st_length_get(obj->headers[i]);
 			result[at++] = (unsigned char)'\r';
 			result[at++] = (unsigned char)'\n';
 		}
@@ -127,7 +149,7 @@ dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
 		return HEADER_TYPE_ORGANIZATION;
 	}
 
-	return HEADER_TYPE_ORGANIZATION;
+	return HEADER_TYPE_NONE;
 }
 
 /*
@@ -136,31 +158,28 @@ dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
  * @param	insize	Input buffer size.
  * @return	A dmime_common_headers_t array of stringers containing parsed header info.
  */
-dmime_common_headers_t _dmsg_parse_common_headers(unsigned char *in, size_t insize) {
+dmime_common_headers_t * _dmsg_parse_common_headers(unsigned char *in, size_t insize) {
 
 	dmime_header_type_t type;
 	size_t at = 0, head_size;
-	dmime_common_headers_t result;
+	dmime_common_headers_t *result;
 
 	if(!in || !insize) {
 		RET_ERROR_CUST(0, ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(result = malloc(6 * sizeof(stringer_t *)))) {
-		PUSH_ERROR_SYSCALL("malloc");
-		RET_ERROR_CUST(0, ERR_NOMEM, "could not allocate memory for parsed common headers");
+	if(!(result = _dmsg_create_common_headers())) {
+		RET_ERROR_CUST(0, ERR_UNSPEC, "error creating a new dmime_common_headers_t object");
 	}
-
-	memset(result, 0, 6*sizeof(stringer_t *));
 
 	while(at < insize) {
 
-		if(!(type = _dmsg_parse_next_header(in + at, insize - at))) {
+		if((type = _dmsg_parse_next_header(in + at, insize - at)) == HEADER_TYPE_NONE) {
 			_dmsg_destroy_common_headers(result);
-			RET_ERROR_CUST(0, ERR_UNSPEC, "headers buffer contained an invalid header type");
+			RET_ERROR_CUST(0, ERR_UNSPEC, "headers	 buffer contained an invalid header type");
 		}
 
-		if(result[type - 1]) {
+		if(result->headers[type]) {
 			_dmsg_destroy_common_headers(result);
 			RET_ERROR_CUST(0, ERR_UNSPEC, "headers buffer contains duplicate fields");
 		}
@@ -177,7 +196,7 @@ dmime_common_headers_t _dmsg_parse_common_headers(unsigned char *in, size_t insi
 			RET_ERROR_CUST(0, ERR_UNSPEC, "invalid header syntax");
 		}
 
-		result[type - 1] = st_import(in+at, head_size);
+		result->headers[type] = st_import(in+at, head_size);
 		at += head_size + 2;
 	}
 
@@ -454,12 +473,12 @@ char * _dmsg_object_state_to_string(dmime_object_state_t state) {
 }
 
 
-dmime_header_key_t dmime_header_keys[7] = {
-	{0, NULL, 0},
+dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS] = {
 	{1, "Date: ", 6},
 	{1, "To: ", 4},
 	{0, "CC: ", 4},
 	{1, "From: ", 6},
 	{0, "Organization: ", 14},
-	{1, "Subject: ", 9}
+	{1, "Subject: ", 9},
+	{0, NULL, 0}
 };

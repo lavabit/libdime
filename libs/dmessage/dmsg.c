@@ -3520,10 +3520,10 @@ int _dmsg_dump_object(dmime_object_t *object) {
 
 	if((object->actor == id_author) || (object->actor == id_recipient)) {
 
-		for(unsigned int i = 1; i < 7; ++i) {
+		for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
 
-			if(object->common_headers[i-1]) {
-				printf("%s%.*s\r\n", dmime_header_keys[i].label, (int)st_length_get(object->common_headers[i-1]), (char *)st_data_get(object->common_headers[i-1]));
+			if(object->common_headers->headers[i] && dmime_header_keys[i].label) {
+				printf("%s%.*s\r\n", dmime_header_keys[i].label, (int)st_length_get(object->common_headers->headers[i]), (char *)st_data_get(object->common_headers->headers[i]));
 			}
 
 		}

@@ -67,13 +67,15 @@ unsigned char _dmsg_get_chunk_flags(dmime_message_chunk_t *chunk);
 
 /* in parser.c */
 
-void _dmsg_destroy_common_headers(dmime_common_headers_t obj);
+dmime_common_headers_t * _dmsg_create_common_headers(void);
 
-unsigned char * _dmsg_format_common_headers(dmime_common_headers_t obj, size_t *outsize);
+void _dmsg_destroy_common_headers(dmime_common_headers_t *obj);
+
+unsigned char * _dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *outsize);
 
 dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize);
 
-dmime_common_headers_t _dmsg_parse_common_headers(unsigned char *in, size_t insize);
+dmime_common_headers_t * _dmsg_parse_common_headers(unsigned char *in, size_t insize);
 
 void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj);
 

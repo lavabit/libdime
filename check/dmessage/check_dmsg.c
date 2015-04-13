@@ -2,6 +2,14 @@
 #include "dmessage/dmsg.h"
 #include "check_dmsg.h"
 
+START_TEST (check_header_parsing) {
+
+	ck_assert_msg(1 == 1, "nothing yet");
+
+
+}
+END_TEST
+
 START_TEST (check_message_encryption)
 {
 	EC_KEY *auth_enckey, *orig_enckey, *dest_enckey, *recp_enckey;
@@ -90,8 +98,7 @@ START_TEST (check_message_encryption)
 	draft = malloc(sizeof(dmime_object_t));
 	memset(draft, 0, sizeof(dmime_object_t));
 
-	draft->common_headers = malloc(6 * sizeof(stringer_t *));
-	memset(draft->common_headers, 0, 6);
+	draft->common_headers = _dmsg_create_common_headers();
 
 	draft->actor = id_author;
 	draft->author = st_import(auth, strlen(auth));
@@ -102,11 +109,11 @@ START_TEST (check_message_encryption)
 	draft->signet_origin = signet_orig;
 	draft->signet_destination = signet_dest;
 	draft->signet_recipient = signet_recp;
-	draft->common_headers[HEADER_TYPE_DATE-1] = st_import(common_date, strlen(common_date));
-	draft->common_headers[HEADER_TYPE_FROM-1] = st_import(common_from, strlen(common_from));
-	draft->common_headers[HEADER_TYPE_ORGANIZATION-1] = st_import(common_organization, strlen(common_organization));
-	draft->common_headers[HEADER_TYPE_SUBJECT] = st_import(common_subject, strlen(common_subject));
-	draft->common_headers[HEADER_TYPE_TO] = st_import(common_to, strlen(common_to));
+	draft->common_headers->headers[HEADER_TYPE_DATE] = st_import(common_date, strlen(common_date));
+	draft->common_headers->headers[HEADER_TYPE_FROM] = st_import(common_from, strlen(common_from));
+	draft->common_headers->headers[HEADER_TYPE_ORGANIZATION] = st_import(common_organization, strlen(common_organization));
+	draft->common_headers->headers[HEADER_TYPE_SUBJECT] = st_import(common_subject, strlen(common_subject));
+	draft->common_headers->headers[HEADER_TYPE_TO] = st_import(common_to, strlen(common_to));
 	draft->other_headers = st_import(other_headers, strlen(other_headers));
 	draft->display = _dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
 
@@ -206,6 +213,7 @@ Suite * suite_check_dmsg(void) {
 	TCase *tc;
 
 	s = suite_create("signet");
+	testcase(s, tc, "check common header formatting and parsing", check_header_parsing);
 	testcase(s, tc, "check message creation and encryption", check_message_encryption);
 
 	return s;
