@@ -41,4 +41,13 @@
 
 #endif
 
+#if !CHECK_VERSION_AT_LEAST(0,9,9)
+
+#define ck_assert_int_lt(X, Y) _ck_assert_int(X, <, Y)
+#define ck_assert_int_le(X, Y) _ck_assert_int(X, <=, Y)
+#define ck_assert_int_gt(X, Y) _ck_assert_int(X, >, Y)
+#define ck_assert_int_ge(X, Y) _ck_assert_int(X, >=, Y)
+
+#endif
+
 #endif
