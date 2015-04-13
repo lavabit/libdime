@@ -5,7 +5,7 @@ include $(topdir)/config.mk
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compilation
-CFLAGS			:= $(CWARNS) -std=gnu99 -fPIC -Os -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -rdynamic -fmessage-length=0 -c -MMD
 
 # Linker Flags
 LDFLAGS			:= -rdynamic

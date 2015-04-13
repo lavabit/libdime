@@ -33,19 +33,13 @@ CHECK_LIBS	:= $(shell pkg-config --libs check)
 check_PROGRAMS	= checks
 CC		=  gcc
 LIBS 		= $(checks_LDADD) $(CHECK_LIBS) -lz -lresolv
-CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) $(CWARNS) -ggdb -Os -I../../include -std=gnu99
+CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) $(CWARNS) $(CDEBUG) -I../../include -std=gnu99
 SRCFILES	= $(checks_SOURCES)
 OBJDIRNAME	= .objs
 DEPDIRNAME	= .deps
 df = $(DEPDIRNAME)/$(*F)
 DEPFILES	= $(patsubst %.c,$(DEPDIRNAME)/%.d,$(SRCFILES))
 OBJFILES	= $(patsubst %.c,$(OBJDIRNAME)/%.o,$(SRCFILES))
-
-ifeq ($(V),1)
-RUN		=
-else
-RUN		= @
-endif
 
 .PHONY: all clean run-checks
 all: $(check_PROGRAMS) run-checks
@@ -55,7 +49,7 @@ clean:
 	@rm -f $(check_PROGRAMS)
 
 $(check_PROGRAMS): $(OBJFILES)
-	$(CC) -o $@ $(OBJFILES) $(LIBS)
+	$(RUN)$(CC) -o $@ $(OBJFILES) $(LIBS)
 
 $(OBJDIRNAME) $(DEPDIRNAME):
 	@test -d $@ || mkdir $@

@@ -5,7 +5,7 @@ include $(topdir)/config.mk
 DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compiler Flags
-CFLAGS			:= $(CWARNS) -std=gnu99 -fPIC -Os -rdynamic -fmessage-length=0 -g3 -ggdb -c -MMD
+CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -rdynamic -fmessage-length=0 -c -MMD
 
 # Archiver Flags
 ARFLAGS			:= rcs
@@ -62,7 +62,7 @@ clean:
 # Construct the static archive file
 $(ARCHIVE): $(OBJFILES)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
-	@$(AR) $(ARFLAGS) $@ $(OBJFILES)
+	$(RUN)$(AR) $(ARFLAGS) $@ $(OBJFILES)
 	@$(RANLIB) $@
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
@@ -71,7 +71,7 @@ $(OBJDIR)/%.o: %.c
 	@echo 'Compiling' $(YELLOW)$<$(NORMAL)
 	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
-	@$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
+	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
 # If we've already generated dependency files, use them to see if a rebuild is required
 -include $(DEPFILES)
