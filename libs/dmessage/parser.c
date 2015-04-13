@@ -465,3 +465,14 @@ char * _dmsg_object_state_to_string(dmime_object_state_t state) {
 	}
 
 }
+
+
+dmime_header_key_t dmime_header_keys[7] = {
+	{0, NULL, 0},
+	{1, "Date: ", 6},
+	{1, "To: ", 4},
+	{0, "CC: ", 4},
+	{1, "From: ", 6},
+	{0, "Organization: ", 14},
+	{1, "Subject: ", 9}
+};
