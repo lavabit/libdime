@@ -53,7 +53,7 @@ enum {
 };
 
 /************ TYPE ************/
-char * type(M_TYPE type);
+const char * type(M_TYPE type);
 /************ TYPE ************/
 
 #include "memory.h"

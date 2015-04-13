@@ -130,8 +130,8 @@ void st_free(stringer_t *s);
 void st_cleanup(stringer_t *s);
 //stringer_t * st_alloc(size_t len);
 stringer_t * st_dupe(stringer_t *s);
-//stringer_t * st_merge(chr_t *format, ...);
-//stringer_t * st_aprint(chr_t *format, va_list list);
+//stringer_t * st_merge(const chr_t *format, ...);
+//stringer_t * st_aprint(const chr_t *format, va_list list);
 stringer_t * st_import(const void *s, size_t len);
 stringer_t * st_copy_in(stringer_t *s, void *buf, size_t len);
 stringer_t * st_realloc(stringer_t *s, size_t len);
@@ -141,7 +141,7 @@ stringer_t * st_nullify(chr_t *input, size_t len);
 // Allocation with Options
 stringer_t * st_alloc_opts(uint32_t opts, size_t len);
 stringer_t * st_dupe_opts(uint32_t opts, stringer_t *s);
-stringer_t * st_merge_opts(uint32_t opts, chr_t *format, ...);
+stringer_t * st_merge_opts(uint32_t opts, const chr_t *format, ...);
 stringer_t * st_append_opts(size_t align, stringer_t *s, stringer_t *append);
 
 /// shortcuts.c
@@ -162,12 +162,12 @@ bool_t   st_opt_get(stringer_t *s, uint32_t opt);
 int_t    st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled);
 
 /// print.c
-stringer_t * st_aprint(chr_t *format, ...) __attribute__((format (printf, 1, 2)));
-stringer_t * st_aprint_opts(uint32_t opts, chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-stringer_t * st_quick(stringer_t *s, chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-size_t st_sprint(stringer_t *s, chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-stringer_t * st_vaprint_opts(uint32_t opts, chr_t *format, va_list args);
-size_t st_vsprint(stringer_t *s, chr_t *format, va_list args);
+stringer_t * st_aprint(const chr_t *format, ...) __attribute__((format (printf, 1, 2)));
+stringer_t * st_aprint_opts(uint32_t opts, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
+stringer_t * st_quick(stringer_t *s, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
+size_t st_sprint(stringer_t *s, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
+stringer_t * st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args);
+size_t st_vsprint(stringer_t *s, const chr_t *format, va_list args);
 
 /// replace.c
 int_t         st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replacement);

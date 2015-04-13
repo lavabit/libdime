@@ -793,7 +793,7 @@ dnskey_t * _add_dnskey_entry_rsa (const char *label, uint16_t flags, unsigned ch
  * @param	ttl		the TTL value indicated by the DS resource record.
  * @return	NULL on failure, or a pointer to the new DS object cache entry on success.
  */
-ds_t * _add_ds_entry(char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl) {
+ds_t * _add_ds_entry(const char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl) {
 
 	cached_object_t *result;
 	ds_t *ds;
@@ -865,7 +865,7 @@ ds_t * _add_ds_entry(char *label, unsigned int keytag, unsigned char algorithm, 
  * 				otherwise, lookups will be restricted only to the object cache.
  * @return	a pointer to the specified DNSKEY record if it was found, or NULL on error or if it wasn't.
  */
-dnskey_t *_get_dnskey_by_tag(unsigned int tag, char *signer, int force_lookup) {
+dnskey_t *_get_dnskey_by_tag(unsigned int tag, const char *signer, int force_lookup) {
 
 	dnskey_t cmp;
 	cached_object_t *obj;
@@ -875,7 +875,7 @@ dnskey_t *_get_dnskey_by_tag(unsigned int tag, char *signer, int force_lookup) {
 	}
 
 	memset(&cmp, 0, sizeof(cmp));
-	cmp.label = signer;
+	cmp.label = (char *)signer; /* won't be deallocated */
 	cmp.keytag = tag;
 
 	if ((obj = _find_cached_object_cmp(&cmp, &(cached_stores[cached_data_dnskey]), &_dnskey_tag_comparator))) {
@@ -1214,15 +1214,9 @@ dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t
 /**
  * @brief	Verify the signature provided by an RRSIG record.
  * @see		rsa_verify_record()
- * @param	label
- * @param	dhandle
- * @param	covered
- * @param	rdata
- * @param	rdlen
- * @param	outkey
  * @return	1 if the RRSIG signature was correct for the RR data, 0 if it was not, or -1 on general error.
  */
-int _validate_rrsig_rr(char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey) {
+int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey) {
 
 	rrsig_rr_t *rrsig;
 	dnskey_t *signing_key;
@@ -1327,7 +1321,7 @@ void _dump_dns_header(ns_msg *handle) {
 
 
 // TODO: needs lots of cleanup. Needs to return values, for one.
-void * _lookup_dnskey(char *label) {
+void * _lookup_dnskey(const char *label) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1441,7 +1435,7 @@ void * _lookup_dnskey(char *label) {
  * @brief	Lookup the DS record for a specified domain.
  * @param	label	a null-terminated string containing the name of the domain to have its DS record queried.
  */
-void * _lookup_ds(char *label) {
+void * _lookup_ds(const char *label) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1626,7 +1620,8 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 	dnskey_t *signing_key;
 	const unsigned char *strptr;
 	unsigned char resbuf[4096];
-	char *lname, *result = NULL;
+	const char *lname;
+	char *result = NULL;
 	int nread, vval, dnssec_rrs = 0;
 	size_t i, nanswers, nadditional, strsize, rdleft, rsize = 0;
 	uint16_t rrtype, z;

@@ -50,7 +50,7 @@ int_t         spool_check(stringer_t *path);
 int_t         spool_check_file(const char *file, const struct stat *info, int type);
 int_t         spool_cleanup(void);
 uint64_t      spool_error_stats(void);
-int_t         spool_mktemp(int_t spool, chr_t *prefix);
+int_t         spool_mktemp(int_t spool, const chr_t *prefix);
 stringer_t *  spool_path(int_t spool);
 bool_t        spool_start(void);
 void          spool_stop(void);

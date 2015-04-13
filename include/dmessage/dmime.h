@@ -149,8 +149,8 @@ typedef struct {
 	unsigned int dest_keyslot;
 	unsigned int recp_keyslot;
 
-	char *name;
-	char *description;
+	const char *name;
+	const char *description;
 } dmime_chunk_key_t;
 
 
@@ -265,7 +265,7 @@ typedef enum {
 
 typedef struct {
 	int required;
-	char *label;
+	const char *label;
 	size_t label_length;
 } dmime_header_key_t;
 

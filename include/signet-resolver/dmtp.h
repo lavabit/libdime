@@ -94,6 +94,6 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
 int         _dmtp_expect_banner(dmtp_session_t *session);
 int         _dmtp_issue_command(dmtp_session_t *session, const char *cmd);
 char *      _dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode);
-int         _dmtp_write_data(dmtp_session_t *session, void *buf, size_t buflen);
+int         _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen);
 
 #endif

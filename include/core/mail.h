@@ -48,9 +48,9 @@ typedef struct {
 } mail_message_t;
 
 typedef struct {
-	chr_t *extension;
+	const chr_t *extension;
 	bool_t bin;
-	chr_t *name;
+	const chr_t *name;
 } media_type_t;
 
 // counters.c

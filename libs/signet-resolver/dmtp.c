@@ -1827,7 +1827,7 @@ char * _dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned sh
  * @param	buflen		the size, in bytes, of the data buffer to be written to the DMTP session.
  * @return	0 if all requested bytes were written successfully to the connection, or -1 on failure.
  */
-int _dmtp_write_data(dmtp_session_t *session, void *buf, size_t buflen) {
+int _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen) {
 
 	unsigned char *dataptr = (unsigned char *)buf;
 	int nwritten;

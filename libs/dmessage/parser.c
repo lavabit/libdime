@@ -252,7 +252,7 @@ void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
 dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 
 	dmime_envelope_object_t *result;
-	char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
+	const char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
 	unsigned char *start;
 	size_t string_size = 0, at = 0;
 
@@ -422,7 +422,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
  * @param	actor		Actor value.
  * @return	String containing human readable actor.
 */
-char * _dmsg_actor_to_string(dmime_actor_t actor) {
+const char * _dmsg_actor_to_string(dmime_actor_t actor) {
 
 	switch(actor) {
 
@@ -447,7 +447,7 @@ char * _dmsg_actor_to_string(dmime_actor_t actor) {
  * @param	state		Object state value.
  * @return	String containing human readable dmime object state.
 */
-char * _dmsg_object_state_to_string(dmime_object_state_t state) {
+const char * _dmsg_object_state_to_string(dmime_object_state_t state) {
 
 	switch(state) {
 

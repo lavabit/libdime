@@ -19,83 +19,60 @@
  * @param type The type code to evaluate.
  * @return Null terminated string containing type name. String is stored in static buffer and returned as a pointer.
  */
-char * type(M_TYPE type) {
-
-	char *answer = "";
+const char *type(M_TYPE type) {
 
 	switch (type) {
 
 	// Strings
 	case (M_TYPE_STRINGER):
-		answer = "M_TYPE_STRINGER";
-		break;
-
+		return "M_TYPE_STRINGER";
 	case (M_TYPE_NULLER):
-		answer = "M_TYPE_NULLER";
-		break;
-
+		return "M_TYPE_NULLER";
 	case (M_TYPE_PLACER):
-		answer = "M_TYPE_PLACER";
-		break;
-
+		return "M_TYPE_PLACER";
 	case (M_TYPE_BLOCK):
-		answer = "M_TYPE_BLOCK";
-		break;
+		return "M_TYPE_BLOCK";
 
 	// Enum
 	case (M_TYPE_ENUM):
-		answer = "M_TYPE_ENUM";
-		break;
+		return "M_TYPE_ENUM";
 
 	// Multi
 	case (M_TYPE_MULTI):
-		answer = "M_TYPE_MULTI";
-		break;
+		return "M_TYPE_MULTI";
 
 	// Boolean
 	case (M_TYPE_BOOLEAN):
-		answer = "M_TYPE_BOOLEAN";
-		break;
+		return "M_TYPE_BOOLEAN";
 
 	// Unsigned integers
 	case (M_TYPE_UINT64):
-		answer = "M_TYPE_UINT64";
-		break;
+		return "M_TYPE_UINT64";
 	case (M_TYPE_UINT32):
-		answer = "M_TYPE_UINT32";
-		break;
+		return "M_TYPE_UINT32";
 	case (M_TYPE_UINT16):
-		answer = "M_TYPE_UINT16";
-		break;
+		return "M_TYPE_UINT16";
 	case (M_TYPE_UINT8):
-		answer = "M_TYPE_UINT8";
-		break;
+		return "M_TYPE_UINT8";
 
 	// Signed integers
 	case (M_TYPE_INT64):
-		answer = "M_TYPE_INT64";
-		break;
+		return "M_TYPE_INT64";
 	case (M_TYPE_INT32):
-		answer = "M_TYPE_INT32";
-		break;
+		return "M_TYPE_INT32";
 	case (M_TYPE_INT16):
-		answer = "M_TYPE_INT16";
-		break;
+		return "M_TYPE_INT16";
 	case (M_TYPE_INT8):
-		answer = "M_TYPE_INT8";
-		break;
+		return "M_TYPE_INT8";
 
 	case (M_TYPE_FLOAT):
-		answer = "M_TYPE_FLOAT";
-		break;
+		return "M_TYPE_FLOAT";
 	case (M_TYPE_DOUBLE):
-		answer = "M_TYPE_DOUBLE";
-		break;
+		return "M_TYPE_DOUBLE";
 	case (M_TYPE_EMPTY):
-		answer = "M_TYPE_EMPTY";
-		break;
+		return "M_TYPE_EMPTY";
 	}
 
-	return answer;
+	return "";
 }
 
