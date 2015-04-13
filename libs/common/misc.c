@@ -286,7 +286,7 @@ unsigned int _get_dbg_level(void) {
  * @param	fmt
  * @return
  */
-int _str_printf(char **sbuf, char *fmt, ...) {
+int _str_printf(char **sbuf, const char *fmt, ...) {
 
 	va_list ap;
 	int result;
@@ -305,7 +305,7 @@ int _str_printf(char **sbuf, char *fmt, ...) {
  * @param	fmt
  * @return
  */
-int __str_printf(char **sbuf, char *fmt, va_list ap) {
+int __str_printf(char **sbuf, const char *fmt, va_list ap) {
 
 	va_list copy;
 	char *result, *endptr, tmp;

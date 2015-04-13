@@ -46,7 +46,8 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 	dime_record_t *drec = (dime_record_t *)record;
 	unsigned char **tlsptr;
 	unsigned char **pokptr;
-	char *policy_string, *sub_string, **dxptr, *tmpstr;
+	const char *policy_string, *sub_string;
+	char **dxptr, *tmpstr;
 	size_t i;
 
 	if (!fp) {

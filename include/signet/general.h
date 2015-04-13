@@ -210,8 +210,8 @@ typedef struct {
 
 	field_data_t data_type;		/* Dump format for the field */
 
-	char* name;
-	char* description;		/* field type description*/
+	const char* name;
+	const char* description;		/* field type description*/
 
 } signet_field_key_t;
 

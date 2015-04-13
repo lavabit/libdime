@@ -53,7 +53,7 @@ unsigned int get_dbg_level(void) {
 	PUBLIC_FUNC_IMPL(get_dbg_level,);
 }
 
-int str_printf(char **sbuf, char *fmt, ...) {
+int str_printf(char **sbuf, const char *fmt, ...) {
 	PUBLIC_FUNC_IMPL_VA2_RET(int, str_printf, sbuf, fmt);
 }
 

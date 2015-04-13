@@ -366,7 +366,7 @@ char * _signet_serialize_b64(signet_t *signet) {
 */
 void _signet_dump(FILE *fp, signet_t *signet) {
 
-	char *type;
+	const char *type;
 	int i, res;
 	unsigned int version = SIGNET_VER_NO;
 	signet_type_t signet_type;
@@ -1866,7 +1866,7 @@ signet_state_t 	_signet_full_verify(const signet_t *signet, const signet_t *orgs
 
 	int i, res, res2, res3, pok_num;
 	unsigned char *user_key, ** org_keys;
-	char *errmsg = NULL;
+	const char *errmsg = NULL;
 	size_t key_size;
 	signet_state_t signet_state, result = SS_FULL;
 	signet_type_t type;
@@ -2917,8 +2917,8 @@ signet_field_t * _signet_field_destroy(signet_field_t *field) {
 
 int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 
-	char *name, *nbuf, *data = NULL;
-	const char *png_name = "PNG file";
+	char *name, *data = NULL;
+	const char *png_name = "PNG file", *nbuf;
 
 	if(!fp || !field) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);

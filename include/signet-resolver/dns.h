@@ -127,7 +127,7 @@ PUBLIC_FUNC_DECL(int,            load_dnskey_file,        const char *filename);
 PUBLIC_FUNC_DECL(int,            is_validated_key,        dnskey_t *dk);
 
 PUBLIC_FUNC_DECL(int,            compute_dnskey_sha_hash, const dnskey_t *key, size_t nbits, unsigned char *outbuf);
-PUBLIC_FUNC_DECL(dnskey_t *,     get_dnskey_by_tag,       unsigned int tag, char *signer, int force_lookup);
+PUBLIC_FUNC_DECL(dnskey_t *,     get_dnskey_by_tag,       unsigned int tag, const char *signer, int force_lookup);
 PUBLIC_FUNC_DECL(ds_t *,         get_ds_by_dnskey,        const dnskey_t *key);
 PUBLIC_FUNC_DECL(unsigned int,   get_keytag,              const unsigned char *rdata, size_t rdlen);
 
@@ -135,9 +135,9 @@ PUBLIC_FUNC_DECL(void,           destroy_dnskey,          dnskey_t *key);
 PUBLIC_FUNC_DECL(void,           destroy_ds,              ds_t *ds);
 
 PUBLIC_FUNC_DECL(int,            rsa_verify_record,       const char *label, unsigned char algorithm, RSA *pubkey, const unsigned char *rrsig, const unsigned char *sigbuf, size_t siglen, ns_msg *dhandle);
-PUBLIC_FUNC_DECL(int,            validate_rrsig_rr,       char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey);
-PUBLIC_FUNC_DECL(void *,         lookup_dnskey,           char *label);
-PUBLIC_FUNC_DECL(void *,         lookup_ds,               char *label);
+PUBLIC_FUNC_DECL(int,            validate_rrsig_rr,       const char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey);
+PUBLIC_FUNC_DECL(void *,         lookup_dnskey,           const char *label);
+PUBLIC_FUNC_DECL(void *,         lookup_ds,               const char *label);
 PUBLIC_FUNC_DECL(char *,         get_txt_record,          const char *qstring, unsigned long *ttl, int *validated);
 PUBLIC_FUNC_DECL(mx_record_t **, get_mx_records,          const char *qstring);
 PUBLIC_FUNC_DECL(void,           free_mx_records,         mx_record_t **mxs);
@@ -149,7 +149,7 @@ int        _initialize_resolver(void);
 dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t len, unsigned long ttl);
 dnskey_t * _add_dnskey_entry_rsa (const char *label, uint16_t flags, unsigned char algorithm, RSA *pubkey, unsigned int keytag, const unsigned char *rdata,
 	                          size_t rdlen, unsigned long ttl, unsigned int do_cache, int forced);
-ds_t *     _add_ds_entry (char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl);
+ds_t *     _add_ds_entry (const char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl);
 RSA *      _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen);
 
 void       _destroy_dnskey_record_cb(void *record);

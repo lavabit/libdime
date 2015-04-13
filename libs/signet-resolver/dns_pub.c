@@ -20,7 +20,7 @@ int compute_dnskey_sha_hash(const dnskey_t *key, size_t nbits, unsigned char *ou
 	PUBLIC_FUNC_IMPL(compute_dnskey_sha_hash, key, nbits, outbuf);
 }
 
-dnskey_t *get_dnskey_by_tag(unsigned int tag, char *signer, int force_lookup) {
+dnskey_t *get_dnskey_by_tag(unsigned int tag, const char *signer, int force_lookup) {
 	PUBLIC_FUNC_IMPL(get_dnskey_by_tag, tag, signer, force_lookup);
 }
 
@@ -36,15 +36,15 @@ void destroy_ds(ds_t *ds) {
 	PUBLIC_FUNC_IMPL_VOID(destroy_ds, ds);
 }
 
-int validate_rrsig_rr(char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey) {
+int validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covered, const unsigned char *rdata, size_t rdlen, dnskey_t **outkey) {
 	PUBLIC_FUNC_IMPL(validate_rrsig_rr, label, dhandle, covered, rdata, rdlen, outkey);
 }
 
-void * lookup_dnskey(char *label) {
+void * lookup_dnskey(const char *label) {
 	PUBLIC_FUNC_IMPL(lookup_dnskey, label);
 }
 
-void * lookup_ds(char *label) {
+void * lookup_ds(const char *label) {
 	PUBLIC_FUNC_IMPL(lookup_ds, label);
 }
 

@@ -54,7 +54,7 @@ PUBLIC_FUNC_DECL(void,            int_no_put_3b,             void *buf, uint32_t
 PUBLIC_FUNC_DECL(void,            int_no_put_2b,             void *buf, uint16_t val);
 
 // Managing dynamically re-sized data buffers.
-PUBLIC_FUNC_DECL_VA(int,          str_printf,                char **sbuf, char *fmt);
+PUBLIC_FUNC_DECL_VA(int,          str_printf,                char **sbuf, const char *fmt);
 PUBLIC_FUNC_DECL(size_t,          mem_append,                unsigned char **buf, size_t *blen, const unsigned char *data, size_t dlen);
 
 // Pointer chain operations.
