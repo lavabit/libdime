@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 
 	dime_record_t *drec;
 	dmtp_session_t *session;
-	signet_t *signet, *org_signet;
+	signet_t *signet, *org_signet = NULL;
 	cached_object_t *obj;
 	char *dxname = NULL, *dimefile = NULL, *fingerprint = NULL, *endfp = NULL, *newprint = NULL, *signame, *domain, *line;
 	unsigned long ttl = 0;
