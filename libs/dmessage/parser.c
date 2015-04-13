@@ -409,19 +409,14 @@ char * _dmsg_actor_to_string(dmime_actor_t actor) {
 
 		case id_author:
 			return "Author";
-			break;
 		case id_origin:
 			return "Origin";
-			break;
 		case id_destination:
 			return "Destination";
-			break;
 		case id_recipient:
 			return "Recipient";
-			break;
 		default:
 			return "Invalid dmime actor";
-			break;
 
 	}
 
@@ -439,28 +434,20 @@ char * _dmsg_object_state_to_string(dmime_object_state_t state) {
 
 		case DMIME_OBJECT_STATE_NONE:
 			return "None";
-			break;
 		case DMIME_OBJECT_STATE_CREATION:
 			return "Creation";
-			break;
 		case DMIME_OBJECT_STATE_LOADED_ENVELOPE:
 			return "Loaded Envelope";
-			break;
 		case DMIME_OBJECT_STATE_LOADED_SIGNETS:
 			return "Loaded Signets";
-			break;
 		case DMIME_OBJECT_STATE_INCOMPLETE_ENVELOPE:
 			return "Incomplete Envelope";
-			break;
 		case DMIME_OBJECT_STATE_INCOMPLETE_METADATA:
 			return "Incomplete Metadata";
-			break;
 		case DMIME_OBJECT_STATE_COMPLETE:
 			return "Complete";
-			break;
 		default:
 			return "Unknown";
-			break;
 
 	}
 
