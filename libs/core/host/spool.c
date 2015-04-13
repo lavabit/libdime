@@ -43,7 +43,7 @@ uint64_t spool_error_stats(void) {
  */
 stringer_t * spool_path(int_t spool) {
 
-	chr_t *folder;
+	const chr_t *folder;
 	stringer_t *result;
 
 	// Use the spool value to determine the folder.
@@ -112,7 +112,7 @@ int_t spool_check(stringer_t *path) {
  * @param	prefix	an optional prefix for the temp file name ("magma" will be used if prefix is NULL).
  * @return	-1 on failure or the file descriptor to the newly created temp file on success.
  */
-int_t spool_mktemp(int_t spool, chr_t *prefix) {
+int_t spool_mktemp(int_t spool, const chr_t *prefix) {
 
 	int_t fd = -1;
 	time_t now;

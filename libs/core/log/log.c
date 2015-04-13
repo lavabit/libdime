@@ -110,7 +110,8 @@ void log_internal(const char *file, const char *function, const int line, M_LOG_
 	struct tm local;
 //	void *array[1024];
 	bool_t output = false;
-	char /***strings = NULL, */buffer[128], *errmsg;
+	char /***strings = NULL, */buffer[128];
+	const char *errmsg;
 
 	va_start(args, format);
 

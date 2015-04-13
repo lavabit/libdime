@@ -1084,7 +1084,8 @@ stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, strin
 
 	stringer_t *result, *encoded;
 	media_type_t *mtype;
-	chr_t *fstart, *extptr = NULL, *ctype;
+	chr_t *fstart, *extptr = NULL;
+	const chr_t *ctype;
 	size_t flen;
 
 	if (!data) {

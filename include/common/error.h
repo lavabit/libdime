@@ -52,7 +52,7 @@
 
 typedef struct {
 	unsigned int errcode;
-	char *errmsg;
+	const char *errmsg;
 } err_desc_t;
 
 
@@ -80,12 +80,12 @@ void              dump_error_stack(void);
 
 // Internal error handling functions.
 void              _clear_error_stack(void);
-errinfo_t *       _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
+errinfo_t *       _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg);
 errinfo_t *       _push_error_stack_fmt(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...);
 errinfo_t *       _push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc);
 errinfo_t *       _push_error_stack_openssl(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno);
 errinfo_t *       _push_error_stack_resolver(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc);
-errinfo_t *       _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg);
+errinfo_t *       _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg);
 void              _dump_error(const errinfo_t *error);
 
 #endif

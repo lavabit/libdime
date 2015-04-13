@@ -141,7 +141,7 @@ stringer_t * st_nullify(chr_t *input, size_t len);
 // Allocation with Options
 stringer_t * st_alloc_opts(uint32_t opts, size_t len);
 stringer_t * st_dupe_opts(uint32_t opts, stringer_t *s);
-stringer_t * st_merge_opts(uint32_t opts, chr_t *format, ...);
+stringer_t * st_merge_opts(uint32_t opts, const chr_t *format, ...);
 stringer_t * st_append_opts(size_t align, stringer_t *s, stringer_t *append);
 
 /// shortcuts.c

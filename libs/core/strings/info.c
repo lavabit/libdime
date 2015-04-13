@@ -12,11 +12,11 @@
 
 #include "magma.h"
 
-chr_t *st_option_flags[] = {
+const chr_t *st_option_flags[] = {
 	"FOREIGNDATA"
 };
 
-chr_t *st_option_types[] = {
+const chr_t *st_option_types[] = {
 	"UNKNOWN",
 	"CONSTANT",
 	"PLACER",
@@ -26,13 +26,13 @@ chr_t *st_option_types[] = {
 	"MAPPED"
 };
 
-chr_t *st_option_layouts[] = {
+const chr_t *st_option_layouts[] = {
 	"UNKNOWN",
 	"CONTIGUOUS",
 	"JOINTED"
 };
 
-chr_t *st_option_allocators[] = {
+const chr_t *st_option_allocators[] = {
 	"UNKNOWN",
 	"STACK",
 	"HEAP",
@@ -46,7 +46,7 @@ chr_t *st_option_allocators[] = {
  */
 const chr_t * st_info_type(uint32_t opts) {
 
-	chr_t *result = st_option_types[0];
+	const chr_t *result = st_option_types[0];
 
 	switch (opts & (CONSTANT_T | NULLER_T | PLACER_T | BLOCK_T | MANAGED_T | MAPPED_T)) {
 		case (CONSTANT_T):
@@ -79,7 +79,7 @@ const chr_t * st_info_type(uint32_t opts) {
  */
 const chr_t * st_info_layout(uint32_t opts) {
 
-	chr_t *result = st_option_layouts[0];
+	const chr_t *result = st_option_layouts[0];
 
 	switch (opts & (CONTIGUOUS | JOINTED)) {
 		case (CONTIGUOUS):
@@ -100,7 +100,7 @@ const chr_t * st_info_layout(uint32_t opts) {
  */
 const chr_t * st_info_allocator(uint32_t opts) {
 
-	chr_t *result = st_option_allocators[0];
+	const chr_t *result = st_option_allocators[0];
 
 	switch (opts & (STACK | HEAP | SECURE)) {
 		case (STACK):

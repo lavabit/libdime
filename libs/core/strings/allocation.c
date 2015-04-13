@@ -112,12 +112,13 @@ void st_cleanup(stringer_t *s) {
  * @param	...		a variable argument list containing the strings to be concatenated to one another.
  * @return	a newly allocated string containing the concatenations of all specified managed and null-terminated strings.
  */
-stringer_t * st_merge_opts(uint32_t opts, chr_t *format, ...) {
+stringer_t * st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 
 	va_list list;
 	void *current;
 	stringer_t *result = NULL;
-	chr_t *cursor, *out;
+	const chr_t *cursor;
+	chr_t *out;
 	size_t length = 0, remaining;
 
 #ifdef MAGMA_PEDANTIC

@@ -202,15 +202,8 @@ void _clear_error_stack(void) {
 
 /**
  * @brief	Push an error onto the error stack.
- * @param	filename
- * @param	funcname
- * @param	lineno
- * @param	errcode
- * @param	xerrno
- * @param	auxmisg
- * @return
  */
-errinfo_t * _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
+errinfo_t * _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
 
 	errinfo_t *err;
 
@@ -360,7 +353,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
  * @param	auxmsg
  * @return
  */
-errinfo_t * _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, char *auxmsg) {
+errinfo_t * _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
 
 	memset(errptr, 0, sizeof(errinfo_t));
 
