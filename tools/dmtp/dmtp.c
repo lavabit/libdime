@@ -1,7 +1,3 @@
-
-
-
-
 #include "signet-resolver/dmtp.h"
 #include "signet-resolver/cache.h"
 #include "signet-resolver/dns.h"
@@ -14,13 +10,9 @@
 #include "common/network.h"
 #include "common/error.h"
 
-#include "dmessage/dmessage.h"
+#include "dmessage/dmsg.h"
 
-
-void usage(const char *progname);
-
-
-void usage(const char *progname) {
+static void usage(const char *progname) {
 
 	fprintf(stderr, "\nUsage: %s <-o origin> <-d destination> [-k org_key_file] [-x dxserver] [-p port] [-0] [-n] [-4 or -6] [-v] <dmime_msg_file>    where\n", progname);
 	fprintf(stderr, " dmime_msg_file is the pathname of the DMIME message to be transmitted.\n");
@@ -36,7 +28,6 @@ void usage(const char *progname) {
 
 	exit(EXIT_FAILURE);
 }
-
 
 int main(int argc, char *argv[]) {
 

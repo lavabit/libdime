@@ -1,14 +1,10 @@
-
 #include <unistd.h>
 
 #include "signet/keys.h"
-
 #include "common/misc.h"
 #include "common/dcrypto.h"
 
-
-
-void usage(const char *progname) {
+static void usage(const char *progname) {
 
 	fprintf(stderr, "\nUsage: %s <-g or -d> [-p] [-f keyfile]  where\n", progname);
 	fprintf(stderr, "  -g generates a new ED25519 keypair.\n");
@@ -86,14 +82,14 @@ int main(int argc, char *argv[]) {
 
 		}
 
-		if (!(privb64 = b64encode(key->private, sizeof(key->private)))) {
+		if (!(privb64 = b64encode(key->private_key, sizeof(key->private_key)))) {
 			fprintf(stderr, "Error: Unable to base64 encode ED25519 private key.\n");
 			dump_error_stack();
 			free_ed25519_key(key);
 			exit(EXIT_FAILURE);
 		}
 
-		if (!(pubb64 = b64encode(key->public, sizeof(key->public)))) {
+		if (!(pubb64 = b64encode(key->public_key, sizeof(key->public_key)))) {
 			fprintf(stderr, "Error: Unable to base64 encode ED25519 public key.\n");
 			dump_error_stack();
 			free_ed25519_key(key);
@@ -141,7 +137,7 @@ int main(int argc, char *argv[]) {
 
 		}
 
-		if (!(hexkey = hex_encode(key->private, sizeof(key->private)))) {
+		if (!(hexkey = hex_encode(key->private_key, sizeof(key->private_key)))) {
 			fprintf(stderr, "Error: Unable to encode ED25519 private key.\n");
 			dump_error_stack();
 			exit(EXIT_FAILURE);
@@ -150,7 +146,7 @@ int main(int argc, char *argv[]) {
 		printf("ED25519 private key: %s\n", hexkey);
 		free(hexkey);
 
-		if (!(hexkey = hex_encode(key->public, sizeof(key->public)))) {
+		if (!(hexkey = hex_encode(key->public_key, sizeof(key->public_key)))) {
 			fprintf(stderr, "Error: Unable to encode ED25519 public key.\n");
 			dump_error_stack();
 			exit(EXIT_FAILURE);

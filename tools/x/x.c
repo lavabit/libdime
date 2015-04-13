@@ -7,9 +7,7 @@
 #include "common/misc.h"
 #include "common/error.h"
 
-
-
-int main(int argc, char *argv[]) {
+int main(void) {
 
 	dime_record_t xdrec;
 	dmtp_session_t xsession;

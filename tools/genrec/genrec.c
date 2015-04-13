@@ -10,8 +10,7 @@
 #include "signet-resolver/mrec.h"
 #include "signet-resolver/signet-ssl.h"
 
-
-void usage(const char *progname) {
+static void usage(const char *progname) {
 
 	fprintf(stderr, "\nUsage: %s <-k privkey_file> [-c cert_file] [-d dx] [-p policy] [-s policy] [-e expiry] [-y syndicate] [-v version]  where\n", progname);
 	fprintf(stderr, "  -k specifies the mandatory path to the ed25519 private key file in PEM format.\n");
@@ -27,7 +26,6 @@ void usage(const char *progname) {
 
 	exit(EXIT_FAILURE);
 }
-
 
 int main(int argc, char *argv[]) {
 
@@ -61,7 +59,7 @@ int main(int argc, char *argv[]) {
 				}
 
 				// Derive public key from private key.
-				if (!(pubb64 = b64encode_nopad(key->public, ED25519_KEY_SIZE))) {
+				if (!(pubb64 = b64encode_nopad(key->public_key, ED25519_KEY_SIZE))) {
 					fprintf(stderr, "Error: Unable to base64 encode public key data.\n");
 					dump_error_stack();
 					exit(EXIT_FAILURE);

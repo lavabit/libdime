@@ -4,8 +4,7 @@
 #include "signet-resolver/cache.h"
 #include "signet-resolver/dns.h"
 
-
-void usage(const char *progname) {
+static void usage(const char *progname) {
 
 	fprintf(stderr, "\nUsage: %s [-mkdos] [-v] [-r anchor-file]    where\n", progname);
 	fprintf(stderr, " -m   dumps all cached DIME management records.\n");
