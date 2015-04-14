@@ -139,7 +139,7 @@ chr_t * st_info_opts(uint32_t opts, chr_t *s, size_t len) {
 		// Flags
 		/// LOW: Turn this into a loop.
 		if (opts & FOREIGNDATA) {
-			flags = st_append(flags, NULLER(st_option_flags[0]));
+			flags = st_append(flags, NULLER((char *)st_option_flags[0]));
 		}
 
 		snprintf(s, len, "(%s | %s | %s%s%.*s)", st_info_type(opts), st_info_layout(opts), st_info_allocator(opts), st_empty(flags) ? "" : " | ", st_length_int(flags), st_char_get(flags));
