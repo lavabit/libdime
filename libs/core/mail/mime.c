@@ -129,7 +129,7 @@ stringer_t * mail_mime_type_group(placer_t header) {
 	stringer_t *line, *result;
 	size_t remaining, characters = 0;
 
-	if (!(line = mail_header_fetch_cleaned(&header, PLACER("Content-Type", 12)))) {
+	if (!(line = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Type", 12)))) {
 		return st_import("text", 4);
 	}
 
@@ -175,7 +175,7 @@ stringer_t * mail_mime_type_sub(placer_t header) {
 	stringer_t *line, *result;
 	size_t remaining, characters = 0;
 
-	if (!(line = mail_header_fetch_cleaned(&header, PLACER("Content-Type", 12)))) {
+	if (!(line = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Type", 12)))) {
 		return st_import("plain", 5);
 	}
 
@@ -239,7 +239,7 @@ stringer_t * mail_mime_content_encoding(placer_t header) {
 	stringer_t *holder, *result = NULL;
 	size_t remaining, characters = 0;
 
-	if (!(holder = mail_header_fetch_cleaned(&header, PLACER("Content-Transfer-Encoding", 25)))) {
+	if (!(holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Transfer-Encoding", 25)))) {
 		return st_import("7bit", 4);
 	}
 
@@ -285,7 +285,7 @@ stringer_t * mail_mime_content_id(placer_t header) {
 	stringer_t *holder, *result = NULL;
 	size_t remaining, characters = 0;
 
-	if (!(holder = mail_header_fetch_cleaned(&header, PLACER("Content-Id", 10)))) {
+	if (!(holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Id", 10)))) {
 		return NULL;
 	}
 
@@ -434,9 +434,10 @@ array_t * mail_mime_type_parameters(placer_t header) {
 	array_t *output;
 	stringer_t *key, *holder;
 	placer_t parameter;
+	stringer_t *pparameter = (stringer_t *)&parameter;
 	unsigned increment, tokens;
 
-	if (!(holder = mail_header_fetch_cleaned(&header, PLACER("Content-Type", 12)))) {
+	if (!(holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Type", 12)))) {
 		return NULL;
 	}
 
@@ -454,10 +455,10 @@ array_t * mail_mime_type_parameters(placer_t header) {
 	for (increment = 1; increment < tokens; increment++) {
 		tok_get_st(holder, ';', increment, &parameter);
 
-		if ((key = mail_mime_type_parameters_key(&parameter))) {
+		if ((key = mail_mime_type_parameters_key(pparameter))) {
 			upper_st(key);
 			ar_append(&output, ARRAY_TYPE_STRINGER, key);
-			ar_append(&output, ARRAY_TYPE_STRINGER, mail_mime_type_parameters_value(&parameter));
+			ar_append(&output, ARRAY_TYPE_STRINGER, mail_mime_type_parameters_value(pparameter));
 		}
 
 	}
@@ -523,7 +524,7 @@ int_t mail_mime_type(placer_t header) {
 	size_t remaining;
 	stringer_t *holder;
 
-	if ((holder = mail_header_fetch_cleaned(&header, PLACER("Content-Type", 12))) == NULL) {
+	if ((holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Type", 12))) == NULL) {
 		return MESSAGE_TYPE_PLAIN;
 	}
 
@@ -579,7 +580,7 @@ int_t mail_mime_encoding(placer_t header) {
 	size_t remaining;
 	stringer_t *holder;
 
-	if ((holder = mail_header_fetch_cleaned(&header, PLACER("Content-Transfer-Encoding", 25))) == NULL) {
+	if ((holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Transfer-Encoding", 25))) == NULL) {
 		return MESSAGE_ENCODING_7BIT;
 	}
 
@@ -627,12 +628,12 @@ stringer_t * mail_mime_boundary(placer_t header) {
 	stringer_t *holder, *haystack, *boundary, *content;
 
 	// Get the content type line from the header.
-	if ((content = mail_header_fetch_all(&header, PLACER("Content-Type", 12)))) {
+	if ((content = mail_header_fetch_all((stringer_t *)&header, PLACER("Content-Type", 12)))) {
 		haystack = PLACER(st_char_get(content), st_length_get(content));
 	}
 	// If there is no content line, search the entire header.
 	else {
-		haystack = &header;
+		haystack = (stringer_t *)&header;
 	}
 
 	// Find the boundary.
@@ -707,7 +708,7 @@ uint32_t mail_mime_count(placer_t body, stringer_t *boundary) {
 	}
 
 	// Figure out the lengths.
-	if (!(length = st_length_get(&body))) {
+	if (!(length = pl_length_get(body))) {
 		log_pedantic("Cannot count boundary marker in zero-length MIME body..");
 		return 0;
 	}
@@ -717,7 +718,7 @@ uint32_t mail_mime_count(placer_t body, stringer_t *boundary) {
 	}
 
 	// Setup.
-	stream = st_char_get(&body);
+	stream = st_char_get((stringer_t *)&body);
 	bounddata = st_char_get(boundary);
 
 	// Find the start of the first part.
@@ -762,7 +763,7 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
 	}
 
 	// Figure out the lengths.
-	if (!(length = st_length_get(&body))) {
+	if (!(length = pl_length_get(body))) {
 		log_pedantic("Cannot parse children from zero-length MIME body..");
 		return pl_null();
 	}
@@ -772,7 +773,7 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
 	}
 
 	// Setup.
-	stream = st_char_get(&body);
+	stream = st_char_get((stringer_t *)&body);
 	bounddata = st_char_get(boundary);
 
 	// Find the start of the first part.
@@ -946,8 +947,9 @@ mail_mime_t * mail_mime_part(stringer_t *part, uint32_t recursion) {
 	result->header = mail_mime_header(part);
 
 	// Check to make sure the header doesn't take up the entire part.
-	if (st_length_get(&(result->header)) != st_length_get(part)) {
-		result->body = pl_init(st_char_get(part) + st_length_get(&(result->header)), st_length_get(part) - st_length_get(&(result->header)));
+	size_t header_len = pl_length_get(result->header);
+	if (header_len != st_length_get(part)) {
+		result->body = pl_init(st_char_get(part) + header_len, st_length_get(part) - header_len);
 	}
 
 	// Determine the content type.
@@ -1003,7 +1005,7 @@ int_t mail_mime_update(mail_message_t *message) {
 	}
 
 	part = pl_init(st_char_get(message->text), st_length_get(message->text));
-	message->mime = mail_mime_part(&part, 1);
+	message->mime = mail_mime_part((stringer_t *)&part, 1);
 
 	return 1;
 }

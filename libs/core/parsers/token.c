@@ -271,6 +271,7 @@ uint64_t str_tok_get_count_bl(void *block, size_t length, chr_t *token, size_t t
 
 	uint64_t count = 0;
 	placer_t haystack, needle;
+	stringer_t *phaystack = (stringer_t *)&haystack, *pneedle = (stringer_t *)&needle;
 	size_t hptr, skipped = 0;
 
 	// We can't search NULL pointers or empty strings.
@@ -281,7 +282,7 @@ uint64_t str_tok_get_count_bl(void *block, size_t length, chr_t *token, size_t t
 	haystack = pl_init(block, length);
 	needle = pl_init(token, toklen);
 
-	while ((skipped < length) && st_search_cs(&haystack, &needle, &hptr)) {
+	while ((skipped < length) && st_search_cs(phaystack, pneedle, &hptr)) {
 		skipped += pl_length_get (needle) + hptr;
 		haystack = pl_init((char *) block + skipped, length-skipped);
 		count++;
@@ -303,6 +304,7 @@ uint64_t str_tok_get_count_bl(void *block, size_t length, chr_t *token, size_t t
 int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint64_t fragment, placer_t *value) {
 
 	placer_t haystack, needle;
+	stringer_t *phaystack = (stringer_t *)&haystack, *pneedle = (stringer_t *)&needle;
 	size_t hptr, skipped = 0;
 	bool_t found;
 
@@ -320,19 +322,19 @@ int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint
 
 	while (fragment) {
 
-		if (!(found = st_search_cs(&haystack, &needle, &hptr))) {
+		if (!(found = st_search_cs(phaystack, pneedle, &hptr))) {
 			*value = pl_null();
 			return -1;
 		}
 
 		// Haystack becomes the entire block after the token.
-		skipped += pl_length_get (needle) + hptr;
+		skipped += pl_length_get(needle) + hptr;
 		haystack = pl_init(pl_char_get(haystack) + skipped, length-skipped);
 		fragment--;
 	}
 
 	// If no more tokens are present, return everything we have left
-	if (!st_search_cs(&haystack, &needle, &hptr)) {
+	if (!st_search_cs(phaystack, pneedle, &hptr)) {
 		*value = haystack;
 		return 1;
 	}

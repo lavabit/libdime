@@ -393,6 +393,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 	stringer_t *result;
 	size_t position = 0;
 	placer_t line;
+	stringer_t *pline = (stringer_t *)&line;
 	stringer_t *header, *first = NULL, *second = NULL;
 
 	if (!message || !*message || !label) {
@@ -404,15 +405,15 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 	header = PLACER(st_char_get(*message), mail_header_end(*message));
 
 	while (found != 1 && !pl_empty((line = mail_header_pop(header, &position)))) {
-		if (st_length_get(&line) >= 8) {
-			found = st_cmp_ci_starts(&line, CONSTANT("Subject:")) == 0 ? 1 : 0;
+		if (st_length_get(pline) >= 8) {
+			found = st_cmp_ci_starts(pline, CONSTANT("Subject:")) == 0 ? 1 : 0;
 		}
 	}
 
 	// Subject found.
 	if (found == 1) {
-		first = PLACER(st_data_get(*message), (st_char_get(&line) + 8) - st_char_get(*message));
-		second = PLACER(st_data_get(&line) + 8, st_length_get(*message) - st_length_get(first));
+		first = PLACER(st_data_get(*message), (st_char_get(pline) + 8) - st_char_get(*message));
+		second = PLACER(st_data_get(pline) + 8, st_length_get(*message) - st_length_get(first));
 	}
 	// Subject not found.
 	else {

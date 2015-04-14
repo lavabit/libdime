@@ -79,7 +79,10 @@ typedef struct __attribute__ ((packed)) {
 	void *data;
 } mapped_t;
 
-typedef void stringer_t;
+typedef struct __attribute__ ((packed)) {
+	uint32_t opts;
+	/* The remaining data fields depend on the options. */
+} stringer_t;
 
 /// nuller.c
 chr_t *  ns_alloc(size_t len);
