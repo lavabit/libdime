@@ -173,6 +173,10 @@ size_t st_vsprint(stringer_t *s, const chr_t *format, va_list args);
 int_t         st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replacement);
 stringer_t *  st_swap(stringer_t *target, uchr_t pattern, uchr_t replacement);
 
+static inline char *const_cast_char_ptr(const char *str) {
+	return (char *)str;
+}
+
 // Shortcut Macros
 #define st_append(s, append) st_append_opts(1024, s, append)
 #define st_alloc(len) st_alloc_opts(MANAGED_T | CONTIGUOUS | HEAP, len)
@@ -183,7 +187,7 @@ stringer_t *  st_swap(stringer_t *target, uchr_t pattern, uchr_t replacement);
 #define CONSTANT(string) (stringer_t *)((constant_t *)"\x41\x01\x00\x00" string)
 
 // Usage: nuller_t *nuller = NULLER(data);
-#define NULLER(d) (stringer_t *)&((nuller_t){ .opts = (NULLER_T | JOINTED | STACK | FOREIGNDATA), .data = d })
+#define NULLER(d) (stringer_t *)&((nuller_t){ .opts = (NULLER_T | JOINTED | STACK | FOREIGNDATA), .data = const_cast_char_ptr(d) })
 
 // Usage: block_t *block = BLOCK(data, length);
 #define BLOCK(d, l) (stringer_t *)&((block_t){ .opts = (BLOCK_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l })
