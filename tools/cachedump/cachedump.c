@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "signet-resolver/cache.h"
-#include "signet-resolver/dns.h"
+#include <signet-resolver/cache.h>
+#include <signet-resolver/dns.h>
 
 static void usage(const char *progname) {
 

@@ -73,8 +73,8 @@ placer_t pl_trim_start(placer_t place);
 void st_trim(stringer_t *string);
 
 
-#include "numbers.h"
-#include "formats.h"
-#include "special.h"
+#include <core/numbers.h>
+#include <core/formats.h>
+#include <core/special.h>
 
 #endif

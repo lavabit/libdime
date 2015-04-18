@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 /**
  * @brief	Computer a 32-bit Fletcher hash for a block of data.

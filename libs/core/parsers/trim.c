@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 static bool_t is_trimspace(chr_t ch) {
 	return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v';

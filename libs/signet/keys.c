@@ -1,4 +1,4 @@
-#include "signet/keys.h"
+#include <signet/keys.h>
 
 /**
  * @brief	Creates a keys file with specified signing and encryption keys.

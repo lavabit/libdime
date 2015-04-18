@@ -9,7 +9,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 /**
  * @note	We have to track errors locally so these functions can be used during startup and shutdown when the global statistics system may not be available.

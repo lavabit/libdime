@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 /**
  * @brief	Perform a case-sensitive check to see if one string ends in another, comparing backwards.

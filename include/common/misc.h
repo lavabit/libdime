@@ -7,14 +7,13 @@
 #include <ctype.h>
 #include <time.h>
 
-#include "openssl/bio.h"
-#include "openssl/evp.h"
-#include "openssl/buffer.h"
-#include "openssl/sha.h"
-#include "openssl/rsa.h"
-#include "openssl/bn.h"
-#include "error.h"
-
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/buffer.h>
+#include <openssl/sha.h>
+#include <openssl/rsa.h>
+#include <openssl/bn.h>
+#include <common/error.h>
 
 #define ANSI_COLOR_RED		"\x1b[31m"
 #define ANSI_COLOR_RESET	"\x1b[0m"

@@ -14,7 +14,7 @@
 #define MAGMA_OBJECTS_MAIL_H
 
 
-#include "mime.h"
+#include <core/mime.h>
 
 
 #define MAIL_MIME_RECURSION_LIMIT 16

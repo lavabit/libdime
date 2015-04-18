@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 media_type_t media_types[] = {
 		{ "",       true,  "application/octet-stream"},

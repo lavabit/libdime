@@ -1,4 +1,4 @@
-#include "core/magma.h"
+#include <core/magma.h>
 #include "checks.h"
 
 static stringer_t *mkstringer(const char *s) {

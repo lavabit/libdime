@@ -1,4 +1,4 @@
-#include "signet-resolver/dmtp.h"
+#include <signet-resolver/dmtp.h>
 
 
 signet_t *get_signet(const char *name, const char *fingerprint, int use_cache) {

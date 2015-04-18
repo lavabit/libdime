@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 #define MAGMA_HASHED_BUCKETS 1024
 

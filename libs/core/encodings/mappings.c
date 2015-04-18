@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 mappings_t mappings = {
 	.zbase32 = {

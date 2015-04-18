@@ -1,4 +1,4 @@
-#include "core/magma.h"
+#include <core/magma.h>
 #include "checks.h"
 
 // size_t align(size_t alignment, size_t len);

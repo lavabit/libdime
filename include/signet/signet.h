@@ -8,8 +8,7 @@
 #ifndef SIGNET_H
 #define SIGNET_H
 
-#include "signet/keys.h"
-
+#include <signet/keys.h>
 
 /*PUBLIC FUNCTIONS*/
 

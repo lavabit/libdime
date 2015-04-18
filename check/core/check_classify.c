@@ -1,4 +1,4 @@
-#include "core/magma.h"
+#include <core/magma.h>
 #include "checks.h"
 
 START_TEST (test_chr_alphanumeric)

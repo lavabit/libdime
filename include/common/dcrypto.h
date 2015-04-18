@@ -1,13 +1,12 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
-#include "openssl/obj_mac.h"
-#include "openssl/ec.h"
-#include "openssl/ecdsa.h"
-#include "openssl/pem.h"
-#include "error.h"
-#include "ed25519.h"
-
+#include <openssl/obj_mac.h>
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <openssl/pem.h>
+#include <common/error.h>
+#include <ed25519.h>
 
 #define AES_256_PADDING_SIZE		16
 #define AES_256_KEY_SIZE		32

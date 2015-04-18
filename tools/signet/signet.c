@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "signet/signet.h"
+#include <signet/signet.h>
 
 
 

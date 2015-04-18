@@ -4,12 +4,11 @@
 #include <stdarg.h>
 #include <netdb.h>
 
-#include "openssl/buffer.h"
-#include "openssl/err.h"
-#include "openssl/ssl.h"
-#include "error.h"
-#include "misc.h"
-
+#include <openssl/buffer.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+#include <common/error.h>
+#include <common/misc.h>
 
 // sizeof(errinfo_t) and number elements chosen so the entire data structure fits inside one 4,096 byte page.
 struct thread_err_stack {

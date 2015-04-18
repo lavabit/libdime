@@ -1,5 +1,5 @@
 
-#include "magma.h"
+#include <core/magma.h>
 
 
 /**

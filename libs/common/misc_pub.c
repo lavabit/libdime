@@ -1,6 +1,5 @@
-#include "misc.h"
-#include "error.h"
-
+#include <common/misc.h>
+#include <common/error.h>
 
 void int_no_put_4b(void *buf, uint32_t val) {
 	PUBLIC_FUNC_IMPL_VOID(int_no_put_4b, buf, val);

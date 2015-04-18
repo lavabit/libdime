@@ -1,8 +1,8 @@
 #include <unistd.h>
 
-#include "signet/keys.h"
-#include "common/misc.h"
-#include "common/dcrypto.h"
+#include <signet/keys.h>
+#include <common/misc.h>
+#include <common/dcrypto.h>
 
 static void usage(const char *progname) {
 

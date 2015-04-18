@@ -6,11 +6,10 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 
-#include "openssl/x509.h"
-#include "openssl/err.h"
-#include "misc.h"
-#include "error.h"
-
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <common/misc.h>
+#include <common/error.h>
 
 int _verbose = 0;
 

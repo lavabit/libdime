@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 uint64_t log_date;
 bool_t log_enabled = true;

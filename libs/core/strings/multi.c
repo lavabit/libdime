@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 // implement a generic interface for a variant type; or a single struct/union/type that
 // can hold all of the commonly used data types

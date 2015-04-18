@@ -11,7 +11,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 /**
  * @brief	Encode data as a zbase32 string.

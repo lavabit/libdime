@@ -1,9 +1,7 @@
 #include <errno.h>
 
-#include "network.h"
-#include "misc.h"
-
-
+#include <common/network.h>
+#include <common/misc.h>
 
 /**
  * @brief	Connect to a host/tcp port in an address-independent manner, and return a file descriptor.

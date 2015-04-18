@@ -1,14 +1,14 @@
 
-#include "openssl/x509v3.h"
+#include <openssl/x509v3.h>
 
-#include "signet-resolver/dmtp.h"
-#include "signet-resolver/cache.h"
-#include "signet-resolver/dns.h"
-#include "signet-resolver/mrec.h"
+#include <signet-resolver/dmtp.h>
+#include <signet-resolver/cache.h>
+#include <signet-resolver/dns.h>
+#include <signet-resolver/mrec.h>
 
-#include "common/network.h"
-#include "common/misc.h"
-#include "common/error.h"
+#include <common/network.h>
+#include <common/misc.h>
+#include <common/error.h>
 
 
 signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache) {

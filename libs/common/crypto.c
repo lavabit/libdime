@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "openssl/bio.h"
-#include "openssl/ssl.h"
-#include "openssl/err.h"
-#include "openssl/rand.h"
-#include "dcrypto.h"
-#include "misc.h"
-#include "error.h"
-
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <common/dcrypto.h>
+#include <common/misc.h>
+#include <common/error.h>
 
 EC_GROUP *_signing_group = NULL;
 EC_GROUP *_encryption_group = NULL;

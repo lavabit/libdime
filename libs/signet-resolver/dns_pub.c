@@ -1,4 +1,4 @@
-#include "signet-resolver/dns.h"
+#include <signet-resolver/dns.h>
 
 unsigned int get_keytag(const unsigned char *rdata, size_t rdlen) {
 	PUBLIC_FUNC_IMPL(get_keytag, rdata, rdlen);

@@ -1,7 +1,7 @@
 #ifndef DMSG_H
 #define DMSG_H
 
-#include "dmessage/dmime.h"
+#include <dmessage/dmime.h>
 
 PUBLIC_FUNC_DECL(dmime_object_state_t,          dmsg_init_object_state,      dmime_object_t *object);
 

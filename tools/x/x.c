@@ -1,11 +1,11 @@
-#include "signet-resolver/cache.h"
-#include "signet-resolver/dmtp.h"
-#include "signet-resolver/dns.h"
-#include "signet-resolver/mrec.h"
-#include "signet-resolver/signet-ssl.h"
-#include "common/network.h"
-#include "common/misc.h"
-#include "common/error.h"
+#include <signet-resolver/cache.h>
+#include <signet-resolver/dmtp.h>
+#include <signet-resolver/dns.h>
+#include <signet-resolver/mrec.h>
+#include <signet-resolver/signet-ssl.h>
+#include <common/network.h>
+#include <common/misc.h>
+#include <common/error.h>
 
 int main(void) {
 

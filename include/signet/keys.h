@@ -1,8 +1,7 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include "signet/general.h"
-
+#include <signet/general.h>
 
 /* PUBLIC FUNCTIONS */
 

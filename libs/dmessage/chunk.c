@@ -1,4 +1,4 @@
-#include "dmessage/dmsg.h"
+#include <dmessage/dmsg.h>
 
 /*
  * @brief	Retrieves pointer to the specified chunk type key from the global chunk key structure.

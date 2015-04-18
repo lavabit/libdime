@@ -12,8 +12,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
-#include "error.h"
-
+#include <common/error.h>
 
 #define CONNECT_TIMEOUT		5	/* the timeout value for connection attempts, in seconds */
 

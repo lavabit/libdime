@@ -1,6 +1,6 @@
 #include "../check-compat.h"
 #include "check_dime.h"
-#include "../../include/signet-resolver/signet-ssl.h"
+#include <signet-resolver/signet-ssl.h>
 #include "check_ssl.h"
 
 /* void ssl_initialize(void);

@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "openssl/rand.h"
-#include "common/error.h"
+#include <openssl/rand.h>
+#include <common/error.h>
 #include "check_common.h"
 
 /* FIXME TODO pt -- should we move it to common/error.h or lb/error.h ?" */

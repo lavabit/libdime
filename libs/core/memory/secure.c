@@ -10,7 +10,7 @@
  *
  */
 
-#include "magma.h"
+#include <core/magma.h>
 
 enum {
 	MM_SEC_CHUNK_AVAILABLE = 0,

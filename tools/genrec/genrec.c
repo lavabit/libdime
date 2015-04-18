@@ -1,14 +1,14 @@
 #include <openssl/buffer.h>
 #include <openssl/pem.h>
 
-#include "common/network.h"
-#include "common/misc.h"
-#include "common/dcrypto.h"
+#include <common/network.h>
+#include <common/misc.h>
+#include <common/dcrypto.h>
 
-#include "signet-resolver/cache.h"
-#include "signet-resolver/dmtp.h"
-#include "signet-resolver/mrec.h"
-#include "signet-resolver/signet-ssl.h"
+#include <signet-resolver/cache.h>
+#include <signet-resolver/dmtp.h>
+#include <signet-resolver/mrec.h>
+#include <signet-resolver/signet-ssl.h>
 
 static void usage(const char *progname) {
 

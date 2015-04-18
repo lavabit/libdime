@@ -1,5 +1,5 @@
-#include "dmessage/dmime.h"
-#include "dmessage/dmsg.h"
+#include <dmessage/dmime.h>
+#include <dmessage/dmsg.h>
 #include "check_dmsg.h"
 
 START_TEST (check_header_parsing) {

@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "openssl/err.h"
-#include "openssl/rand.h"
-#include "common/error.h"
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <common/error.h>
 #include "check_common.h"
 
 #define ERRMSG "error:02001002:system library:fopen:No such file or directory:filename:100"
