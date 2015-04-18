@@ -30,7 +30,9 @@
 #include <pthread.h>
 #include <stdarg.h>
 #include <dlfcn.h>
+#ifdef __linux
 #include <execinfo.h>
+#endif
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -38,7 +40,9 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/utsname.h>
+#ifdef __linux
 #include <sys/epoll.h>
+#endif
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>
@@ -51,7 +55,9 @@
 #include <sys/mman.h>
 
 // GNU C Library
+#ifdef __linux
 #include <gnu/libc-version.h>
+#endif
 
 // added
 #include <math.h>

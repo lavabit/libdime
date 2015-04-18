@@ -455,7 +455,7 @@ int _load_dnskey_file(const char *filename) {
 
 		lptr = line;
 
-		while (isspace(*lptr)) {
+		while (chr_isspace(*lptr)) {
 			lptr++;
 		}
 
@@ -506,7 +506,7 @@ int _load_dnskey_file(const char *filename) {
 
 		*lptr++ = 0;
 
-		while (isspace(*lptr)) {
+		while (chr_isspace(*lptr)) {
 			lptr++;
 		}
 
@@ -518,7 +518,7 @@ int _load_dnskey_file(const char *filename) {
 		/* Get rid of any spaces */
 		for (lptr = optr; *lptr; lptr++) {
 
-			if (isspace(*lptr)) {
+			if (chr_isspace(*lptr)) {
 				memmove(lptr, lptr+1, strlen(lptr));
 			}
 

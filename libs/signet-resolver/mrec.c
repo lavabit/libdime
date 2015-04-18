@@ -326,7 +326,7 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
 	while (len+1) {
 
 		// Be careful; base64-encoded fields can end in sequences of multiple =
-		if ((*ptr == '=') && (*(ptr+1) != '=') && *(ptr+1) && !isspace(*(ptr+1))) {
+		if ((*ptr == '=') && (*(ptr+1) != '=') && *(ptr+1) && !chr_isspace(*(ptr+1))) {
 			*ptr = 0;
 			startval = ptr+1;
 		} else if ((*ptr == ' ') || (*ptr == ';') || (!*ptr)) {
@@ -658,7 +658,7 @@ dime_record_t * _get_dime_record_from_file(const char *filename, const char *dom
 
 		for (i = 0; i < strlen(buf); i++) {
 
-			if (isprint(buf[i])) {
+			if (chr_isprint(buf[i])) {
 
 				if (buf[strlen(buf)-1] == '\n') {
 					buf[strlen(buf)-1] = 0;

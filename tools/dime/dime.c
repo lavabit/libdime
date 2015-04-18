@@ -1,4 +1,3 @@
-
 #include <signet-resolver/cache.h>
 #include <signet-resolver/dmtp.h>
 #include <signet-resolver/dns.h>
@@ -11,13 +10,7 @@
 #include <common/misc.h>
 #include <common/network.h>
 
-
-
-void usage(const char *progname);
-void show_coc(const char *cocstr);
-
-
-void usage(const char *progname) {
+static void usage(const char *progname) {
 
 	fprintf(stderr, "\nUsage: %s [-d dxserver] [-p port] [-i dimefile [-0] [-f fingerprint] [-h or -c] [-e endfp] [-n] [-4 or -6] [-v] <signet>    where\n", progname);
 	fprintf(stderr, " signet is the name of the user or organizational signet to be looked up.\n");
@@ -39,7 +32,7 @@ void usage(const char *progname) {
 }
 
 
-void show_coc(const char *cocstr) {
+static void show_coc(const char *cocstr) {
 
 	signet_t *signet;
 	char *datastr, *tokens, *token, *dptr;
@@ -67,7 +60,7 @@ void show_coc(const char *cocstr) {
 	while (token) {
 		dptr = token;
 
-		while (isspace(*dptr)) {
+		while (chr_isspace(*dptr)) {
 			dptr++;
 		}
 
@@ -85,7 +78,7 @@ void show_coc(const char *cocstr) {
 		token = dptr+1;
 		dptr = token + strlen(token) - 1;
 
-		while ((dptr > token) && isspace(*dptr)) {
+		while ((dptr > token) && chr_isspace(*dptr)) {
 			dptr--;
 		}
 

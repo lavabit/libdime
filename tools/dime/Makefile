@@ -23,6 +23,6 @@ STATIC			+= $(DIMEDIR)signet-resolver/libsignet-resolver.a
 DYNAMIC			:= -lc -lrt -ldl -lpthread -lresolv
  
 # Include paths
-INCLUDES		:= -I../../include/ -I../../include/core/ -I../../include/common/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
+INCLUDES		:= -I../../include/ -I../../deps/sources/donna -I../../deps/sources/openssl/include
 
 include ../../tool.mk

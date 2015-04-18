@@ -602,7 +602,7 @@ char * _dmtp_get_signet(dmtp_session_t *session, const char *signame, const char
 
 	rptr = response;
 
-	while (isspace(*rptr)) {
+	while (chr_isspace(*rptr)) {
 		rptr++;
 	}
 
@@ -613,7 +613,7 @@ char * _dmtp_get_signet(dmtp_session_t *session, const char *signame, const char
 
 	rptr += 2;
 
-	while (isspace(*rptr)) {
+	while (chr_isspace(*rptr)) {
 		rptr++;
 	}
 
@@ -1048,7 +1048,7 @@ char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attrib
 
 	rptr = response;
 
-	while (*rptr && isspace(*rptr)) {
+	while (*rptr && chr_isspace(*rptr)) {
 		rptr++;
 	}
 
@@ -1059,12 +1059,12 @@ char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attrib
 
 	rptr += 4;
 
-	if (!isspace(*rptr)) {
+	if (!chr_isspace(*rptr)) {
 		return response;
 	}
 
 	// If we've gotten this far, we can assume that the server intended to return a nonce.
-	while (isspace(*rptr)) {
+	while (chr_isspace(*rptr)) {
 		rptr++;
 	}
 
@@ -1579,7 +1579,7 @@ char * _parse_line_code(const char *line, unsigned short *rcode, int *multiline)
 
 		// The word before the first space is (should be) the numerical code.
 		// Or in multiline mode, the response code is separated from the rest of the line by a hyphen.
-		if (isspace(*ptr) || (multiline && (*ptr == '-'))) {
+		if (chr_isspace(*ptr) || (multiline && (*ptr == '-'))) {
 			memset(numbuf, 0, sizeof(numbuf));
 			nbytes = (unsigned long)ptr - (unsigned long)line;
 			nbytes = nbytes < sizeof(numbuf) ? nbytes : sizeof(numbuf) - 1;
@@ -1598,7 +1598,7 @@ char * _parse_line_code(const char *line, unsigned short *rcode, int *multiline)
 			} else {
 
 				// Otherwise, what comes after the last space is the rest of the line.
-				while (*ptr && isspace(*ptr)) {
+				while (*ptr && chr_isspace(*ptr)) {
 					ptr++;
 				}
 
@@ -1687,7 +1687,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
 		return dmtp_mode_unknown;
 	}
 
-	while (isspace(*rptr)) {
+	while (chr_isspace(*rptr)) {
 		rptr++;
 	}
 

@@ -23,6 +23,10 @@ typedef int32_t int_t;
 typedef uint32_t uint_t;
 typedef unsigned char uchr_t;
 typedef unsigned char byte_t;
+#if defined(__NetBSD__) /* as of 2015-04-18 */
+typedef double double_t;
+typedef float float_t;
+#endif
 
 /**
  * Different types used throughout.

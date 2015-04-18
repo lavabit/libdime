@@ -14,10 +14,10 @@ ARFLAGS			:= rcs
 AR			:= ar
 LD			:= gcc
 CC			:= gcc
-MV			:= mv --force
-RM			:= rm --force
+MV			:= mv -f
+RM			:= rm -f
 RMDIR			:= rmdir --parents --ignore-fail-on-non-empty
-MKDIR			:= mkdir --parents
+MKDIR			:= mkdir -p
 RANLIB			:= ranlib
 
 # Hidden directories for generated files

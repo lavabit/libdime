@@ -1088,11 +1088,11 @@ int _domain_wildcard_check(const char *pattern, const char *domain) {
 	}
 
 	for (i = 0; i < strlen(p); i++) {
-		p[i] = tolower(p[i]);
+		p[i] = tolower((unsigned char)p[i]);
 	}
 
 	for (i = 0; i < strlen(d); i++) {
-		d[i] = tolower(d[i]);
+		d[i] = tolower((unsigned char)d[i]);
 	}
 
 	// Simple equality check first.
