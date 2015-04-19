@@ -567,7 +567,7 @@ int _load_dnskey_file(const char *filename) {
 
 	// Make sure that we got our root key(s).
 	memset(&cmp, 0, sizeof(cmp));
-	cmp.label = ".";
+	cmp.label = (char *)".";
 
 	if (!_find_cached_object_cmp(&cmp, &(cached_stores[cached_data_dnskey]), &_dnskey_domain_comparator)) {
 		RET_ERROR_INT(ERR_UNSPEC, "config file did not contain any root DNSKEY entries");

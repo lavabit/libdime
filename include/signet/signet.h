@@ -13,7 +13,7 @@
 /*PUBLIC FUNCTIONS*/
 
 /* Create a new signet and keysfile */
-PUBLIC_FUNC_DECL(signet_t *, 	   signet_new_keysfile,		signet_type_t type, 	 char *keysfile);
+PUBLIC_FUNC_DECL(signet_t *, 	   signet_new_keysfile,		signet_type_t type, 	 const char *keysfile);
 
 /* Loading signet from and saving to file */
 PUBLIC_FUNC_DECL(signet_t *,	   signet_from_file,		const char *filename);

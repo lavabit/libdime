@@ -196,7 +196,7 @@ static inline char *const_cast_char_ptr(const char *str) {
 #define BLOCK(d, l) (stringer_t *)&((block_t){ .opts = (BLOCK_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l })
 
 // Usage: placer_t *placer = PLACER(data, length);
-#define PLACER(d, l) (stringer_t *)&((placer_t){ .opts = (PLACER_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l })
+#define PLACER(d, l) (stringer_t *)&((placer_t){ .opts = (PLACER_T | JOINTED | STACK | FOREIGNDATA), .data = (char *)(d), .length = l })
 
 // Usage: managed_t *managed = MANAGED(data, length, avail);
 #define MANAGED(d, l, a) (stringer_t *)&((managed_t){ .opts = (MANAGED_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l, .avail = a })

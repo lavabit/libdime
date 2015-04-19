@@ -79,7 +79,8 @@ END_TEST
 
 START_TEST (check_signet_parsing)
 {
-	char *b64_sigone, *b64_sigtwo, *filename = "check.signet";
+	char *b64_sigone, *b64_sigtwo;
+	const char *filename = "check.signet";
 	uint32_t len;
 	unsigned char *ser_sigone, *ser_sigtwo;
 	signet_t *sigone, *sigtwo;
@@ -134,7 +135,7 @@ END_TEST
 
 START_TEST (check_signet_signing)
 {	
-	char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
+	const char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
 	unsigned char **org_signet_sign_keys;
 	ED25519_KEY *orgkey, *userkey, *userpubkey;
 	signet_t *org_signet, *user_signet, *newuser_signet;

@@ -10,7 +10,7 @@
  * @param	keysfile	Null terminated string containing the name of the keyfile to be created.
  * @return	Pointer to the newly created and allocated signet_t structure or NULL on error.
 */
-signet_t * _signet_new_keysfile(signet_type_t type, char *keysfile) {		//TODO currently creating 2 files both of which are storing the pok public and private keys.
+signet_t * _signet_new_keysfile(signet_type_t type, const char *keysfile) {		//TODO currently creating 2 files both of which are storing the pok public and private keys.
 
 	size_t enc_key_size, f_len;
 	unsigned char sign_fid, enc_fid, *ser_enc_pubkey;

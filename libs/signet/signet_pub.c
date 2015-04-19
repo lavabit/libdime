@@ -3,7 +3,7 @@
 
 
 /* Create a new signet and keysfile */
-signet_t *		signet_new_keysfile(signet_type_t type, char *keysfile) {
+signet_t *		signet_new_keysfile(signet_type_t type, const char *keysfile) {
 	PUBLIC_FUNC_IMPL(signet_new_keysfile, type, keysfile);
 }
 

@@ -440,7 +440,7 @@ static void dump_signet(const char * signet_file) {			// TODO needs to dump in H
 */
 static void examine_signet(signet_type_t type) {
 
-	char *strtype;
+	const char *strtype;
 	int i;
 	signet_field_key_t *keys;
 

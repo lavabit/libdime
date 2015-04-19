@@ -48,7 +48,7 @@ typedef struct cached_object {
 
 typedef struct {
 	cached_data_type_t dtype;		// The type of data that will be stored within.
-	char *description;			// A text description of the cache store.
+	const char *description;			// A text description of the cache store.
 	unsigned char internal;			// Determines whether the cached store is for internal use only.
 						// If it is, objects will not be cloned before being returned to the caller.
 	cached_object_t *head;			// A pointer to the head of the cached object list.

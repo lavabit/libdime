@@ -14,15 +14,15 @@ START_TEST (check_message_encryption)
 {
 	EC_KEY *auth_enckey, *orig_enckey, *dest_enckey, *recp_enckey;
 	ED25519_KEY *auth_signkey, *orig_signkey, *dest_signkey, *recp_signkey;
-	char *auth = "ivan@darkmail.info", *orig = "darkmail.info", *dest = "lavabit.com", *recp = "ryan@lavabit.com";
-	char *auth_keys = "auth.keys", *orig_keys = "orig.keys", *dest_keys = "dest.keys", *recp_keys = "recp.keys";
-	char *common_date = "12 minutes ago";
-	char *common_to = "Ryan <ryan@lavabit.com>";
-	char *common_from = "Ivan <ivan@darkmail.info>";
-	char *common_subject = "Mr.Watson - Come here - I want to see you";
-	char *common_organization = "Lavabit";
-	char *other_headers = "SECRET METADATA\r\n";
-	char *display = "This is a test\r\nCan you read this?\r\n";
+	const char *auth = "ivan@darkmail.info", *orig = "darkmail.info", *dest = "lavabit.com", *recp = "ryan@lavabit.com";
+	const char *auth_keys = "auth.keys", *orig_keys = "orig.keys", *dest_keys = "dest.keys", *recp_keys = "recp.keys";
+	const char *common_date = "12 minutes ago";
+	const char *common_to = "Ryan <ryan@lavabit.com>";
+	const char *common_from = "Ivan <ivan@darkmail.info>";
+	const char *common_subject = "Mr.Watson - Come here - I want to see you";
+	const char *common_organization = "Lavabit";
+	const char *other_headers = "SECRET METADATA\r\n";
+	const char *display = "This is a test\r\nCan you read this?\r\n";
 	dmime_kek_t orig_kek, dest_kek, recp_kek;
 	dmime_message_t *message;
 	dmime_object_t *draft, *at_orig, *at_dest, *at_recp;
