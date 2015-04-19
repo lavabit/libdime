@@ -2,3 +2,4 @@
 .objs/
 *.a
 /check/**/checks
+/doxygen-doc/
