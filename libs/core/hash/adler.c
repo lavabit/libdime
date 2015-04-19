@@ -30,7 +30,7 @@ uint32_t hash_adler32(void *buffer, size_t length) {
 		length -= input;
 
 		do {
-			a += *(chr_t *)buffer++;
+			a += *(uchr_t *)buffer++;
 			b += a;
 		} while (--input);
 
