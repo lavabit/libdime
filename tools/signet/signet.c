@@ -26,19 +26,12 @@ static void usage(const char *progname) {
  * @param	prompt		an optional NULL-terminated string containing a prompt message for the user.
  * @param	buf		a pointer to a buffer into which the user's input will be read.
  * @param	bufsize		the size, in bytes, of the user input buffer.
- * @param	exit_failure	if set, forcibly exit the program on user input failure.
- * @return	1 if the user input line was successfully retrieved or 0 on failure.
 */
-static int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int exit_failure) {
+static void wizard_get_input(const char *prompt, char *buf, size_t bufsize) {
 
-	if(!buf || !bufsize ) {
+	if (!buf || !bufsize ) {
 		fprintf(stderr, "Error: No buffer specified, or buffer size is 0.\n");
-
-		if(exit_failure) {
-			exit(EXIT_FAILURE);
-		}
-
-		return 0;
+		exit(EXIT_FAILURE);
 	}
 
 	if (prompt) {
@@ -48,18 +41,16 @@ static int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int e
 
 	memset(buf, 0, bufsize);
 
-	if(!fgets(buf, bufsize - 1, stdin)) {
-		perror("fgets");
-
-		if (exit_failure) {
-			exit(EXIT_FAILURE);
+	if (!fgets(buf, bufsize - 1, stdin)) {
+		if (errno == 0) {
+			printf("\n");
+		} else {
+			perror("fgets");
 		}
-
-		return 0;
+		exit(EXIT_FAILURE);
 	}
 
 	buf[strcspn(buf, "\n")] = '\0';
-	return 1;
 }
 
 /**
@@ -141,19 +132,19 @@ static void generate_signet(const char * signet_name, const char * signet_file, 
 	switch( type ) {
 		case SIGNET_TYPE_ORG:
 
-			wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string), 1);
+			wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string));
 			signet_add_field_string(signet, SIGNET_ORG_NAME, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string), 1);
+			wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string));
 			signet_add_field_string(signet, SIGNET_ORG_ADDRESS, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string), 1);
+			wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string));
 			signet_add_field_string(signet, SIGNET_ORG_COUNTRY, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string), 1);
+			wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string));
 			signet_add_field_string(signet, SIGNET_ORG_POSTAL, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string), 1);
+			wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string));
 			signet_add_field_string(signet, SIGNET_ORG_PHONE,  NULL, wizard_string, 0);
 
 	 		signet_sign_core_sig(signet, key);
@@ -327,15 +318,15 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 	free(keys_bin);
 
 	signet_sign_initial_sig(signet, key);
-	wizard_get_input("User name:", wizard_string, sizeof(wizard_string), 1);
+	wizard_get_input("User name:", wizard_string, sizeof(wizard_string));
 	signet_add_field_string(signet, SIGNET_USER_NAME, NULL, wizard_string, 0);
-	wizard_get_input("User address:", wizard_string, sizeof(wizard_string), 1);
+	wizard_get_input("User address:", wizard_string, sizeof(wizard_string));
 	signet_add_field_string(signet, SIGNET_USER_ADDRESS, NULL, wizard_string, 0);
-	wizard_get_input("User country:", wizard_string, sizeof(wizard_string), 1);
+	wizard_get_input("User country:", wizard_string, sizeof(wizard_string));
 	signet_add_field_string(signet, SIGNET_USER_COUNTRY, NULL, wizard_string, 0);
-	wizard_get_input("User postal code:", wizard_string, sizeof(wizard_string), 1);
+	wizard_get_input("User postal code:", wizard_string, sizeof(wizard_string));
 	signet_add_field_string(signet, SIGNET_USER_POSTAL, NULL, wizard_string, 0);
-	wizard_get_input("User phone number:", wizard_string, sizeof(wizard_string), 1);
+	wizard_get_input("User phone number:", wizard_string, sizeof(wizard_string));
 	signet_add_field_string(signet, SIGNET_USER_PHONE, NULL, wizard_string, 0);
 	signet_sign_core_sig(signet, key);
 	signet_set_id(signet, signet_name);
@@ -687,6 +678,3 @@ int main(int argc, char** argv) {
 
 	return 0;
 }
-
-
-
