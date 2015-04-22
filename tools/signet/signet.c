@@ -1,19 +1,15 @@
-
 #include <unistd.h>
 #include <getopt.h>
 
 #include <signet/signet.h>
 
-
-
 /**
  * @brief	Display the app options to the user.
- * @param	name	Tool name.
- * @return	void.
+ * @param	progname	Tool name.
 */
-static void usage(const char *name) {
+static void usage(const char *progname) {
 
-	fprintf(stderr, "\nUsage: %s <-g signet_id> <-s signet_id> <-d signet_filename> [-o output_filename] [-k keys_filename] [-r ssr_filename] [-c custody_filename] <-x signet_type\n", name);
+	fprintf(stderr, "\nUsage: %s <-g signet_id> <-s signet_id> <-d signet_filename> [-o output_filename] [-k keys_filename] [-r ssr_filename] [-c custody_filename] <-x signet_type\n", progname);
 	fprintf(stderr, "  --generate|-g   Uses provided signet id to generate a signet or SSR (signet signing request) and a keys files, may be used with a -c option to create an SSR for rotation of user signets.\n");
 	fprintf(stderr, "  --sign    |-s   Signs an SSR file specifed by the -r option with an org signing key specified by -k option and creates a user signet file.\n");
 	fprintf(stderr, "  --dump    |-d   Specifies filename of a signet file, the contents of which are dumped to the terminal.\n");
@@ -46,7 +42,8 @@ static int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int e
 	}
 
 	if (prompt) {
-		fprintf(stdout, "%s\n", prompt);
+		fprintf(stdout, "%s ", prompt);
+		fflush(stdout);
 	}
 
 	memset(buf, 0, bufsize);
@@ -61,11 +58,7 @@ static int wizard_get_input(const char *prompt, char *buf, size_t bufsize, int e
 		return 0;
 	}
 
-	// Trim off trailing new character.
-	if(buf[0]) {
-		buf[strlen(buf)-1]=0;
-	}
-
+	buf[strcspn(buf, "\n")] = '\0';
 	return 1;
 }
 
