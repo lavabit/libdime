@@ -3,6 +3,7 @@
 #ifndef CHECK_DIME_H
 #define CHECK_DIME_H
 
+#include <common/error.h>
 #include "check-compat.h"
 
 static inline void suite_add_test(Suite *s, const char *name, TFun func) {
