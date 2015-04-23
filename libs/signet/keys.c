@@ -275,7 +275,7 @@ EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 	}
 
 	if(len < at + EC_PRIVKEY_SIZE) {
-		RET_ERROR_PTR(ERR_UNSPEC, "keys buffer too small for encryption key");
+		RET_ERROR_PTR_FMT(ERR_UNSPEC, "keys buffer too small for encryption key (%zu must be < %zu + %zu)", len, at, (size_t)EC_PRIVKEY_SIZE);
 	}
 
 	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, EC_PRIVKEY_SIZE, 0))) {
@@ -312,7 +312,7 @@ EC_KEY * _keys_file_fetch_enc_key(const char *filename) {
 	free(keys_bin);
 
 	if (!key) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve ed25519 signing key");
+		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not retrieve ed25519 signing key from %s", filename);
 	}
 
 	return key;
