@@ -66,4 +66,10 @@ $(OBJDIRNAME)/%.o : %.c | $(OBJDIRNAME) $(DEPDIRNAME)
 run-checks: $(check_PROGRAMS)
 	./$(check_PROGRAMS)
 
+run-checks-endlessly: $(check_PROGRAMS)
+	$(RUN)ulimit -c unlimited; \
+	rm -f core.*; \
+	while ./checks; do :; done; \
+	echo 'where' | gdb --quiet ./checks core.*
+
 -include $(DEPFILES)
