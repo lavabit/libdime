@@ -235,7 +235,7 @@ ED25519_KEY * _keys_file_fetch_sign_key(const char *filename) {
 EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 
 	unsigned char sign_fid, enc_fid;
-	unsigned int at = 0;
+	size_t at = 0, privkeylen;
 	EC_KEY *enc_key;
 
 	if(!bin_keys) {
@@ -274,11 +274,12 @@ EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 		RET_ERROR_PTR(ERR_UNSPEC, "no encryption key was found");
 	}
 
-	if(len < at + EC_PRIVKEY_SIZE) {
-		RET_ERROR_PTR_FMT(ERR_UNSPEC, "keys buffer too small for encryption key (%zu must be < %zu + %zu)", len, at, (size_t)EC_PRIVKEY_SIZE);
+	privkeylen = EC_PRIVKEY_SIZE;
+	if (len < at + EC_PRIVKEY_SIZE) {
+		privkeylen = len - at;
 	}
 
-	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, EC_PRIVKEY_SIZE, 0))) {
+	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, privkeylen, 0))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize encryption key");
 	}
 

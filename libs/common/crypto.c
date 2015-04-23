@@ -304,6 +304,7 @@ EC_KEY * _deserialize_ec_privkey(const unsigned char *buf, size_t blen, int sign
 
 	EC_KEY *result;
 	int nid;
+	const unsigned char *bufptr = buf;
 
 	if (!buf || !blen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -324,11 +325,18 @@ EC_KEY * _deserialize_ec_privkey(const unsigned char *buf, size_t blen, int sign
 		RET_ERROR_PTR(ERR_UNSPEC, "could not get curve group for deserialization");
 	}
 
-	if (!(result = d2i_ECPrivateKey(&result, (const unsigned char **)&buf, blen))) {
+	if (!(result = d2i_ECPrivateKey(&result, &bufptr, blen))) {
 		PUSH_ERROR_OPENSSL();
 		EC_KEY_free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "deserialization of EC public key portion failed");
 	}
+
+	/*
+	 * At this point, in most cases bufptr == buf + blen. There may be
+	 * cases though where the private key is shorter than the provided
+	 * buffer. This is because DER is a variable-length encoding. Parsing
+	 * any field behind the privkey must take this into account.
+	 */
 
 	return result;
 }
