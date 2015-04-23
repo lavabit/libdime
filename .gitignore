@@ -3,3 +3,4 @@
 *.a
 /check/**/checks
 /doxygen-doc/
+core.[1-9]*

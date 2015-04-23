@@ -5,8 +5,6 @@
 START_TEST (check_header_parsing) {
 
 	ck_assert_msg(1 == 1, "nothing yet");
-
-
 }
 END_TEST
 
@@ -132,6 +130,7 @@ START_TEST (check_message_encryption)
 	_dmsg_get_kek(message, orig_enckey, &orig_kek);
 
 	at_orig = _dmsg_msg_to_object_envelope(message, id_origin, &orig_kek);
+	ck_assert_dime_noerror();
 	at_orig->signet_author = signet_auth;
 	at_orig->signet_destination = signet_dest;
 	at_orig->origin = st_import(orig, strlen(orig));
@@ -152,6 +151,7 @@ START_TEST (check_message_encryption)
 	//decrypt message as destination
 	_dmsg_get_kek(message, dest_enckey, &dest_kek);
 	at_dest = _dmsg_msg_to_object_envelope(message, id_destination, &dest_kek);
+	ck_assert_dime_noerror();
 	at_dest->signet_origin = signet_orig;
 	at_dest->signet_recipient = signet_recp;
 	at_dest->destination = st_import(dest, strlen(dest));
@@ -170,6 +170,7 @@ START_TEST (check_message_encryption)
 	//decrypt message as recipient
 	_dmsg_get_kek(message, recp_enckey, &recp_kek);
 	at_recp = _dmsg_msg_to_object_envelope(message, id_recipient, &recp_kek);
+	ck_assert_dime_noerror();
 	at_recp->signet_author = signet_auth;
 	at_recp->signet_origin = signet_orig;
 	at_recp->signet_destination = signet_dest;
