@@ -56,5 +56,5 @@ signet: libs $(signet)
 tools: $(dime) $(signet)
 
 uncrustify:
-	find include libs check -type f -name '*.[ch]' -print \
+	find check include libs tools -type f -name '*.[ch]' -print \
 	| uncrustify -c uncrustify.cfg -F- --no-backup -l C
