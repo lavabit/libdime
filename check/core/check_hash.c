@@ -10,7 +10,7 @@ static uint32_t rfc1950_adler32(const uchr_t *buf, size_t len) {
 
 	for (size_t n = 0; n < len; n++) {
 		s1 = (s1 + buf[n]) % BASE;
-		s2 = (s2 + s1)     % BASE;
+		s2 = (s2 + s1) % BASE;
 	}
 	return (s2 << 16) + s1;
 }

@@ -8,7 +8,7 @@ static stringer_t *mkstringer(const char *s) {
 	return st;
 }
 
-START_TEST (test_st_cmp_ci_ends)
+START_TEST(test_st_cmp_ci_ends)
 {
 	stringer_t *empty = mkstringer("");
 	stringer_t *whatever = mkstringer("whatever");
@@ -26,61 +26,61 @@ START_TEST (test_st_cmp_ci_ends)
 END_TEST
 
 // int_t st_cmp_cs_ends(stringer_t *s, stringer_t *ends);
-START_TEST (test_st_cmp_cs_ends)
+START_TEST(test_st_cmp_cs_ends)
 {
 }
 END_TEST
 
 // int_t mm_cmp_ci_eq(void *a, void *b, size_t len);
-START_TEST (test_mm_cmp_ci_eq)
+START_TEST(test_mm_cmp_ci_eq)
 {
 }
 END_TEST
 
 // int_t mm_cmp_cs_eq(void *a, void *b, size_t len);
-START_TEST (test_mm_cmp_cs_eq)
+START_TEST(test_mm_cmp_cs_eq)
 {
 }
 END_TEST
 
 // int_t st_cmp_ci_eq(stringer_t *a, stringer_t *b);
-START_TEST (test_st_cmp_ci_eq)
+START_TEST(test_st_cmp_ci_eq)
 {
 }
 END_TEST
 
 // int_t st_cmp_cs_eq(stringer_t *a, stringer_t *b);
-START_TEST (test_st_cmp_cs_eq)
+START_TEST(test_st_cmp_cs_eq)
 {
 }
 END_TEST
 
 // bool_t st_search_ci(stringer_t *haystack, stringer_t *needle, size_t *location);
-START_TEST (test_st_search_ci)
+START_TEST(test_st_search_ci)
 {
 }
 END_TEST
 
 // bool_t st_search_cs(stringer_t *haystack, stringer_t *needle, size_t *location);
-START_TEST (test_st_search_cs)
+START_TEST(test_st_search_cs)
 {
 }
 END_TEST
 
 // bool_t st_search_chr(stringer_t *haystack, chr_t needle, size_t *location);
-START_TEST (test_st_search_chr)
+START_TEST(test_st_search_chr)
 {
 }
 END_TEST
 
 // int_t st_cmp_ci_starts(stringer_t *s, stringer_t *starts);
-START_TEST (test_st_cmp_ci_starts)
+START_TEST(test_st_cmp_ci_starts)
 {
 }
 END_TEST
 
 // int_t st_cmp_cs_starts(stringer_t *s, stringer_t *starts);
-START_TEST (test_st_cmp_cs_starts)
+START_TEST(test_st_cmp_cs_starts)
 {
 }
 END_TEST

@@ -48,12 +48,12 @@ calc_nonnegative_sum(int a, int b)
 	/* cleanup error stack if needed */
 	BEGIN_PUBLIC_FUNC
 	if (a < 0)
-		RET_INT_ERROR_EX(CMN_ERRCODE_BADARG, "`a' is negative")
+		RET_INT_ERROR_EX(CMN_ERRCODE_BADARG, "`a' is negative");
 	if (b < 0)
-		RET_INT_ERROR_EX(CMN_ERRCODE_BADARG, "'b' is negative")
+		RET_INT_ERROR_EX(CMN_ERRCODE_BADARG, "'b' is negative");
 	const int res = a + b;
 	if (res < 0)
-		RET_INT_ERROR(CMN_ERRCODE_INTOVERFLOW)
+		RET_INT_ERROR(CMN_ERRCODE_INTOVERFLOW);
 	return res;
 }
 
@@ -101,7 +101,7 @@ START_TEST(errinfo_test)
 END_TEST
 #endif /* ERROR_API_FINISHED */
 
-Suite * suite_check_errorapi(void) {
+Suite *suite_check_errorapi(void) {
 
 	Suite *s = suite_create("error-api");
 #ifdef ERROR_API_FINISHED

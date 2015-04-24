@@ -6,7 +6,7 @@
 #include "check_common.h"
 
 
-START_TEST (check_ec_signatures)
+START_TEST(check_ec_signatures)
 {
 	EC_KEY *key;
 
@@ -48,7 +48,7 @@ START_TEST (check_ec_signatures)
 END_TEST
 
 
-START_TEST (check_ec_sha_signatures)
+START_TEST(check_ec_sha_signatures)
 {
 	EC_KEY *key;
 
@@ -104,7 +104,7 @@ START_TEST (check_ec_sha_signatures)
 END_TEST
 
 
-START_TEST (load_ec_key_file)
+START_TEST(load_ec_key_file)
 {
 	char filename[256], *b64key;
 	EC_KEY *result, *key;
@@ -116,16 +116,16 @@ START_TEST (load_ec_key_file)
 
 	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
 
-	for(i = 0; i < 5; ++i) {
+	for (i = 0; i < 5; ++i) {
 		key = _generate_ec_keypair(0);
-		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i+1);
+		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
 		serial = _serialize_ec_privkey(key, &size);
 		b64key = _b64encode(serial, size);
 		free(serial);
 		_write_pem_data(b64key, "EC PRIVATE KEY", filename);
 		free(b64key);
-		
-		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i+1);
+
+		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i + 1);
 		serial = _serialize_ec_pubkey(key, &size);
 		free_ec_key(key);
 		b64key = _b64encode(serial, size);
@@ -135,12 +135,12 @@ START_TEST (load_ec_key_file)
 	}
 
 	for (i = 0; i < 5; i++) {
-		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i+1);
+		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
 		result = _load_ec_privkey(filename);
 		ck_assert_msg(result != NULL, "load_ec_privkey failed for %s", filename);
 		free_ec_key(result);
 
-		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i+1);
+		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i + 1);
 		result = _load_ec_pubkey(filename);
 		ck_assert_msg(result != NULL, "load_ec_pubkey failed for %s", filename);
 		free_ec_key(result);
@@ -151,7 +151,7 @@ START_TEST (load_ec_key_file)
 END_TEST
 
 
-START_TEST (check_ec_serialization)
+START_TEST(check_ec_serialization)
 {
 	EC_KEY *pair, *pair2;
 	unsigned char *sbuf, *sbuf2;
@@ -208,7 +208,7 @@ START_TEST (check_ec_serialization)
 END_TEST
 
 
-START_TEST (check_ecdh_kdf) 
+START_TEST(check_ecdh_kdf)
 {
 
 	EC_KEY *ec1, *ec2, *pub1, *pub2;
@@ -248,18 +248,18 @@ START_TEST (check_ecdh_kdf)
 	res = _compute_aes256_kek(pub2, ec1, key2);
 
 	ck_assert_msg((res == 0), "could not perform the second ECDH key exchange.\n");
-	
+
 	ck_assert_msg((memcmp(key1, key2, 48) == 0), "the key derivation functions did not yield the correct result");
 
 	fprintf(stderr, "ECDH key derivation function check completed.\n");
 }
 END_TEST
 
-	
 
 
 
-START_TEST (check_ed25519_signatures)
+
+START_TEST(check_ed25519_signatures)
 {
 	ED25519_KEY *key;
 	ed25519_signature sigbuf;
@@ -298,7 +298,7 @@ START_TEST (check_ed25519_signatures)
 END_TEST
 
 
-Suite * suite_check_crypto(void) {
+Suite *suite_check_crypto(void) {
 
 	Suite *s = suite_create("crypto");
 	suite_add_test(s, "EC Serialization/Deserialization", check_ec_serialization);

@@ -22,7 +22,7 @@
  38 void * _deserialize_ocsp_response_cb(void *data, size_t len);
  39 void * _serialize_ocsp_response_cb(void *record, size_t *outlen); */
 
-START_TEST (check_domain_wildcard)
+START_TEST(check_domain_wildcard)
 {
 	ck_assert_int_eq(1, _domain_wildcard_check("www.google.com", "www.google.com"));
 	ck_assert_int_eq(1, _domain_wildcard_check("*.google.com", "abc.google.com"));
@@ -32,7 +32,7 @@ START_TEST (check_domain_wildcard)
 END_TEST
 
 
-Suite * suite_check_ssl(void) {
+Suite *suite_check_ssl(void) {
 
 	TCase *tc;
 

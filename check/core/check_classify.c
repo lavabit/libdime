@@ -1,7 +1,7 @@
 #include <core/magma.h>
 #include "checks.h"
 
-START_TEST (test_chr_alphanumeric)
+START_TEST(test_chr_alphanumeric)
 {
 	ck_assert(chr_alphanumeric('X'));
 	ck_assert(chr_alphanumeric('x'));
@@ -13,47 +13,47 @@ START_TEST (test_chr_alphanumeric)
 }
 END_TEST
 
-START_TEST (test_chr_ascii)
+START_TEST(test_chr_ascii)
 {
 }
 END_TEST
 
-START_TEST (test_chr_blank)
+START_TEST(test_chr_blank)
 {
 }
 END_TEST
 
-START_TEST (test_chr_lower)
+START_TEST(test_chr_lower)
 {
 }
 END_TEST
 
-START_TEST (test_chr_numeric)
+START_TEST(test_chr_numeric)
 {
 }
 END_TEST
 
-START_TEST (test_chr_printable)
+START_TEST(test_chr_printable)
 {
 }
 END_TEST
 
-START_TEST (test_chr_punctuation)
+START_TEST(test_chr_punctuation)
 {
 }
 END_TEST
 
-START_TEST (test_chr_upper)
+START_TEST(test_chr_upper)
 {
 }
 END_TEST
 
-START_TEST (test_chr_whitespace)
+START_TEST(test_chr_whitespace)
 {
 }
 END_TEST
 
-START_TEST (test_chr_is_class)
+START_TEST(test_chr_is_class)
 {
 }
 END_TEST

@@ -23,7 +23,7 @@
  39 int get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out); */
 
 
-START_TEST (check_debug_level)
+START_TEST(check_debug_level)
 {
 	unsigned int i;
 
@@ -53,7 +53,7 @@ START_TEST(check_base64_macros)
 }
 END_TEST
 
-Suite * suite_check_misc(void) {
+Suite *suite_check_misc(void) {
 
 	Suite *s = suite_create("misc");
 	suite_add_testfunc(s, check_debug_level);

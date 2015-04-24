@@ -1,7 +1,7 @@
 #include <signet/signet.h>
 #include "check_signet.h"
 
-START_TEST (check_signet_modification)
+START_TEST(check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529", *name1 = "check undef", *data1 = "undef data", *name2 = "check name", *data2 = "check check";
 	size_t data_size;
@@ -68,16 +68,16 @@ END_TEST
 
 /*	to debug signet contents
 
-	fprintf(stderr, "signet size: %d\nsignet data: ", signet->size);
-	for(i = 0; i< signet->size; ++i)
-		fprintf(stderr, "%d ", signet->data[i]);
-	fprintf(stderr, "\nfield indexes: ");
-	for(i = 0; i <= SIGNET_FID_MAX; ++i)
-		fprintf(stderr, "%d ", signet->fields[i]);
-	fprintf(stderr, "\n");
-*/
+        fprintf(stderr, "signet size: %d\nsignet data: ", signet->size);
+        for(i = 0; i< signet->size; ++i)
+                fprintf(stderr, "%d ", signet->data[i]);
+        fprintf(stderr, "\nfield indexes: ");
+        for(i = 0; i <= SIGNET_FID_MAX; ++i)
+                fprintf(stderr, "%d ", signet->fields[i]);
+        fprintf(stderr, "\n");
+ */
 
-START_TEST (check_signet_parsing)
+START_TEST(check_signet_parsing)
 {
 	char *b64_sigone, *b64_sigtwo;
 	const char *filename = "check.signet";
@@ -133,8 +133,8 @@ START_TEST (check_signet_parsing)
 }
 END_TEST
 
-START_TEST (check_signet_signing)
-{	
+START_TEST(check_signet_signing)
+{
 	const char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
 	unsigned char **org_signet_sign_keys;
 	ED25519_KEY *orgkey, *userkey, *userpubkey;
@@ -142,8 +142,8 @@ START_TEST (check_signet_signing)
 	EC_KEY *eckey;
 
 	_crypto_init();
-//create org signet and keys file	
-	ck_assert_msg((org_signet = _signet_new_keysfile(SIGNET_TYPE_ORG, org_keys)) != NULL, "could not create new signet with keys.\n"); 
+//create org signet and keys file
+	ck_assert_msg((org_signet = _signet_new_keysfile(SIGNET_TYPE_ORG, org_keys)) != NULL, "could not create new signet with keys.\n");
 //retrieve public encryption key
 	ck_assert_msg((eckey = _signet_get_enckey(org_signet)) != NULL, "could not retreive public encryption key from signet.\n");
 	_free_ec_key(eckey);
@@ -222,7 +222,7 @@ START_TEST (check_signet_signing)
 END_TEST
 
 
-Suite * suite_check_signet(void) {
+Suite *suite_check_signet(void) {
 
 	Suite *s;
 	TCase *tc;

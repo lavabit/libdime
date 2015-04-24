@@ -2,7 +2,7 @@
 #include "checks.h"
 
 // size_t align(size_t alignment, size_t len);
-START_TEST (test_align) {
+START_TEST(test_align) {
 
 	ck_assert_uint_eq(0x01, align(0x01, 0x01));
 	ck_assert_uint_eq(0x02, align(0x02, 0x01));

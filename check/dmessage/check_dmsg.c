@@ -2,7 +2,7 @@
 #include <dmessage/dmsg.h>
 #include "check_dmsg.h"
 
-START_TEST (check_header_parsing) {
+START_TEST(check_header_parsing) {
 
 	ck_assert_msg(1 == 1, "nothing yet");
 }
@@ -11,7 +11,7 @@ END_TEST
 /**
  * Demonstrates the way of a message from the author to the recipient.
  */
-START_TEST (check_message_encryption)
+START_TEST(check_message_encryption)
 {
 	EC_KEY *auth_enckey, *orig_enckey, *dest_enckey, *recp_enckey;
 	ED25519_KEY *auth_signkey, *orig_signkey, *dest_signkey, *recp_signkey;
@@ -241,7 +241,7 @@ START_TEST (check_message_encryption)
 }
 END_TEST
 
-Suite * suite_check_dmsg(void) {
+Suite *suite_check_dmsg(void) {
 
 	Suite *s;
 	TCase *tc;
@@ -256,7 +256,7 @@ Suite * suite_check_dmsg(void) {
 int main(void) {
 
 	SRunner *sr = srunner_create(suite_check_dmsg());
-	srunner_set_fork_status (sr, CK_NOFORK);
+	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_ENV);
 	int nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
