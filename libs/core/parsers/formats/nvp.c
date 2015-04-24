@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/parsers/formats/nvp.c
  *
@@ -19,7 +18,7 @@
 int nvp_parse(nvp_t *nvp, stringer_t *data) {
 	#ifdef MAGMA_PEDANTIC
 	if (nvp == NULL) log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to access a NULL nvp pointer. Printing stack:");
-	else if (data == NULL || st_length_get(data) == 0)	log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to access a NULL or zero length string. Printing stack:");
+	else if (data == NULL || st_length_get(data) == 0)      log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to access a NULL or zero length string. Printing stack:");
 	#endif
 
 	multi_t key;
@@ -74,7 +73,7 @@ int nvp_parse(nvp_t *nvp, stringer_t *data) {
  * @note	Defaults use "\n" for a line separator, "#" for a comment starting character, and "=" as the assignment character.
  * @return	NULL on failure, or a pointer to the newly allocated name/value pair object.
  */
-nvp_t * nvp_alloc() {
+nvp_t *nvp_alloc() {
 
 	nvp_t *result = NULL;
 
@@ -108,4 +107,3 @@ void nvp_free(nvp_t *nvp) {
 		mm_free(nvp);
 	}
 }
-

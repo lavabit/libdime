@@ -21,7 +21,7 @@ int main(void) {
 //	char *hostname = "testssl-expire.disig.sk";
 	unsigned short port = 443;
 
-set_dbg_level(3);
+	set_dbg_level(3);
 
 	if (!(s = ssl_connect_host(hostname, port, AF_INET))) {
 		fprintf(stderr, "Could not connect to host %s:%u\n", hostname, port);
@@ -38,7 +38,7 @@ set_dbg_level(3);
 	xsession.con = s;
 	xsession.domain = hostname;
 	xsession.dx = hostname;
-load_cache_contents();
+	load_cache_contents();
 	res = verify_dx_certificate(&xsession);
 	printf("verification = %d\n", res);
 

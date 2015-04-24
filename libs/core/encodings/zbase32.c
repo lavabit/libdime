@@ -1,9 +1,8 @@
-
 /**
  * @file /magma/core/encodings/zbase32.c
  *
  * @brief	A modified base32 encoding routine (zbase32) which selects characters to enhance readability.
- * 			zbase32 strings may be used in URLs without any further encoding.
+ *                      zbase32 strings may be used in URLs without any further encoding.
  *
  * $Author$
  * $Date$
@@ -18,7 +17,7 @@
  * @param	s	a managed string containing the data to be encoded.
  * @result	NULL on failure, or a freshly allocated managed string containing the zbase32-encoded data on success.
  */
-stringer_t * zbase32_encode(stringer_t *s) {
+stringer_t *zbase32_encode(stringer_t *s) {
 
 	uchr_t *p, *o;
 	stringer_t *output;
@@ -66,7 +65,7 @@ stringer_t * zbase32_encode(stringer_t *s) {
  * @result	NULL on failure, or a freshly allocated managed string containing the zbase32-decoded data on success.
  */
 
-stringer_t * zbase32_decode(stringer_t *s) {
+stringer_t *zbase32_decode(stringer_t *s) {
 
 	uchr_t *p, *o;
 	stringer_t *output;

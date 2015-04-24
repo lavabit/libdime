@@ -1,5 +1,4 @@
-
- /**
+/**
  * @file /magma/core/host/host.c
  *
  * @brief	Functions to retrieve information about the operating system.
@@ -18,7 +17,7 @@
  * @return	NULL on failure, or the user-specified managed string containing the OS info on success.
  *
  */
-stringer_t * host_platform(stringer_t *output) {
+stringer_t *host_platform(stringer_t *output) {
 
 	struct utsname os;
 
@@ -44,7 +43,7 @@ stringer_t * host_platform(stringer_t *output) {
  * @param	output	a pointer to a managed string to receive the release information.
  * @return	NULL on failure, or the user-specified managed string containing the release info on success.
  */
-stringer_t * host_version(stringer_t *output) {
+stringer_t *host_version(stringer_t *output) {
 
 	struct utsname os;
 

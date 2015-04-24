@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/print.c
  *
@@ -83,7 +82,7 @@ size_t st_sprint(stringer_t *s, const chr_t *format, ...) {
  * @param	...		a variable argument list containing the parameters to the print format string.
  * @return	a pointer to the managed string that received the printed output.
  */
-stringer_t * st_quick(stringer_t *s, const chr_t *format, ...) {
+stringer_t *st_quick(stringer_t *s, const chr_t *format, ...) {
 
 	va_list list;
 
@@ -102,7 +101,7 @@ stringer_t * st_quick(stringer_t *s, const chr_t *format, ...) {
  * @param	args	a variable argument list of parameters to be formatted as output.
  * @return	NULL on failure or a managed string containing the final formatted data on success.
  */
-stringer_t * st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args) {
+stringer_t *st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args) {
 
 	void *out;
 	va_list copy;
@@ -147,7 +146,7 @@ stringer_t * st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args) {
  * @param	...		a variable argument list of parameters to be formatted as output.
  * @return	NULL on failure or a managed string containing the final formatted data on success.
  */
-stringer_t * st_aprint(const chr_t *format, ...) {
+stringer_t *st_aprint(const chr_t *format, ...) {
 
 	va_list list;
 	stringer_t *result;
@@ -166,7 +165,7 @@ stringer_t * st_aprint(const chr_t *format, ...) {
  * @param	...		a variable argument list of parameters to be formatted as output.
  * @return	NULL on failure or a managed string of the specified allocation options containing the final formatted data on success.
  */
-stringer_t * st_aprint_opts(uint32_t opts, const chr_t *format, ...) {
+stringer_t *st_aprint_opts(uint32_t opts, const chr_t *format, ...) {
 
 	va_list list;
 	stringer_t *result;
@@ -177,4 +176,3 @@ stringer_t * st_aprint_opts(uint32_t opts, const chr_t *format, ...) {
 
 	return result;
 }
-

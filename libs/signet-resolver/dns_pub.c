@@ -24,7 +24,7 @@ dnskey_t *get_dnskey_by_tag(unsigned int tag, const char *signer, int force_look
 	PUBLIC_FUNC_IMPL(get_dnskey_by_tag, tag, signer, force_lookup);
 }
 
-ds_t * get_ds_by_dnskey(const dnskey_t *key) {
+ds_t *get_ds_by_dnskey(const dnskey_t *key) {
 	PUBLIC_FUNC_IMPL(get_ds_by_dnskey, key);
 }
 
@@ -40,15 +40,15 @@ int validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covered
 	PUBLIC_FUNC_IMPL(validate_rrsig_rr, label, dhandle, covered, rdata, rdlen, outkey);
 }
 
-void * lookup_dnskey(const char *label) {
+void *lookup_dnskey(const char *label) {
 	PUBLIC_FUNC_IMPL(lookup_dnskey, label);
 }
 
-void * lookup_ds(const char *label) {
+void *lookup_ds(const char *label) {
 	PUBLIC_FUNC_IMPL(lookup_ds, label);
 }
 
-char * get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
+char *get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 	PUBLIC_FUNC_IMPL(get_txt_record, qstring, ttl, validated);
 }
 
@@ -56,6 +56,6 @@ void free_mx_records(mx_record_t **mxs) {
 	PUBLIC_FUNC_IMPL_VOID(free_mx_records, mxs);
 }
 
-mx_record_t ** get_mx_records(const char *qstring) {
+mx_record_t **get_mx_records(const char *qstring) {
 	PUBLIC_FUNC_IMPL(get_mx_records, qstring);
 }

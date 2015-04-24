@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/buckets/pool.c
  *
@@ -35,7 +34,7 @@ void pool_free(pool_t *pool) {
  * @param	timeout		a timeout for pool requests in seconds (specify 0 for infinite wait).
  * @return	NULL on failure,
  */
-pool_t * pool_alloc(uint32_t count, uint32_t timeout) {
+pool_t *pool_alloc(uint32_t count, uint32_t timeout) {
 
 	pool_t *pool;
 	size_t pool_size = sizeof(pool_t) + (sizeof(status_t) * count) + (sizeof(void *) * count);
@@ -139,7 +138,7 @@ uint64_t pool_get_failures(pool_t *pool) {
  * @note	A value of PL_AVAILABLE indicates the object is available for use,; PL_RESERVED indicates the object is in use by a worker thread.
  * @param	pool	the pool containing the specified item.
  * @param	item	the identifier of the item to be queried.
- * @return 	PL_ERROR on failure; otherwise, the status of the specified item.
+ * @return      PL_ERROR on failure; otherwise, the status of the specified item.
  */
 status_t pool_get_status(pool_t *pool, uint32_t item) {
 
@@ -156,7 +155,7 @@ status_t pool_get_status(pool_t *pool, uint32_t item) {
 /**
  * @brief	Set the status flag for an item in a pool.
  * @note	A value of PL_AVAILABLE indicates the object is available for use,; PL_RESERVED indicates the object is in use by a worker thread.
- * @param	pool 	the pool containing the specified item.
+ * @param	pool    the pool containing the specified item.
  * @param	item	the identifier of the item to be adjusted.
  * @param	status	the new status for the item.
  * @return	PL_ERROR on failure; otherwise, the new status value of the specified item.
@@ -176,7 +175,7 @@ status_t pool_set_status(pool_t *pool, uint32_t item, status_t status) {
 /**
  * @brief	Return the first available object in a pool.
  * @note	If no object can be returned immediately, wait for the pool's configured timeout value, in seconds, for
- * 			an object to become available. If the timeout is zero, wait indefinitely.
+ *                      an object to become available. If the timeout is zero, wait indefinitely.
  * @param	item	A pointer to a number that will store the zero-based indexed of the first available item in the pool.
  * @return	PL_RESERVED on success or PL_ERROR if an object couldn't be reserved.
  */
@@ -224,7 +223,7 @@ status_t pool_pull(pool_t *pool, uint32_t *item) {
 
 /**
  * @brief	Return an object to a pool and set its status to PL_AVAILABLE.
- * @param	pool 	the pool tracking the returned item.
+ * @param	pool    the pool tracking the returned item.
  * @param	item	the identifier of the item being returned.
  * @return	This function returns no value.
  */
@@ -243,7 +242,7 @@ void pool_release(pool_t *pool, uint32_t item) {
  * @param	item	the identifier of the object to query.
  * @return	NULL on failure, or the object corresponding to the specified item number.
  */
-void * pool_get_obj(pool_t *pool, uint32_t item) {
+void *pool_get_obj(pool_t *pool, uint32_t item) {
 
 	if (!pool) {
 		return NULL;
@@ -269,7 +268,7 @@ void * pool_get_obj(pool_t *pool, uint32_t item) {
  * @param	object	the new value of the object corresponding to the specified item.
  * @return	NULL on failure, or a pointer to the object that was set.
  */
-void * pool_set_obj(pool_t *pool, uint32_t item, void *object) {
+void *pool_set_obj(pool_t *pool, uint32_t item, void *object) {
 
 	if (!pool) {
 		return NULL;
@@ -295,7 +294,7 @@ void * pool_set_obj(pool_t *pool, uint32_t item, void *object) {
  * @param	object	the new value of the object corresponding to the specified item.
  * @return	a pointer to the original pool object's value, or NULL on failure.
  */
-void * pool_swap_obj(pool_t *pool, uint32_t item, void *object) {
+void *pool_swap_obj(pool_t *pool, uint32_t item, void *object) {
 
 	bool_t loop = true;
 	void *current = NULL;

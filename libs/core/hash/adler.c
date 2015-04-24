@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/hash/adler.c
  *
@@ -35,7 +34,7 @@ uint32_t hash_adler32(void *buffer, size_t length) {
 		} while (--input);
 
 		a = (a & 0xffff) + (a >> 16) * (65536 - 65521);
-    b = (b & 0xffff) + (b >> 16) * (65536 - 65521);
+		b = (b & 0xffff) + (b >> 16) * (65536 - 65521);
 	}
 
 	// If a is greater than the mod number, modulo.

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/compare/starts.c
  *
@@ -46,7 +45,7 @@ int_t st_cmp_cs_starts(stringer_t *s, stringer_t *starts) {
 	}
 
 	// If the string length is equal/greater and result is still set to 0, we have a match.
-	if (result == 0 && slen < startlen) result =  -1;
+	if (result == 0 && slen < startlen) result = -1;
 	return result;
 }
 
@@ -84,6 +83,6 @@ int_t st_cmp_ci_starts(stringer_t *s, stringer_t *starts) {
 	}
 
 	// If the string length is equal/greater and result is still set to 0, we have a match.
-	if (result == 0 && slen < startlen) result =  -1;
+	if (result == 0 && slen < startlen) result = -1;
 	return result;
 }

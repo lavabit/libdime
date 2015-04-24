@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/parsers/line.c
  *
@@ -48,7 +47,7 @@ placer_t line_pl_bl(char *block, size_t length, uint64_t number) {
 
 	while (length-- && *block++ != '\n');
 
-	if (*(block-1) != '\n') {
+	if (*(block - 1) != '\n') {
 		return pl_null();
 	}
 

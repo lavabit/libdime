@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/compare/equal.c
  *
@@ -115,7 +114,7 @@ int_t st_cmp_cs_eq(stringer_t *a, stringer_t *b) {
 	}
 
 	// If the strings match, then the longer string is greater
-	if (result == 0 && alen < blen) result =  -1;
+	if (result == 0 && alen < blen) result = -1;
 	else if (result == 0 && alen > blen) result = 1;
 	return result;
 }
@@ -154,8 +153,7 @@ int_t st_cmp_ci_eq(stringer_t *a, stringer_t *b) {
 	}
 
 	// If the strings match, then the longer string is greater
-	if (result == 0 && alen < blen) result =  -1;
+	if (result == 0 && alen < blen) result = -1;
 	else if (result == 0 && alen > blen) result = 1;
 	return result;
 }
-

@@ -2,8 +2,8 @@
 
 /**
  * @brief	Creates a keys file with specified signing and encryption keys.
- * @param	type	 	Type of keys file, whether the keys correspond to a user or organizational signet.
- * @param	sign_key 	Pointer to the specified ed25519 key, the private portion of which will be stored in the keys file as the signing key.
+ * @param	type	        Type of keys file, whether the keys correspond to a user or organizational signet.
+ * @param	sign_key        Pointer to the specified ed25519 key, the private portion of which will be stored in the keys file as the signing key.
  * @param	enc_key		Pointer to the specified elliptic curve key, the private portion of which will be stored in the keys file as the encryption key.
  * @param	filename	Pointer to the NULL terminated string containing the filename for the keys file.
  * @return	0 on success, -1 on failure.
@@ -21,19 +21,19 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 
 	switch(type) {
 
-		case KEYS_TYPE_ORG:
-			number = DIME_ORG_KEYS;
-			sign_fid = KEYS_ORG_PRIVATE_POK;
-			enc_fid = KEYS_ORG_PRIVATE_ENC;
-			break;
-		case KEYS_TYPE_USER:
-			number = DIME_USER_KEYS;
-			sign_fid = KEYS_USER_PRIVATE_SIGN;
-			enc_fid = KEYS_USER_PRIVATE_ENC;
-			break;
-		default:
-			RET_ERROR_INT(ERR_BAD_PARAM, NULL);
-			break;
+	case KEYS_TYPE_ORG:
+		number = DIME_ORG_KEYS;
+		sign_fid = KEYS_ORG_PRIVATE_POK;
+		enc_fid = KEYS_ORG_PRIVATE_ENC;
+		break;
+	case KEYS_TYPE_USER:
+		number = DIME_USER_KEYS;
+		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		enc_fid = KEYS_USER_PRIVATE_ENC;
+		break;
+	default:
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+		break;
 
 	}
 
@@ -56,13 +56,13 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 
 	memset(serial_keys, 0, serial_size);
 	_int_no_put_2b(serial_keys, (uint16_t)number);
-	_int_no_put_3b(serial_keys+2, (uint32_t)(serial_size - KEYS_HEADER_SIZE));
+	_int_no_put_3b(serial_keys + 2, (uint32_t)(serial_size - KEYS_HEADER_SIZE));
 
 	serial_keys[KEYS_HEADER_SIZE] = sign_fid;
-	memcpy(serial_keys+KEYS_HEADER_SIZE+1, serial_sign, ED25519_KEY_SIZE);
+	memcpy(serial_keys + KEYS_HEADER_SIZE + 1, serial_sign, ED25519_KEY_SIZE);
 	_secure_wipe(serial_sign, ED25519_KEY_SIZE);
 	serial_keys[KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE] = enc_fid;
-	memcpy(serial_keys+KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1, serial_enc, enc_size);
+	memcpy(serial_keys + KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1, serial_enc, enc_size);
 	_secure_wipe(serial_enc, enc_size);
 	free(serial_enc);
 
@@ -93,10 +93,10 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
  * @param	len		Pointer to the length of the output.
  * @return	Pointer to the keys binary string, this memory needs to be wipe before being freed. NULL on error.
 */
-unsigned char * _keys_get_binary(const char *filename, size_t *len) {
+unsigned char *_keys_get_binary(const char *filename, size_t *len) {
 
 	char *b64_keys = NULL;
-	unsigned char * serial_keys = NULL;
+	unsigned char *serial_keys = NULL;
 
 	if(!filename || !len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -151,7 +151,7 @@ keys_type_t _keys_get_type(const unsigned char *bin_keys, size_t len) {
  * @param	len		Length of the keys buffer.
  * @return	Pointer to ed25519 signing key, NULL if an error occurred.
 */
-ED25519_KEY * _keys_fetch_sign_key(const unsigned char *bin_keys, size_t len) {
+ED25519_KEY *_keys_fetch_sign_key(const unsigned char *bin_keys, size_t len) {
 
 	unsigned char sign_fid;
 	unsigned int at = 0;
@@ -167,15 +167,15 @@ ED25519_KEY * _keys_fetch_sign_key(const unsigned char *bin_keys, size_t len) {
 
 	switch(_keys_get_type(bin_keys, len)) {
 
-		case KEYS_TYPE_ORG:
-			sign_fid = KEYS_ORG_PRIVATE_POK;
-			break;
-		case KEYS_TYPE_USER:
-			sign_fid = KEYS_USER_PRIVATE_SIGN;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
-			break;
+	case KEYS_TYPE_ORG:
+		sign_fid = KEYS_ORG_PRIVATE_POK;
+		break;
+	case KEYS_TYPE_USER:
+		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
+		break;
 
 	}
 
@@ -198,7 +198,7 @@ ED25519_KEY * _keys_fetch_sign_key(const unsigned char *bin_keys, size_t len) {
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the ed25519 signing key.
 */
-ED25519_KEY * _keys_file_fetch_sign_key(const char *filename) {
+ED25519_KEY *_keys_file_fetch_sign_key(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -228,11 +228,11 @@ ED25519_KEY * _keys_file_fetch_sign_key(const char *filename) {
 
 /**
  * @brief	Retrieves the encryption key from the keys binary.
- * @param	bin_keys 	Pointer to the keys buffer.
+ * @param	bin_keys        Pointer to the keys buffer.
  * @param	len		Length of the keys buffer.
  * @return	Pointer to elliptic curve key, NULL if an error occurred.
 */
-EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
+EC_KEY *_keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 
 	unsigned char sign_fid, enc_fid;
 	size_t at = 0, privkeylen;
@@ -246,17 +246,17 @@ EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 
 	switch(_keys_get_type(bin_keys, len)) {
 
-		case KEYS_TYPE_ORG:
-			sign_fid = KEYS_ORG_PRIVATE_POK;
-			enc_fid = KEYS_ORG_PRIVATE_ENC;
-			break;
-		case KEYS_TYPE_USER:
-			sign_fid = KEYS_USER_PRIVATE_SIGN;
-			enc_fid = KEYS_USER_PRIVATE_ENC;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
-			break;
+	case KEYS_TYPE_ORG:
+		sign_fid = KEYS_ORG_PRIVATE_POK;
+		enc_fid = KEYS_ORG_PRIVATE_ENC;
+		break;
+	case KEYS_TYPE_USER:
+		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		enc_fid = KEYS_USER_PRIVATE_ENC;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
+		break;
 
 	}
 
@@ -292,7 +292,7 @@ EC_KEY * _keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the elliptic curve encryption key.
 */
-EC_KEY * _keys_file_fetch_enc_key(const char *filename) {
+EC_KEY *_keys_file_fetch_enc_key(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -336,7 +336,7 @@ int _keys_check_length(const unsigned char *in, size_t in_len) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	signet_length = _int_no_get_3b((void *)(in+2));
+	signet_length = _int_no_get_3b((void *)(in + 2));
 
 	if ((in_len - SIGNET_HEADER_SIZE) != signet_length) {
 		RET_ERROR_INT(ERR_UNSPEC, "length does not match input size");

@@ -14,7 +14,7 @@
 
 #include <common/error.h>
 
-#define CONNECT_TIMEOUT		5	/* the timeout value for connection attempts, in seconds */
+#define CONNECT_TIMEOUT 5               /* the timeout value for connection attempts, in seconds */
 
 PUBLIC_FUNC_DECL(int, connect_host, const char *hostname, unsigned short port, int force_family);
 

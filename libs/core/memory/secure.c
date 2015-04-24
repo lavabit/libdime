@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/memory/secure.c
  *
@@ -20,7 +19,7 @@ enum {
 typedef struct {
 	uint32_t flags;
 	size_t length;
-} __attribute__ ((packed)) secured_t;
+} __attribute__((packed)) secured_t;
 
 static struct {
 
@@ -42,9 +41,9 @@ static struct {
 } secure = {
 
 	.slab = {
-	.data = NULL,
-	.length = 0,
-	.lock = PTHREAD_MUTEX_INITIALIZER
+		.data = NULL,
+		.length = 0,
+		.lock = PTHREAD_MUTEX_INITIALIZER
 	},
 
 	.allocated = {
@@ -188,7 +187,7 @@ static secured_t *mm_sec_chunk_new(secured_t *block, size_t size) {
 	}
 
 	// If we end up reaching the end of the secure address space, return NULL.
-	if (!mm_sec_secured(chunk))	chunk = NULL;
+	if (!mm_sec_secured(chunk))     chunk = NULL;
 
 	return chunk;
 }
@@ -237,7 +236,7 @@ void mm_sec_free(void *block) {
  * @param	len		the length, in bytes, of the secure memory chunk to be allocated.
  * @return	NULL on failure, or a pointer to the freshly allocated chunk of secure memory on success.
  */
-void * mm_sec_alloc(size_t len) {
+void *mm_sec_alloc(size_t len) {
 
 	secured_t *chunk;
 	void *result = NULL;
@@ -268,7 +267,7 @@ void * mm_sec_alloc(size_t len) {
 		log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Secure memory allocation failed. {len = %zu}", len);
 		size_t total, bytes, items;
 		mm_sec_stats(&total, &bytes, &items);
-		log_pedantic("secmem usage: %lu/%lu bytes in %lu chunks\n",	bytes, total, items);
+		log_pedantic("secmem usage: %lu/%lu bytes in %lu chunks\n",     bytes, total, items);
 
 		//log_pedantic("Secure memory allocation failed. {len = %zu}", len);
 
@@ -280,7 +279,7 @@ void * mm_sec_alloc(size_t len) {
 
 // Allocates a larger block of secure memory if requested. Depends on allocation/free routines to lock the required mutex. If a new block
 // is allocated, the original data is copied and then the block is freed. In the event of an error, the original block is preserved and NULL is returned.
-void * mm_sec_realloc(void *orig, size_t len) {
+void *mm_sec_realloc(void *orig, size_t len) {
 
 	size_t olen;
 	void *result;
@@ -338,7 +337,7 @@ void mm_sec_stop(void) {
 /**
  * @brief	If enabled, allocate and initialize the secure memory slab.
  * @note	This function will mmap a page-aligned secure memory slab (defaults to 32768 bytes long), mlock() it into memory, and zero-wipe it.
- * 			Guard pages with empty permissions are created on the boundaries of the slab to prevent memory bungling.
+ *                      Guard pages with empty permissions are created on the boundaries of the slab to prevent memory bungling.
  * @return	true if the secure memory slab has been initialized, or false if the process fails.
  */
 // TODO: We still need to implement signal handlers that detect when the application is being attached to a debugger, or being forced to create a core dump
@@ -364,7 +363,7 @@ bool_t mm_sec_start(void) {
 	}
 	// If the page length is smaller than MM_SEC_PAGE_ALIGNMENT_MIN bytes, replace it with an aligned value of at least MM_SEC_PAGE_ALIGNMENT_MIN.
 	else if (alignment < MM_SEC_PAGE_ALIGNMENT_MIN) {
-		 alignment = (MM_SEC_PAGE_ALIGNMENT_MIN + alignment - 1) & ~(alignment - 1);
+		alignment = (MM_SEC_PAGE_ALIGNMENT_MIN + alignment - 1) & ~(alignment - 1);
 	}
 
 	// Ensure the default length for secure memory slabs is greater than zero and is aligned by the page table size.

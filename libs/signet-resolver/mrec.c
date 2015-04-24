@@ -65,33 +65,33 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 	}
 
 	switch(drec->policy) {
-		case msg_experimental:
-			policy_string = "experimental";
-			break;
-		case msg_mixed:
-			policy_string = "mixed";
-			break;
-		case msg_strict:
-			policy_string = "strict";
-			break;
-		default:
-			policy_string = "[unknown]";
-			break;
+	case msg_experimental:
+		policy_string = "experimental";
+		break;
+	case msg_mixed:
+		policy_string = "mixed";
+		break;
+	case msg_strict:
+		policy_string = "strict";
+		break;
+	default:
+		policy_string = "[unknown]";
+		break;
 	}
 
 	switch(drec->subdomain) {
-		case sub_strict:
-			sub_string = "strict";
-			break;
-		case sub_relaxed:
-			sub_string = "relaxed";
-			break;
-		case sub_explicit:
-			sub_string = "explicit";
-			break;
-		default:
-			sub_string = "[unknown]";
-			break;
+	case sub_strict:
+		sub_string = "strict";
+		break;
+	case sub_relaxed:
+		sub_string = "relaxed";
+		break;
+	case sub_explicit:
+		sub_string = "explicit";
+		break;
+	default:
+		sub_string = "[unknown]";
+		break;
 	}
 
 
@@ -199,10 +199,10 @@ void _destroy_dime_record_cb(void *record) {
  * @param	len	the length, in bytes, of the buffer to be deserialized.
  * @return	a pointer to a newly allocated DIME management record structure constructed from the serialized data, or NULL on failure.
  */
-void * _deserialize_dime_record_cb(void *data, size_t len) {
+void *_deserialize_dime_record_cb(void *data, size_t len) {
 
 	dime_record_t *result;
-	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data+len;
+	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data + len;
 
 	if (!data || !len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -216,14 +216,14 @@ void * _deserialize_dime_record_cb(void *data, size_t len) {
 	memset(result, 0, sizeof(dime_record_t));
 
 	if (!_deserialize_data((unsigned char *)&(result->version), &dptr, dend, sizeof(result->version)) ||
-		!_deserialize_array(&(result->pubkey), &dptr, dend, ED25519_KEY_SIZE) ||
-		!_deserialize_array(&(result->tlssig), &dptr, dend, ED25519_SIG_SIZE) ||
-		!_deserialize_data((unsigned char *)&(result->policy), &dptr, dend, sizeof(result->policy)) ||
-		!_deserialize_string(&(result->syndicates), &dptr, dend) ||
-		!_deserialize_str_array(&(result->dx), &dptr, dend) ||
-		!_deserialize_data((unsigned char *)&(result->expiry), &dptr, dend, sizeof(result->expiry)) ||
-		!_deserialize_data((unsigned char *)&(result->subdomain), &dptr, dend, sizeof(result->subdomain)) ||
-		!_deserialize_data((unsigned char *)&(result->validated), &dptr, dend, sizeof(result->validated))) {
+	    !_deserialize_array(&(result->pubkey), &dptr, dend, ED25519_KEY_SIZE) ||
+	    !_deserialize_array(&(result->tlssig), &dptr, dend, ED25519_SIG_SIZE) ||
+	    !_deserialize_data((unsigned char *)&(result->policy), &dptr, dend, sizeof(result->policy)) ||
+	    !_deserialize_string(&(result->syndicates), &dptr, dend) ||
+	    !_deserialize_str_array(&(result->dx), &dptr, dend) ||
+	    !_deserialize_data((unsigned char *)&(result->expiry), &dptr, dend, sizeof(result->expiry)) ||
+	    !_deserialize_data((unsigned char *)&(result->subdomain), &dptr, dend, sizeof(result->subdomain)) ||
+	    !_deserialize_data((unsigned char *)&(result->validated), &dptr, dend, sizeof(result->validated))) {
 		free(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize DIME management record from persistent cache");
 	}
@@ -244,9 +244,9 @@ void * _deserialize_dime_record_cb(void *data, size_t len) {
  * @param	outlen	a pointer to a variable to receive the length of the serialized data on completion.
  * @return	a pointer to a newly allocated buffer containing the serialized DIME record data, or NULL on failure.
  */
-void * _serialize_dime_record_cb(void *record, size_t *outlen) {
+void *_serialize_dime_record_cb(void *record, size_t *outlen) {
 
-	dime_record_t *drec = (dime_record_t *) record;
+	dime_record_t *drec = (dime_record_t *)record;
 	unsigned char *buf = NULL;
 
 	if (!drec || !outlen) {
@@ -256,14 +256,14 @@ void * _serialize_dime_record_cb(void *record, size_t *outlen) {
 	*outlen = 0;
 
 	if (!_mem_append(&buf, outlen, (unsigned char *)&(drec->version), sizeof(drec->version)) ||
-		!_mem_append_serialized_array(&buf, outlen, (const unsigned char **)drec->pubkey, ED25519_KEY_SIZE) ||
-		!_mem_append_serialized_array(&buf, outlen, (const unsigned char **)drec->tlssig, ED25519_SIG_SIZE) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(drec->policy), sizeof(drec->policy)) ||
-		!_mem_append_serialized_string(&buf, outlen, drec->syndicates) ||
-		!_mem_append_serialized_str_array(&buf, outlen, (const char **)drec->dx) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(drec->expiry), sizeof(drec->expiry)) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(drec->subdomain), sizeof(drec->subdomain)) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(drec->validated), sizeof(drec->validated))) {
+	    !_mem_append_serialized_array(&buf, outlen, (const unsigned char **)drec->pubkey, ED25519_KEY_SIZE) ||
+	    !_mem_append_serialized_array(&buf, outlen, (const unsigned char **)drec->tlssig, ED25519_SIG_SIZE) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(drec->policy), sizeof(drec->policy)) ||
+	    !_mem_append_serialized_string(&buf, outlen, drec->syndicates) ||
+	    !_mem_append_serialized_str_array(&buf, outlen, (const char **)drec->dx) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(drec->expiry), sizeof(drec->expiry)) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(drec->subdomain), sizeof(drec->subdomain)) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(drec->validated), sizeof(drec->validated))) {
 
 		if (buf) {
 			free(buf);
@@ -283,7 +283,7 @@ void * _serialize_dime_record_cb(void *record, size_t *outlen) {
  * @param	len	the length, in bytes, of the data buffer to be parsed.
  * @return	a pointer to the DIME management record on success, or NULL on failure.
  */
-dime_record_t * _parse_dime_record(const char *txt, size_t len) {
+dime_record_t *_parse_dime_record(const char *txt, size_t len) {
 
 	dime_record_t *result;
 	unsigned char *keydata, *tmpdata;
@@ -295,18 +295,18 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if (!(result = malloc (sizeof(dime_record_t)))) {
+	if (!(result = malloc(sizeof(dime_record_t)))) {
 		PUSH_ERROR_SYSCALL("malloc");
 		RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for DIME record");
 	}
 
-	if (!(txtcopy = malloc(len+1))) {
+	if (!(txtcopy = malloc(len + 1))) {
 		PUSH_ERROR_SYSCALL("malloc");
 		free(result);
 		RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for DIME record copy");
 	}
 
-	memset(txtcopy, 0, len+1);
+	memset(txtcopy, 0, len + 1);
 	memcpy(txtcopy, txt, len);
 
 	// Fill in default values.
@@ -323,12 +323,12 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
 	_dbgprint(parse_dbg_level, "Started parsing DIME management record...\n");
 
 	// Weird loop condition, but we want to include the null byte as a possibility.
-	while (len+1) {
+	while (len + 1) {
 
 		// Be careful; base64-encoded fields can end in sequences of multiple =
-		if ((*ptr == '=') && (*(ptr+1) != '=') && *(ptr+1) && !chr_isspace(*(ptr+1))) {
+		if ((*ptr == '=') && (*(ptr + 1) != '=') && *(ptr + 1) && !chr_isspace(*(ptr + 1))) {
 			*ptr = 0;
-			startval = ptr+1;
+			startval = ptr + 1;
 		} else if ((*ptr == ' ') || (*ptr == ';') || (!*ptr)) {
 			*ptr = 0;
 
@@ -467,7 +467,7 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
 
 			_dbgprint(parse_dbg_level, " [%s]\n", startval);
 
-			startopt = ptr+1;
+			startopt = ptr + 1;
 		}
 
 		len--;
@@ -492,7 +492,7 @@ dime_record_t * _parse_dime_record(const char *txt, size_t len) {
  * @param	use_cache	if set, use the cache as the first-line resolver; if 0, only perform live network lookups.
  * @return	NULL on failure, or a pointer to a populated dime_record_t structure on success.
  */
-dime_record_t * _get_dime_record(const char *domain, unsigned long *ttl, int use_cache) {
+dime_record_t *_get_dime_record(const char *domain, unsigned long *ttl, int use_cache) {
 
 	cached_object_t *cached, *newobj, *cloned;
 	dime_record_t *result;
@@ -634,7 +634,7 @@ int _validate_dime_record(const dime_record_t *record) {
  * @param	domain		a null-terminated string containing the name of the dark domain with which the DIME record is to be associated.
  * @return	NULL on failure or a pointer to the retrieved DIME management record on success.
  */
-dime_record_t * _get_dime_record_from_file(const char *filename, const char *domain) {
+dime_record_t *_get_dime_record_from_file(const char *filename, const char *domain) {
 
 	dime_record_t *result = NULL;
 	cached_object_t *cached;
@@ -660,8 +660,8 @@ dime_record_t * _get_dime_record_from_file(const char *filename, const char *dom
 
 			if (chr_isprint(buf[i])) {
 
-				if (buf[strlen(buf)-1] == '\n') {
-					buf[strlen(buf)-1] = 0;
+				if (buf[strlen(buf) - 1] == '\n') {
+					buf[strlen(buf) - 1] = 0;
 				}
 
 				// Since this is supplied in the file, this doesn't make it to the persistent cache. It also has an unlimited TTL.
@@ -689,7 +689,7 @@ dime_record_t * _get_dime_record_from_file(const char *filename, const char *dom
 
 		}
 
- 	}
+	}
 
 	fclose(fp);
 

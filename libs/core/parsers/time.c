@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/parsers/time.c
  *
@@ -63,14 +62,14 @@ uint64_t time_datestamp(void) {
  * @param	moment	the specified time to be formatted, as a UNIX time value.
  * @return	NULL on failure, or a pointer to the managed string containing the result on success.
  */
-stringer_t * time_print_local(stringer_t *s, chr_t *format, time_t moment) {
+stringer_t *time_print_local(stringer_t *s, chr_t *format, time_t moment) {
 
 	size_t len;
 	struct tm localtime;
 
 	mm_wipe(&localtime, sizeof(struct tm));
 
-	if (!s || (moment = time(NULL)) == ((time_t) -1) || !localtime_r(&moment, &localtime)) {
+	if (!s || (moment = time(NULL)) == ((time_t)-1) || !localtime_r(&moment, &localtime)) {
 		log_pedantic("Could not determine the proper time.");
 		return NULL;
 	}
@@ -94,7 +93,7 @@ stringer_t * time_print_local(stringer_t *s, chr_t *format, time_t moment) {
  * @param	moment	the specified time to be formatted, as a UNIX time value.
  * @return	NULL on failure, or a pointer to the managed string containing the result on success.
  */
-stringer_t * time_print_gmt(stringer_t *s, chr_t *format, time_t moment) {
+stringer_t *time_print_gmt(stringer_t *s, chr_t *format, time_t moment) {
 
 	size_t len;
 	struct tm gmt;

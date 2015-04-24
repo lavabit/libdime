@@ -26,21 +26,21 @@ int main(int argc, char *argv[]) {
 	while ((opt = getopt(argc, argv, "gdf:p")) != -1) {
 
 		switch (opt) {
-			case 'g':
-				generate = 1;
-				break;
-			case 'd':
-				dump = 1;
-				break;
-			case 'f':
-				filename = optarg;
-				break;
-			case 'p':
-				pok = 1;
-				break;
-			default:
-				usage(argv[0]);
-				break;
+		case 'g':
+			generate = 1;
+			break;
+		case 'd':
+			dump = 1;
+			break;
+		case 'f':
+			filename = optarg;
+			break;
+		case 'p':
+			pok = 1;
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 
 	}

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/thread/thread.h
  *
@@ -30,14 +29,14 @@ int   rwlock_attr_getkind(pthread_rwlockattr_t *attr, int *pref);
 int   rwlock_attr_init(pthread_rwlockattr_t *attr);
 int   rwlock_attr_setkind(pthread_rwlockattr_t *attr, int pref);
 int   rwlock_destroy(pthread_rwlock_t *lock);
-int   rwlock_init(pthread_rwlock_t *lock, pthread_rwlockattr_t * attr);
+int   rwlock_init(pthread_rwlock_t *lock, pthread_rwlockattr_t *attr);
 int   rwlock_lock_read(pthread_rwlock_t *lock);
 int   rwlock_lock_write(pthread_rwlock_t *lock);
 int   rwlock_unlock(pthread_rwlock_t *lock);
 
 /// keys.c
 void *  tkey_get(pthread_key_t key);
-int     tkey_init(pthread_key_t *key, void(*destructor)(void*));
+int     tkey_init(pthread_key_t *key, void (*destructor)(void *));
 int     tkey_set(pthread_key_t key, void *value);
 
 /// mutex.c

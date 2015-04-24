@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/classify/ascii.c
  *
@@ -48,7 +47,7 @@ bool_t chr_printable(uchr_t c) {
 
 bool_t chr_alphanumeric(uchr_t c) {
 
-	if ((c >= 'A' && c <= 'Z') ||	(c >= 'a' && c <= 'z') ||	(c >= '0' && c <= '9')) {
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
 		return true;
 	}
 

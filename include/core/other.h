@@ -6,4 +6,3 @@ uint64_t _rand_get_uint64(void);
 
 
 #endif
-

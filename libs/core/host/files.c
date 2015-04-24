@@ -14,7 +14,7 @@
 /**
  * @brief	Get the contents of a file on disk.
  * @see		file_load()
- * @note 	This is similar in function to file_load() but there is no read() length checking, so it can be used on non-regular files.
+ * @note        This is similar in function to file_load() but there is no read() length checking, so it can be used on non-regular files.
  * @param	name	a character pointer to the full pathname of the file to be opened.
  * @param	output	a managed string where the results of the file read operation will be stored.
  * @return	-1 on failure or the number of bytes read from the file on success.
@@ -53,7 +53,7 @@ int_t file_read(char *name, stringer_t *output) {
  * @param	name	a character pointer to the full pathname of the file to be opened.
  * @return	NULL on failure, or a managed string containing all the data in the file.
  */
-stringer_t * file_load(char *name) {
+stringer_t *file_load(char *name) {
 
 	int fd;
 	stringer_t *result;
@@ -63,13 +63,13 @@ stringer_t * file_load(char *name) {
 	// FTM: returns the new file descriptor, or -1 if an error occurred (in which case, errno is set appropriately).
 	if ((fd = open(name, O_RDONLY)) == -1) {
 		log_info("Could not open the file %s for reading. {errno = %i & strerror = %s}", name, errno,
-				(strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
+		         (strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
 		return NULL;
 	}
 	// FTM: On success, zero is returned.  On error, -1 is returned, and errno is set appropriately.
 	else if (fstat(fd, &info) == -1) {
 		log_info("Could not fstat the file %s. {errno = %i & strerror = %s}", name, errno,
-				(strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
+		         (strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
 		close(fd);
 		return NULL;
 	} else if ((result = st_alloc(info.st_size)) == NULL) {
@@ -84,7 +84,7 @@ stringer_t * file_load(char *name) {
 	// QUESTION: We also probably shouldn't count on read reading all the bytes either
 	else if (read(fd, st_data_get(result), st_avail_get(result)) != info.st_size) {
 		log_info("Could not read the entire file %s. {errno = %i & strerror = %s}", name, errno,
-				(strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
+		         (strerror_r(errno, estring, 1024) == 0 ? estring : "Unknown error"));
 		close(fd);
 		return NULL;
 	}
@@ -114,7 +114,7 @@ int_t get_temp_file_handle(chr_t *pdir, stringer_t **tmpname) {
 	if (sp) {
 		opath = sp;
 	} else {
-		opath = st_import(pdir,ns_length_get(pdir));
+		opath = st_import(pdir, ns_length_get(pdir));
 	}
 
 	if (!opath) {
@@ -124,10 +124,10 @@ int_t get_temp_file_handle(chr_t *pdir, stringer_t **tmpname) {
 
 	// We have to do this because spool_path() doesn't return the type of string we need for appending.
 	if (!(path = st_dupe_opts(MANAGED_T | JOINTED | HEAP, opath))) {
-			log_pedantic("Could not allocate a buffer for temp file name.");
-			st_free(opath);
-			return -1;
-		}
+		log_pedantic("Could not allocate a buffer for temp file name.");
+		st_free(opath);
+		return -1;
+	}
 
 	st_free(opath);
 
@@ -169,7 +169,7 @@ bool_t file_accessible(const chr_t *path) {
  */
 bool_t file_readwritable(const chr_t *path) {
 
-	return (access(path, R_OK|W_OK) == 0);
+	return (access(path, R_OK | W_OK) == 0);
 }
 
 /**
@@ -184,5 +184,5 @@ bool_t file_world_accessible(const chr_t *path) {
 		return false;
 	}
 
-	return ((sb.st_mode & (S_IROTH|S_IWOTH)) != 0);
+	return ((sb.st_mode & (S_IROTH | S_IWOTH)) != 0);
 }

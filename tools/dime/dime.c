@@ -75,7 +75,7 @@ static void show_coc(const char *cocstr) {
 			return;
 		}
 
-		token = dptr+1;
+		token = dptr + 1;
 		dptr = token + strlen(token) - 1;
 
 		while ((dptr > token) && chr_isspace(*dptr)) {
@@ -123,55 +123,55 @@ int main(int argc, char *argv[]) {
 	while ((opt = getopt(argc, argv, "046d:e:f:i:hcnp:v")) != -1) {
 
 		switch (opt) {
-			case '0':
-				no_trust = 1;
-				break;
-			case '4':
-				family = AF_INET;
-				break;
-			case '6':
-				family = AF_INET6;
-				break;
-			case 'c':
-				do_vrfy = 1;
-				break;
-			case 'd':
-				dxname = optarg;
-				break;
-			case 'e':
-				endfp = optarg;
-				break;
-			case 'f':
-				fingerprint = optarg;
-				break;
-			case 'i':
-				dimefile = optarg;
-				break;
-			case 'h':
-				do_hist = 1;
-				break;
-			case 'n':
-				no_cache = 1;
-				break;
-			case 'p':
+		case '0':
+			no_trust = 1;
+			break;
+		case '4':
+			family = AF_INET;
+			break;
+		case '6':
+			family = AF_INET6;
+			break;
+		case 'c':
+			do_vrfy = 1;
+			break;
+		case 'd':
+			dxname = optarg;
+			break;
+		case 'e':
+			endfp = optarg;
+			break;
+		case 'f':
+			fingerprint = optarg;
+			break;
+		case 'i':
+			dimefile = optarg;
+			break;
+		case 'h':
+			do_hist = 1;
+			break;
+		case 'n':
+			no_cache = 1;
+			break;
+		case 'p':
 
-				if (!(port = atoi(optarg))) {
-					fprintf(stderr, "Error: specified invalid port number.\n");
-					exit(EXIT_FAILURE);
-				}
+			if (!(port = atoi(optarg))) {
+				fprintf(stderr, "Error: specified invalid port number.\n");
+				exit(EXIT_FAILURE);
+			}
 
-				if ((port != DMTP_PORT) && (port != DMTP_PORT_DUAL)) {
-					fprintf(stderr, "Error: invalid port specified; must be %u or %u.\n", DMTP_PORT, DMTP_PORT_DUAL);
-					exit(EXIT_FAILURE);
-				}
+			if ((port != DMTP_PORT) && (port != DMTP_PORT_DUAL)) {
+				fprintf(stderr, "Error: invalid port specified; must be %u or %u.\n", DMTP_PORT, DMTP_PORT_DUAL);
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			case 'v':
-				_verbose++;
-				break;
-			default:
-				usage(argv[0]);
-				break;
+			break;
+		case 'v':
+			_verbose++;
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 
 	}
@@ -181,11 +181,11 @@ int main(int argc, char *argv[]) {
 		dbgprint(1, "Disabling object cache.\n");
 
 		// We need to be able to use the cache, but not to load or save to disk.
-		if (set_cache_permissions(CACHE_PERM_READ|CACHE_PERM_ADD|CACHE_PERM_DELETE) < 0) {
-				fprintf(stderr, "Error: could not adjust cache permissions.\n");
-				dump_error_stack();
-				exit(EXIT_FAILURE);
-			}
+		if (set_cache_permissions(CACHE_PERM_READ | CACHE_PERM_ADD | CACHE_PERM_DELETE) < 0) {
+			fprintf(stderr, "Error: could not adjust cache permissions.\n");
+			dump_error_stack();
+			exit(EXIT_FAILURE);
+		}
 
 	}
 
@@ -241,8 +241,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Error: unable to load cache contents from disk.\n");
 		dump_error_stack();
 	} else if (_verbose >= 5) {
-			dbgprint(5, "Loaded object cache; dumping contents:\n");
-			_dump_cache(cached_data_unknown, 1, 1);
+		dbgprint(5, "Loaded object cache; dumping contents:\n");
+		_dump_cache(cached_data_unknown, 1, 1);
 	}
 
 	if ((obj = find_cached_object(signame, &(cached_stores[cached_data_signet])))) {
@@ -345,14 +345,14 @@ int main(int argc, char *argv[]) {
 	dbgprint(1, "DX certificate successfully verified.\n");
 
 /*	printf("Executing command tests...\n");
-	printf("STAT returned %s\n", dmtp_stats(session, NULL));
-	printf("MODE returned %d\n", dmtp_get_mode(session));
-	printf("NOOP returned %d\n", dmtp_noop(session));
-	printf("RSET returned %d\n", dmtp_reset(session));
-	printf("Done.\n");
+        printf("STAT returned %s\n", dmtp_stats(session, NULL));
+        printf("MODE returned %d\n", dmtp_get_mode(session));
+        printf("NOOP returned %d\n", dmtp_noop(session));
+        printf("RSET returned %d\n", dmtp_reset(session));
+        printf("Done.\n");
 
 printf("XXX: aborting\n");
-	_dump_cache(cached_data_unknown, 1);
+        _dump_cache(cached_data_unknown, 1);
 exit(0); */
 
 	// Depending on the command line options supplied, there's 3 things we can do: signet resolution, signet verification, or signet history.
@@ -376,7 +376,7 @@ exit(0); */
 		return 0;
 	} else if (do_hist) {
 		dbgprint(1, "Attempting to retrieve the CoC history between (%s) and (%s) for signet: %s\n", fingerprint,
-			(endfp ? endfp : "[current]"), signame);
+		         (endfp ? endfp : "[current]"), signame);
 
 		if (!(line = dmtp_history(session, signame, fingerprint, endfp))) {
 			fprintf(stderr, "Signet history command failed.\n");
@@ -469,13 +469,13 @@ exit(0); */
 
 
 /*	printf("Entering loop...\n");
-	_ssl_fd_loop(session->con);
-	printf("Exited loop.. Terminating.\n"); */
+        _ssl_fd_loop(session->con);
+        printf("Exited loop.. Terminating.\n"); */
 
 /*	if (_verbose >= 2) {
-		dump_dnskey_entries();
-		dump_ds_entries();
-	} */
+                dump_dnskey_entries();
+                dump_ds_entries();
+        } */
 
 
 	return 0;

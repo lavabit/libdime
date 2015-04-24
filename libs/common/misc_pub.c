@@ -25,22 +25,22 @@ uint16_t int_no_get_2b(const void *buf) {
 	PUBLIC_FUNC_IMPL(int_no_get_2b, buf);
 }
 
-char * b64encode(const unsigned char *buf, size_t len) {
+char *b64encode(const unsigned char *buf, size_t len) {
 	PUBLIC_FUNC_IMPL(b64encode, buf, len);
 }
-char * b64encode_nopad(const unsigned char *buf, size_t len) {
+char *b64encode_nopad(const unsigned char *buf, size_t len) {
 	PUBLIC_FUNC_IMPL(b64encode_nopad, buf, len);
 }
 
-unsigned char * b64decode(const char *buf, size_t len, size_t *outlen) {
+unsigned char *b64decode(const char *buf, size_t len, size_t *outlen) {
 	PUBLIC_FUNC_IMPL(b64decode, buf, len, outlen);
 }
 
-unsigned char * b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
+unsigned char *b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
 	PUBLIC_FUNC_IMPL(b64decode_nopad, buf, len, outlen);
 }
 
-char * hex_encode(const unsigned char *buf, size_t len) {
+char *hex_encode(const unsigned char *buf, size_t len) {
 	PUBLIC_FUNC_IMPL(hex_encode, buf, len);
 }
 
@@ -49,7 +49,7 @@ void set_dbg_level(unsigned int level) {
 }
 
 unsigned int get_dbg_level(void) {
-	PUBLIC_FUNC_IMPL(get_dbg_level,);
+	PUBLIC_FUNC_IMPL(get_dbg_level, );
 }
 
 int str_printf(char **sbuf, const char *fmt, ...) {
@@ -64,7 +64,7 @@ void ptr_chain_free(void *buf) {
 	PUBLIC_FUNC_IMPL_VOID(ptr_chain_free, buf);
 }
 
-void * ptr_chain_add(void *buf, const void *addr) {
+void *ptr_chain_add(void *buf, const void *addr) {
 	PUBLIC_FUNC_IMPL(ptr_chain_add, buf, addr);
 }
 
@@ -72,11 +72,11 @@ int count_ptr_chain(void *buf) {
 	PUBLIC_FUNC_IMPL(count_ptr_chain, buf);
 }
 
-void * ptr_chain_clone(void *buf) {
+void *ptr_chain_clone(void *buf) {
 	PUBLIC_FUNC_IMPL(ptr_chain_clone, buf);
 }
 
-char * get_chr_date(time_t time, int local) {
+char *get_chr_date(time_t time, int local) {
 	PUBLIC_FUNC_IMPL(get_chr_date, time, local);
 }
 
@@ -100,7 +100,7 @@ int compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *
 	PUBLIC_FUNC_IMPL(compute_sha_hash_multibuf, nbits, bufs, outbuf);
 }
 
-RSA * decode_rsa_pubkey(unsigned char *data, size_t dlen) {
+RSA *decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 	PUBLIC_FUNC_IMPL(decode_rsa_pubkey, data, dlen);
 }
 
@@ -116,11 +116,11 @@ int is_buf_zeroed(void *buf, size_t len) {
 	PUBLIC_FUNC_IMPL(is_buf_zeroed, buf, len);
 }
 
-unsigned char * read_file_data(const char *filename, size_t *fsize) {
+unsigned char *read_file_data(const char *filename, size_t *fsize) {
 	PUBLIC_FUNC_IMPL(read_file_data, filename, fsize);
 }
 
-char * read_pem_data(const char *pemfile, const char *tag, int nospace) {
+char *read_pem_data(const char *pemfile, const char *tag, int nospace) {
 	PUBLIC_FUNC_IMPL(read_pem_data, pemfile, tag, nospace);
 }
 

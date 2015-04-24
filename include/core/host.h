@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/host/host.h
  *
@@ -32,12 +31,12 @@ bool_t        file_world_accessible(const chr_t *path);
 
 
 /// host.c
-stringer_t *  host_platform(stringer_t *output);
-stringer_t *  host_version(stringer_t *output);
+stringer_t *host_platform(stringer_t *output);
+stringer_t *host_version(stringer_t *output);
 
 /// mappings.c
-chr_t *  errno_name(int errnum, char *buffer, size_t length);
-chr_t *  signal_name(int signal, char *buffer, size_t length);
+chr_t *errno_name(int errnum, char *buffer, size_t length);
+chr_t *signal_name(int signal, char *buffer, size_t length);
 
 /// folder.c
 int_t   folder_exists(stringer_t *path, bool_t create);
@@ -56,4 +55,3 @@ bool_t        spool_start(void);
 void          spool_stop(void);
 
 #endif
-

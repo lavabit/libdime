@@ -15,19 +15,19 @@
 #include <openssl/bn.h>
 #include <common/error.h>
 
-#define ANSI_COLOR_RED		"\x1b[31m"
-#define ANSI_COLOR_RESET	"\x1b[0m"
-#define ALERT_PRINT(fp,x)	{ fprintf(fp, ANSI_COLOR_RED); x; fprintf(fp, ANSI_COLOR_RESET); fflush(fp); }
+#define ANSI_COLOR_RED   "\x1b[31m"
+#define ANSI_COLOR_RESET "\x1b[0m"
+#define ALERT_PRINT(fp, x) { fprintf(fp, ANSI_COLOR_RED); x; fprintf(fp, ANSI_COLOR_RESET); fflush(fp); }
 
 
-#define SHA_160_SIZE		20
-#define SHA_256_SIZE		32
-#define SHA_512_SIZE		64
+#define SHA_160_SIZE 20
+#define SHA_256_SIZE 32
+#define SHA_512_SIZE 64
 
-#define SHA_512_B64_SIZE	86
+#define SHA_512_B64_SIZE 86
 
-#define B64_ENCODED_LEN(len)	((((len) + (((len) % 3) ? (3 - ((len) % 3)) : 0)) / 3) * 4)
-#define B64_DECODED_LEN(len)	((len) * 3/4)
+#define B64_ENCODED_LEN(len) ((((len) + (((len) % 3) ? (3 - ((len) % 3)) : 0)) / 3) * 4)
+#define B64_DECODED_LEN(len) ((len) * 3 / 4)
 
 #define chr_isspace(c) isspace((unsigned char)(c))
 #define chr_isprint(c) isprint((unsigned char)(c))
@@ -61,7 +61,7 @@ PUBLIC_FUNC_DECL(size_t,          mem_append,                unsigned char **buf
 PUBLIC_FUNC_DECL(void *,          ptr_chain_add,             void *buf, const void *addr);
 PUBLIC_FUNC_DECL(void,            ptr_chain_free,            void *buf);
 PUBLIC_FUNC_DECL(int,             count_ptr_chain,           void *buf);
-PUBLIC_FUNC_DECL(void * ,         ptr_chain_clone,           void *buf);
+PUBLIC_FUNC_DECL(void *,         ptr_chain_clone,           void *buf);
 
 // Miscellaneous/no category.
 PUBLIC_FUNC_DECL(char *,          get_chr_date,              time_t time, int local);
@@ -77,7 +77,7 @@ PUBLIC_FUNC_DECL(char *,          hex_encode,                const unsigned char
 
 // Functions for dumping data and printing debugging messages.
 PUBLIC_FUNC_DECL(void,            dump_buf,                  const unsigned char *buf, size_t len, int all_hex);
-PUBLIC_FUNC_DECL(void,            dump_buf_outer,            const unsigned char * buf, size_t len, size_t nouter, int all_hex);
+PUBLIC_FUNC_DECL(void,            dump_buf_outer,            const unsigned char *buf, size_t len, size_t nouter, int all_hex);
 // Special declaration for variable argument function.
 PUBLIC_FUNC_DECL_VA(void,         dbgprint,                  unsigned int dbglevel, const char *fmt);
 

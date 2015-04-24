@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/multi.c
  *
@@ -145,7 +144,7 @@ uint64_t mt_get_number(multi_t multi) {
 	case (M_TYPE_INT16):
 		result = (uint64_t)multi.val.i16;
 		break;
-		case (M_TYPE_INT8):
+	case (M_TYPE_INT8):
 		result = (uint64_t)multi.val.i8;
 		break;
 	case (M_TYPE_FLOAT):
@@ -173,7 +172,7 @@ uint64_t mt_get_number(multi_t multi) {
  * @param	multi	the multi-type object to be examined.
  * @param	a pointer to the value of the input object, or NULL on failure.
  */
-char * mt_get_char(multi_t multi) {
+char *mt_get_char(multi_t multi) {
 
 	char *result = NULL;
 
@@ -197,7 +196,7 @@ char * mt_get_char(multi_t multi) {
 		result = (char *)&(multi.val.binary);
 		break;
 
-		// Unsigned integers
+	// Unsigned integers
 	case (M_TYPE_UINT64):
 		result = (char *)&(multi.val.u64);
 
@@ -212,7 +211,7 @@ char * mt_get_char(multi_t multi) {
 		result = (char *)&(multi.val.u8);
 		break;
 
-		// Signed integers
+	// Signed integers
 	case (M_TYPE_INT64):
 		result = (char *)&(multi.val.i64);
 		break;
@@ -266,7 +265,7 @@ size_t mt_get_length(multi_t multi) {
 		result = sizeof(bool_t);
 		break;
 
-		// Unsigned integers
+	// Unsigned integers
 	case (M_TYPE_UINT64):
 		result = sizeof(uint64_t);
 
@@ -281,7 +280,7 @@ size_t mt_get_length(multi_t multi) {
 		result = sizeof(uint8_t);
 		break;
 
-		// Signed integers
+	// Signed integers
 	case (M_TYPE_INT64):
 		result = sizeof(int64_t);
 		break;
@@ -340,7 +339,7 @@ M_TYPE mt_get_type(multi_t multi) {
 		result = M_TYPE_BOOLEAN;
 		break;
 
-		// Unsigned integers
+	// Unsigned integers
 	case (M_TYPE_UINT64):
 		result = M_TYPE_UINT64;
 		break;
@@ -354,7 +353,7 @@ M_TYPE mt_get_type(multi_t multi) {
 		result = M_TYPE_UINT8;
 		break;
 
-		// Signed integers
+	// Signed integers
 	case (M_TYPE_INT64):
 		result = M_TYPE_INT64;
 		break;
@@ -499,13 +498,13 @@ multi_t mt_dupe(multi_t multi) {
 		result.val.ns = ns_dupe(multi.val.ns);
 		break;
 
-		// Boolean
+	// Boolean
 	case (M_TYPE_BOOLEAN):
 		result.type = M_TYPE_BOOLEAN;
 		result.val.binary = multi.val.binary;
 		break;
 
-		// Unsigned integers
+	// Unsigned integers
 	case (M_TYPE_UINT64):
 		result.type = M_TYPE_UINT64;
 		result.val.u64 = multi.val.u64;
@@ -523,7 +522,7 @@ multi_t mt_dupe(multi_t multi) {
 		result.val.u8 = multi.val.u8;
 		break;
 
-		// Signed integers
+	// Signed integers
 	case (M_TYPE_INT64):
 		result.type = M_TYPE_INT64;
 		result.val.i64 = multi.val.i64;
@@ -589,82 +588,82 @@ bool_t ident_mt_mt(multi_t one, multi_t two) {
 
 		switch (one.type) {
 
-			// Strings
-			case (M_TYPE_STRINGER):
-				result = (st_cmp_cs_eq(one.val.st, two.val.st) == 0);
-				break;
+		// Strings
+		case (M_TYPE_STRINGER):
+			result = (st_cmp_cs_eq(one.val.st, two.val.st) == 0);
+			break;
 
-			case (M_TYPE_NULLER):
-				result = (st_cmp_cs_eq(PLACER(one.val.ns, ns_length_get(one.val.ns)), PLACER(two.val.ns, ns_length_get(two.val.ns))) == 0);
-				break;
+		case (M_TYPE_NULLER):
+			result = (st_cmp_cs_eq(PLACER(one.val.ns, ns_length_get(one.val.ns)), PLACER(two.val.ns, ns_length_get(two.val.ns))) == 0);
+			break;
 
-			// Boolean
-			case (M_TYPE_BOOLEAN):
-				if (one.val.binary == two.val.binary) {
-					result = true;
-				}
-				break;
+		// Boolean
+		case (M_TYPE_BOOLEAN):
+			if (one.val.binary == two.val.binary) {
+				result = true;
+			}
+			break;
 
-			// Unsigned integers
-			case (M_TYPE_UINT64):
-				if (one.val.u64 == two.val.u64) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_UINT32):
-				if (one.val.u32 == two.val.u32) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_UINT16):
-				if (one.val.u16 == two.val.u16) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_UINT8):
-				if (one.val.u8 == two.val.u8) {
-					result = true;
-				}
-				break;
+		// Unsigned integers
+		case (M_TYPE_UINT64):
+			if (one.val.u64 == two.val.u64) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_UINT32):
+			if (one.val.u32 == two.val.u32) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_UINT16):
+			if (one.val.u16 == two.val.u16) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_UINT8):
+			if (one.val.u8 == two.val.u8) {
+				result = true;
+			}
+			break;
 
-			// Signed integers
-			case (M_TYPE_INT64):
-				if (one.val.i64 == two.val.i64) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_INT32):
-				if (one.val.i32 == two.val.i32) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_INT16):
-				if (one.val.i16 == two.val.i16) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_INT8):
-				if (one.val.i8 == two.val.i8) {
-					result = true;
-				}
-				break;
+		// Signed integers
+		case (M_TYPE_INT64):
+			if (one.val.i64 == two.val.i64) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_INT32):
+			if (one.val.i32 == two.val.i32) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_INT16):
+			if (one.val.i16 == two.val.i16) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_INT8):
+			if (one.val.i8 == two.val.i8) {
+				result = true;
+			}
+			break;
 
-			// Decimal numbers
-			case (M_TYPE_FLOAT):
-				if (one.val.fl == two.val.fl) {
-					result = true;
-				}
-				break;
-			case (M_TYPE_DOUBLE):
-				if (one.val.dbl == two.val.dbl) {
-					result = true;
-				}
-				break;
+		// Decimal numbers
+		case (M_TYPE_FLOAT):
+			if (one.val.fl == two.val.fl) {
+				result = true;
+			}
+			break;
+		case (M_TYPE_DOUBLE):
+			if (one.val.dbl == two.val.dbl) {
+				result = true;
+			}
+			break;
 
-			default:
-				log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "The ident_mt_mt function was called on an unsupported data type.");
-				result = false;
-				break;
+		default:
+			log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "The ident_mt_mt function was called on an unsupported data type.");
+			result = false;
+			break;
 		}
 
 	}
@@ -706,71 +705,71 @@ int32_t cmp_mt_mt(multi_t one, multi_t two) {
 
 		switch (one.type) {
 
-			// Strings
-			case (M_TYPE_STRINGER):
-				result = st_cmp_cs_eq(one.val.st, two.val.st);
-				break;
+		// Strings
+		case (M_TYPE_STRINGER):
+			result = st_cmp_cs_eq(one.val.st, two.val.st);
+			break;
 
-			case (M_TYPE_NULLER):
-				result = st_cmp_cs_eq(NULLER(one.val.ns), NULLER(two.val.ns));
-				break;
+		case (M_TYPE_NULLER):
+			result = st_cmp_cs_eq(NULLER(one.val.ns), NULLER(two.val.ns));
+			break;
 
-			// The tuple below should return -1 if one > two, 1 if one < two and 0 if they are equal. Note that is only works because the second
-			// conditional results in 0 if evaluated as false and 1 if evaluated as true. Were relying on the C implementation to function as expected
-			// so we test for this behavior as part of our sanity checks.
+		// The tuple below should return -1 if one > two, 1 if one < two and 0 if they are equal. Note that is only works because the second
+		// conditional results in 0 if evaluated as false and 1 if evaluated as true. Were relying on the C implementation to function as expected
+		// so we test for this behavior as part of our sanity checks.
 
-			// Boolean
-			case (M_TYPE_BOOLEAN):
-				result = (one.val.binary == false && two.val.binary == true) ? -1 : one.val.binary == true && two.val.binary == false;
-				break;
+		// Boolean
+		case (M_TYPE_BOOLEAN):
+			result = (one.val.binary == false && two.val.binary == true) ? -1 : one.val.binary == true && two.val.binary == false;
+			break;
 
-			// Unsigned integers
-			case (M_TYPE_UINT64):
-				result = (one.val.u64 < two.val.u64) ? -1 : one.val.u64 > two.val.u64;
-				break;
+		// Unsigned integers
+		case (M_TYPE_UINT64):
+			result = (one.val.u64 < two.val.u64) ? -1 : one.val.u64 > two.val.u64;
+			break;
 
-			case (M_TYPE_UINT32):
-				result = (one.val.u32 < two.val.u32) ? -1 : one.val.u32 > two.val.u32;
-				break;
+		case (M_TYPE_UINT32):
+			result = (one.val.u32 < two.val.u32) ? -1 : one.val.u32 > two.val.u32;
+			break;
 
-			case (M_TYPE_UINT16):
-				result = (one.val.u16 < two.val.u16) ? -1 : one.val.u16 > two.val.u16;
-				break;
+		case (M_TYPE_UINT16):
+			result = (one.val.u16 < two.val.u16) ? -1 : one.val.u16 > two.val.u16;
+			break;
 
-			case (M_TYPE_UINT8):
-				result = (one.val.u8 < two.val.u8) ? -1 : one.val.u8 > two.val.u8;
-				break;
+		case (M_TYPE_UINT8):
+			result = (one.val.u8 < two.val.u8) ? -1 : one.val.u8 > two.val.u8;
+			break;
 
-			// Signed integers
-			case (M_TYPE_INT64):
-				result = (one.val.i64  < two.val.i64) ? -1 : one.val.i64 > two.val.i64;
-				break;
+		// Signed integers
+		case (M_TYPE_INT64):
+			result = (one.val.i64 < two.val.i64) ? -1 : one.val.i64 > two.val.i64;
+			break;
 
-			case (M_TYPE_INT32):
-				result = (one.val.i32 < two.val.i32) ? -1 : one.val.i32 > two.val.i32;
-				break;
+		case (M_TYPE_INT32):
+			result = (one.val.i32 < two.val.i32) ? -1 : one.val.i32 > two.val.i32;
+			break;
 
-			case (M_TYPE_INT16):
-				result = (one.val.i16 < two.val.i16) ? -1 : one.val.i16 > two.val.i16;
-				break;
+		case (M_TYPE_INT16):
+			result = (one.val.i16 < two.val.i16) ? -1 : one.val.i16 > two.val.i16;
+			break;
 
-			case (M_TYPE_INT8):
-				result = (one.val.i8 < two.val.i8) ? -1 : one.val.i8 > two.val.i8;
-				break;
+		case (M_TYPE_INT8):
+			result = (one.val.i8 < two.val.i8) ? -1 : one.val.i8 > two.val.i8;
+			break;
 
-			// Decimal numbers
-			case (M_TYPE_FLOAT):
-				result = (one.val.fl < two.val.fl) ? -1 : one.val.fl > two.val.fl;
-				break;
+		// Decimal numbers
+		case (M_TYPE_FLOAT):
+			result = (one.val.fl < two.val.fl) ? -1 : one.val.fl > two.val.fl;
+			break;
 
-			case (M_TYPE_DOUBLE):
-				result = (one.val.dbl < two.val.dbl) ? -1 : one.val.dbl > two.val.dbl;
-				break;
+		case (M_TYPE_DOUBLE):
+			result = (one.val.dbl < two.val.dbl) ? -1 : one.val.dbl > two.val.dbl;
+			break;
 
-			default:
-				log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "The cmp_mt_mt function was called on an unsupported data type.");
-				result = false;
-				break;
+		default:
+			log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "The cmp_mt_mt function was called on an unsupported data type.");
+			result = false;
+			break;
 		}
 	}
 

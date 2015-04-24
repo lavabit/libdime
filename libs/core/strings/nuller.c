@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/nuller.c
  *
@@ -68,7 +67,7 @@ int ns_length_int(chr_t *s) {
  * @param	len	the length of the buffer to be allocated.
  * @return	NULL on failure or if len was 0; a pointer to the newly allocated memory otherwise.
  */
-chr_t * ns_alloc(size_t len) {
+chr_t *ns_alloc(size_t len) {
 
 	chr_t *result;
 
@@ -111,7 +110,7 @@ void ns_free(chr_t *s) {
  * @param	s	the null-terminated string to be duplicated.
  * @result	NULL on failure, or a pointer to a copy of the input string.
  */
-chr_t * ns_dupe(chr_t *s) {
+chr_t *ns_dupe(chr_t *s) {
 
 	chr_t *result;
 	size_t length;
@@ -136,7 +135,7 @@ chr_t * ns_dupe(chr_t *s) {
  * @param	len		the length, in bytes, of the data buffer to be copied.
  * @return	NULL on failure, or a pointer to the newly allocated null-terminated string on success.
  */
-chr_t * ns_import(void *block, size_t len) {
+chr_t *ns_import(void *block, size_t len) {
 
 	chr_t *result;
 
@@ -155,7 +154,7 @@ chr_t * ns_import(void *block, size_t len) {
  * @param	append	a pointer to a null-terminated string to be appended to the leading string.
  * @return	NULL if a memory allocation failure occurred, or a pointer to the resulting string on success.
  */
-chr_t * ns_append(chr_t *s, chr_t *append) {
+chr_t *ns_append(chr_t *s, chr_t *append) {
 
 	chr_t *output = NULL;
 	size_t alen, slen = 0;

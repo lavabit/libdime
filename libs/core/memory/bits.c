@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/memory/bits.c
  *
@@ -14,7 +13,7 @@
 
 /**
  * @brief	Count the number of bits that are set in a 64-bit number.
- * @param 	value	an unsigned 64-bit value to be checked.
+ * @param       value	an unsigned 64-bit value to be checked.
  * @return	the number of bits in value that are set.
  */
 uint_t bits_count(uint64_t value) {

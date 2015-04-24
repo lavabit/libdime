@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/opts.c
  *
@@ -29,7 +28,7 @@ int_t st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled) {
 
 	else if (!st_valid_opts((enabled ? opts | opt : (opts | opt) ^ opt))) {
 		log_pedantic("The set operation would create an illegal option combination. { opts = %s / target = %s / enabled = %s }", st_info_opts(opts, MEMORYBUF(128), 128),
-			st_info_opts(opt, MEMORYBUF(128), 128), enabled ? "true" : "false");
+		             st_info_opts(opt, MEMORYBUF(128), 128), enabled ? "true" : "false");
 		return -1;
 	}
 

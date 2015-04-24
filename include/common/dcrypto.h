@@ -8,19 +8,19 @@
 #include <common/error.h>
 #include <ed25519.h>
 
-#define AES_256_PADDING_SIZE		16
-#define AES_256_KEY_SIZE		32
-#define AES_256_KEK_SIZE		48
+#define AES_256_PADDING_SIZE 16
+#define AES_256_KEY_SIZE     32
+#define AES_256_KEK_SIZE     48
 
-#define EC_SIGNING_CURVE	NID_secp256k1
-#define EC_ENCRYPT_CURVE	NID_secp256k1
+#define EC_SIGNING_CURVE NID_secp256k1
+#define EC_ENCRYPT_CURVE NID_secp256k1
 
-#define ED25519_KEY_SIZE		32
-#define ED25519_KEY_B64_SIZE		43
-#define ED25519_SIG_SIZE		64
-#define ED25519_SIG_B64_SIZE		86
-#define EC_PRIVKEY_SIZE			279
-#define EC_PUBKEY_SIZE			65
+#define ED25519_KEY_SIZE     32
+#define ED25519_KEY_B64_SIZE 43
+#define ED25519_SIG_SIZE     64
+#define ED25519_SIG_B64_SIZE 86
+#define EC_PRIVKEY_SIZE      279
+#define EC_PUBKEY_SIZE       65
 
 // Wrappers around ED25519 functions
 typedef struct {
@@ -47,7 +47,7 @@ PUBLIC_FUNC_DECL(int,             verify_ec_sha_signature,  const unsigned char 
 
 // Other EC-related routines.
 PUBLIC_FUNC_DECL(void *,          ecies_env_derivation,     const void *input, size_t ilen, void *output, size_t *olen);
-PUBLIC_FUNC_DECL(int,             compute_aes256_kek, 	    EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf);
+PUBLIC_FUNC_DECL(int,             compute_aes256_kek,       EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf);
 
 // EC key serialization/deserialization.
 PUBLIC_FUNC_DECL(unsigned char *, serialize_ec_pubkey,      EC_KEY *key, size_t *outsize);

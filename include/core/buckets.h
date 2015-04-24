@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/buckets/buckets.h
  *
@@ -24,14 +23,14 @@
 #define MAGMA_CORE_POOL_TIMEOUT_LIMIT 86400
 
 // Defines for the array type.
-#define ARRAY_MAX_ELEMENTS 16384
-#define ARRAY_TYPE_EMPTY 0
-#define ARRAY_TYPE_ARRAY 1
+#define ARRAY_MAX_ELEMENTS  16384
+#define ARRAY_TYPE_EMPTY    0
+#define ARRAY_TYPE_ARRAY    1
 #define ARRAY_TYPE_STRINGER 2
-#define ARRAY_TYPE_SIZER 3
-#define ARRAY_TYPE_NULLER 4
-#define ARRAY_TYPE_PLACER 5
-#define ARRAY_TYPE_POINTER 6
+#define ARRAY_TYPE_SIZER    3
+#define ARRAY_TYPE_NULLER   4
+#define ARRAY_TYPE_PLACER   5
+#define ARRAY_TYPE_POINTER  6
 
 // TODO: Someday arrays should go away and we should use the inx interfaces instead.
 typedef char array_t;
@@ -67,7 +66,7 @@ typedef struct {
 } pool_t;
 
 // Pool interface
-void pool_free(pool_t *pool);
+void     pool_free(pool_t *pool);
 uint32_t pool_get_count(pool_t *pool);
 uint32_t pool_get_timeout(pool_t *pool);
 uint64_t pool_get_failures(pool_t *pool);
@@ -79,11 +78,11 @@ status_t pool_get_status(pool_t *pool, uint32_t item);
 status_t pool_set_status(pool_t *pool, uint32_t item, status_t status);
 
 // Object interface
-void pool_release(pool_t *pool, uint32_t item);
-void * pool_get_obj(pool_t *pool, uint32_t item);
+void     pool_release(pool_t *pool, uint32_t item);
+void *   pool_get_obj(pool_t *pool, uint32_t item);
 status_t pool_pull(pool_t *pool, uint32_t *item);
-void * pool_swap_obj(pool_t *pool, uint32_t item, void *object);
-void * pool_set_obj(pool_t *pool, uint32_t item, void *object);
+void *   pool_swap_obj(pool_t *pool, uint32_t item, void *object);
+void *   pool_set_obj(pool_t *pool, uint32_t item, void *object);
 
 /// arrays.c
 array_t *     ar_alloc(size_t size);
@@ -101,11 +100,11 @@ size_t        ar_length_get(array_t *array);
 void          ar_length_set(array_t *array, size_t used);
 
 /// stacked.c
-int_t stacker_push(stacker_t *stack, void *data);
-stacker_t * stacker_alloc(void (*free_function)(void *));
+int_t         stacker_push(stacker_t *stack, void *data);
+stacker_t *   stacker_alloc(void (*free_function)(void *));
 unsigned long stacker_nodes(stacker_t *stack);
-void * stacker_pop(stacker_t *stack);
-void stacker_free(stacker_t *stack);
+void *        stacker_pop(stacker_t *stack);
+void          stacker_free(stacker_t *stack);
 
 
 #endif

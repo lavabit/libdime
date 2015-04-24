@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/strings.h
  *
@@ -19,59 +18,59 @@
 enum {
 
 	// Type
-	CONSTANT_T = 1,				// An immutable string
-	PLACER_T = 2,				/* Placeholder stores no data on its own and MUST be jointed;
-	 	 	 	 	 	 	 	   it points to a chunk of another managed string */
-	NULLER_T = 4,				// Null-terminated string
-	BLOCK_T = 8,				// A binary blob
-	MANAGED_T = 16,				// A vanilla managed string for wrapping string data
-	MAPPED_T = 32,				// The managed string is allocated with mmap()
+	CONSTANT_T = 1,                         // An immutable string
+	PLACER_T = 2,                           /* Placeholder stores no data on its own and MUST be jointed;
+	                                                           it points to a chunk of another managed string */
+	NULLER_T = 4,                           // Null-terminated string
+	BLOCK_T = 8,                            // A binary blob
+	MANAGED_T = 16,                         // A vanilla managed string for wrapping string data
+	MAPPED_T = 32,                          // The managed string is allocated with mmap()
 
 	// Layout
-	CONTIGUOUS = 64,			/* Data and chunk header are adjacent */
-	JOINTED = 128,				/* Data is not contiguous with chunk header */
+	CONTIGUOUS = 64,                        /* Data and chunk header are adjacent */
+	JOINTED = 128,                          /* Data is not contiguous with chunk header */
 
 	// Memory
-	STACK = 256,				// More properly, data is not on the heap (stack or static initialization)
+	STACK = 256,                            // More properly, data is not on the heap (stack or static initialization)
 	HEAP = 512,
-	SECURE = 1024,				// Must be on the heap
+	SECURE = 1024,                          // Must be on the heap
 
 	// Flags
-	FOREIGNDATA = 4096			// Do not free data upon deallocation - this is somebody else's job!
+	FOREIGNDATA = 4096                      // Do not free data upon deallocation - this is somebody else's job!
 
-	// If you add any new flags, make sure you update the info.c arrays!
+	              // If you add any new flags, make sure you update the info.c arrays!
 };
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	char data[];
 } constant_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	char *data;
 } nuller_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	size_t length;
 	void *data;
 } block_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	size_t length;
 	void *data;
 } placer_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	size_t length;
 	size_t avail;
 	void *data;
 } managed_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	size_t length;
 	size_t avail;
@@ -79,7 +78,7 @@ typedef struct __attribute__ ((packed)) {
 	void *data;
 } mapped_t;
 
-typedef struct __attribute__ ((packed)) {
+typedef struct __attribute__((packed)) {
 	uint32_t opts;
 	/* The remaining data fields depend on the options. */
 } stringer_t;
@@ -97,10 +96,10 @@ int      ns_length_int(chr_t *s);
 void     ns_wipe(chr_t *s, size_t len);
 
 // Options to String
-const chr_t * st_info_type(uint32_t opts);
-const chr_t * st_info_layout(uint32_t opts);
-const chr_t * st_info_allocator(uint32_t opts);
-chr_t * st_info_opts(uint32_t opts, chr_t *s, size_t len);
+const chr_t *st_info_type(uint32_t opts);
+const chr_t *st_info_layout(uint32_t opts);
+const chr_t *st_info_allocator(uint32_t opts);
+chr_t *      st_info_opts(uint32_t opts, chr_t *s, size_t len);
 
 // Option Checks
 bool_t st_valid_free(uint32_t opts);
@@ -113,7 +112,7 @@ bool_t st_valid_tracked(uint32_t opts);
 bool_t st_valid_destination(uint32_t opts);
 
 // Length
-int_t st_length_int(stringer_t *s);
+int_t  st_length_int(stringer_t *s);
 size_t st_avail_get(stringer_t *s);
 size_t st_length_get(stringer_t *s);
 size_t st_avail_set(stringer_t *s, size_t avail);
@@ -125,27 +124,27 @@ uchr_t *  st_uchar_get(stringer_t *s);
 void *    st_data_get(stringer_t *s);
 void      st_data_set(stringer_t *s, void *data);
 bool_t    st_empty(stringer_t *s);
-bool_t    st_empty_out(stringer_t *s, uchr_t **ptr, size_t *len) __attribute__((nonnull (2, 3)));
+bool_t    st_empty_out(stringer_t *s, uchr_t **ptr, size_t *len) __attribute__((nonnull(2, 3)));
 void      st_wipe(stringer_t *s);
 
 // Creation/Destruction
 void st_free(stringer_t *s);
 void st_cleanup(stringer_t *s);
 //stringer_t * st_alloc(size_t len);
-stringer_t * st_dupe(stringer_t *s);
+stringer_t *st_dupe(stringer_t *s);
 //stringer_t * st_merge(const chr_t *format, ...);
 //stringer_t * st_aprint(const chr_t *format, va_list list);
-stringer_t * st_import(const void *s, size_t len);
-stringer_t * st_copy_in(stringer_t *s, void *buf, size_t len);
-stringer_t * st_realloc(stringer_t *s, size_t len);
-stringer_t * st_output(stringer_t *output, size_t len);
-stringer_t * st_nullify(chr_t *input, size_t len);
+stringer_t *st_import(const void *s, size_t len);
+stringer_t *st_copy_in(stringer_t *s, void *buf, size_t len);
+stringer_t *st_realloc(stringer_t *s, size_t len);
+stringer_t *st_output(stringer_t *output, size_t len);
+stringer_t *st_nullify(chr_t *input, size_t len);
 
 // Allocation with Options
-stringer_t * st_alloc_opts(uint32_t opts, size_t len);
-stringer_t * st_dupe_opts(uint32_t opts, stringer_t *s);
-stringer_t * st_merge_opts(uint32_t opts, const chr_t *format, ...);
-stringer_t * st_append_opts(size_t align, stringer_t *s, stringer_t *append);
+stringer_t *st_alloc_opts(uint32_t opts, size_t len);
+stringer_t *st_dupe_opts(uint32_t opts, stringer_t *s);
+stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...);
+stringer_t *st_append_opts(size_t align, stringer_t *s, stringer_t *append);
 
 /// shortcuts.c
 chr_t *    pl_char_get(placer_t place);
@@ -165,12 +164,12 @@ bool_t   st_opt_get(stringer_t *s, uint32_t opt);
 int_t    st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled);
 
 /// print.c
-stringer_t * st_aprint(const chr_t *format, ...) __attribute__((format (printf, 1, 2)));
-stringer_t * st_aprint_opts(uint32_t opts, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-stringer_t * st_quick(stringer_t *s, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-size_t st_sprint(stringer_t *s, const chr_t *format, ...) __attribute__((format (printf, 2, 3)));
-stringer_t * st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args);
-size_t st_vsprint(stringer_t *s, const chr_t *format, va_list args);
+stringer_t *st_aprint(const chr_t *format, ...) __attribute__((format(printf, 1, 2)));
+stringer_t *st_aprint_opts(uint32_t opts, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
+stringer_t *st_quick(stringer_t *s, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
+size_t      st_sprint(stringer_t *s, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
+stringer_t *st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args);
+size_t      st_vsprint(stringer_t *s, const chr_t *format, va_list args);
 
 /// replace.c
 int_t         st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replacement);
@@ -181,31 +180,31 @@ static inline char *const_cast_char_ptr(const char *str) {
 }
 
 // Shortcut Macros
-#define st_append(s, append) st_append_opts(1024, s, append)
-#define st_alloc(len) st_alloc_opts(MANAGED_T | CONTIGUOUS | HEAP, len)
-#define st_merge(...) st_merge_opts(MANAGED_T | CONTIGUOUS | HEAP, __VA_ARGS__)
+#define st_append(s, append)     st_append_opts(1024, s, append)
+#define st_alloc(len)            st_alloc_opts(MANAGED_T | CONTIGUOUS | HEAP, len)
+#define st_merge(...)            st_merge_opts(MANAGED_T | CONTIGUOUS | HEAP, __VA_ARGS__)
 #define st_vaprint(format, args) st_vaprint_opts(MANAGED_T | CONTIGUOUS | HEAP, format, args)
 
 // Usage: constant_t *constant = CONSTANT("Hello world.");
 #define CONSTANT(string) (stringer_t *)((constant_t *)"\x41\x01\x00\x00" string)
 
 // Usage: nuller_t *nuller = NULLER(data);
-#define NULLER(d) (stringer_t *)&((nuller_t){ .opts = (NULLER_T | JOINTED | STACK | FOREIGNDATA), .data = const_cast_char_ptr(d) })
+#define NULLER(d) (stringer_t *)&((nuller_t) {.opts = (NULLER_T | JOINTED | STACK | FOREIGNDATA), .data = const_cast_char_ptr(d) })
 
 // Usage: block_t *block = BLOCK(data, length);
-#define BLOCK(d, l) (stringer_t *)&((block_t){ .opts = (BLOCK_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l })
+#define BLOCK(d, l) (stringer_t *)&((block_t) {.opts = (BLOCK_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l })
 
 // Usage: placer_t *placer = PLACER(data, length);
-#define PLACER(d, l) (stringer_t *)&((placer_t){ .opts = (PLACER_T | JOINTED | STACK | FOREIGNDATA), .data = (char *)(d), .length = l })
+#define PLACER(d, l) (stringer_t *)&((placer_t) {.opts = (PLACER_T | JOINTED | STACK | FOREIGNDATA), .data = (char *)(d), .length = l })
 
 // Usage: managed_t *managed = MANAGED(data, length, avail);
-#define MANAGED(d, l, a) (stringer_t *)&((managed_t){ .opts = (MANAGED_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l, .avail = a })
+#define MANAGED(d, l, a) (stringer_t *)&((managed_t) {.opts = (MANAGED_T | JOINTED | STACK | FOREIGNDATA), .data = d, .length = l, .avail = a })
 
 // Usage: block_t *buffer = BLOCKBUF(length);
-#define BLOCKBUF(l) (stringer_t *)&((block_t){ .opts = (BLOCK_T | CONTIGUOUS | STACK), .data = &((chr_t []){ [ 0 ... l ] = 0 }), .length = l })
+#define BLOCKBUF(l) (stringer_t *)&((block_t) {.opts = (BLOCK_T | CONTIGUOUS | STACK), .data = &((chr_t []) { [ 0 ... l ] = 0 }), .length = l })
 
 // Usage: managed_t *buffer = MANAGEDBUF(length);
-#define MANAGEDBUF(l) (stringer_t *)&((managed_t){ .opts = (MANAGED_T | CONTIGUOUS | STACK), .data = &((chr_t []){ [ 0 ... l ] = 0 }), .length = 0, .avail = l })
+#define MANAGEDBUF(l) (stringer_t *)&((managed_t) {.opts = (MANAGED_T | CONTIGUOUS | STACK), .data = &((chr_t []) { [ 0 ... l ] = 0 }), .length = 0, .avail = l })
 
 /************ TYPES ************/
 typedef struct {

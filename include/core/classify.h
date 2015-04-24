@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/classify/classify.h
  *
@@ -26,4 +25,3 @@ bool_t chr_whitespace(uchr_t c);
 bool_t chr_is_class(uchr_t c, uchr_t *chrs, size_t chrlen);
 
 #endif
-

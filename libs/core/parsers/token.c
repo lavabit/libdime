@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/parsers/token.c
  *
@@ -283,8 +282,8 @@ uint64_t str_tok_get_count_bl(void *block, size_t length, chr_t *token, size_t t
 	needle = pl_init(token, toklen);
 
 	while ((skipped < length) && st_search_cs(phaystack, pneedle, &hptr)) {
-		skipped += pl_length_get (needle) + hptr;
-		haystack = pl_init((char *) block + skipped, length-skipped);
+		skipped += pl_length_get(needle) + hptr;
+		haystack = pl_init((char *)block + skipped, length - skipped);
 		count++;
 	}
 
@@ -329,7 +328,7 @@ int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint
 
 		// Haystack becomes the entire block after the token.
 		skipped += pl_length_get(needle) + hptr;
-		haystack = pl_init(pl_char_get(haystack) + skipped, length-skipped);
+		haystack = pl_init(pl_char_get(haystack) + skipped, length - skipped);
 		fragment--;
 	}
 
@@ -351,7 +350,7 @@ int str_tok_get_bl(char *block, size_t length, chr_t *token, size_t toklen, uint
  * @param	nchars		the number of characters to be tested in the collection in skipchars.
  * @return	true if the skip operation completed before the end of the placer was reached, or false otherwise.
  */
-bool_t pl_skip_characters (placer_t *place, char *skipchars, size_t nchars) {
+bool_t pl_skip_characters(placer_t *place, char *skipchars, size_t nchars) {
 
 	char *ptr = pl_char_get(*place);
 
@@ -365,7 +364,7 @@ bool_t pl_skip_characters (placer_t *place, char *skipchars, size_t nchars) {
 
 			// We went through all the skip characters without finding something... so this is where we return.
 			if (j == nchars) {
-				place->data = (char *) place->data + i;
+				place->data = (char *)place->data + i;
 				place->length -= i;
 				return true;
 			}
@@ -387,7 +386,7 @@ bool_t pl_skip_characters (placer_t *place, char *skipchars, size_t nchars) {
  * @param	nchars		the number of characters to be tested in the collection in skiptochars.
  * @return	true if the skip operation completed before the end of the placer was reached, or false otherwise.
  */
-bool_t pl_skip_to_characters (placer_t *place, char *skiptochars, size_t nchars) {
+bool_t pl_skip_to_characters(placer_t *place, char *skiptochars, size_t nchars) {
 
 	char *ptr = pl_char_get(*place);
 
@@ -401,7 +400,7 @@ bool_t pl_skip_to_characters (placer_t *place, char *skiptochars, size_t nchars)
 
 			// We went through all the skip characters without finding something... so this is where we return.
 			if (*ptr == skiptochars[j]) {
-				place->data = (char *) place->data + i;
+				place->data = (char *)place->data + i;
 				place->length -= i;
 				return true;
 			}
@@ -420,7 +419,7 @@ bool_t pl_skip_to_characters (placer_t *place, char *skiptochars, size_t nchars)
  * @param	nchars		the number of characters to be tested in the collection in shrinkchars.
  * @return	true if the shrink operation completed before the end of the placer was reached, or false otherwise.
  */
-bool_t pl_shrink_before_characters (placer_t *place, char *shrinkchars, size_t nchars) {
+bool_t pl_shrink_before_characters(placer_t *place, char *shrinkchars, size_t nchars) {
 
 	char *ptr = pl_char_get(*place) + pl_length_get(*place) - 1;
 
@@ -432,14 +431,14 @@ bool_t pl_shrink_before_characters (placer_t *place, char *shrinkchars, size_t n
 
 		for (size_t j = 0; j <= nchars; j++) {
 
-				// We went through all the skip characters without finding something... so this is where we return.
-				if (j == nchars) {
-					place->length -= i;
-					return true;
-				}
+			// We went through all the skip characters without finding something... so this is where we return.
+			if (j == nchars) {
+				place->length -= i;
+				return true;
+			}
 
-				if (*ptr == shrinkchars[j])
-					break;
+			if (*ptr == shrinkchars[j])
+				break;
 
 		}
 
@@ -457,7 +456,7 @@ bool_t pl_shrink_before_characters (placer_t *place, char *shrinkchars, size_t n
  * @param	required	if true, fail if no data was found between the pair of braces.
  * @return	true if the brace sequence was complete, or false if either component could not be located.
  */
-bool_t pl_get_embraced (placer_t str, placer_t *out, unsigned char opening, unsigned char closing, bool_t required) {
+bool_t pl_get_embraced(placer_t str, placer_t *out, unsigned char opening, unsigned char closing, bool_t required) {
 
 	char *ptr = pl_char_get(str);
 
@@ -500,9 +499,9 @@ bool_t pl_get_embraced (placer_t str, placer_t *out, unsigned char opening, unsi
  * @param	more	if true, more characters following the minimum buffer size are necessary.
  * @return	true if the placer meets the minimum size check, or false if it does not.
  */
-bool_t pl_update_start (placer_t *place, size_t nchars, bool_t more) {
+bool_t pl_update_start(placer_t *place, size_t nchars, bool_t more) {
 
-	size_t ncheck = more ? nchars+1 : nchars;
+	size_t ncheck = more ? nchars + 1 : nchars;
 
 	if (place->length < ncheck) {
 		return false;

@@ -5,8 +5,8 @@
 
 #define RUN_TEST_CASE_TIMEOUT 100
 
-#define N_SERIALIZATION_TESTS	20
-#define N_SIGNATURE_TIER_TESTS	5
+#define N_SERIALIZATION_TESTS  20
+#define N_SIGNATURE_TIER_TESTS 5
 
 Suite *suite_check_errorapi(void);
 Suite *suite_check_crypto(void);

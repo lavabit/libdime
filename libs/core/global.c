@@ -1,4 +1,3 @@
-
 /**
  *
  * @file /magma/engine/config/global/global.c

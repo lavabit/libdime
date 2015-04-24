@@ -31,42 +31,42 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
- 	while ((opt = getopt(argc, argv, "dhkmor:sv")) != -1) {
+	while ((opt = getopt(argc, argv, "dhkmor:sv")) != -1) {
 
 		switch (opt) {
-			case 'd':
-				do_ds = 1;
-				break;
-			case 'h':
-				usage(argv[0]);
-				break;
-			case 'k':
-				do_dnskey = 1;
-				break;
-			case 'm':
-				do_dime = 1;
-				break;
-			case 'o':
-				do_ocsp = 1;
-				break;
-			case 'r':
+		case 'd':
+			do_ds = 1;
+			break;
+		case 'h':
+			usage(argv[0]);
+			break;
+		case 'k':
+			do_dnskey = 1;
+			break;
+		case 'm':
+			do_dime = 1;
+			break;
+		case 'o':
+			do_ocsp = 1;
+			break;
+		case 'r':
 
-				if (load_dnskey_file(optarg) < 0) {
-					fprintf(stderr, "Error: could not load DNSKEY anchor records from file.\n");
-					dump_error_stack();
-					exit(EXIT_FAILURE);
-				}
+			if (load_dnskey_file(optarg) < 0) {
+				fprintf(stderr, "Error: could not load DNSKEY anchor records from file.\n");
+				dump_error_stack();
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			case 's':
-				do_signet = 1;
-				break;
-			case 'v':
-				verbose = 1;
-				break;
-			default:
-				usage(argv[0]);
-				break;
+			break;
+		case 's':
+			do_signet = 1;
+			break;
+		case 'v':
+			verbose = 1;
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 
 	}

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/indexes/indexes.h
  *
@@ -98,9 +97,9 @@ void       inx_truncate(inx_t *inx);
 void       inx_unlock(inx_t *inx);
 
 /// linked.c
-inx_t * linked_alloc(uint64_t options, void *data_free);
+inx_t *linked_alloc(uint64_t options, void *data_free);
 
 /// hashed.c
-inx_t * hashed_alloc(uint64_t options, void *data_free);
+inx_t *hashed_alloc(uint64_t options, void *data_free);
 
 #endif

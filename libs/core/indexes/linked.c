@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/indexes/linked.c
  *
@@ -28,7 +27,7 @@ typedef struct {
 	inx_t *inx;
 	linked_node_t *node;
 	uint64_t serial, count, position;
-}__attribute__ ((__packed__)) linked_cursor_t;
+} __attribute__((__packed__)) linked_cursor_t;
 
 /**
  * @brief	Get the data associated with a linked list record.
@@ -42,7 +41,7 @@ static void *linked_record_get_data(linked_record_t *record, size_t element) {
 	if (!record) log_pedantic("The index pointer is invalid.");
 	#endif
 
-	if (element != 0)	return NULL;
+	if (element != 0)       return NULL;
 	return record->data;
 }
 
@@ -90,7 +89,7 @@ static void linked_record_free(inx_t *index, linked_record_t *record) {
  * @param	data	a pointer to the data to be associated with the record.
  * @return	a pointer to the newly allocated and initialized linked record object.
  */
-static linked_record_t * linked_record_alloc(multi_t key, void *data) {
+static linked_record_t *linked_record_alloc(multi_t key, void *data) {
 
 	linked_record_t *record;
 
@@ -290,7 +289,7 @@ static linked_node_t *linked_cursor_next(linked_cursor_t *cursor) {
 		}
 	}
 	else {
-			cursor->node = node = cursor->inx->index;
+		cursor->node = node = cursor->inx->index;
 	}
 
 	return node;
@@ -459,7 +458,7 @@ static void linked_free(void *inx) {
  * @param	data_free	a pointer to a function used to free linked list items.
  * @return	NULL on failure or a pointer to the newly allocated linked list object on success.
  */
-inx_t * linked_alloc(uint64_t options, void *data_free) {
+inx_t *linked_alloc(uint64_t options, void *data_free) {
 
 	inx_t *result;
 
@@ -474,15 +473,15 @@ inx_t * linked_alloc(uint64_t options, void *data_free) {
 	result->insert = linked_insert;
 	result->delete_entry = linked_delete;
 
-	result->cursor_free = (void (*)(void *))&linked_cursor_free;
-	result->cursor_reset = (void (*)(void *))&linked_cursor_reset;
-	result->cursor_alloc = (void * (*)(void *))&linked_cursor_alloc;
+	result->cursor_free = (void (*)(void *)) & linked_cursor_free;
+	result->cursor_reset = (void (*)(void *)) & linked_cursor_reset;
+	result->cursor_alloc = (void * (*)(void *)) & linked_cursor_alloc;
 
-	result->cursor_key_next = (multi_t (*)(void *))&linked_cursor_key_next;
-	result->cursor_key_active = (multi_t (*)(void *))&linked_cursor_key_active;
+	result->cursor_key_next = (multi_t (*)(void *)) & linked_cursor_key_next;
+	result->cursor_key_active = (multi_t (*)(void *)) & linked_cursor_key_active;
 
-	result->cursor_value_next = (void * (*)(void *))&linked_cursor_value_next;
-	result->cursor_value_active = (void * (*)(void *))&linked_cursor_value_active;
+	result->cursor_value_next = (void * (*)(void *)) & linked_cursor_value_next;
+	result->cursor_value_active = (void * (*)(void *)) & linked_cursor_value_active;
 
 	return result;
 }

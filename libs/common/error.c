@@ -15,7 +15,7 @@ struct thread_err_stack {
 	errinfo_t error_stack[ERR_STACK_SIZE];
 	errinfo_t *error_stack_top;
 	unsigned char error_stack_overflow;
-} __attribute__ ((__packed__));
+} __attribute__((__packed__));
 
 
 __thread struct thread_err_stack _t_err_stack;
@@ -23,13 +23,13 @@ __thread struct thread_err_stack _t_err_stack;
 
 // The global error message string table.
 err_desc_t err_desc_table[] = {
-	{ ERR_SYSCALL,		"error [errno] was returned by syscall" },
-	{ ERR_OPENSSL,		"an error occurred in -lopenssl" },
-	{ ERR_RESOLVER,		"an error occurred in the resolver library" },
-	{ ERR_UNSPEC,		"an unspecified error has occurred" },
-	{ ERR_BAD_PARAM,	"a bad parameter was supplied to the function" },
-	{ ERR_NOMEM,		"memory allocation prevented operation" },
-	{ ERR_PERM,		"permission was denied for the requested operation" }
+	{ ERR_SYSCALL,          "error [errno] was returned by syscall" },
+	{ ERR_OPENSSL,          "an error occurred in -lopenssl" },
+	{ ERR_RESOLVER,         "an error occurred in the resolver library" },
+	{ ERR_UNSPEC,           "an unspecified error has occurred" },
+	{ ERR_BAD_PARAM,        "a bad parameter was supplied to the function" },
+	{ ERR_NOMEM,            "memory allocation prevented operation" },
+	{ ERR_PERM,             "permission was denied for the requested operation" }
 };
 
 
@@ -97,8 +97,8 @@ void _dump_error(const errinfo_t *error) {
 	}
 
 	fprintf(stderr, "%s:%d [%s()]: %u (%s), errno = %d",
-		error->filename ? error->filename : "", error->lineno, error->funcname ? error->funcname : "unknown function",
-		error->errcode, errstring,  error->xerrno);
+	        error->filename ? error->filename : "", error->lineno, error->funcname ? error->funcname : "unknown function",
+	        error->errcode, errstring,  error->xerrno);
 
 	if (error->auxmsg) {
 		fprintf(stderr, ", aux = \"%s\"\n", error->auxmsg);
@@ -119,7 +119,7 @@ const char *get_error_string(unsigned int errcode) {
 
 	size_t i;
 
-	for (i = 0; i < sizeof(err_desc_table)/sizeof(err_desc_t); i++) {
+	for (i = 0; i < sizeof(err_desc_table) / sizeof(err_desc_t); i++) {
 
 		if (err_desc_table[i].errcode == errcode) {
 			return err_desc_table[i].errmsg;
@@ -175,7 +175,7 @@ errinfo_t *pop_last_error(void) {
 }
 
 
-const errinfo_t * get_first_error(void) {
+const errinfo_t *get_first_error(void) {
 
 	if (!_t_err_stack.error_stack_top) {
 		return NULL;
@@ -202,11 +202,11 @@ void _clear_error_stack(void) {
 /**
  * @brief	Push an error onto the error stack.
  */
-errinfo_t * _push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
+errinfo_t *_push_error_stack(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
 
 	errinfo_t *err;
 
-	if (_t_err_stack.error_stack_top == &(_t_err_stack.error_stack[ERR_STACK_SIZE-1])) {
+	if (_t_err_stack.error_stack_top == &(_t_err_stack.error_stack[ERR_STACK_SIZE - 1])) {
 		_t_err_stack.error_stack_overflow = 1;
 		fprintf(stderr, "Error stack overflow.\n");
 		return NULL;
@@ -235,7 +235,7 @@ errinfo_t * _push_error_stack(const char *filename, const char *funcname, int li
  * @param	...
  * @return
  */
-errinfo_t * _push_error_stack_fmt(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...) {
+errinfo_t *_push_error_stack_fmt(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *fmt, ...) {
 
 	va_list ap;
 	char auxmsg[1024];
@@ -259,12 +259,12 @@ errinfo_t * _push_error_stack_fmt(const char *filename, const char *funcname, in
  * @param	errfunc		the name of the library call or syscall function responsible for setting errno.
  * @return
  */
-errinfo_t * _push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc) {
+errinfo_t *_push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc) {
 
 	char auxmsg[256], *ptr;
 
 	memset(auxmsg, 0, sizeof(auxmsg));
-	snprintf(auxmsg, sizeof(auxmsg)-1, "%s: ", errfunc);
+	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: ", errfunc);
 	ptr = auxmsg + strlen(auxmsg);
 	strerror_r(xerrno, ptr, (unsigned long)(auxmsg + sizeof(auxmsg)) - (unsigned long)ptr);
 
@@ -281,7 +281,7 @@ errinfo_t * _push_error_stack_syscall(const char *filename, const char *funcname
  * @param	xerrno
  * @return
  */
-errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno) {
+errinfo_t *_push_error_stack_openssl(const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno) {
 
 	const char *ssl_filename, *ssl_data;
 	char auxmsg[512], tmpbuf[512], tmpbuf2[512];
@@ -330,12 +330,12 @@ errinfo_t * _push_error_stack_openssl(const char *filename, const char *funcname
  * @param	errfunc
  * @return
  */
-errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc) {
+errinfo_t *_push_error_stack_resolver(const char *filename, const char *funcname, int lineno, int xerrno, int herrno, const char *errfunc) {
 
 	char auxmsg[256];
 
 	memset(auxmsg, 0, sizeof(auxmsg));
-	snprintf(auxmsg, sizeof(auxmsg)-1, "%s: [%u]: %s", errfunc, herrno, hstrerror(herrno));
+	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: [%u]: %s", errfunc, herrno, hstrerror(herrno));
 
 	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
@@ -352,7 +352,7 @@ errinfo_t * _push_error_stack_resolver(const char *filename, const char *funcnam
  * @param	auxmsg
  * @return
  */
-errinfo_t * _create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
+errinfo_t *_create_new_error(errinfo_t *errptr, const char *filename, const char *funcname, int lineno, unsigned int errcode, int xerrno, const char *auxmsg) {
 
 	memset(errptr, 0, sizeof(errinfo_t));
 

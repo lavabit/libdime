@@ -1,4 +1,3 @@
-
 #include <core/magma.h>
 
 

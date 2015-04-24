@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/objects/mail/mime.c
  *
@@ -13,87 +12,87 @@
 #include <core/magma.h>
 
 media_type_t media_types[] = {
-		{ "",       true,  "application/octet-stream"},
-		{ ".aif",   true,  "audio/aiff" },
-		{ ".aiff",  true,  "audio/aiff" },
-		{ ".au",    true,  "audio/basic" },
-		{ ".avi",   true,  "video/avi" },
-		{ ".bmp",   true,  "image/bmp" },
-		{ ".bz",    true,  "application/x-bzip" },
-		{ ".bz2",   true,  "application/x-bzip2" },
-		{ ".c",     false, "text/x-c" },
-		{ ".class", true,  "application/java" },
-		{ ".conf",  false, "text/plain" },
-		{ ".cpp",   false, "text/x-c" },
-		{ ".crt",   true,  "application/x-x509-ca-cert" },
-		{ ".css",   false, "text/css" },
-		{ ".csv",   false, "text/csv" },
-		{ ".doc",   true,  "application/msword" },
-		{ ".dot",   true,  "application/msword" },
-		{ ".flv",   true,  "video/x-flv" },
-		{ ".gif",   true,  "image/gif" },
-		{ ".gz",    true,  "application/gzip" },
-		{ ".h",     false, "text/x-h" },
-		{ ".htm",   false, "text/html" },
-		{ ".html",  false, "text/html" },
-		{ ".ico",   true,  "image/x-icon" },
-		{ ".inf",   false, "application/inf" },
-		{ ".java",  false, "text/x-java-source" },
-		{ ".jfif",  true,  "image/jpeg" },
-		{ ".jpe",   true,  "image/jpeg" },
-		{ ".jpeg",  true,  "image/jpeg" },
-		{ ".jpg",   true,  "image/jpeg" },
-		{ ".js",    false, "application/javascript" },
-		{ ".json",  false, "application/json" },
-		{ ".lst",   true,  "text/plain" },
-		{ ".lzh",   true,  "application/x-lzh" },
-		{ ".lzs",   true,  "application/x-lzh" },
-		{ ".m1v",   true,  "video/mpeg" },
-		{ ".m2v",   true,  "video/mpeg" },
-		{ ".m4v",   true,  "video/mpeg" },
-		{ ".mid",   true,  "audio/midi" },
-		{ ".midi",  true,  "audio/midi" },
-		{ ".mov",   true,  "video/quicktime" },
-		{ ".mp3",   true,  "audio/mpeg3" },
-		{ ".mpeg",  true,  "video/mpeg" },
-		{ ".mpg",   true,  "video/mpeg" },
-		{ ".ogg",   true,  "application/ogg" },
-		{ ".pdf",   true,  "application/pdf" },
-		{ ".pl",    false, "text-script.perl" },
-		{ ".png",   true,  "image/png" },
-		{ ".pps",   true,  "application/mspowerpoint" },
-		{ ".ppt",   true,  "application/powerpoint" },
-		{ ".ps",    true,  "application/postscript" },
-		{ ".py",    false, "text/x-script.python" },
-		{ ".qt",    true,  "video/quicktime" },
-		{ ".ra",    true,  "audio/x-realaudio" },
-		{ ".rss",   true,  "application/rss+xml" },
-		{ ".rtf",   false, "text/rtf" },
-		{ ".s",     false, "text/x-asm" },
-		{ ".sgm",   false, "text/x-sgml" },
-		{ ".smgl",  false, "text/x-sgml" },
-		{ ".sh",    false, "application/x-sh" },
-		{ ".shtml", false, "text/html" },
-		{ ".swf",   true,  "application/x-shockwave-flash" },
-		{ ".tar",   true,  "application/x-tar" },
-		{ ".tcl",   false, "application-xtcl" },
-		{ ".text",  false, "text/plain" },
-		{ ".tgz",   true,  "application/x-compressed" },
-		{ ".tif",   true,  "image/tiff" },
-		{ ".tiff",  true,  "image/tiff" },
-		{ ".txt",   false, "text/plain" },
-		{ ".uu",    false, "text/x-uuencode" },
-		{ ".uue",   false, "text/x-uuencode" },
-		{ ".wav",   true,  "audio/wav" },
-		{ ".wmv",   true,  "video/x-ms-wmv" },
-		{ ".wp5",   true,  "application/wordperfect" },
-		{ ".wp6",   true,  "application/wordperfect" },
-		{ ".xbm",   true,  "image/xbm" },
-		{ ".xl",    true,  "application/excel" },
-		{ ".xls",   true,  "application/excel" },
-		{ ".xml",   false, "text/xml" },
-		{ ".z",     true,  "application/x-compressed" },
-		{ ".zip",   true,  "application/zip" },
+	{ "",       true,  "application/octet-stream"},
+	{ ".aif",   true,  "audio/aiff" },
+	{ ".aiff",  true,  "audio/aiff" },
+	{ ".au",    true,  "audio/basic" },
+	{ ".avi",   true,  "video/avi" },
+	{ ".bmp",   true,  "image/bmp" },
+	{ ".bz",    true,  "application/x-bzip" },
+	{ ".bz2",   true,  "application/x-bzip2" },
+	{ ".c",     false, "text/x-c" },
+	{ ".class", true,  "application/java" },
+	{ ".conf",  false, "text/plain" },
+	{ ".cpp",   false, "text/x-c" },
+	{ ".crt",   true,  "application/x-x509-ca-cert" },
+	{ ".css",   false, "text/css" },
+	{ ".csv",   false, "text/csv" },
+	{ ".doc",   true,  "application/msword" },
+	{ ".dot",   true,  "application/msword" },
+	{ ".flv",   true,  "video/x-flv" },
+	{ ".gif",   true,  "image/gif" },
+	{ ".gz",    true,  "application/gzip" },
+	{ ".h",     false, "text/x-h" },
+	{ ".htm",   false, "text/html" },
+	{ ".html",  false, "text/html" },
+	{ ".ico",   true,  "image/x-icon" },
+	{ ".inf",   false, "application/inf" },
+	{ ".java",  false, "text/x-java-source" },
+	{ ".jfif",  true,  "image/jpeg" },
+	{ ".jpe",   true,  "image/jpeg" },
+	{ ".jpeg",  true,  "image/jpeg" },
+	{ ".jpg",   true,  "image/jpeg" },
+	{ ".js",    false, "application/javascript" },
+	{ ".json",  false, "application/json" },
+	{ ".lst",   true,  "text/plain" },
+	{ ".lzh",   true,  "application/x-lzh" },
+	{ ".lzs",   true,  "application/x-lzh" },
+	{ ".m1v",   true,  "video/mpeg" },
+	{ ".m2v",   true,  "video/mpeg" },
+	{ ".m4v",   true,  "video/mpeg" },
+	{ ".mid",   true,  "audio/midi" },
+	{ ".midi",  true,  "audio/midi" },
+	{ ".mov",   true,  "video/quicktime" },
+	{ ".mp3",   true,  "audio/mpeg3" },
+	{ ".mpeg",  true,  "video/mpeg" },
+	{ ".mpg",   true,  "video/mpeg" },
+	{ ".ogg",   true,  "application/ogg" },
+	{ ".pdf",   true,  "application/pdf" },
+	{ ".pl",    false, "text-script.perl" },
+	{ ".png",   true,  "image/png" },
+	{ ".pps",   true,  "application/mspowerpoint" },
+	{ ".ppt",   true,  "application/powerpoint" },
+	{ ".ps",    true,  "application/postscript" },
+	{ ".py",    false, "text/x-script.python" },
+	{ ".qt",    true,  "video/quicktime" },
+	{ ".ra",    true,  "audio/x-realaudio" },
+	{ ".rss",   true,  "application/rss+xml" },
+	{ ".rtf",   false, "text/rtf" },
+	{ ".s",     false, "text/x-asm" },
+	{ ".sgm",   false, "text/x-sgml" },
+	{ ".smgl",  false, "text/x-sgml" },
+	{ ".sh",    false, "application/x-sh" },
+	{ ".shtml", false, "text/html" },
+	{ ".swf",   true,  "application/x-shockwave-flash" },
+	{ ".tar",   true,  "application/x-tar" },
+	{ ".tcl",   false, "application-xtcl" },
+	{ ".text",  false, "text/plain" },
+	{ ".tgz",   true,  "application/x-compressed" },
+	{ ".tif",   true,  "image/tiff" },
+	{ ".tiff",  true,  "image/tiff" },
+	{ ".txt",   false, "text/plain" },
+	{ ".uu",    false, "text/x-uuencode" },
+	{ ".uue",   false, "text/x-uuencode" },
+	{ ".wav",   true,  "audio/wav" },
+	{ ".wmv",   true,  "video/x-ms-wmv" },
+	{ ".wp5",   true,  "application/wordperfect" },
+	{ ".wp6",   true,  "application/wordperfect" },
+	{ ".xbm",   true,  "image/xbm" },
+	{ ".xl",    true,  "application/excel" },
+	{ ".xls",   true,  "application/excel" },
+	{ ".xml",   false, "text/xml" },
+	{ ".z",     true,  "application/x-compressed" },
+	{ ".zip",   true,  "application/zip" },
 };
 
 
@@ -103,7 +102,7 @@ media_type_t media_types[] = {
  * @param	extension	a pointer to a null-terminated string containing the file extension to be looked up, starting with a period.
  * @return	a pointer to a media type object corresponding to the media type of the specified file extension.
  */
-media_type_t * mail_mime_get_media_type (chr_t *extension) {
+media_type_t *mail_mime_get_media_type(chr_t *extension) {
 
 	size_t cmplen = ns_length_get(extension) + 1;
 
@@ -123,7 +122,7 @@ media_type_t * mail_mime_get_media_type (chr_t *extension) {
  * @param	header	a placer pointing to the mime header to be parsed.
  * @return	a managed string containing the content type value of the header, with "text" as the default.
  */
-stringer_t * mail_mime_type_group(placer_t header) {
+stringer_t *mail_mime_type_group(placer_t header) {
 
 	chr_t *stream;
 	stringer_t *line, *result;
@@ -144,8 +143,8 @@ stringer_t * mail_mime_type_group(placer_t header) {
 
 	// Count how many characters are in the group. Based on RFC4288, section 4.2.
 	while (remaining != 0 && ((*stream >= 'a' && *stream <= 'z') || (*stream >= 'A' && *stream <= 'Z') || (*stream >= '0' && *stream <= '9') ||
-		*stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
-		*stream == '^' || *stream == '_')) {
+	                          *stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
+	                          *stream == '^' || *stream == '_')) {
 		stream++;
 		remaining--;
 		characters++;
@@ -169,7 +168,7 @@ stringer_t * mail_mime_type_group(placer_t header) {
  * @param	header	a placer pointing to the mime header to be parsed.
  * @return	a managed string containing the content subtype of the header, with "plain" as the default.
  */
-stringer_t * mail_mime_type_sub(placer_t header) {
+stringer_t *mail_mime_type_sub(placer_t header) {
 
 	chr_t *stream;
 	stringer_t *line, *result;
@@ -190,8 +189,8 @@ stringer_t * mail_mime_type_sub(placer_t header) {
 
 	// Count how many characters are in the group. Based on RFC4288, section 4.2.
 	while (remaining && ((*stream >= 'a' && *stream <= 'z') || (*stream >= 'A' && *stream <= 'Z') || (*stream >= '0' && *stream <= '9') ||
-		*stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
-		*stream == '^' || *stream == '_')) {
+	                     *stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
+	                     *stream == '^' || *stream == '_')) {
 		stream++;
 		remaining--;
 	}
@@ -208,8 +207,8 @@ stringer_t * mail_mime_type_sub(placer_t header) {
 
 	// Count how many characters are in the subtype. Based on RFC4288, section 4.2.
 	while (remaining != 0 && ((*stream >= 'a' && *stream <= 'z') || (*stream >= 'A' && *stream <= 'Z') || (*stream >= '0' && *stream <= '9') ||
-		*stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
-		*stream == '^' || *stream == '_')) {
+	                          *stream == '!' || *stream == '#' || *stream == '$' || *stream == '&' || *stream == '.' || *stream == '+' || *stream == '-' ||
+	                          *stream == '^' || *stream == '_')) {
 		stream++;
 		remaining--;
 		characters++;
@@ -233,7 +232,7 @@ stringer_t * mail_mime_type_sub(placer_t header) {
  * @param	header	 a placer pointing to the mime header to be parsed.
  * @return	a managed string containing the content encoding type value of the header, with "7bit" as default.
  */
-stringer_t * mail_mime_content_encoding(placer_t header) {
+stringer_t *mail_mime_content_encoding(placer_t header) {
 
 	chr_t *stream;
 	stringer_t *holder, *result = NULL;
@@ -254,7 +253,7 @@ stringer_t * mail_mime_content_encoding(placer_t header) {
 
 	// Count how many characters are in the group. Based on RFC2045, section 6.1.
 	while (remaining != 0 && ((*stream >= 'a' && *stream <= 'z') || (*stream >= 'A' && *stream <= 'Z') || (*stream >= '0' && *stream <= '9') ||
-		*stream == '-')) {
+	                          *stream == '-')) {
 		stream++;
 		remaining--;
 		characters++;
@@ -279,7 +278,7 @@ stringer_t * mail_mime_content_encoding(placer_t header) {
  * @param	header	 a placer pointing to the mime header to be parsed.
  * @return	NULL on failure, or a managed string containing the content id value of the header.
  */
-stringer_t * mail_mime_content_id(placer_t header) {
+stringer_t *mail_mime_content_id(placer_t header) {
 
 	chr_t *stream;
 	stringer_t *holder, *result = NULL;
@@ -300,9 +299,9 @@ stringer_t * mail_mime_content_id(placer_t header) {
 
 	// Count how many characters are in the group. Based on RFC2822, section 3.6.4.
 	while (remaining != 0 && ((*stream >= 'a' && *stream <= 'z') || (*stream >= 'A' && *stream <= 'Z') || (*stream >= '0' && *stream <= '9') ||
-		*stream == '<' || *stream == '@' || *stream == '!' || *stream == '#' || *stream == '$' || *stream == '%' || *stream == '&' || *stream == '\'' ||
-		*stream == '*' || *stream == '+' || *stream == '-' || *stream == '/' || *stream == '=' || *stream == '?' || *stream == '^' || *stream == '_' ||
-		*stream == '`' || *stream == '{' || *stream == '|' || *stream == '}' || *stream == '~' || *stream == '[' || *stream == ']' || *stream == '.' || *stream == '>')) {
+	                          *stream == '<' || *stream == '@' || *stream == '!' || *stream == '#' || *stream == '$' || *stream == '%' || *stream == '&' || *stream == '\'' ||
+	                          *stream == '*' || *stream == '+' || *stream == '-' || *stream == '/' || *stream == '=' || *stream == '?' || *stream == '^' || *stream == '_' ||
+	                          *stream == '`' || *stream == '{' || *stream == '|' || *stream == '}' || *stream == '~' || *stream == '[' || *stream == ']' || *stream == '.' || *stream == '>')) {
 		stream++;
 		remaining--;
 		characters++;
@@ -323,7 +322,7 @@ stringer_t * mail_mime_content_id(placer_t header) {
  * @param	parameter	a managed string containing the complete parameter (key/value pair) of the mime header line.
  * @return	NULL on failure or a managed string containing the mime header parameter key name on success.
  */
-stringer_t * mail_mime_type_parameters_key(stringer_t *parameter) {
+stringer_t *mail_mime_type_parameters_key(stringer_t *parameter) {
 
 	chr_t *stream;
 	size_t length, characters = 0;
@@ -361,7 +360,7 @@ stringer_t * mail_mime_type_parameters_key(stringer_t *parameter) {
  * @param	parameter	a managed string containing the complete parameter (key/value pair) of the mime header line.
  * @return	NULL on failure or a managed string containing the mime header parameter value on success.
  */
-stringer_t * mail_mime_type_parameters_value(stringer_t *parameter) {
+stringer_t *mail_mime_type_parameters_value(stringer_t *parameter) {
 
 	chr_t *stream;
 	size_t length, characters = 0;
@@ -424,12 +423,12 @@ stringer_t * mail_mime_type_parameters_value(stringer_t *parameter) {
 /**
  * @brief	Get an array of the key/value pairs of parameters passed to the value of the mime Content-Type header.
  * @note	The parameters of the Content-Type header value will be examined, and each found parameter will result in the addition of
- * 			TWO managed strings to the returned array: the first containing the parameter key name, and the second with the parameter value.
+ *                      TWO managed strings to the returned array: the first containing the parameter key name, and the second with the parameter value.
  * @param	header	a placer pointing to the mime header to be parsed.
  * @return	NULL on failure, or on success, an array of managed strings structured as the key name followed by the value of each parameter
- * 			passed in the Content-Type header.
+ *                      passed in the Content-Type header.
  */
-array_t * mail_mime_type_parameters(placer_t header) {
+array_t *mail_mime_type_parameters(placer_t header) {
 
 	array_t *output;
 	stringer_t *key, *holder;
@@ -620,7 +619,7 @@ int_t mail_mime_encoding(placer_t header) {
  * @param	header	a placer pointing to the MIME header to be parsed.
  * @return	NULL on failure, or a pointer to a managed string containing the MIME boundary string on success.
  */
-stringer_t * mail_mime_boundary(placer_t header) {
+stringer_t *mail_mime_boundary(placer_t header) {
 
 	chr_t *stream;
 	int_t quote = 0;
@@ -844,7 +843,7 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
  * @param	boundary	a pointer to a managed string containing the boundary string to split the mime content.
  * @return	NULL on failure, or a pointer to an array of mime children on success.
  */
-array_t * mail_mime_split(placer_t body, stringer_t *boundary) {
+array_t *mail_mime_split(placer_t body, stringer_t *boundary) {
 
 	array_t *result;
 	uint32_t parts;
@@ -914,13 +913,13 @@ void mail_mime_free(mail_mime_t *mime) {
 /**
  * @brief	Parse a block of data into a mail mime object.
  * @note	By parsing the specified mime part, this function fills in the content type and encoding of the resulting mail mime object.
- * 			If the message is multipart, the boundary string is determined and then used to split the body into children;
- * 			then each child part is passed to mail_mime_part() to be parsed likewise, recursively.
+ *                      If the message is multipart, the boundary string is determined and then used to split the body into children;
+ *                      then each child part is passed to mail_mime_part() to be parsed likewise, recursively.
  * @param	part		a managed string containing the mime part data to be parsed.
  * @param	recursion	an incremented recursion level tracker for calling this function, to prevent an overflow from occurring.
  * @return	NULL on failure or a pointer to a newly allocated and updated mail mime object parsed from the part data on success.
  */
-mail_mime_t * mail_mime_part(stringer_t *part, uint32_t recursion) {
+mail_mime_t *mail_mime_part(stringer_t *part, uint32_t recursion) {
 
 	array_t *holder;
 	size_t elements, increment;
@@ -958,7 +957,7 @@ mail_mime_t * mail_mime_part(stringer_t *part, uint32_t recursion) {
 
 	// If were dealing with a multipart message, get the boundary.
 	if ((result->type == MESSAGE_TYPE_MULTI_ALTERNATIVE || result->type == MESSAGE_TYPE_MULTI_MIXED || result->type == MESSAGE_TYPE_MULTI_RELATED ||
-		result->type == MESSAGE_TYPE_MULTI_RFC822 || result->type == MESSAGE_TYPE_MULTI_UNKOWN) && (result->boundary = mail_mime_boundary(result->header))) {
+	     result->type == MESSAGE_TYPE_MULTI_RFC822 || result->type == MESSAGE_TYPE_MULTI_UNKOWN) && (result->boundary = mail_mime_boundary(result->header))) {
 
 		// Get an array of message parts.
 		if ((holder = mail_mime_split(result->body, result->boundary)) && (elements = ar_length_get(holder))) {
@@ -1015,7 +1014,7 @@ int_t mail_mime_update(mail_message_t *message) {
  * @param	parts	a pointer to an array of managed strings containing the MIME children data to be separated by the boundary.
  * @return	NULL on failure, or a pointer to a managed string containing the generated boundary on success.
  */
-stringer_t * mail_mime_generate_boundary (array_t *parts) {
+stringer_t *mail_mime_generate_boundary(array_t *parts) {
 
 	stringer_t *result, *cmp;
 	chr_t *ptr;
@@ -1035,7 +1034,7 @@ stringer_t * mail_mime_generate_boundary (array_t *parts) {
 	// Keep generating boundary strings until one of them is unique... we don't expect collisions to happen that often.
 	while (1) {
 		srand(_rand_get_uint64());
-		ptr = st_char_get (result);
+		ptr = st_char_get(result);
 
 		// Generate blen's worth of random bytes, each being either a random digit or lowercase letter.
 		for (size_t i = 0; i < blen; i++) {
@@ -1044,7 +1043,7 @@ stringer_t * mail_mime_generate_boundary (array_t *parts) {
 			if (rnd % 2) {
 				*ptr++ = '0' + (rnd % 10);
 			} else {
-				*ptr ++ = 'a' + (rnd % 26);
+				*ptr++ = 'a' + (rnd % 26);
 			}
 
 		}
@@ -1054,7 +1053,7 @@ stringer_t * mail_mime_generate_boundary (array_t *parts) {
 		// Now make sure it's not found in any of the parts.
 		for (size_t i = 0; i < ar_length_get(parts); i++) {
 
-			if (!(cmp = (stringer_t *) ar_field_ptr(parts, i))) {
+			if (!(cmp = (stringer_t *)ar_field_ptr(parts, i))) {
 				log_pedantic("Could not generate mime boundary for null content.");
 				st_free(result);
 				return NULL;
@@ -1076,13 +1075,13 @@ stringer_t * mail_mime_generate_boundary (array_t *parts) {
 /**
  * @brief	Encode a MIME part for a provided block of data (file attachment) with the specified filename.
  * @note	This function will look up the media type based on the supplied filename, and use that media type as a determination
- * 			of whether the content is to be encoded as either quoted-printable or base64.
+ *                      of whether the content is to be encoded as either quoted-printable or base64.
  * @param	data		a pointer to a managed string containing the body of the data to be encoded.
  * @param	filename	a pointer to a managed string containing the filename of the attachment for which the data was provided.
  * @param	boundary	a pointer to a managed string containing the boundary that will be used to separate the individual MIME parts.
  * @return	NULL on failure, or a pointer to a managed string containing the file attachment encoded as a MIME part on success.
  */
-stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary) {
+stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary) {
 
 	stringer_t *result, *encoded;
 	media_type_t *mtype;
@@ -1113,7 +1112,7 @@ stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, strin
 
 	}
 
-	mtype = mail_mime_get_media_type (extptr);
+	mtype = mail_mime_get_media_type(extptr);
 
 	if (mtype->bin) {
 		encoded = base64_encode_st(data, NULL);
@@ -1130,7 +1129,7 @@ stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, strin
 
 	// What we return is: boundary/CRLF, Content-Type/CRLF, Content-Transfer-Encoding/CRLF, Content-Disposition/CRLF, data/CRLF
 	if (!(result = st_merge("nsnnnnnnnsns", "--------------", boundary, "\r\n", "Content-Type: ", mtype->name, ";\r\n", "Content-Transfer-Encoding: ", ctype,
-			"\r\nContent-Disposition: attachment; filename=\"", filename, "\"\r\n\r\n", encoded))) {
+	                        "\r\nContent-Disposition: attachment; filename=\"", filename, "\"\r\n\r\n", encoded))) {
 		log_pedantic("Unable to generate MIME part data.");
 		return NULL;
 	}
@@ -1149,77 +1148,77 @@ stringer_t * mail_mime_encode_part(stringer_t *data, stringer_t *filename, strin
  * @param	subject		a pointer to a managed string containing the text of the subject line.
  * @param	boundary	a pointer to a managed string containing a boundary string to be used in multipart messages.
  * @param	attached	if true, the envelope is to be created for a mail with attachments (type "multipart/mixed");
- * 						if false, only a single part will be sent for the main email body.
+ *                                              if false, only a single part will be sent for the main email body.
  * @return	NULL on failure or a pointer to a managed string containing the smtp envelope data that will be supplied to an smtp
- * 			relay server at the beginning of the DATA command.
+ *                      relay server at the beginning of the DATA command.
  */
 /*stringer_t * mail_mime_get_smtp_envelope(stringer_t *from, inx_t *tos, inx_t *ccs, inx_t *bccs, stringer_t *subject, stringer_t *boundary, bool_t attached) {
 
-	stringer_t *result, *firsthead = NULL;
-	stringer_t *str_to, *str_cc, *str_bcc;
-	struct tm ltime;
-	static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z";
-	chr_t date_buffer[1024];
-	time_t utime;
+        stringer_t *result, *firsthead = NULL;
+        stringer_t *str_to, *str_cc, *str_bcc;
+        struct tm ltime;
+        static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z";
+        chr_t date_buffer[1024];
+        time_t utime;
 
-	if (!from || !tos || !ccs | !bccs || !subject) {
-		log_pedantic("Could not build smtp envelope with incomplete information.");
-		return NULL;
-	}
+        if (!from || !tos || !ccs | !bccs || !subject) {
+                log_pedantic("Could not build smtp envelope with incomplete information.");
+                return NULL;
+        }
 
-	// Serialize the To, CC, and BCC data into separate strings.
-	if (!(str_to = portal_smtp_merge_headers(tos, NULLER("To: "), NULLER("\r\n")))) {
-		log_error("Could not construct To: header for smtp envelope.");
-		return NULL;
-	} else if (!(str_cc = portal_smtp_merge_headers(ccs, NULLER("CC: "), NULLER("\r\n")))) {
-		log_error("Could not construct CC: header for smtp envelope.");
-		st_free(str_to);
-		return NULL;
-	} else if (!(str_bcc = portal_smtp_merge_headers(bccs, NULLER("BCC: "), NULLER("\r\n")))) {
-		log_error("Could not construct BCC: header for smtp envelope.");
-		st_free(str_to);
-		st_free(str_cc);
-		return NULL;
-	}
+        // Serialize the To, CC, and BCC data into separate strings.
+        if (!(str_to = portal_smtp_merge_headers(tos, NULLER("To: "), NULLER("\r\n")))) {
+                log_error("Could not construct To: header for smtp envelope.");
+                return NULL;
+        } else if (!(str_cc = portal_smtp_merge_headers(ccs, NULLER("CC: "), NULLER("\r\n")))) {
+                log_error("Could not construct CC: header for smtp envelope.");
+                st_free(str_to);
+                return NULL;
+        } else if (!(str_bcc = portal_smtp_merge_headers(bccs, NULLER("BCC: "), NULLER("\r\n")))) {
+                log_error("Could not construct BCC: header for smtp envelope.");
+                st_free(str_to);
+                st_free(str_cc);
+                return NULL;
+        }
 
-	// Add the current date/time to the outbound message.
-	if (((utime = time(&utime)) == -1) || (localtime_r(&utime, &ltime) == NULL) || (strftime(date_buffer, sizeof(date_buffer), date_format, &ltime) <= 0)) {
-		log_error("Could not build smtp envelope without current time.");
-		st_free(str_to);
-		st_free(str_cc);
-		st_free(str_bcc);
-		return NULL;
-	}
+        // Add the current date/time to the outbound message.
+        if (((utime = time(&utime)) == -1) || (localtime_r(&utime, &ltime) == NULL) || (strftime(date_buffer, sizeof(date_buffer), date_format, &ltime) <= 0)) {
+                log_error("Could not build smtp envelope without current time.");
+                st_free(str_to);
+                st_free(str_cc);
+                st_free(str_bcc);
+                return NULL;
+        }
 
-	// If there are attachments, we are going to make a multipart message.
-	if (attached) {
+        // If there are attachments, we are going to make a multipart message.
+        if (attached) {
 
-		if (!(firsthead = st_merge("nsn", "Content-Type: multipart/mixed; boundary=\"------------", boundary, "\"\r\n\r\nThis is a multi-part message in MIME format.\r\n"))) {
-			log_error("Could not build multipart header for smtp envelope.");
-			st_free(str_to);
-			st_free(str_cc);
-			st_free(str_bcc);
-			return NULL;
-		}
+                if (!(firsthead = st_merge("nsn", "Content-Type: multipart/mixed; boundary=\"------------", boundary, "\"\r\n\r\nThis is a multi-part message in MIME format.\r\n"))) {
+                        log_error("Could not build multipart header for smtp envelope.");
+                        st_free(str_to);
+                        st_free(str_cc);
+                        st_free(str_bcc);
+                        return NULL;
+                }
 
-	}
+        }
 
-	//if (!(result = st_merge("nnsnsnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\nTo: ",
-	//		to, "\r\nSubject: ", subject, "\r\n", firsthead))) {
-	if (!(result = st_merge("nnsnsssnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\n",
-				str_to, str_cc, str_bcc, "Subject: ", subject, "\r\n", firsthead))) {
-		log_error("Unable to allocate space for smtp envelope.");
-		st_free(str_to);
-		st_free(str_cc);
-		st_free(str_bcc);
-		st_cleanup(firsthead);
-		return NULL;
-	}
+        //if (!(result = st_merge("nnsnsnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\nTo: ",
+        //		to, "\r\nSubject: ", subject, "\r\n", firsthead))) {
+        if (!(result = st_merge("nnsnsssnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\n",
+                                str_to, str_cc, str_bcc, "Subject: ", subject, "\r\n", firsthead))) {
+                log_error("Unable to allocate space for smtp envelope.");
+                st_free(str_to);
+                st_free(str_cc);
+                st_free(str_bcc);
+                st_cleanup(firsthead);
+                return NULL;
+        }
 
-	st_free(str_to);
-	st_free(str_cc);
-	st_free(str_bcc);
-	st_cleanup(firsthead);
+        st_free(str_to);
+        st_free(str_cc);
+        st_free(str_bcc);
+        st_cleanup(firsthead);
 
-	return result;
+        return result;
 }*/

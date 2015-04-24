@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/validate.c
  *
@@ -15,7 +14,7 @@
 /**
  * @brief	A sanity check to determine whether the managed string is a valid placer.
  * @note	The following criteria must be satisfied: placer bit set, jointed bit set, either stack, heap, or secure set,
- * 			and no other bits other than these mentioned should be set.
+ *                      and no other bits other than these mentioned should be set.
  * @param opts	the managed string options value to be evaluated.
  * @return	true if the option value reflects a valid placer, or false otherwise.
  */
@@ -24,7 +23,7 @@ bool_t st_valid_placer(uint32_t opts) {
 	if (!st_valid_opts(opts)) {
 		return false;
 	} else if (!(opts & PLACER_T) && !(opts & JOINTED) && !(opts & (STACK | HEAP | SECURE)) &&
-			(opts & ~(PLACER_T | JOINTED | STACK | HEAP | SECURE))) {
+	           (opts & ~(PLACER_T | JOINTED | STACK | HEAP | SECURE))) {
 		return false;
 	}
 
@@ -135,8 +134,8 @@ bool_t st_valid_avail(uint32_t opts) {
 /**
  * @brief	Check to see that a managed string has a valid combination of allocation options.
  * @note	The following rules are enforced:
- * 			1. Each managed string must only be one of the following:
- * 				a. constant, nuller, block, placer, managed, or mapped.
+ *                      1. Each managed string must only be one of the following:
+ *                              a. constant, nuller, block, placer, managed, or mapped.
  *				b. jointed or contiguous.
  *				c. allocated on the stack, heap, or secure.
  *			2. A placer cannot be contiguous.
@@ -165,26 +164,26 @@ bool_t st_valid_opts(uint32_t opts) {
 
 	switch (opts & (CONSTANT_T | NULLER_T | BLOCK_T | PLACER_T | MANAGED_T | MAPPED_T)) {
 
-		// Constants must use the stack allocator, and specify a contiguous layout.
-		case (CONSTANT_T):
-			if (opts != (CONSTANT_T | CONTIGUOUS | STACK)) result = false;
-			break;
+	// Constants must use the stack allocator, and specify a contiguous layout.
+	case (CONSTANT_T):
+		if (opts != (CONSTANT_T | CONTIGUOUS | STACK)) result = false;
+		break;
 
-		// Placer's must specify a jointed layout, but can use any allocation method.
-		case (PLACER_T):
-			if (opts & CONTIGUOUS) result = false;
-			break;
+	// Placer's must specify a jointed layout, but can use any allocation method.
+	case (PLACER_T):
+		if (opts & CONTIGUOUS) result = false;
+		break;
 
-		case (NULLER_T):
-		case (BLOCK_T):
-		case (MANAGED_T):
-			break;
+	case (NULLER_T):
+	case (BLOCK_T):
+	case (MANAGED_T):
+		break;
 
-		// Mapped containers must specify a jointed layout and use the heap allocator.
-		case (MAPPED_T):
-			if (opts & CONTIGUOUS) result = false;
-			else if (opts & STACK) result = false;
-			break;
+	// Mapped containers must specify a jointed layout and use the heap allocator.
+	case (MAPPED_T):
+		if (opts & CONTIGUOUS) result = false;
+		else if (opts & STACK) result = false;
+		break;
 
 	}
 

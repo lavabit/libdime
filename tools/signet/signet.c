@@ -29,7 +29,7 @@ static void usage(const char *progname) {
 */
 static void wizard_get_input(const char *prompt, char *buf, size_t bufsize) {
 
-	if (!buf || !bufsize ) {
+	if (!buf || !bufsize) {
 		fprintf(stderr, "Error: No buffer specified, or buffer size is 0.\n");
 		exit(EXIT_FAILURE);
 	}
@@ -59,10 +59,10 @@ static void wizard_get_input(const char *prompt, char *buf, size_t bufsize) {
  * @param	signet_file	NULL terminated string containing preferred signet filename, if NULL default filename is used.
  * @param	keys_file	NULL terminated string containing preferred keys filename, if NULL default keysname is used.
  * @param	old_keys	NULL terminated string containing the filename to the previous keys file required to perform the chain of custody signing.
- * 				If NULL, no chain of custody signing occurs, if not NULL and desired signet is an org signet, returns an error.
+ *                              If NULL, no chain of custody signing occurs, if not NULL and desired signet is an org signet, returns an error.
  * @return	void.
 */
-static void generate_signet(const char * signet_name, const char * signet_file, const char * keys_file, const char * old_keys) {
+static void generate_signet(const char *signet_name, const char *signet_file, const char *keys_file, const char *old_keys) {
 
 	char *domain, wizard_string[256], *signet_f = NULL, *keys_f = NULL;
 	int keys_alloc = 0, signet_alloc = 0;
@@ -129,73 +129,73 @@ static void generate_signet(const char * signet_name, const char * signet_file, 
 		free(keys_f);
 	}
 
-	switch( type ) {
-		case SIGNET_TYPE_ORG:
+	switch(type) {
+	case SIGNET_TYPE_ORG:
 
-			wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string));
-			signet_add_field_string(signet, SIGNET_ORG_NAME, NULL, wizard_string, 0);
+		wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string));
+		signet_add_field_string(signet, SIGNET_ORG_NAME, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string));
-			signet_add_field_string(signet, SIGNET_ORG_ADDRESS, NULL, wizard_string, 0);
+		wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string));
+		signet_add_field_string(signet, SIGNET_ORG_ADDRESS, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string));
-			signet_add_field_string(signet, SIGNET_ORG_COUNTRY, NULL, wizard_string, 0);
+		wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string));
+		signet_add_field_string(signet, SIGNET_ORG_COUNTRY, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string));
-			signet_add_field_string(signet, SIGNET_ORG_POSTAL, NULL, wizard_string, 0);
+		wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string));
+		signet_add_field_string(signet, SIGNET_ORG_POSTAL, NULL, wizard_string, 0);
 
-			wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string));
-			signet_add_field_string(signet, SIGNET_ORG_PHONE,  NULL, wizard_string, 0);
+		wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string));
+		signet_add_field_string(signet, SIGNET_ORG_PHONE,  NULL, wizard_string, 0);
 
-	 		signet_sign_core_sig(signet, key);
-			signet_set_id(signet, signet_name);
-			signet_sign_full_sig(signet, key);
-			break;
-		case SIGNET_TYPE_SSR:
+		signet_sign_core_sig(signet, key);
+		signet_set_id(signet, signet_name);
+		signet_sign_full_sig(signet, key);
+		break;
+	case SIGNET_TYPE_SSR:
 
-			if(old_keys) {
+		if(old_keys) {
 
-				if(!(keys_bin = keys_get_binary(old_keys, &keys_len))) {
-					fprintf(stderr, "Could not open the specified keys file: %s\n", old_keys);
-					free_ed25519_key(key);
-					signet_destroy(signet);
-					exit(EXIT_FAILURE);
-				}
-
-				if(keys_get_type(keys_bin, keys_len) != KEYS_TYPE_USER) {
-					fprintf(stderr, "The specified keys file does not contain user keys.\n");
-					free_ed25519_key(key);
-					signet_destroy(signet);
-					memset(keys_bin, 0, keys_len);
-					free(keys_bin);
-					exit(EXIT_FAILURE);
-				}
-
-				if(!(oldkey = keys_fetch_sign_key(keys_bin, keys_len))) {
-					fprintf(stderr, "Could not retrieve the signing key from the keys file.\n");
-					free_ed25519_key(key);
-					signet_destroy(signet);
-					memset(keys_bin, 0, keys_len);
-					free(keys_bin);
-					exit(EXIT_FAILURE);
-				}
-
-				memset(keys_bin, 0, keys_len);
-				free(keys_bin);
-				signet_sign_coc_sig(signet, oldkey);
-				free_ed25519_key(oldkey);
+			if(!(keys_bin = keys_get_binary(old_keys, &keys_len))) {
+				fprintf(stderr, "Could not open the specified keys file: %s\n", old_keys);
+				free_ed25519_key(key);
+				signet_destroy(signet);
+				exit(EXIT_FAILURE);
 			}
 
- 			signet_sign_ssr_sig(signet, key);
-			break;
-		case SIGNET_TYPE_USER:
-			fprintf(stderr, "To create a user signet, an organization needs to sign an ssr.\n");
-			free_ed25519_key(key);
-			exit(EXIT_FAILURE);
-		default:
-			fprintf(stderr, "Invalid signet type.\n");
-			free_ed25519_key(key);
-			exit(EXIT_FAILURE);
+			if(keys_get_type(keys_bin, keys_len) != KEYS_TYPE_USER) {
+				fprintf(stderr, "The specified keys file does not contain user keys.\n");
+				free_ed25519_key(key);
+				signet_destroy(signet);
+				memset(keys_bin, 0, keys_len);
+				free(keys_bin);
+				exit(EXIT_FAILURE);
+			}
+
+			if(!(oldkey = keys_fetch_sign_key(keys_bin, keys_len))) {
+				fprintf(stderr, "Could not retrieve the signing key from the keys file.\n");
+				free_ed25519_key(key);
+				signet_destroy(signet);
+				memset(keys_bin, 0, keys_len);
+				free(keys_bin);
+				exit(EXIT_FAILURE);
+			}
+
+			memset(keys_bin, 0, keys_len);
+			free(keys_bin);
+			signet_sign_coc_sig(signet, oldkey);
+			free_ed25519_key(oldkey);
+		}
+
+		signet_sign_ssr_sig(signet, key);
+		break;
+	case SIGNET_TYPE_USER:
+		fprintf(stderr, "To create a user signet, an organization needs to sign an ssr.\n");
+		free_ed25519_key(key);
+		exit(EXIT_FAILURE);
+	default:
+		fprintf(stderr, "Invalid signet type.\n");
+		free_ed25519_key(key);
+		exit(EXIT_FAILURE);
 	}
 
 	free_ed25519_key(key);
@@ -257,7 +257,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 	size_t keys_len;
 	unsigned char *keys_bin;
 	ED25519_KEY *key;
-	signet_t * signet;
+	signet_t *signet;
 
 	if(!signet_name) {
 		fprintf(stderr, "No signet id.\n");
@@ -372,11 +372,11 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
  * @param	signet_f	Filename of the signet to be dumped.
  * @return	void.
 */
-static void dump_signet(const char * signet_file) {			// TODO needs to dump in HEX format rather than b64
+static void dump_signet(const char *signet_file) {                      // TODO needs to dump in HEX format rather than b64
 
 	char *fingerprint, *signet_f = NULL;
 	signet_type_t type;
-	signet_t * signet;
+	signet_t *signet;
 
 	if(!signet_file) {
 		fprintf(stderr, "No signet file specified.\n");
@@ -430,22 +430,22 @@ static void examine_signet(signet_type_t type) {
 
 	switch(type) {
 
-		case SIGNET_TYPE_ORG:
-			keys = signet_org_field_keys;
-			strtype = "Organizational signet";
-			break;
-		case SIGNET_TYPE_USER:
-			keys = signet_user_field_keys;
-			strtype = "User signet";
-			break;
-		case SIGNET_TYPE_SSR:
-			keys = signet_ssr_field_keys;
-			strtype = "SSR";
-			break;
-		default:
-			fprintf(stderr, "Invalid signet type specified to be examined.\n");
-			exit(EXIT_FAILURE);
-			break;
+	case SIGNET_TYPE_ORG:
+		keys = signet_org_field_keys;
+		strtype = "Organizational signet";
+		break;
+	case SIGNET_TYPE_USER:
+		keys = signet_user_field_keys;
+		strtype = "User signet";
+		break;
+	case SIGNET_TYPE_SSR:
+		keys = signet_ssr_field_keys;
+		strtype = "SSR";
+		break;
+	default:
+		fprintf(stderr, "Invalid signet type specified to be examined.\n");
+		exit(EXIT_FAILURE);
+		break;
 	}
 
 	fprintf(stdout, "\n%s field types:\n", strtype);
@@ -460,7 +460,7 @@ static void examine_signet(signet_type_t type) {
 }
 
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 
 	char *signet_id = NULL, *dump_file = NULL, *out_file = NULL, *ssr_file = NULL, *keys_file = NULL, *custody_file = NULL, *examine_type = NULL;
 	int is_help = 0, opt, opt_index = 0;;
@@ -486,99 +486,99 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	while((opt = getopt_long(argc, argv, "g:s:d:o:k:r:c:x:h", long_options, &opt_index)) != -1 ) {
+	while((opt = getopt_long(argc, argv, "g:s:d:o:k:r:c:x:h", long_options, &opt_index)) != -1) {
 
 		switch(opt) {
 
-			case 'g':
+		case 'g':
 
-				if(command != NONE) {
-					fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(command != NONE) {
+				fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				signet_id = optarg;
-				command = GENERATE;
-				break;
-			case 's':
+			signet_id = optarg;
+			command = GENERATE;
+			break;
+		case 's':
 
-				if(command != NONE) {
-					fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(command != NONE) {
+				fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				signet_id = optarg;
-				command = SIGN;
-				break;
-			case 'd':
+			signet_id = optarg;
+			command = SIGN;
+			break;
+		case 'd':
 
-				if(command != NONE) {
-					fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(command != NONE) {
+				fprintf(stderr, "Conflicting options (generate, sign, dump)\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				dump_file = optarg;
-				command = DUMP;
-				break;
-			case 'o':
+			dump_file = optarg;
+			command = DUMP;
+			break;
+		case 'o':
 
-				if(out_file) {
-					fprintf(stderr, "More than a single signet filename specified.\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(out_file) {
+				fprintf(stderr, "More than a single signet filename specified.\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				out_file = optarg;
-				break;
-			case 'k':
+			out_file = optarg;
+			break;
+		case 'k':
 
-				if(keys_file) {
-					fprintf(stderr, "More than a single keys filename specified.\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(keys_file) {
+				fprintf(stderr, "More than a single keys filename specified.\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				keys_file = optarg;
-				break;
-			case 'r':
+			keys_file = optarg;
+			break;
+		case 'r':
 
-				if(ssr_file) {
-					fprintf(stderr, "More than a single ssr filename specified.\n");
-					usage(argv[0]);
-				}
+			if(ssr_file) {
+				fprintf(stderr, "More than a single ssr filename specified.\n");
+				usage(argv[0]);
+			}
 
-				ssr_file = optarg;
-				break;
-			case 'c':
+			ssr_file = optarg;
+			break;
+		case 'c':
 
-				if(custody_file) {
-					fprintf(stderr, "More than a single custody keys filename specified.\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(custody_file) {
+				fprintf(stderr, "More than a single custody keys filename specified.\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				custody_file = optarg;
-				break;
-			case 'x':
+			custody_file = optarg;
+			break;
+		case 'x':
 
-				if(examine_type) {
-					fprintf(stderr, "Only one signet type can be specified at a time to be examined.\n");
-					usage(argv[0]);
-					return 0;
-				}
+			if(examine_type) {
+				fprintf(stderr, "Only one signet type can be specified at a time to be examined.\n");
+				usage(argv[0]);
+				return 0;
+			}
 
-				examine_type = optarg;
-				command = EXAMINE;
-				break;
-			case 'h':
-				is_help = 1;
-				break;
-			default:
-				fprintf(stderr, "Invalid option. Use -h for help.\n");
-				break;
+			examine_type = optarg;
+			command = EXAMINE;
+			break;
+		case 'h':
+			is_help = 1;
+			break;
+		default:
+			fprintf(stderr, "Invalid option. Use -h for help.\n");
+			break;
 
 		}
 	}
@@ -592,87 +592,87 @@ int main(int argc, char** argv) {
 
 	switch(command) {
 
-		case GENERATE:
+	case GENERATE:
 
-			if(ssr_file) {
-				fprintf(stderr, "You should not specify an ssr file to generate a signet. Use --output [-o] for output signet.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			generate_signet(signet_id, out_file, keys_file, custody_file);
-			break;
-		case SIGN:
-
-			if(!ssr_file) {
-				fprintf(stderr, "No ssr filename specified for signing.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			if(!keys_file) {
-				fprintf(stderr, "No org keys file specified to sign the ssr.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			if(custody_file) {
-				fprintf(stderr, "You should not specify custody keys file to sign an ssr. Use --gen [-g] to create an ssr signed with custody keys.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			sign_signet(signet_id, ssr_file, keys_file, out_file);
-			break;
-		case DUMP:
-
-			if(ssr_file) {
-				fprintf(stderr, "You should not specify an ssr file to dump a signet, use --dump [-d] <filename> to specify signet file.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			if(out_file) {
-				fprintf(stderr, "Dump command does not use an output file option.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			if(keys_file) {
-				fprintf(stderr, "Dump command does not use keys file option.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			if(custody_file) {
-				fprintf(stderr, "Dump command does not use custody keys file option.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			dump_signet(dump_file);
-			break;
-		case EXAMINE:
-
-			if(!strcmp(examine_type, "org")) {
-				type = SIGNET_TYPE_ORG;
-			} else if (!strcmp(examine_type, "user")) {
-				type = SIGNET_TYPE_USER;
-			} else if (!strcmp(examine_type, "ssr")) {
-				type = SIGNET_TYPE_SSR;
-			} else {
-				fprintf(stderr, "Invalid signet type specified to be examined. Use one of the following: 'org' 'user' 'ssr'.\n");
-				usage(argv[0]);
-				return 0;
-			}
-
-			examine_signet(type);
-			break;
-		default:
-			fprintf(stderr, "Invalid command specified. This tool can be used to generate (-g), sign (-s) and dump (-d) signets.\n");
+		if(ssr_file) {
+			fprintf(stderr, "You should not specify an ssr file to generate a signet. Use --output [-o] for output signet.\n");
 			usage(argv[0]);
 			return 0;
-			break;
+		}
+
+		generate_signet(signet_id, out_file, keys_file, custody_file);
+		break;
+	case SIGN:
+
+		if(!ssr_file) {
+			fprintf(stderr, "No ssr filename specified for signing.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		if(!keys_file) {
+			fprintf(stderr, "No org keys file specified to sign the ssr.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		if(custody_file) {
+			fprintf(stderr, "You should not specify custody keys file to sign an ssr. Use --gen [-g] to create an ssr signed with custody keys.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		sign_signet(signet_id, ssr_file, keys_file, out_file);
+		break;
+	case DUMP:
+
+		if(ssr_file) {
+			fprintf(stderr, "You should not specify an ssr file to dump a signet, use --dump [-d] <filename> to specify signet file.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		if(out_file) {
+			fprintf(stderr, "Dump command does not use an output file option.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		if(keys_file) {
+			fprintf(stderr, "Dump command does not use keys file option.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		if(custody_file) {
+			fprintf(stderr, "Dump command does not use custody keys file option.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		dump_signet(dump_file);
+		break;
+	case EXAMINE:
+
+		if(!strcmp(examine_type, "org")) {
+			type = SIGNET_TYPE_ORG;
+		} else if (!strcmp(examine_type, "user")) {
+			type = SIGNET_TYPE_USER;
+		} else if (!strcmp(examine_type, "ssr")) {
+			type = SIGNET_TYPE_SSR;
+		} else {
+			fprintf(stderr, "Invalid signet type specified to be examined. Use one of the following: 'org' 'user' 'ssr'.\n");
+			usage(argv[0]);
+			return 0;
+		}
+
+		examine_signet(type);
+		break;
+	default:
+		fprintf(stderr, "Invalid command specified. This tool can be used to generate (-g), sign (-s) and dump (-d) signets.\n");
+		usage(argv[0]);
+		return 0;
+		break;
 
 	}
 

@@ -1,10 +1,9 @@
-
 /**
  * @file /magma/core/encodings/qp.c
  *
  * @brief	Functions for encoding/decoding quoted printable data, as described by RFC 2045, section 6.7.
  * @note	This function operates on standard 8-bit characters, transforming non-printable characters into printable ones.
- * 			It is used as a MIME content encoding, and wraps lines at 76 characters.
+ *                      It is used as a MIME content encoding, and wraps lines at 76 characters.
  *
  * $Author$
  * $Date$
@@ -19,7 +18,7 @@
  * @param	s	a pointer to a managed string containing data to be encoded.
  * @result	a pointer to a managed string containing the QP encoded data, or NULL on failure.
  */
-stringer_t * qp_encode(stringer_t *s) {
+stringer_t *qp_encode(stringer_t *s) {
 
 	chr_t hex[4];
 	uchr_t *p;
@@ -100,7 +99,7 @@ stringer_t * qp_encode(stringer_t *s) {
  * @param	s	the managed string containing data to be decoded.
  * @result	a pointer to a managed string containing the 8-bit decoded output, or NULL on failure.
  */
-stringer_t * qp_decode(stringer_t *s) {
+stringer_t *qp_decode(stringer_t *s) {
 
 	uchr_t *p, *o;
 	stringer_t *output;

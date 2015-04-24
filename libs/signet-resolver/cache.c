@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -24,18 +23,18 @@ char *_dime_dir = NULL;
 uid_t _last_uid = 0;
 
 // This is the global table that stores all the cache management functions for the different types of data supported by the object cache.
-cached_store_t cached_stores[cached_data_signet+1] = {
+cached_store_t cached_stores[cached_data_signet + 1] = {
 	{ cached_data_unknown, "unknown", 0, NULL, PTHREAD_MUTEX_INITIALIZER, NULL, NULL, NULL, NULL, NULL },
 	{ cached_data_drec, "DIME management records", 0, NULL, PTHREAD_MUTEX_INITIALIZER, &_destroy_dime_record_cb,
-		&_serialize_dime_record_cb, &_deserialize_dime_record_cb, &_dump_dime_record_cb, NULL },
+	  &_serialize_dime_record_cb, &_deserialize_dime_record_cb, &_dump_dime_record_cb, NULL },
 	{ cached_data_dnskey, "DNSKEY records", 1, NULL, PTHREAD_MUTEX_INITIALIZER, &_destroy_dnskey_record_cb,
-		&_serialize_dnskey_record_cb, &_deserialize_dnskey_record_cb, &_dump_dnskey_record_cb, &_clone_dnskey_record_cb },
+	  &_serialize_dnskey_record_cb, &_deserialize_dnskey_record_cb, &_dump_dnskey_record_cb, &_clone_dnskey_record_cb },
 	{ cached_data_ds, "DS records", 1, NULL, PTHREAD_MUTEX_INITIALIZER, &_destroy_ds_record_cb,
-		&_serialize_ds_record_cb, &_deserialize_ds_record_cb, &_dump_ds_record_cb, NULL },
+	  &_serialize_ds_record_cb, &_deserialize_ds_record_cb, &_dump_ds_record_cb, NULL },
 	{ cached_data_ocsp, "OCSP", 1, NULL, PTHREAD_MUTEX_INITIALIZER, &_destroy_ocsp_response_cb,
-		&_serialize_ocsp_response_cb, &_deserialize_ocsp_response_cb, &_dump_ocsp_response_cb, NULL },
+	  &_serialize_ocsp_response_cb, &_deserialize_ocsp_response_cb, &_dump_ocsp_response_cb, NULL },
 	{ cached_data_signet, "signets", 0, NULL, PTHREAD_MUTEX_INITIALIZER, &_destroy_signet_cb,
-		&_serialize_signet_cb, &_deserialize_signet_cb, &_dump_signet_cb, NULL }
+	  &_serialize_signet_cb, &_deserialize_signet_cb, &_dump_signet_cb, NULL }
 };
 
 
@@ -44,7 +43,7 @@ cached_store_t cached_stores[cached_data_signet+1] = {
  * @param	dtype	the numerical identifier of the cached data type.
  * @return	a pointer to the requested cached object store on success, or NULL on failure.
  */
-cached_store_t * _get_cached_store_by_type(cached_data_type_t dtype) {
+cached_store_t *_get_cached_store_by_type(cached_data_type_t dtype) {
 
 	if (!dtype || (dtype > (sizeof(cached_stores) / sizeof(cached_store_t)))) {
 		return NULL;
@@ -59,7 +58,7 @@ cached_store_t * _get_cached_store_by_type(cached_data_type_t dtype) {
  * @param	suffix	if not NULL, an optional suffix containing a filename or path to be appended to the end of the DIME directory name.
  * @return	NULL on failure, or a null-terminated string containing the requested DIME directory pathname on success.
  */
-char * _get_dime_dir_location(const char *suffix) {
+char *_get_dime_dir_location(const char *suffix) {
 
 	struct passwd pw, *pwresult;
 	struct stat sb;
@@ -129,7 +128,7 @@ char * _get_dime_dir_location(const char *suffix) {
 			RET_ERROR_PTR(ERR_UNSPEC, "error looking up user DIME storage directory");
 		}
 
-	// Make sure it's actually a directory.
+		// Make sure it's actually a directory.
 	} else if (!S_ISDIR(sb.st_mode)) {
 		free(cdir);
 		RET_ERROR_PTR(ERR_UNSPEC, "~/.dime exists but it is not a directory");
@@ -151,7 +150,7 @@ char * _get_dime_dir_location(const char *suffix) {
  * @note	The default location returned by this function can be overridden by setting the DIME_CACHE_FILE environment variable.
  * @return	NULL on failure, or a null-terminated string containing the filename of the DIME object cache file on success.
  */
-const char * _get_cache_location(void) {
+const char *_get_cache_location(void) {
 
 	const char *result;
 	char *cfile = NULL;
@@ -227,21 +226,21 @@ int _set_cache_location(const char *path) {
  * @brief	Allocate and initialize a new cached object.
  * @see		_add_cached_object()
  * @note	The data parameter specifies an object-specific value that will be passed to other parts
- * 		of the cache management subsystem, such as functions for deletion, destruction, search, etc.
+ *              of the cache management subsystem, such as functions for deletion, destruction, search, etc.
  * @param	dtype		the data type identifying the cached store to which this cached object will belong.
  * @param	ttl		if not 0, an optional time-to-live value in seconds specifying in how many
- * 				seconds from now the cached object will reach expiration.
+ *                              seconds from now the cached object will reach expiration.
  * @param	expiration	if not 0, an optional UTC time value specifying the exact time at which this
- * 				cached object will reach expiration.
+ *                              cached object will reach expiration.
  * @param	data		a pointer to the object-specific data to be associated with the cache entry.
  * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.
  * @param	relaxed		if set, use a relaxed cache policy. A relaxed cache policy ensures that even if
- * 				the entry's ttl has expired, if its absolute (UTC) expiration time has not been
- * 				reached, it will not be evicted from the cache, but will allow for a notification
- * 				to the caller that it is time for the cached entry to be refreshed.
+ *                              the entry's ttl has expired, if its absolute (UTC) expiration time has not been
+ *                              reached, it will not be evicted from the cache, but will allow for a notification
+ *                              to the caller that it is time for the cached entry to be refreshed.
  * @return	a pointer to a newly allocated cached object for the specified data on success, or NULL on failure.
  */
-cached_object_t * _create_cached_object(cached_data_type_t dtype, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
+cached_object_t *_create_cached_object(cached_data_type_t dtype, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
 
 	cached_object_t *result;
 	time_t now;
@@ -273,12 +272,12 @@ cached_object_t * _create_cached_object(cached_data_type_t dtype, unsigned long 
 /**
  * @brief	Get the data associated with a cached object, freeing the parent cached object.
  * @note	This function is useful as a wrapper for returning cached data without returning the meta-information associated with
- * 			the same data that is stored inside its cached_object_t holder.
- * 		If the object belongs to an internal store, no memory will be freed.
+ *                      the same data that is stored inside its cached_object_t holder.
+ *              If the object belongs to an internal store, no memory will be freed.
  * @param	object	a pointer to the cached object to have its opaque data returned, and enclosing structure freed.
  * @return	NULL on failure, or a pointer to the cached object's data on success.
  */
-void * _get_cache_obj_data(cached_object_t *object) {
+void *_get_cache_obj_data(cached_object_t *object) {
 
 	void *result;
 	cached_store_t *store;
@@ -354,7 +353,7 @@ void _destroy_cache_entry(cached_object_t *entry) {
  * @param	store	a pointer to the cached store to be searched for the target object.
  * @return	a pointer to the specified cached object, if found, or NULL on failure.
  */
-cached_object_t * _find_cached_object(const char *oid, cached_store_t *store) {
+cached_object_t *_find_cached_object(const char *oid, cached_store_t *store) {
 
 	cached_object_t *ptr;
 	unsigned char hashid[SHA_256_SIZE];
@@ -408,10 +407,10 @@ cached_object_t * _find_cached_object(const char *oid, cached_store_t *store) {
  * @param	key	a pointer to an object-specific key that will be passed to the custom comparison function.
  * @param	store	a pointer to the cached store in which to search for the cached object.
  * @param	cmpfn	a custom comparison function that will compare the key value to the objects in the
- * 			specified cached store and determine whether the two objects match one another.
+ *                      specified cached store and determine whether the two objects match one another.
  * @return	a pointer to the found cached object on success, or NULL on failure.
  */
-cached_object_t * _find_cached_object_cmp(const void *key, cached_store_t *store, cached_store_comparator_t cmpfn) {
+cached_object_t *_find_cached_object_cmp(const void *key, cached_store_t *store, cached_store_comparator_t cmpfn) {
 
 	cached_object_t *ptr;
 
@@ -502,7 +501,7 @@ int _cached_object_exists(const unsigned char *hashid, cached_store_t *store) {
  * @param	key	a pointer to an object-specific key that will be passed to the comparison function.
  * @param	store	a pointer to the cached store in which to search for the cached object.
  * @param	cmpfn	a comparison function that will compare the key value to the objects in the
- * 			specified cached store, and determine whether the two objects match one another.
+ *                      specified cached store, and determine whether the two objects match one another.
  * @return	1 if the object described was present in the cache, 0 if it was not, or -1 on error.
  */
 int _cached_object_exists_cmp(const void *key, cached_store_t *store, cached_store_comparator_t cmpfn) {
@@ -551,11 +550,11 @@ int _cached_object_exists_cmp(const void *key, cached_store_t *store, cached_sto
  * @param	data		a pointer to the object-specific data to be associated with the cache entry.
  * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.
  * @param	relaxed		if set, use a relaxed cache policy; this ensures that even if the entry's TTL has
- * 				expired, if its absolute (UTC) expiration has not been reached, it will not be
- * 				evicted from the cache, but will delivery a refresh notification to the caller.
+ *                              expired, if its absolute (UTC) expiration has not been reached, it will not be
+ *                              evicted from the cache, but will delivery a refresh notification to the caller.
  * @return	a pointer to the newly allocated cached object for the specified data on success, or NULL on failure.
  */
-cached_object_t * _add_cached_object(const char *id, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
+cached_object_t *_add_cached_object(const char *id, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
 
 	cached_object_t *ptr, *entry, *optr, *result;
 	void *odata;
@@ -648,8 +647,8 @@ cached_object_t * _add_cached_object(const char *id, cached_store_t *store, unsi
 /**
  * @brief	Create and add an object to the cache, forcing the removal of any existing object with a clashing id.
  * @note	If an object with the same identifier already exists, it will be stored as the "shadow" data of the
- * 		newly created cached entry. This allows for shadowed data to be saved to disk on a cache save, even
- * 		if the over-shadowing data is not marked as persistent.
+ *              newly created cached entry. This allows for shadowed data to be saved to disk on a cache save, even
+ *              if the over-shadowing data is not marked as persistent.
  * @param	id		a unique identifier to be associated with the cached object in the store.
  * @param	store		a pointer to the cached store that will hold the new cached object.
  * @param	ttl		an optional time-to-live value for the cached object, in seconds.
@@ -661,7 +660,7 @@ cached_object_t * _add_cached_object(const char *id, cached_store_t *store, unsi
  *				evicted from the cache, but will delivery a refresh notification to the caller.
  * @return	a pointer to the newly allocated cached object for the specified data on success, or NULL on failure.
  */
-cached_object_t * _add_cached_object_forced(const char *id, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
+cached_object_t *_add_cached_object_forced(const char *id, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed) {
 
 	cached_object_t *found, *newobj, *result;
 	void *odata;
@@ -734,13 +733,13 @@ cached_object_t * _add_cached_object_forced(const char *id, cached_store_t *stor
  * @param	data		a pointer to the object-specific data to be associated with the cache entry.
  * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.
  * @param	relaxed		if set, use a relaxed cache policy; this ensures that even if the entry's TTL has
- * 				expired, if its absolute (UTC) expiration has not been reached, it will not be
- * 				evicted from the cache, but will delivery a refresh notification to the caller.
+ *                              expired, if its absolute (UTC) expiration has not been reached, it will not be
+ *                              evicted from the cache, but will delivery a refresh notification to the caller.
  * @param	cmpfn		a custom comparison function that will compare the key value to the objects in the
- * 				specified cache dstore and determine whether the two objects match one another.
+ *                              specified cache dstore and determine whether the two objects match one another.
  * @return	a pointer to the newly allocated cached object for the specified data on success, or NULL on failure.
  */
-cached_object_t * _add_cached_object_cmp(const char *id, const void *key, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed, cached_store_comparator_t cmpfn) {
+cached_object_t *_add_cached_object_cmp(const char *id, const void *key, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed, cached_store_comparator_t cmpfn) {
 
 	cached_object_t *ptr, *entry, *optr, *result;
 	void *odata;
@@ -819,7 +818,7 @@ cached_object_t * _add_cached_object_cmp(const char *id, const void *key, cached
 
 /**
  * @brief	Create and add an object to the cache, forcing the removal of any existing object that matches the result
- * 		of a custom comparison function.
+ *              of a custom comparison function.
  * @param	id		a unique identifier to be associated with the cached object in the store.
  * @param	key		a pointer to an object-specific key that will be passed to the custom comparison function.
  * @param	store		a pointer to the cached store that will hold the new cached object.
@@ -828,13 +827,13 @@ cached_object_t * _add_cached_object_cmp(const char *id, const void *key, cached
  * @param	data		a pointer to the object-specific data to be associated with the cache entry.
  * @param	persists	if set, the cached object will be persisted to disk when the cache is saved.
  * @param	relaxed		if set, use a relaxed cache policy; this ensures that even if the entry's TTL has
- * 				expired, if its absolute (UTC) expiration has not been reached, it will not be
- * 				evicted from the cache, but will delivery a refresh notification to the caller.
+ *                              expired, if its absolute (UTC) expiration has not been reached, it will not be
+ *                              evicted from the cache, but will delivery a refresh notification to the caller.
  * @param	cmpfn		a custom comparison function that will compare the key value to the objects in the
- * 				specified cache dstore and determine whether the two objects match one another.
+ *                              specified cache dstore and determine whether the two objects match one another.
  * @return	a pointer to the newly allocated cached object for the specified data on success, or NULL on failure.
  */
-cached_object_t * _add_cached_object_cmp_forced(const char *id, const void *key, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed, cached_store_comparator_t cmpfn) {
+cached_object_t *_add_cached_object_cmp_forced(const char *id, const void *key, cached_store_t *store, unsigned long ttl, time_t expiration, void *data, int persists, int relaxed, cached_store_comparator_t cmpfn) {
 
 	cached_object_t *found, *newobj, *result;
 	void *odata;
@@ -949,7 +948,7 @@ int _remove_cached_object(const char *oid, cached_store_t *store) {
  * @param	key	a pointer to an object-specific key that will be passed to the custom comparison function.
  * @param	store	a pointer to the cached store from which the specified object will be removed.
  * @param	cmpfn	a custom comparison function that will compare the key value to the objects in the
- * 			specified cached store and determine whether the two objects match one another.
+ *                      specified cached store and determine whether the two objects match one another.
  * @return	1 if the object was successfully removed or 0 if it couldn't be found; -1 on general error.
  */
 int _remove_cached_object_cmp(const void *key, cached_store_t *store, cached_store_comparator_t cmpfn) {
@@ -997,7 +996,7 @@ int _remove_cached_object_cmp(const void *key, cached_store_t *store, cached_sto
  *
  *
  */
-cached_object_t * _clone_cached_object(const cached_object_t *obj) {
+cached_object_t *_clone_cached_object(const cached_object_t *obj) {
 
 	cached_store_t *store;
 	cached_object_t *result;
@@ -1079,7 +1078,7 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 	time_t now;
 	size_t i, j, total;
 
-	for(i = 1; i < sizeof(cached_stores)/sizeof(cached_store_t); i++) {
+	for(i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
 
 		if ((dtype != cached_data_unknown) && (cached_stores[i].dtype != dtype)) {
 			continue;
@@ -1123,12 +1122,12 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 
 			}
 
-			fprintf(stderr, "+++ [%u: ", (unsigned int)(j+1));
+			fprintf(stderr, "+++ [%u: ", (unsigned int)(j + 1));
 			_dump_cache_data(stderr, ptr, 1);
 
 			expstr = ptr->expiration ? _get_chr_date(ptr->expiration, 1) : strdup("[none]");
 			fprintf(stderr, "] ttl = %s, expiration = %s, data = %s, timestamp = %s, persist = %s",
-				ttlstr, (expstr ? expstr : "[error]"), (ptr->data ? "yes" : "no"), (tstr ? tstr : "[unknown timestamp]"), (ptr->persists ? "yes" : "no"));
+			        ttlstr, (expstr ? expstr : "[error]"), (ptr->data ? "yes" : "no"), (tstr ? tstr : "[unknown timestamp]"), (ptr->persists ? "yes" : "no"));
 
 			if (ptr->relaxed) {
 				fprintf(stderr, " [RELAXED]");
@@ -1295,7 +1294,7 @@ int _load_cache_contents(void) {
 			RET_ERROR_INT(ERR_UNSPEC, "unable to read contents of object cache");
 		}
 
-		obj = (cached_object_t *) cdata;
+		obj = (cached_object_t *)cdata;
 
 		// Make sure we're even able to handle this data type.
 		if (!(store = _get_cached_store_by_type(obj->dtype))) {
@@ -1333,7 +1332,7 @@ int _load_cache_contents(void) {
 
 		// Finally, attach the store-specific data to the cached object.
 		if (objlen >= chdr_size) {
-			uptr = (unsigned char *) cdata;
+			uptr = (unsigned char *)cdata;
 			uptr += chdr_size;
 
 			if (!(udata = store->deserialize(uptr, (objlen - chdr_size)))) {
@@ -1368,7 +1367,7 @@ int _load_cache_contents(void) {
 		if (_verbose >= 5) {
 			expstr = obj->expiration ? _get_chr_date(obj->expiration, 1) : strdup("[none]");
 			fprintf(stderr, "+++ type = %u, ttl = %s, expiration = %s, data = %s, timestamp = %s\n",
-				(unsigned int)obj->dtype, ttlstr, (expstr ? expstr : "[error]"), (obj->data ? "yes" : "no"), (tstr ? tstr : "[unknown timestamp]"));
+			        (unsigned int)obj->dtype, ttlstr, (expstr ? expstr : "[error]"), (obj->data ? "yes" : "no"), (tstr ? tstr : "[unknown timestamp]"));
 			_dump_cache_data(stderr, obj, 0);
 
 			if (expstr) {
@@ -1441,7 +1440,7 @@ int _save_cache_contents(void) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to open object cache file for writing: %s", cfile);
 	}
 
-	for(i = 1; i < sizeof(cached_stores)/sizeof(cached_store_t); i++) {
+	for(i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
 		_dbgprint(4, "Persisting cache of type: %s ...\n", cached_stores[i].description);
 
 		_lock_cache_store(&(cached_stores[i]));
@@ -1473,8 +1472,8 @@ int _save_cache_contents(void) {
 					objlen = chdr_size + clen;
 
 					if ((size_t)write(cfd, &objlen, sizeof(objlen)) != sizeof(objlen)
-							|| (size_t)write(cfd, towrite, chdr_size) != chdr_size
-							|| (size_t)write(cfd, cdata, clen) != clen) {
+					    || (size_t)write(cfd, towrite, chdr_size) != chdr_size
+					    || (size_t)write(cfd, cdata, clen) != clen) {
 						PUSH_ERROR_SYSCALL("write");
 						_unlock_cache_store(&(cached_stores[i]));
 						free(cdata);
@@ -1520,7 +1519,7 @@ int _set_cache_permissions(unsigned long flags) {
  * @brief       Append a variable-length chunk of data to a dynamically allocated buffer for serialization.
  * @param	buf	a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen	a pointer to a variable that holds the buffer's current size and will receive the
- * 			size of the newly resized output buffer.
+ *                      size of the newly resized output buffer.
  * @param	data	a pointer to a buffer holding the data that will be appended to the end of the output buffer.
  * @param	dlen	the size, in bytes, of the data buffer to be appended to the output buffer.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
@@ -1549,7 +1548,7 @@ size_t _mem_append_serialized(unsigned char **buf, size_t *blen, const unsigned 
  * @brief	Apped a null-terminated string to a dynamically allocated buffer for serialization.
  * @param	buf	a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen	a pointer to a variable that holds the buffer's current size and will receive the
- * 			size of the newly resized output buffer.
+ *                      size of the newly resized output buffer.
  * @param	string	a null-terminated string that will be appended to the end of the output buffer.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  */
@@ -1565,7 +1564,7 @@ size_t _mem_append_serialized_string(unsigned char **buf, size_t *blen, const ch
 	if (!string) {
 		res = _mem_append(buf, blen, &null, sizeof(null));
 	} else {
-		res = _mem_append(buf, blen, (unsigned char *)string, strlen(string)+1);
+		res = _mem_append(buf, blen, (unsigned char *)string, strlen(string) + 1);
 	}
 
 	if (!res) {
@@ -1580,9 +1579,9 @@ size_t _mem_append_serialized_string(unsigned char **buf, size_t *blen, const ch
  * @brief	Append an array of fixed-size objects to a dynamically allocated buffer for serialization.
  * @param	buf		a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen		a pointer to a variable that holds the buffer's current size and will receive the
- * 				size of the newly resized output buffer.
+ *                              size of the newly resized output buffer.
  * @param	array		an array of pointers to fixed-size objects (ending with a NULL pointer) to be
- * 				appended to the end of the output buffer.
+ *                              appended to the end of the output buffer.
  * @param	itemsize	the size, in bytes, of the array elements to be deserialized.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  */
@@ -1636,9 +1635,9 @@ size_t _mem_append_serialized_array(unsigned char **buf, size_t *blen, const uns
  * @brief	Append an array of null-terminated strings to a dynamically allocated buffer for serialization.
  * @param	buf	a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen	a pointer to a variable that holds the buffer's current size and will receive the
- * 			size of the newly resized output buffer.
+ *                      size of the newly resized output buffer.
  * @param	array	an array of pointers to null-terminated strings (ending with a NULL pointer) to be
- * 			appended to the end of the output buffer.
+ *                      appended to the end of the output buffer.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  */
 size_t _mem_append_serialized_str_array(unsigned char **buf, size_t *blen, const char **array) {
@@ -1693,9 +1692,9 @@ size_t _mem_append_serialized_str_array(unsigned char **buf, size_t *blen, const
  * @note	This function uses a custom serialization function in order to output the user data properly.
  * @param	buf	a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen	a pointer to a variable that holds the buffer's current size and will receive the
- * 			size of the newly resized output buffer.
+ *                      size of the newly resized output buffer.
  * @param	array	an array of pointers to custom-formatted data buffers (ending with a NULL pointer) to be
- * 			appended to the end of the output buffer using a custom serialization function.
+ *                      appended to the end of the output buffer using a custom serialization function.
  * @param	sfn	a custom serialization function that will be used to serialize the user data into the output buffer.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  */
@@ -1748,10 +1747,10 @@ size_t _mem_append_serialized_array_cb(unsigned char **buf, size_t *blen, const 
 /**
  * @brief	Deserialize a fixed-sized chunk of data from an input buffer.
  * @note	This is the inverse function of _mem_append();
- * 		dst must be at least len bytes long.
+ *              dst must be at least len bytes long.
  * @param	dst		a pointer to the output buffer that will receive the deserialized data.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	len		the size of the data chunk to be deserialized from the input buffer.
  * @result	1 on success or 0 on failure.
@@ -1779,12 +1778,12 @@ unsigned int _deserialize_data(unsigned char *dst, unsigned char **bufptr, const
  * @brief	Deserialize a variable-length chunk of data from an input buffer.
  * @note	This is the inverse function of _mem_append_serialized.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	olen		an optional pointer to receive the size of the deserialized data on success.
  * @result	a pointer to a newly allocated buffer containing the deserialized data on success, or NULL on failure.
  */
-unsigned char * _deserialize_vardata(unsigned char **bufptr, const unsigned char *bufend, size_t *olen) {
+unsigned char *_deserialize_vardata(unsigned char **bufptr, const unsigned char *bufend, size_t *olen) {
 
 	unsigned char *result;
 	size_t dlen;
@@ -1820,9 +1819,9 @@ unsigned char * _deserialize_vardata(unsigned char **bufptr, const unsigned char
  * @brief	Deserialize a null-terminated string from an input buffer.
  * @note	This is the inverse function of _mem_append_serialized_string().
  * @param	dst		a pointer to the address of a string that will receive a copy of the deserialized
- * 				data as a null-terminated string on success.
+ *                              data as a null-terminated string on success.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @result	1 on success or 0 on failure.
  */
@@ -1868,9 +1867,9 @@ unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsig
  * @brief	Deserialize an array of fixed-size objects from an input buffer.
  * @note	This is the inverse function of _mem_append_serialized_array().
  * @param	dst		a pointer to the address of an array of objects that will receive a copy of the deserialized
- * 				data as an array of (NULL pointer terminated) fixed-size objects on success.
+ *                              data as an array of (NULL pointer terminated) fixed-size objects on success.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	itemsize	the size, in bytes, of the fixed-sized objects to be deserialized.
  * @result	1 on success or 0 on failure.
@@ -1948,9 +1947,9 @@ unsigned int _deserialize_array(unsigned char ***dst, unsigned char **bufptr, co
  * @brief	Deserialize an array of null-terminated string from an input buffer.
  * @note	This is the inverse function of _mem_append_serialized_str_array().
  * @param	dst		a pointer to the address of an array of strings that will receive a copy of the deserialized
- * 				data as an array of (NULL pointer terminated) null-terminated strings on success.
+ *                              data as an array of (NULL pointer terminated) null-terminated strings on success.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @result	1 on success or 0 on failure.
  */
@@ -2017,9 +2016,9 @@ unsigned int _deserialize_str_array(char ***dst, unsigned char **bufptr, const u
  * @brief	Deserialize an array of custom-formatted data objects from an input buffer using a deserialization function.
  * @note	This is the inverse function of _mem_append_serialized_array_cb().
  * @param	dst		a pointer to the address of an array of data buffers that will receive a copy of the deserialized
- * 				data as an array of (NULL pointer terminated) data buffers on success.
+ *                              data as an array of (NULL pointer terminated) data buffers on success.
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
- * 				which will be updated after the operation to point to the next available data.
+ *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	dfn		a custom deserialization function that will be used to deserialize the user data from the input buffer.
  * @result	1 on success or 0 on failure.
@@ -2085,11 +2084,11 @@ unsigned int _deserialize_array_cb(unsigned char ***dst, unsigned char **bufptr,
 /**
  * @brief	Check to see if a cached object needs to be evicted for exceeding its TTL or expiration.
  * @note	An object has "expired" and needs to be evicted from the cache if it has a non-zero TTL from its cache
- * 		date that has been reached, or a non-zero absolute expiration date that has been exceeded. If the object's
- * 		 cache policy is relaxed, a TTL expiration advises a "refresh" if no absolute expiration has occurred.
+ *              date that has been reached, or a non-zero absolute expiration date that has been exceeded. If the object's
+ *               cache policy is relaxed, a TTL expiration advises a "refresh" if no absolute expiration has occurred.
  * @param	obj		a pointer to the cached object to have its age examined.
  * @param	refresh		an optional pointer to a value that, if the cached object has a relaxed expiration
- * 				policy, will be set to 1 if it needs to be refreshed or 0 if it does not.
+ *                              policy, will be set to 1 if it needs to be refreshed or 0 if it does not.
  * @return	1 if the object has expired or 0 if it has not; -1 if a general error has occurred.
  */
 int _is_object_expired(cached_object_t *obj, int *refresh) {
@@ -2139,7 +2138,7 @@ int _is_object_expired(cached_object_t *obj, int *refresh) {
  * @param	stale		if set, the cache removal was performed because of a stale entry.
  * @return	a pointer to the next cached object in the store, or NULL if at the end of the store.
  */
-cached_object_t * _unlink_object(cached_object_t *object, int destroy, int stale) {
+cached_object_t *_unlink_object(cached_object_t *object, int destroy, int stale) {
 
 	cached_store_t *store;
 	cached_object_t *next = NULL;
@@ -2207,7 +2206,7 @@ cached_object_t * _unlink_object(cached_object_t *object, int destroy, int stale
  * @param	shadow	if set, preserve the old object as the "shadow" value of the new object.
  * @return	NULL on failure, or a pointer to the new cached object on success.
  */
-cached_object_t * _replace_object(cached_object_t *oobj, cached_object_t *nobj, int shadow) {
+cached_object_t *_replace_object(cached_object_t *oobj, cached_object_t *nobj, int shadow) {
 
 	cached_store_t *store;
 

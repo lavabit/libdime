@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/memory/align.c
  *

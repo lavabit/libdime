@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/indexes/hashed.c
  *
@@ -276,7 +275,7 @@ static bool_t hashed_delete(void *inx, multi_t key) {
 
 /// BUG: It's a little unclear what's happening, but when this function gets called, the serials don't match, and the count is greater than the number of available
 /// data buckets, because a bucket has been removed, the cursor will get stuck returning the last item endlessly (I think).
-static hashed_bucket_t * hashed_cursor_active(hashed_cursor_t *cursor) {
+static hashed_bucket_t *hashed_cursor_active(hashed_cursor_t *cursor) {
 
 	uint64_t count = 0;
 	hashed_bucket_t *bucket = NULL, *loop;
@@ -324,7 +323,7 @@ static hashed_bucket_t * hashed_cursor_active(hashed_cursor_t *cursor) {
 	return bucket;
 }
 
-static hashed_bucket_t * hashed_cursor_next(hashed_cursor_t *cursor) {
+static hashed_bucket_t *hashed_cursor_next(hashed_cursor_t *cursor) {
 
 	hashed_bucket_t *bucket = NULL;
 
@@ -341,7 +340,7 @@ static hashed_bucket_t * hashed_cursor_next(hashed_cursor_t *cursor) {
 		bucket = hashed_cursor_active(cursor);
 	}
 	// The serials don't match so we'll be counting out the items in the current bucket. So we just need to increase our counter.
-	else if (cursor->slot < ((hashed_index_t *)cursor->inx->index)->buckets){
+	else if (cursor->slot < ((hashed_index_t *)cursor->inx->index)->buckets) {
 		bucket = hashed_cursor_active(cursor);
 	}
 
@@ -495,7 +494,7 @@ static void hashed_truncate(void *inx) {
  *
  * @return	NULL on failure, or a pointer to the newly allocated hash table object on success.
  */
-inx_t * hashed_alloc(uint64_t options, void *data_free) {
+inx_t *hashed_alloc(uint64_t options, void *data_free) {
 
 	inx_t *result;
 
@@ -516,15 +515,15 @@ inx_t * hashed_alloc(uint64_t options, void *data_free) {
 	result->insert = hashed_insert;
 	result->delete_entry = hashed_delete;
 
-	result->cursor_free = (void (*)(void *))&hashed_cursor_free;
-	result->cursor_reset = (void (*)(void *))&hashed_cursor_reset;
-	result->cursor_alloc = (void * (*)(void *))&hashed_cursor_alloc;
+	result->cursor_free = (void (*)(void *)) & hashed_cursor_free;
+	result->cursor_reset = (void (*)(void *)) & hashed_cursor_reset;
+	result->cursor_alloc = (void * (*)(void *)) & hashed_cursor_alloc;
 
-	result->cursor_key_next = (multi_t (*)(void *))&hashed_cursor_key_next;
-	result->cursor_key_active = (multi_t (*)(void *))&hashed_cursor_key_active;
+	result->cursor_key_next = (multi_t (*)(void *)) & hashed_cursor_key_next;
+	result->cursor_key_active = (multi_t (*)(void *)) & hashed_cursor_key_active;
 
-	result->cursor_value_next = (void * (*)(void *))&hashed_cursor_value_next;
-	result->cursor_value_active = (void * (*)(void *))&hashed_cursor_value_active;
+	result->cursor_value_next = (void * (*)(void *)) & hashed_cursor_value_next;
+	result->cursor_value_active = (void * (*)(void *)) & hashed_cursor_value_active;
 
 	return result;
 }

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/thread/rwlock.c
  *
@@ -19,7 +18,7 @@
  * @param	attr	an optional pointer to a set of lock attributes, or the default attributes if NULL is specified.
  * @return	0 on success or an error number on failure.
  */
-int rwlock_init(pthread_rwlock_t *lock, pthread_rwlockattr_t * attr) {
+int rwlock_init(pthread_rwlock_t *lock, pthread_rwlockattr_t *attr) {
 
 #ifdef MAGMA_PEDANTIC
 	int result = pthread_rwlock_init(lock, attr);

@@ -5,7 +5,7 @@ signet_t *get_signet(const char *name, const char *fingerprint, int use_cache) {
 	PUBLIC_FUNC_IMPL(get_signet, name, fingerprint, use_cache);
 }
 
-dmtp_session_t * dmtp_connect(const char *domain, int force_family) {
+dmtp_session_t *dmtp_connect(const char *domain, int force_family) {
 	PUBLIC_FUNC_IMPL(dmtp_connect, domain, force_family);
 }
 
@@ -13,11 +13,11 @@ void destroy_dmtp_session(dmtp_session_t *session) {
 	PUBLIC_FUNC_IMPL_VOID(destroy_dmtp_session, session);
 }
 
-dmtp_session_t * dx_connect_standard(const char *host, const char *domain, int force_family, dime_record_t *dimerec) {
+dmtp_session_t *dx_connect_standard(const char *host, const char *domain, int force_family, dime_record_t *dimerec) {
 	PUBLIC_FUNC_IMPL(dx_connect_standard, host, domain, force_family, dimerec);
 }
 
-dmtp_session_t * dx_connect_dual(const char *host, const char *domain, int force_family, dime_record_t *dimerec, int failover) {
+dmtp_session_t *dx_connect_dual(const char *host, const char *domain, int force_family, dime_record_t *dimerec, int failover) {
 	PUBLIC_FUNC_IMPL(dx_connect_dual, host, domain, force_family, dimerec, failover);
 }
 
@@ -25,7 +25,7 @@ int verify_dx_certificate(dmtp_session_t *session) {
 	PUBLIC_FUNC_IMPL(verify_dx_certificate, session);
 }
 
-char * dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
+char *dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
 	PUBLIC_FUNC_IMPL(dmtp_get_signet, session, signame, fingerprint);
 }
 
@@ -41,7 +41,7 @@ int dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
 	PUBLIC_FUNC_IMPL(dmtp_rcpt_to, session, domain);
 }
 
-char * dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
+char *dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 	PUBLIC_FUNC_IMPL(dmtp_data, session, msg, msglen);
 }
 
@@ -49,11 +49,11 @@ int dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char 
 	PUBLIC_FUNC_IMPL(dmtp_verify_signet, session, signame, fingerprint, newprint);
 }
 
-char * dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
+char *dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
 	PUBLIC_FUNC_IMPL(dmtp_history, session, signame, startfp, endfp);
 }
 
-char * dmtp_stats(dmtp_session_t *session, const unsigned char *secret) {
+char *dmtp_stats(dmtp_session_t *session, const unsigned char *secret) {
 	PUBLIC_FUNC_IMPL(dmtp_stats, session, secret);
 }
 
@@ -73,7 +73,7 @@ int dmtp_reset(dmtp_session_t *session) {
 	PUBLIC_FUNC_IMPL(dmtp_reset, session);
 }
 
-char * dmtp_help(dmtp_session_t *session) {
+char *dmtp_help(dmtp_session_t *session) {
 	PUBLIC_FUNC_IMPL(dmtp_help, session);
 }
 

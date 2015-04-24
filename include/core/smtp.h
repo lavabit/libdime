@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/network/smtp.h
  *
@@ -91,7 +90,7 @@ typedef struct {
 	uint32_t greytime, local_size, daily_recv_limit, daily_recv_limit_ip;
 	uint64_t usernum, signum, spamkey, quota, stor_size, inbox, autoreply, messagenum, foldernum;
 	int_t mark, secure, rollout, spam, virus, greylist, spf, dkim, rbl, phish, overquota, bounces, spfaction, dkimaction,
-		rblaction, spamaction, virusaction, phishaction, spam_checked;
+	      rblaction, spamaction, virusaction, phishaction, spam_checked;
 	inx_t *filters;
 	struct smtp_inbound_prefs_t *next;
 } smtp_inbound_prefs_t;
@@ -136,4 +135,3 @@ typedef struct {
 } smtp_session_t;
 
 #endif
-

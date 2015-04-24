@@ -39,17 +39,17 @@
 		ck_assert_msg(_ck_x OP _ck_y, "Assertion '%s' failed: %s == %#p, %s == %#p", #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y); \
 	} while (0)
 
-#define ck_assert_ptr_eq(X, Y)	_ck_assert_ptr(X, ==, Y)
-#define ck_assert_ptr_ne(X, Y)	_ck_assert_ptr(X, !=, Y)
+#define ck_assert_ptr_eq(X, Y) _ck_assert_ptr(X, ==, Y)
+#define ck_assert_ptr_ne(X, Y) _ck_assert_ptr(X, !=, Y)
 
 #endif
 
 #if !CHECK_VERSION_AT_LEAST(0, 9, 9)
 
-#define ck_assert_int_lt(X, Y)	_ck_assert_int(X, <, Y)
-#define ck_assert_int_le(X, Y)	_ck_assert_int(X, <=, Y)
-#define ck_assert_int_gt(X, Y)	_ck_assert_int(X, >, Y)
-#define ck_assert_int_ge(X, Y)	_ck_assert_int(X, >=, Y)
+#define ck_assert_int_lt(X, Y) _ck_assert_int(X, <, Y)
+#define ck_assert_int_le(X, Y) _ck_assert_int(X, <=, Y)
+#define ck_assert_int_gt(X, Y) _ck_assert_int(X, >, Y)
+#define ck_assert_int_ge(X, Y) _ck_assert_int(X, >=, Y)
 
 #endif
 

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/hash/crc.c
  *
@@ -18,7 +17,7 @@
 #define C(x) (((x) >> 16) & 0xFF)
 #define D(x) ((x) >> 24)
 
-#define S8(x) ((x) >> 8)
+#define S8(x)  ((x) >> 8)
 #define S32(x) ((x) >> 32)
 
 extern const uint32_t hash_crc32_table[8][256];

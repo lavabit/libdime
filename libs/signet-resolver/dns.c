@@ -4,7 +4,7 @@
 #include <common/misc.h>
 #include <common/error.h>
 
-#define INITIALIZE_DNS          { if (!_dns_initialized && (_initialize_resolver() < 0)) { RET_ERROR_PTR(ERR_UNSPEC, "failed to initialize DNS resolver"); } }
+#define INITIALIZE_DNS { if (!_dns_initialized && (_initialize_resolver() < 0)) { RET_ERROR_PTR(ERR_UNSPEC, "failed to initialize DNS resolver"); } }
 
 static int _dns_initialized = 0;
 
@@ -14,7 +14,7 @@ static int _dns_initialized = 0;
  * @note	This function should be called for the first time with *buf and *blen set to NULL.
  * @param	buf	a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
  * @param	blen	a pointer to a variable that will both hold the initial size of and receive the newly resized output buffer
- * 			following the completion of the append operation.
+ *                      following the completion of the append operation.
  * @param       name	a null-terminated string containing the domain label to be stored in the buffer in canonical form.
  * @return	the new size of the (re)allocated output buffer, or 0 on failure.
  *
@@ -96,7 +96,7 @@ size_t _mem_append_canon(unsigned char **buf, size_t *blen, const char *name) {
 /**
  * @brief	Calculate the keytag value for a DNSKEY resource record.
  * @note	This value is not necessarily unique, but should distinguish between keys of different owners/algorithms.
- * 		As per RFC 4034, this applies to all algorithms except of type 1.
+ *              As per RFC 4034, this applies to all algorithms except of type 1.
  * @param	rdata	a pointer to the start of the rdata buffer of the DNSKEY RR.
  * @param	rdlen	the rdlength (total size, in bytes) of the DNSKEY RR.
  * @return	a keytag value for the specified DNSKEY RR to be referenced in RRSIG (or DS) records.
@@ -123,12 +123,12 @@ unsigned int _get_keytag(const unsigned char *rdata, size_t rdlen) {
 /**
  * @brief	Extract an RSA public key from a DNSKEY resource record.
  * @note	The parameters to this function are not the same as the RR's rdata/rdlen, but rather, the
- * 		RSA key data that usually begins 4 bytes into this buffer.
+ *              RSA key data that usually begins 4 bytes into this buffer.
  * @param	rdptr	a pointer to the start of the raw RSA key data inside the DNSKEY RR's rdata.
  * @param	rdlen	the length, in bytes, of the encoded RSA public key.
  * @return	NULL on failure, or a pointer to a newly allocated RSA public key on success.
  */
-RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
+RSA *_get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
 
 	RSA *result;
 	BIGNUM *mod, *exp;
@@ -210,10 +210,10 @@ RSA * _get_rsa_dnskey(const unsigned char *rdptr, size_t rdlen) {
 /**
  * @brief	Verify that an RRSIG record has been signed properly using a given RSA public key.
  * @note	According to RFC 4034, the signature calculation is computed over the following data:
- * 		RRSIG_RDATA | RR(1) | RR(2) | RR(s)
- * 		where RRSIG_RDATA is the wire format of the RRSIG RDATA with the signer's name in canonical form and NO signature field
- * 		RR(s) is the RRset of all matching RR's.
- * 		RR(x): owner | type | class | ttl (original ttl) | rdlen | rdata
+ *              RRSIG_RDATA | RR(1) | RR(2) | RR(s)
+ *              where RRSIG_RDATA is the wire format of the RRSIG RDATA with the signer's name in canonical form and NO signature field
+ *              RR(s) is the RRset of all matching RR's.
+ *              RR(x): owner | type | class | ttl (original ttl) | rdlen | rdata
 
  *			These fields of each RR and the RRSIG RR must match: owner, class, type=covered, ttl=original ttl
  *		The RRSET must be in canonical order, and the DNS names in the RDATA must be in canonical form.
@@ -249,12 +249,12 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 	}
 
 	// Make sure this is an algorithm we know how to handle.
-	 if (algorithm != NS_ALG_RSASHA1 && algorithm != NS_ALG_RSASHA256 && algorithm != NS_ALG_RSASHA512) {
-		 RET_ERROR_INT_FMT(ERR_UNSPEC, "could not sign RRSIG because of unsupported requested algorithm: %u", algorithm);
-	 }
+	if (algorithm != NS_ALG_RSASHA1 && algorithm != NS_ALG_RSASHA256 && algorithm != NS_ALG_RSASHA512) {
+		RET_ERROR_INT_FMT(ERR_UNSPEC, "could not sign RRSIG because of unsupported requested algorithm: %u", algorithm);
+	}
 
 	// First we pack the RRSIG rdata, up until the signer name (the very last byte of the structure).
-	if (!_mem_append(&hdata, &hlen, rrsig, sizeof(rrsig_rr_t)-1)) {
+	if (!_mem_append(&hdata, &hlen, rrsig, sizeof(rrsig_rr_t) - 1)) {
 		RET_ERROR_INT(ERR_NOMEM, "unable to pack RRSIG RDATA for verification");
 	}
 
@@ -262,7 +262,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 	memset(nbuf, 0, sizeof(nbuf));
 
 	// First grab the uncompressed name of the signer.
-	if (ns_name_uncompress(ns_msg_base(*dhandle), ns_msg_end(*dhandle)+1, rrsig+sizeof(rrsig_rr_t)-1, (char *)nbuf, sizeof(nbuf)) == -1) {
+	if (ns_name_uncompress(ns_msg_base(*dhandle), ns_msg_end(*dhandle) + 1, rrsig + sizeof(rrsig_rr_t) - 1, (char *)nbuf, sizeof(nbuf)) == -1) {
 		PUSH_ERROR_RESOLVER("ns_name_uncompress");
 		free(hdata);
 		RET_ERROR_INT(ERR_UNSPEC, "could not sign RRSIG: signer name field was invalid");
@@ -318,9 +318,9 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 
 		// TODO: According to RFC 4034, the RRSIG RR must have the same TTL value as the RRSET is covers. This check needs to be added.
 /*		if (0 != ns_rr_ttl(rr)) {
-			_dbgprint(5, "Skipped over RR: did not match ttl of RRSIG [%u] vs [%u]...\n", 0, ns_rr_ttl(rr));
-			continue;
-		} */
+                        _dbgprint(5, "Skipped over RR: did not match ttl of RRSIG [%u] vs [%u]...\n", 0, ns_rr_ttl(rr));
+                        continue;
+                } */
 
 		// We've found a matching RR. Now we have to pack the appropriate fields of it into our signed buffer.
 		// First start with the owner.
@@ -337,7 +337,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 		u16 = htons(ns_rr_class(rr));
 		_mem_append(&hdata, &hlen, (unsigned char *)&u16, sizeof(u16));
 		// The TTL is actually the original TTL taken from the RRSIG record.
-		_mem_append(&hdata, &hlen, (unsigned char *) &(rrsigrr->ottl), 4);
+		_mem_append(&hdata, &hlen, (unsigned char *)&(rrsigrr->ottl), 4);
 		// The second-to-last part of the RR to pack is the rdlength.
 		u16 = htons(ns_rr_rdlen(rr));
 		_mem_append(&hdata, &hlen, (unsigned char *)&u16, sizeof(u16));
@@ -397,10 +397,10 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 
 	if (result == 1) {
 		_dbgprint(1, "Signature verification succeeded (signed = %s, keytag = %u, covered = %u, alg = %u)\n",
-			label, ntohs(rrsigrr->key_tag), ntohs(rrsigrr->covered), rrsigrr->algorithm);
+		          label, ntohs(rrsigrr->key_tag), ntohs(rrsigrr->covered), rrsigrr->algorithm);
 	} else if (!result) {
 		fprintf(stderr, "Signature verification failed (signed = %s, keytag = %u, covered = %u, alg = %u)\n",
-			label, ntohs(rrsigrr->key_tag), ntohs(rrsigrr->covered), rrsigrr->algorithm);
+		        label, ntohs(rrsigrr->key_tag), ntohs(rrsigrr->covered), rrsigrr->algorithm);
 	} else {
 		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "error verifying RRSIG record");
@@ -416,7 +416,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 /**
  * @brief	Load a collection of DNS key(s) from a config file (into the object cache).
  * @note	Any DNSKEY entry loaded from this file will be treated as verified and having final authority.
- * 		This function will fail if there are no root [.] DNSKEY entries supplied in the file.
+ *              This function will fail if there are no root [.] DNSKEY entries supplied in the file.
  * @param	filename	a null-terminated string containing the name of the file containing the DNS key entries.
  * @return	0 if key(s) were successfully loaded from the file or -1 on failure.
  */
@@ -449,8 +449,8 @@ int _load_dnskey_file(const char *filename) {
 			break;
 		}
 
-		if ((slen = strlen(line)) && ((line[slen-1] == '\n') || (line[slen-1] == '\r'))) {
-			line[slen-1] = 0;
+		if ((slen = strlen(line)) && ((line[slen - 1] == '\n') || (line[slen - 1] == '\r'))) {
+			line[slen - 1] = 0;
 		}
 
 		lptr = line;
@@ -519,7 +519,7 @@ int _load_dnskey_file(const char *filename) {
 		for (lptr = optr; *lptr; lptr++) {
 
 			if (chr_isspace(*lptr)) {
-				memmove(lptr, lptr+1, strlen(lptr));
+				memmove(lptr, lptr + 1, strlen(lptr));
 			}
 
 		}
@@ -549,7 +549,7 @@ int _load_dnskey_file(const char *filename) {
 		}
 
 		// The ttl is unlimited and we don't want to save this entry to the cache.
-		if (!(dk = _add_dnskey_entry_rsa (dname, flags, algorithm, pubkey, keytag, rdata, rdlen, 0, 0, 1))) {
+		if (!(dk = _add_dnskey_entry_rsa(dname, flags, algorithm, pubkey, keytag, rdata, rdlen, 0, 0, 1))) {
 			fclose(fp);
 			RET_ERROR_INT(ERR_UNSPEC, "unable to import DNS root key entry");
 		}
@@ -580,12 +580,12 @@ int _load_dnskey_file(const char *filename) {
 /*
  * @brief	Trace a DNSKEY backwards through its DS entry to the root, to see if it is validated.
  * @note	Chain validation works recursively on a starting DNSKEY in the following way:
- * 		1. For each of the DNSKEYs that were used to sign this DNSKEY record,
- * 		   2. For each of the signing DNSKEY's DS records,
- * 		      3. Validate the signing DNSKEY of the DS record.
- * 		In the end, a DNSKEY can only be considered if its validated flag has been set, or
- * 		a key by which it has been signed has also been validated. Only the keys supplied from
- * 		the function _load_dnskey_file() carry the validation flag by default.
+ *              1. For each of the DNSKEYs that were used to sign this DNSKEY record,
+ *                 2. For each of the signing DNSKEY's DS records,
+ *                    3. Validate the signing DNSKEY of the DS record.
+ *              In the end, a DNSKEY can only be considered if its validated flag has been set, or
+ *              a key by which it has been signed has also been validated. Only the keys supplied from
+ *              the function _load_dnskey_file() carry the validation flag by default.
  * @param	dk	a pointer to the DNSKEY to be validated.
  * @return	-1 on general error, 0 if the specified key could not be validated, or 1 if it is.
  */
@@ -644,7 +644,7 @@ int _is_validated_key(dnskey_t *dk) {
  * @see		compuute_sha_hash()
  * @note	This hash value is the data that is used to link a DNSKEY to its corresponding DS record.
  * @note	According to section 5.1.4 of RFC 4034, the digest is taken over the concatenation of:
- * 		the owner name of the DNSKEY record in canonical form, with the DSNKEY rdata appended.
+ *              the owner name of the DNSKEY record in canonical form, with the DSNKEY rdata appended.
  * @param	key	a pointer to the DNSKEY record to be hashed.
  * @param	nbits	the number of bits to be used for the SHA hash (160, 256, or 512).
  * @param	outbuf	a pointer to the output buffer of size nbits bits to receive the DNSKEY hash value.
@@ -664,7 +664,7 @@ int _compute_dnskey_sha_hash(const dnskey_t *key, size_t nbits, unsigned char *o
 		RET_ERROR_INT(ERR_NOMEM, "unable to derive canonical name of DNSKEY owner");
 	}
 
-	if (!_mem_append(&hashbuf, &hlen, (unsigned char *) key->rdata, key->rdlen)) {
+	if (!_mem_append(&hashbuf, &hlen, (unsigned char *)key->rdata, key->rdlen)) {
 		RET_ERROR_INT(ERR_NOMEM, NULL);
 	}
 
@@ -691,11 +691,11 @@ int _compute_dnskey_sha_hash(const dnskey_t *key, size_t nbits, unsigned char *o
  * @param	ttl		the TTL value indicated by the DNSKEY resource record.
  * @param	do_cache	if set, the new object cache entry for this DNSKEY can be persisted to the cache file.
  * @param	forced		if set, this entry will forcibly replace (overshadow) any clashing or matching existing DNSKEY entry
- * 				inside the object cache.
+ *                              inside the object cache.
  * @return	NULL on failure, or a pointer to the new DNSKEY object cache entry on success.
  */
-dnskey_t * _add_dnskey_entry_rsa (const char *label, uint16_t flags, unsigned char algorithm, RSA *pubkey, unsigned int keytag, const unsigned char *rdata,
-	size_t rdlen, unsigned long ttl, unsigned int do_cache, int forced) {
+dnskey_t *_add_dnskey_entry_rsa(const char *label, uint16_t flags, unsigned char algorithm, RSA *pubkey, unsigned int keytag, const unsigned char *rdata,
+                                size_t rdlen, unsigned long ttl, unsigned int do_cache, int forced) {
 
 	// TODO: Some of these parameters are redundant.
 
@@ -711,7 +711,7 @@ dnskey_t * _add_dnskey_entry_rsa (const char *label, uint16_t flags, unsigned ch
 	// The first check: the RFC states that if the zone bit is not set then the key cannot be used to verify RRSIGs over RRsets.
 	if (!(flags & DNSKEY_RR_FLAG_ZK)) {
 		RET_ERROR_PTR(ERR_UNSPEC, "DNSKEY without zone bit cannot be used to verify RRSIGs");
- 	}
+	}
 
 	if (!(dnskey = malloc(sizeof(dnskey_t)))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -792,7 +792,7 @@ dnskey_t * _add_dnskey_entry_rsa (const char *label, uint16_t flags, unsigned ch
  * @param	ttl		the TTL value indicated by the DS resource record.
  * @return	NULL on failure, or a pointer to the new DS object cache entry on success.
  */
-ds_t * _add_ds_entry(const char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl) {
+ds_t *_add_ds_entry(const char *label, unsigned int keytag, unsigned char algorithm, unsigned char digest_type, const unsigned char *digest, size_t dlen, unsigned long ttl) {
 
 	cached_object_t *result;
 	ds_t *ds;
@@ -861,7 +861,7 @@ ds_t * _add_ds_entry(const char *label, unsigned int keytag, unsigned char algor
  * @param	tag		the semi-unique keytag value identifying the target DNSKEY entry.
  * @param	signer		a null-terminated string containing the name of the signing domain that owns the DNSKEY entry.
  * @param	force_lookup	if set, perform a live-lookup of any DNSKEY entry that could not be located by keytag;
- * 				otherwise, lookups will be restricted only to the object cache.
+ *                              otherwise, lookups will be restricted only to the object cache.
  * @return	a pointer to the specified DNSKEY record if it was found, or NULL on error or if it wasn't.
  */
 dnskey_t *_get_dnskey_by_tag(unsigned int tag, const char *signer, int force_lookup) {
@@ -908,7 +908,7 @@ dnskey_t *_get_dnskey_by_tag(unsigned int tag, const char *signer, int force_loo
  * @param	key	a pointer to the DNSKEY record that will be used to find the matching DS record.
  * @return	a pointer to the matching DS record on success or NULL on failure.
  */
-ds_t * _get_ds_by_dnskey(const dnskey_t *key) {
+ds_t *_get_ds_by_dnskey(const dnskey_t *key) {
 
 	ds_t cmp;
 	cached_object_t *obj;
@@ -937,7 +937,7 @@ ds_t * _get_ds_by_dnskey(const dnskey_t *key) {
 		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not map DNSKEY to DS record of unsupported digest type {alg = %u}", key->algorithm);
 	}
 
-	if (_compute_dnskey_sha_hash(key, cmp.diglen*8, hashbuf) < 0) {
+	if (_compute_dnskey_sha_hash(key, cmp.diglen * 8, hashbuf) < 0) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to compute SHA hash of DNSKEY");
 	}
 
@@ -1151,7 +1151,7 @@ void _destroy_ds(ds_t *ds) {
  * @param	ttl	the TTL value indicated by the DNSKEY resource record.
  * @return
  */
-dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t len, unsigned long ttl) {
+dnskey_t *_add_dnskey_entry(const char *label, const unsigned char *buf, size_t len, unsigned long ttl) {
 
 	dnskey_rr_flags_t *rrflags;
 	RSA *pubkey;
@@ -1163,7 +1163,7 @@ dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t
 
 	if (!label || !buf) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else 	if (len <= 4) {
+	} else if (len <= 4) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, "DNSKEY RR length was too short");
 	}
 
@@ -1171,8 +1171,8 @@ dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t
 		RET_ERROR_PTR(ERR_UNSPEC, "could not get tag value for DNSKEY");
 	}
 
-	rrflags = (dnskey_rr_flags_t *) buf;
-	flags = (uint16_t *) rrflags;
+	rrflags = (dnskey_rr_flags_t *)buf;
+	flags = (uint16_t *)rrflags;
 	bptr += 2;
 	proto = *bptr++;
 	alg = *bptr++;
@@ -1194,12 +1194,12 @@ dnskey_t * _add_dnskey_entry(const char *label, const unsigned char *buf, size_t
 
 	_dbgprint(3, "  flags reserved1 = %u, zk = %u, reserved2 = %u, sep = %u\n", rrflags->reserved1, rrflags->zone_key, rrflags->reserved2, rrflags->sep);
 
-	if (!(pubkey = _get_rsa_dnskey(bptr, len-4))) {
+	if (!(pubkey = _get_rsa_dnskey(bptr, len - 4))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to extract public key from DNSKEY RR");
 	}
 
 	// TODO: Should this really be called from here?
-	if (!(result = _add_dnskey_entry_rsa (label, ntohs(*flags), alg, pubkey, keytag, buf, len, ttl, 1, 0))) {
+	if (!(result = _add_dnskey_entry_rsa(label, ntohs(*flags), alg, pubkey, keytag, buf, len, ttl, 1, 0))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to add DNSKEY entry to cache");
 	}
 
@@ -1234,7 +1234,7 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 	rdleft -= sizeof(rrsig_rr_t) - 1;
 	strptr += sizeof(rrsig_rr_t) - 1;
 
-	rrsig = (rrsig_rr_t *) rdata;
+	rrsig = (rrsig_rr_t *)rdata;
 
 	if (rrsig->covered != htons(covered)) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "RRSIG record did not cover correct right resource type {got %u, expected %u}", ntohs(rrsig->covered), covered);
@@ -1245,8 +1245,8 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 
 	timestr = _get_chr_date(ntohl(rrsig->inception), 1);
 	_dbgprint(3, "  algorithm: %u, covered: %u, labels: %u, Original ttl: %d, key tag: %d, expiration: %s, inception: %s\n",
-		rrsig->algorithm, ntohs(rrsig->covered), rrsig->labels, ntohl(rrsig->ottl), ntohs(rrsig->key_tag),
-		_get_chr_date(ntohl(rrsig->expiration), 1), timestr ? timestr : "[error]");
+	          rrsig->algorithm, ntohs(rrsig->covered), rrsig->labels, ntohl(rrsig->ottl), ntohs(rrsig->key_tag),
+	          _get_chr_date(ntohl(rrsig->expiration), 1), timestr ? timestr : "[error]");
 	timestr ? free(timestr) : _clear_error_stack();
 
 	if (time(&tnow) == ((time_t)-1)) {
@@ -1266,7 +1266,7 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 
 	memset(nbuf, 0, sizeof(nbuf));
 
-	if ((lsignlen = ns_name_uncompress(ns_msg_base(*dhandle), (unsigned char *) ns_msg_end(*dhandle)+1, (unsigned char *) &(rrsig->signame), nbuf, sizeof(nbuf))) == -1) {
+	if ((lsignlen = ns_name_uncompress(ns_msg_base(*dhandle), (unsigned char *)ns_msg_end(*dhandle) + 1, (unsigned char *)&(rrsig->signame), nbuf, sizeof(nbuf))) == -1) {
 		PUSH_ERROR_RESOLVER("ns_name_uncompress");
 		RET_ERROR_INT(ERR_UNSPEC, "signer name field was invalid");
 	}
@@ -1310,17 +1310,17 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 void _dump_dns_header(ns_msg *handle) {
 
 	_dbgprint(3, "DNS reply header[1] - msg id: %.2x, qr flag: %u, opcode: %u, rcode: %u, aa: %u, ad: %u\n",
-		ns_msg_id(*handle), ns_msg_getflag(*handle, ns_f_qr),	ns_msg_getflag(*handle, ns_f_opcode),
-		ns_msg_getflag(*handle, ns_f_rcode), ns_msg_getflag(*handle, ns_f_aa), ns_msg_getflag(*handle, ns_f_ad));
+	          ns_msg_id(*handle), ns_msg_getflag(*handle, ns_f_qr),   ns_msg_getflag(*handle, ns_f_opcode),
+	          ns_msg_getflag(*handle, ns_f_rcode), ns_msg_getflag(*handle, ns_f_aa), ns_msg_getflag(*handle, ns_f_ad));
 	_dbgprint(3, "DNS reply header[2] - q count: %u, answer count: %u, additional count: %u, ns count: %u\n",
-		ns_msg_count(*handle, ns_s_qd), ns_msg_count(*handle, ns_s_an), ns_msg_count(*handle, ns_s_ar), ns_msg_count(*handle, ns_s_ns));
+	          ns_msg_count(*handle, ns_s_qd), ns_msg_count(*handle, ns_s_an), ns_msg_count(*handle, ns_s_ar), ns_msg_count(*handle, ns_s_ns));
 
 	return;
 }
 
 
 // TODO: needs lots of cleanup. Needs to return values, for one.
-void * _lookup_dnskey(const char *label) {
+void *_lookup_dnskey(const char *label) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1366,7 +1366,7 @@ void * _lookup_dnskey(const char *label) {
 		}
 
 		_dbgprint(2, "Parsing DNSKEY lookup request answer #%u/%u - rr name: [%s], type %u, class %u, ttl %u, rdlen %u\n",
-			i+1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
+		          i + 1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
 		//_dump_buf((char *)ns_rr_rdata(rr), ns_rr_rdlen(rr));
 
 		if ((dnskey = _add_dnskey_entry(ns_rr_name(rr), ns_rr_rdata(rr), ns_rr_rdlen(rr), ns_rr_ttl(rr)))) {
@@ -1434,7 +1434,7 @@ void * _lookup_dnskey(const char *label) {
  * @brief	Lookup the DS record for a specified domain.
  * @param	label	a null-terminated string containing the name of the domain to have its DS record queried.
  */
-void * _lookup_ds(const char *label) {
+void *_lookup_ds(const char *label) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1488,7 +1488,7 @@ void * _lookup_ds(const char *label) {
 		}
 
 		_dbgprint(2, "Parsing DS lookup request answer #%u/%u: rr name: [%s], type %u, class %u, ttl %u, rdlen %u\n",
-			(unsigned int)i+1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
+		          (unsigned int)i + 1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
 		//_dump_buf((char *)ns_rr_rdata(rr), ns_rr_rdlen(rr));
 		//
 
@@ -1497,7 +1497,7 @@ void * _lookup_ds(const char *label) {
 			continue;
 		}
 
-		dsr = (ds_rr_t *) ns_rr_rdata(rr);
+		dsr = (ds_rr_t *)ns_rr_rdata(rr);
 
 		if (dsr->algorithm != NS_ALG_RSASHA1 && dsr->algorithm != NS_ALG_RSASHA256 && dsr->algorithm != NS_ALG_RSASHA512) {
 			_dbgprint(2, "Skipped over DS record; encountered unsupported algorithm: %u\n", dsr->algorithm);
@@ -1514,15 +1514,15 @@ void * _lookup_ds(const char *label) {
 		}
 
 		// Make sure that the digest length (at rdata+4) is exactly as long as it should be
-		if (ns_rr_rdlen(rr) - 4U != hsize/8) {
+		if (ns_rr_rdlen(rr) - 4U != hsize / 8) {
 			_dbgprint(1, "Error: DS record contained a digest of unexpected length.\n");
 			continue;
 		}
 
 		_dbgprint(3, "DS key_tag = %u, algorithm: %u, digest type: %u, rdlen: %u, remainder: %u\n",
-			ntohs(dsr->key_tag), dsr->algorithm, dsr->digest_type, ns_rr_rdlen(rr), ns_rr_rdlen(rr)-4);
+		          ntohs(dsr->key_tag), dsr->algorithm, dsr->digest_type, ns_rr_rdlen(rr), ns_rr_rdlen(rr) - 4);
 
-		if (!(ds = _add_ds_entry(ns_rr_name(rr), ntohs(dsr->key_tag), dsr->algorithm, dsr->digest_type, ns_rr_rdata(rr)+4, (ns_rr_rdlen(rr)-4), ns_rr_ttl(rr)))) {
+		if (!(ds = _add_ds_entry(ns_rr_name(rr), ntohs(dsr->key_tag), dsr->algorithm, dsr->digest_type, ns_rr_rdata(rr) + 4, (ns_rr_rdlen(rr) - 4), ns_rr_ttl(rr)))) {
 			fprintf(stderr, "Error: Unable to generate DS entry for record.\n");
 			dump_error_stack();
 			continue;
@@ -1537,7 +1537,7 @@ void * _lookup_ds(const char *label) {
 			_compute_dnskey_sha_hash(dnskey, hsize, hashbuf);
 
 			// Compare the hashed DNSKEY against the digest field that's 4 bytes into the DS RR.
-			if (memcmp(hashbuf, ns_rr_rdata(rr)+4, hsize/8)) {
+			if (memcmp(hashbuf, ns_rr_rdata(rr) + 4, hsize / 8)) {
 				fprintf(stderr, "Error: DNSKEY hash provided by this DS record did not match up!\n");
 			} else {
 				// Link this DS record to the DNSKEY record that it covers.
@@ -1612,7 +1612,7 @@ void * _lookup_ds(const char *label) {
  *
  *
  */
-char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
+char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1692,7 +1692,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 			continue;
 		}
 
-		_dbgprint(2, "Parsing TXT query answer #%u/%u - rr name: [%s], type %u, class %u, ttl %u, rdlen %u\n", i+1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
+		_dbgprint(2, "Parsing TXT query answer #%u/%u - rr name: [%s], type %u, class %u, ttl %u, rdlen %u\n", i + 1, nanswers, ns_rr_name(rr), ns_rr_type(rr), ns_rr_class(rr), ns_rr_ttl(rr), ns_rr_rdlen(rr));
 
 		rdleft = ns_rr_rdlen(rr);
 		strptr = ns_rr_rdata(rr);
@@ -1725,15 +1725,15 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 
 		} else if (rrtype == ns_t_txt) {
 
-			if (!(result = malloc(rdleft+1))) {
+			if (!(result = malloc(rdleft + 1))) {
 				PUSH_ERROR_SYSCALL("malloc");
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for TXT record answer");
 			}
 
-			memset(result, 0, rdleft+1);
+			memset(result, 0, rdleft + 1);
 
 			while (rdleft) {
-				strsize = *((unsigned char *) strptr++);
+				strsize = *((unsigned char *)strptr++);
 				rdleft--;
 
 				if (strsize > rdleft) {
@@ -1765,7 +1765,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 	}
 
 	for(i = 0; i < nadditional; i++) {
-		_dbgprint(4, "Parsing additional RR #%u/%u ...\n", (unsigned int)i+1, nadditional);
+		_dbgprint(4, "Parsing additional RR #%u/%u ...\n", (unsigned int)i + 1, nadditional);
 
 		if (ns_parserr(&handle, ns_s_ar, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1797,7 +1797,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 
 		_dbgprint(4, "  len = %d, orig ttl = %.8lx, ercode = %.8lx\n", (int)strlen(ns_rr_name(rr)), (long unsigned int)ns_rr_ttl(rr), (long unsigned int)ercode);
 
-		if (!(z	& NS_OPT_DNSSEC_OK)) {
+		if (!(z & NS_OPT_DNSSEC_OK)) {
 			_dbgprint(4, "Skipped over OPT record missing DNSSEC OK flag.\n");
 			continue;
 		}
@@ -1807,7 +1807,7 @@ char * _get_txt_record(const char *qstring, unsigned long *ttl, int *validated) 
 		strptr = ns_rr_rdata(rr);
 
 		while (rdleft) {
-			strsize = *((unsigned char *) strptr++);
+			strsize = *((unsigned char *)strptr++);
 			rdleft--;
 
 			if (strsize > rdleft) {
@@ -1872,7 +1872,7 @@ void _free_mx_records(mx_record_t **mxs) {
  * @param	qstring		a null-terminated string containing the domain name to be queried via DNS.
  * @return	NULL on failure, or a pointer to a null-entry terminated array of mx_record pointers describing the domain on success.
  */
-mx_record_t ** _get_mx_records(const char *qstring) {
+mx_record_t **_get_mx_records(const char *qstring) {
 
 	ns_msg handle;
 	ns_rr rr;
@@ -1918,7 +1918,7 @@ mx_record_t ** _get_mx_records(const char *qstring) {
 	}
 
 	for(i = 0; i < nanswers; i++) {
-		_dbgprint(1, "---\nParsing answer #%u ...\n", (unsigned int)i+1);
+		_dbgprint(1, "---\nParsing answer #%u ...\n", (unsigned int)i + 1);
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1948,7 +1948,7 @@ mx_record_t ** _get_mx_records(const char *qstring) {
 
 		memset(nbuf, 0, sizeof(nbuf));
 
-		if (ns_name_uncompress(ns_msg_base(handle), ns_msg_end(handle)+1, (unsigned char *)strptr, nbuf, sizeof(nbuf)) == -1) {
+		if (ns_name_uncompress(ns_msg_base(handle), ns_msg_end(handle) + 1, (unsigned char *)strptr, nbuf, sizeof(nbuf)) == -1) {
 			PUSH_ERROR_RESOLVER("ns_name_uncompress");
 			RET_ERROR_PTR(ERR_UNSPEC, "could not uncompress name buffer in MX response");
 		}
@@ -1985,13 +1985,13 @@ mx_record_t ** _get_mx_records(const char *qstring) {
 		// Finally, our result set should be sorted by order of priority. A bubble sort will do.
 		rptr = result;
 
-		while (*rptr && *(rptr+1)) {
+		while (*rptr && *(rptr + 1)) {
 
 			// Lower prefs come first.
-			if ((*rptr)->pref > (*(rptr+1))->pref) {
+			if ((*rptr)->pref > (*(rptr + 1))->pref) {
 				oentry = *rptr;
-				*rptr = *(rptr+1);
-				*(rptr+1) = oentry;
+				*rptr = *(rptr + 1);
+				*(rptr + 1) = oentry;
 				rptr = result;
 				continue;
 			}
@@ -2067,7 +2067,7 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 
 	dnskey_t *key = (dnskey_t *)record;
 	ds_t **dsptr;
- 	unsigned char hashbuf[64], h160 = 0, h256 = 0, h512 = 0;
+	unsigned char hashbuf[64], h160 = 0, h256 = 0, h512 = 0;
 	char *signbuf = NULL, dsbuf[32];
 	int ds_count = 0;
 
@@ -2097,8 +2097,8 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 	}
 
 	fprintf(fp, "--- DNSKEY: [%s]: keytag = %u, alg = %u, zone = %u, sep = %u, rdlen = %u, has_ds = %s, signed by %s, validated = %s\n",
-		key->label, key->keytag, key->algorithm, key->is_zone, key->is_sep,
-		(unsigned int)key->rdlen, dsbuf, (signbuf ? signbuf : "[error]"), (_is_validated_key(key) == 1 ? "yes" : "no"));
+	        key->label, key->keytag, key->algorithm, key->is_zone, key->is_sep,
+	        (unsigned int)key->rdlen, dsbuf, (signbuf ? signbuf : "[error]"), (_is_validated_key(key) == 1 ? "yes" : "no"));
 
 	// First check to see if we're attached to any DS records. If so, dump the corresponding hashes.
 	if (key->dse) {
@@ -2116,17 +2116,17 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 	} else {
 
 		switch(key->algorithm) {
-			case NS_ALG_RSASHA1:
-				h160 = 1;
-				break;
-			case NS_ALG_RSASHA256:
-				h256 = 1;
-				break;
-			case NS_ALG_RSASHA512:
-				h512 = 1;
-				break;
-			default:
-				break;
+		case NS_ALG_RSASHA1:
+			h160 = 1;
+			break;
+		case NS_ALG_RSASHA256:
+			h256 = 1;
+			break;
+		case NS_ALG_RSASHA512:
+			h512 = 1;
+			break;
+		default:
+			break;
 		}
 
 	}
@@ -2197,8 +2197,8 @@ void _dump_ds_record_cb(FILE *fp, void *record, int brief) {
 
 	signbuf = _get_signing_key_names(ds->signkeys);
 
- 	fprintf(fp, "--- DS: [%s], alg = %u, digest = %u, keytag = %u, signed by %s, len = %u",
-		ds->label, ds->algorithm, ds->digest_type, ds->keytag, (signbuf ? signbuf : "[error]"), (unsigned int)ds->diglen);
+	fprintf(fp, "--- DS: [%s], alg = %u, digest = %u, keytag = %u, signed by %s, len = %u",
+	        ds->label, ds->algorithm, ds->digest_type, ds->keytag, (signbuf ? signbuf : "[error]"), (unsigned int)ds->diglen);
 
 	if (ds->validated) {
 		fprintf(fp, " [VALIDATED]\n");
@@ -2224,9 +2224,9 @@ void _dump_ds_record_cb(FILE *fp, void *record, int brief) {
  *
  *
  */
-void * _deserialize_ds_record_cb(void *data, size_t len) {
+void *_deserialize_ds_record_cb(void *data, size_t len) {
 
-	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data+len;
+	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data + len;
 	ds_t *result;
 
 	if (!data || !len) {
@@ -2241,11 +2241,11 @@ void * _deserialize_ds_record_cb(void *data, size_t len) {
 	memset(result, 0, sizeof(ds_t));
 
 	if (!_deserialize_string(&(result->label), &dptr, dend) ||
-		!_deserialize_data(&(result->algorithm), &dptr, dend, sizeof(result->algorithm)) ||
-		!_deserialize_data(&(result->digest_type), &dptr, dend, sizeof(result->digest_type)) ||
-		!_deserialize_data((unsigned char *)&(result->keytag), &dptr, dend, sizeof(result->keytag)) ||
-		(!(result->digest = _deserialize_vardata(&dptr, dend, &(result->diglen)))) ||
-		!_deserialize_data(&(result->validated), &dptr, dend, sizeof(result->validated))) {
+	    !_deserialize_data(&(result->algorithm), &dptr, dend, sizeof(result->algorithm)) ||
+	    !_deserialize_data(&(result->digest_type), &dptr, dend, sizeof(result->digest_type)) ||
+	    !_deserialize_data((unsigned char *)&(result->keytag), &dptr, dend, sizeof(result->keytag)) ||
+	    (!(result->digest = _deserialize_vardata(&dptr, dend, &(result->diglen)))) ||
+	    !_deserialize_data(&(result->validated), &dptr, dend, sizeof(result->validated))) {
 		_destroy_ds(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize DS record from persistent cache");
 	}
@@ -2264,9 +2264,9 @@ void * _deserialize_ds_record_cb(void *data, size_t len) {
  *
  *
  */
-void * _serialize_ds_record_cb(void *record, size_t *outlen) {
+void *_serialize_ds_record_cb(void *record, size_t *outlen) {
 
-	ds_t *ds = (ds_t *) record;
+	ds_t *ds = (ds_t *)record;
 	unsigned char *buf = NULL;
 
 	if (!record || !outlen) {
@@ -2276,11 +2276,11 @@ void * _serialize_ds_record_cb(void *record, size_t *outlen) {
 	*outlen = 0;
 
 	if (!_mem_append_serialized_string(&buf, outlen, ds->label) ||
-		!_mem_append(&buf, outlen, &(ds->algorithm), sizeof(ds->algorithm)) ||
-		!_mem_append(&buf, outlen, &(ds->digest_type), sizeof(ds->digest_type)) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(ds->keytag), sizeof(ds->keytag)) ||
-		!_mem_append_serialized(&buf, outlen, ds->digest, ds->diglen) ||
-		!_mem_append(&buf, outlen, &(ds->validated), sizeof(ds->validated))) {
+	    !_mem_append(&buf, outlen, &(ds->algorithm), sizeof(ds->algorithm)) ||
+	    !_mem_append(&buf, outlen, &(ds->digest_type), sizeof(ds->digest_type)) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(ds->keytag), sizeof(ds->keytag)) ||
+	    !_mem_append_serialized(&buf, outlen, ds->digest, ds->diglen) ||
+	    !_mem_append(&buf, outlen, &(ds->validated), sizeof(ds->validated))) {
 		RET_ERROR_PTR(ERR_NOMEM, "unable to deserialize DS record");
 	}
 
@@ -2297,9 +2297,9 @@ void * _serialize_ds_record_cb(void *record, size_t *outlen) {
  *
  *
  */
-void * _deserialize_dnskey_record_cb(void *data, size_t len) {
+void *_deserialize_dnskey_record_cb(void *data, size_t len) {
 
-	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data+len;
+	unsigned char *dptr = (unsigned char *)data, *dend = (unsigned char *)data + len;
 	unsigned char *keydata;
 	dnskey_t *result;
 	size_t olen;
@@ -2316,9 +2316,9 @@ void * _deserialize_dnskey_record_cb(void *data, size_t len) {
 	memset(result, 0, sizeof(dnskey_t));
 
 	if (!_deserialize_string(&(result->label), &dptr, dend) ||
-		!_deserialize_data(&(result->algorithm), &dptr, dend, sizeof(result->algorithm)) ||
-		!_deserialize_data(&(result->is_zone), &dptr, dend, sizeof(result->is_zone)) ||
-		!_deserialize_data(&(result->is_sep), &dptr, dend, sizeof(result->is_sep))) {
+	    !_deserialize_data(&(result->algorithm), &dptr, dend, sizeof(result->algorithm)) ||
+	    !_deserialize_data(&(result->is_zone), &dptr, dend, sizeof(result->is_zone)) ||
+	    !_deserialize_data(&(result->is_sep), &dptr, dend, sizeof(result->is_sep))) {
 		_destroy_dnskey(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize DNSKEY record from persistent cache");
 	}
@@ -2338,7 +2338,7 @@ void * _deserialize_dnskey_record_cb(void *data, size_t len) {
 
 	// We deserialize the rdlen to determine exactly how much rdata we need to read.
 	if (!_deserialize_data((unsigned char *)&(result->keytag), &dptr, dend, sizeof(result->keytag)) ||
-		!_deserialize_data((unsigned char *)&(result->rdlen), &dptr, dend, sizeof(result->rdlen))) {
+	    !_deserialize_data((unsigned char *)&(result->rdlen), &dptr, dend, sizeof(result->rdlen))) {
 		_destroy_dnskey(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize DNSKEY record from persistent cache");
 	}
@@ -2374,13 +2374,13 @@ void * _deserialize_dnskey_record_cb(void *data, size_t len) {
  * @param	outlen	a pointer to a variable that will receive the length of the serialized DNSKEY.
  * @return	a pointer to a newly allocated buffer holding the serialized DNSKEY on success, or NULL on failure.
  */
-void * _serialize_dnskey_record_cb(void *record, size_t *outlen) {
+void *_serialize_dnskey_record_cb(void *record, size_t *outlen) {
 
-	dnskey_t *key = (dnskey_t *) record;
+	dnskey_t *key = (dnskey_t *)record;
 	unsigned char *buf = NULL, *keydata;
 	size_t klen;
 
-	if (!key|| !outlen) {
+	if (!key || !outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	} else if (!key->pubkey) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, "record was missing pubkey");
@@ -2393,14 +2393,14 @@ void * _serialize_dnskey_record_cb(void *record, size_t *outlen) {
 	}
 
 	if (!_mem_append_serialized_string(&buf, outlen, key->label) ||
-		!_mem_append(&buf, outlen, &(key->algorithm), sizeof(key->algorithm)) ||
-		!_mem_append(&buf, outlen, &(key->is_zone), sizeof(key->is_zone)) ||
-		!_mem_append(&buf, outlen, &(key->is_sep), sizeof(key->is_sep)) ||
-		!_mem_append_serialized(&buf, outlen, keydata, klen) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(key->keytag), sizeof(key->keytag)) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(key->rdlen), sizeof(key->rdlen)) ||
-		!_mem_append(&buf, outlen, key->rdata, key->rdlen) ||
-		!_mem_append(&buf, outlen, (unsigned char *)&(key->validated), sizeof(key->validated))) {
+	    !_mem_append(&buf, outlen, &(key->algorithm), sizeof(key->algorithm)) ||
+	    !_mem_append(&buf, outlen, &(key->is_zone), sizeof(key->is_zone)) ||
+	    !_mem_append(&buf, outlen, &(key->is_sep), sizeof(key->is_sep)) ||
+	    !_mem_append_serialized(&buf, outlen, keydata, klen) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(key->keytag), sizeof(key->keytag)) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(key->rdlen), sizeof(key->rdlen)) ||
+	    !_mem_append(&buf, outlen, key->rdata, key->rdlen) ||
+	    !_mem_append(&buf, outlen, (unsigned char *)&(key->validated), sizeof(key->validated))) {
 		free(keydata);
 
 		if (buf) {
@@ -2417,7 +2417,7 @@ void * _serialize_dnskey_record_cb(void *record, size_t *outlen) {
 
 
 // TODO: Will this be use used in the future? For the moment it is not.
-void * _clone_dnskey_record_cb(void *record) {
+void *_clone_dnskey_record_cb(void *record) {
 
 	dnskey_t *result, *original = (dnskey_t *)record;
 
@@ -2452,8 +2452,8 @@ void * _clone_dnskey_record_cb(void *record) {
 	memcpy(result->rdata, original->rdata, result->rdlen);
 
 	if (original->pubkey && (!(result->pubkey = RSAPublicKey_dup(original->pubkey)))) {
-			_destroy_dnskey(result);
-			RET_ERROR_PTR(ERR_UNSPEC, "could not clone DNSKEY RSA key");
+		_destroy_dnskey(result);
+		RET_ERROR_PTR(ERR_UNSPEC, "could not clone DNSKEY RSA key");
 	}
 
 	// We can clone these pointer chains because they consist of lists of shallow copies we don't own.
@@ -2479,22 +2479,22 @@ void * _clone_dnskey_record_cb(void *record) {
 void _fixup_ds_links(void) {
 
 /*	cached_store_t *store = &(cached_stores[cached_data_dnskey]);
-	cached_object_t *ptr = store->head;
-	dnskey_t *key; */
+        cached_object_t *ptr = store->head;
+        dnskey_t *key; */
 
 
 //printf("XXX: fixing up ds links\n");
 
 /*	while (ptr) {
-		key = (dnskey_t *)ptr->data;
+                key = (dnskey_t *)ptr->data;
 
-		if (key && !key->dse) {
-			key->dse = _get_ds_by_dnskey(key);
-			printf("XXX: dse was null, now = %lx [%s]\n", (unsigned long)key->dse, key->label);
-		} else { }
+                if (key && !key->dse) {
+                        key->dse = _get_ds_by_dnskey(key);
+                        printf("XXX: dse was null, now = %lx [%s]\n", (unsigned long)key->dse, key->label);
+                } else { }
 
-		ptr = ptr->next;
-	} */
+                ptr = ptr->next;
+        } */
 
 	return;
 }
@@ -2503,7 +2503,7 @@ void _fixup_ds_links(void) {
 /**
  * @brief	Mark as validated any DNSKEY entries in the object cache that should be but aren't.
  * @note	The retrieval of a new, validated DNSKEY can mean that another DNSKEY in the cache that
- * 		was signed by it will now be validated by virtue of transitivity.
+ *              was signed by it will now be validated by virtue of transitivity.
  * @return	This function returns no value.
  */
 void _fixup_dnskey_validation(void) {
@@ -2527,11 +2527,11 @@ void _fixup_dnskey_validation(void) {
 				if (key->do_cache) {
 					ptr->persists = 1;
 				}
-			// Otherwise it shouldn't be persisted in any case if it's not validated.
+				// Otherwise it shouldn't be persisted in any case if it's not validated.
 			} else {
 				ptr->persists = 0;
 			}
-		// If the key was already validated and it's cacheable, make certain that it is persisted.
+			// If the key was already validated and it's cacheable, make certain that it is persisted.
 		} else if (key && key->validated && key->do_cache) {
 			ptr->persists = 1;
 		}
@@ -2551,7 +2551,7 @@ void _fixup_dnskey_validation(void) {
  *		containing an array of the sorted RR indices.
  * @param	dhandle		the handle of the DNS reply containing the answer RRs to be sorted.
  * @param	ordbuf		a pointer to an array of integers of size nanswers that will be updated to
- * 				contain the new zero-indexed RR indices in proper canonically sorted order.
+ *                              contain the new zero-indexed RR indices in proper canonically sorted order.
  * @param	nanswers	the number of answers in the DNS reply to be sorted (must match dhandle).
  * @return	-1 on error or 0 on success.
  */
@@ -2577,7 +2577,7 @@ int _sort_rrs_canonical(ns_msg *dhandle, int *ordbuf, size_t nanswers) {
 
 	while (i < (nanswers - 1)) {
 
-		if ((ns_parserr(dhandle, ns_s_an, ordbuf[i], &rr1) < 0) || (ns_parserr(dhandle, ns_s_an, ordbuf[i+1], &rr2) < 0))  {
+		if ((ns_parserr(dhandle, ns_s_an, ordbuf[i], &rr1) < 0) || (ns_parserr(dhandle, ns_s_an, ordbuf[i + 1], &rr2) < 0)) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
 			RET_ERROR_INT(ERR_UNSPEC, "encountered error parsing answer for canonical sort");
 		}
@@ -2589,8 +2589,8 @@ int _sort_rrs_canonical(ns_msg *dhandle, int *ordbuf, size_t nanswers) {
 
 		if (_compare_rdata(rrdata1, rrlen1, rrdata2, rrlen2) > 0) {
 			swap = ordbuf[i];
-			ordbuf[i] = ordbuf[i+1];
-			ordbuf[i+1] = swap;
+			ordbuf[i] = ordbuf[i + 1];
+			ordbuf[i + 1] = swap;
 			i = 0;
 		} else {
 			i++;
@@ -2648,9 +2648,9 @@ int _compare_rdata(const unsigned char *rdata1, size_t rdlen1, const unsigned ch
  * @brief	Get the names of a collection of signing DNSKEYs for human display.
  * @param	keys	a pointer to an array of DNSKEY entries to be printed to a human-readable string.
  * @return	NULL on failure, or a pointer to a newly allocated null-terminated string containing the
- * 		DNSKEY collection info on success.
+ *              DNSKEY collection info on success.
  */
-char * _get_signing_key_names(dnskey_t **keys) {
+char *_get_signing_key_names(dnskey_t **keys) {
 
 	dnskey_t **dkptr;
 	char *result = NULL;

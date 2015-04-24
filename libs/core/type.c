@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/type.c
  *
@@ -75,4 +74,3 @@ const char *type(M_TYPE type) {
 
 	return "";
 }
-

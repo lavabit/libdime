@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/thread/thread.c
  *
@@ -60,7 +59,7 @@ int_t thread_launch(pthread_t *thread, void *function, void *data) {
  * @param	data		a pointer to data to be passed to the executed function.
  * @return	NULL on failure, or a pointer to the newly created pthread on success.
  */
-pthread_t * thread_alloc(void *function, void *data) {
+pthread_t *thread_alloc(void *function, void *data) {
 
 	int_t ret;
 	pthread_t *result;

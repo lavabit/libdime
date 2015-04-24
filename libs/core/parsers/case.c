@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/parsers/case.c
  *
@@ -37,7 +36,7 @@ uchr_t lower_chr(uchr_t c) {
  * @param	s	the managed string to be modified.
  * @result	NULL on error, or a pointer to the input managed string, in uppercase.
  */
-stringer_t * upper_st(stringer_t *s) {
+stringer_t *upper_st(stringer_t *s) {
 
 	size_t len;
 	uchr_t *ptr;
@@ -60,7 +59,7 @@ stringer_t * upper_st(stringer_t *s) {
  * @param	s	the managed string to be modified.
  * @result	NULL on error, or a pointer to the input managed string, in lowercase.
  */
-stringer_t * lower_st(stringer_t *s) {
+stringer_t *lower_st(stringer_t *s) {
 
 	size_t len;
 	uchr_t *ptr;

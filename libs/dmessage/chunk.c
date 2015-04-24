@@ -5,7 +5,7 @@
  * @param	type		Specified chunk type.
  * @return	Returns pointer to a dmime_chunk_key_t structure.
 */
-dmime_chunk_key_t * _dmsg_get_chunk_type_key(dmime_chunk_type_t type) {
+dmime_chunk_key_t *_dmsg_get_chunk_type_key(dmime_chunk_type_t type) {
 
 	return &(dmime_chunk_keys[type]);
 }
@@ -27,7 +27,7 @@ int _dmsg_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsign
 	}
 
 	//TODO FIXME use of random number generator, will need some modification in the future for seeding, thread-safety, etc.
-	
+
 	if(_get_random_bytes(&rand, 1)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not generate a random byte");
 	}
@@ -56,7 +56,7 @@ int _dmsg_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsign
  * @param	chunk		Pointer to the dmime chunk. Its type, state and payload size must be initialized.
  * @return	Void pointer to be casted to the appropriate payload structure, NULL on failure.
 */
-void * _dmsg_get_chunk_payload(dmime_message_chunk_t *chunk) {
+void *_dmsg_get_chunk_payload(dmime_message_chunk_t *chunk) {
 
 	dmime_chunk_key_t *key;
 
@@ -86,9 +86,9 @@ void * _dmsg_get_chunk_payload(dmime_message_chunk_t *chunk) {
  * @param	num		number of the desired keyslot.
  * @return	Pointer to the keyslot.
 */
-dmime_keyslot_t * _dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, size_t num){
+dmime_keyslot_t *_dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, size_t num){
 
-	dmime_chunk_key_t * key;
+	dmime_chunk_key_t *key;
 	size_t num_slots;
 
 	if(!chunk || num < 1 || num > 4) {
@@ -105,15 +105,15 @@ dmime_keyslot_t * _dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, s
 
 	switch(key->payload) {
 
-		case PAYLOAD_TYPE_SIGNATURE:
-			return (dmime_keyslot_t *)(&(chunk->data[0]) + ED25519_SIG_SIZE + ((num - 1) * sizeof(dmime_keyslot_t))) ;
-			break;
-		case PAYLOAD_TYPE_STANDARD:
-			return (dmime_keyslot_t *)(&(chunk->data[0]) + _int_no_get_3b(&(chunk->payload_size[0])) + ((num - 1) * sizeof(dmime_keyslot_t)));
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "there are no keyslots for this chunk");
-			break;
+	case PAYLOAD_TYPE_SIGNATURE:
+		return (dmime_keyslot_t *)(&(chunk->data[0]) + ED25519_SIG_SIZE + ((num - 1) * sizeof(dmime_keyslot_t)));
+		break;
+	case PAYLOAD_TYPE_STANDARD:
+		return (dmime_keyslot_t *)(&(chunk->data[0]) + _int_no_get_3b(&(chunk->payload_size[0])) + ((num - 1) * sizeof(dmime_keyslot_t)));
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "there are no keyslots for this chunk");
+		break;
 
 	}
 }
@@ -124,7 +124,7 @@ dmime_keyslot_t * _dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, s
  * @param	chunk		Dmime message chunk to be destroyed.
  * @return	void.
 */
-void	_dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
+void    _dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 
 	if(!chunk) {
 		return;
@@ -145,7 +145,7 @@ void	_dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
  * @param	flags		flags to be set for chunk, only relevant for standard payload chunk types.
  * @return	Pointer to the newly allocated and encoded dmime_message_chunk_t structure.
 */
-dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags) {
+dmime_message_chunk_t *_dmsg_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags) {
 
 	dmime_chunk_key_t *key;
 	void *payload;
@@ -154,13 +154,13 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
 	// serial_size is the size of the serialized result, corresponds to result->serial_size
 	size_t total_size = 0, serial_size = CHUNK_HEADER_SIZE;
 	// payload_size needs to be less than or equal to UNSIGNED_MAX_3_BYTE, corresponds to result->payload_size
-	// data_size is specific only to the standard payload, corresponds to 
+	// data_size is specific only to the standard payload, corresponds to
 	uint32_t payload_size = 0, data_size = 0;
 	unsigned char padbyte = 0;
 	unsigned int num_keyslots = 0, padlen = 0;
-	
-	if(!data || !insize) {	
-	// Currently we do not support chunks with empty payloads TODO
+
+	if(!data || !insize) {
+		// Currently we do not support chunks with empty payloads TODO
 		RET_ERROR_PTR(ERR_BAD_PARAM, "no data provided for the chunk");
 	}
 
@@ -169,7 +169,7 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
 		RET_ERROR_PTR(ERR_UNSPEC, "the input data size is too large");
 	}
 
-	//get the chunk type key	
+	//get the chunk type key
 	if(!((key = _dmsg_get_chunk_type_key(type))->section)) {
 		RET_ERROR_PTR(ERR_UNSPEC, "specified chunk type is invalid");
 	}
@@ -177,41 +177,41 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
 	//switch statement for payload type to determine the payload size, payload size will be finalized after this
 	switch(key->payload) {
 
-		case PAYLOAD_TYPE_SIGNATURE:
-			// check that signature length is appropriate
-			if(insize != ED25519_SIG_SIZE) {
-				RET_ERROR_PTR(ERR_UNSPEC, "provided data does not have correct size to be a signature");
-			}
-			// payload size will be equal to the input size
-			payload_size = insize;
-			break;
-		case PAYLOAD_TYPE_EPHEMERAL:
-			// check that the public encryption key length is appropriate
-			if(insize != EC_PUBKEY_SIZE) {
-				RET_ERROR_PTR(ERR_UNSPEC, "provided data does not have correct size to be a public encryption key");
-			}
-			// payload size will be equal to the input size
-			payload_size = insize;
-			break;
-		case PAYLOAD_TYPE_STANDARD:
-			// calculate padding length and padding byte according to the specified flag
-			if(_dmsg_padlen(insize + 69, flags, &padlen, &padbyte)) {
-				RET_ERROR_PTR(ERR_UNSPEC, "could not calculate padding");
-			}
-			//payload size will be equal to the sum of the following: 
-			//64 bytes for payload signature, 3 bytes for the length, 1 byte for flags, 1 byte for padding byte, input size, padding size
-			payload_size = 69 + insize + padlen;
-			//data size is the input size
-			data_size = insize;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "unsupported payload type");
-			break;
+	case PAYLOAD_TYPE_SIGNATURE:
+		// check that signature length is appropriate
+		if(insize != ED25519_SIG_SIZE) {
+			RET_ERROR_PTR(ERR_UNSPEC, "provided data does not have correct size to be a signature");
+		}
+		// payload size will be equal to the input size
+		payload_size = insize;
+		break;
+	case PAYLOAD_TYPE_EPHEMERAL:
+		// check that the public encryption key length is appropriate
+		if(insize != EC_PUBKEY_SIZE) {
+			RET_ERROR_PTR(ERR_UNSPEC, "provided data does not have correct size to be a public encryption key");
+		}
+		// payload size will be equal to the input size
+		payload_size = insize;
+		break;
+	case PAYLOAD_TYPE_STANDARD:
+		// calculate padding length and padding byte according to the specified flag
+		if(_dmsg_padlen(insize + 69, flags, &padlen, &padbyte)) {
+			RET_ERROR_PTR(ERR_UNSPEC, "could not calculate padding");
+		}
+		//payload size will be equal to the sum of the following:
+		//64 bytes for payload signature, 3 bytes for the length, 1 byte for flags, 1 byte for padding byte, input size, padding size
+		payload_size = 69 + insize + padlen;
+		//data size is the input size
+		data_size = insize;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported payload type");
+		break;
 
 	}
 
 	// if the payload size is greater than the largest number that can be represented by 3 bytes, it's too big
-	if(payload_size >  UNSIGNED_MAX_3_BYTE) {
+	if(payload_size > UNSIGNED_MAX_3_BYTE) {
 		RET_ERROR_PTR(ERR_UNSPEC, "chunk size is too large");
 	}
 
@@ -239,7 +239,7 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
 	memset(result, 0, total_size);
 	result->state = MESSAGE_CHUNK_STATE_NONE;
 	result->serial_size = serial_size;
-	result->type = (unsigned char) type;
+	result->type = (unsigned char)type;
 	_int_no_put_3b(&(result->payload_size[0]), payload_size);
 	result->state = MESSAGE_CHUNK_STATE_CREATION;
 
@@ -249,33 +249,33 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve standard chunk");
 	}
 
-	//this switch statement will encode the data into the chunk	
+	//this switch statement will encode the data into the chunk
 	switch(key->payload) {
-		
-		case PAYLOAD_TYPE_SIGNATURE:
-			// copy the data into the payload
-			memcpy(payload, data, ED25519_SIG_SIZE);
-			break;
-		case PAYLOAD_TYPE_EPHEMERAL:
-			//copy the data into the payload
-			memcpy(payload, data, EC_PUBKEY_SIZE);
-			break;
-		case PAYLOAD_TYPE_STANDARD:
-			//set the data segment 3 byte size
-			_int_no_put_3b(&(((dmime_standard_payload_t *)payload)->data_size[0]), data_size);
-			//set the flags byte
-			((dmime_standard_payload_t *)payload)->flags = flags;
-			//set the pad byte
-			((dmime_standard_payload_t *)payload)->pad_len = padbyte;
-			//copy the data into the payload
-			memcpy(&(((dmime_standard_payload_t *)payload)->data[0]), data, data_size);
-			//pad the payload
-			memset(&(((dmime_standard_payload_t *)payload)->data[data_size]), padbyte, padlen);
-			break;
-		default:
-			_dmsg_destroy_message_chunk(result);
-			RET_ERROR_PTR(ERR_UNSPEC, "unsupported payload type");
-			break;
+
+	case PAYLOAD_TYPE_SIGNATURE:
+		// copy the data into the payload
+		memcpy(payload, data, ED25519_SIG_SIZE);
+		break;
+	case PAYLOAD_TYPE_EPHEMERAL:
+		//copy the data into the payload
+		memcpy(payload, data, EC_PUBKEY_SIZE);
+		break;
+	case PAYLOAD_TYPE_STANDARD:
+		//set the data segment 3 byte size
+		_int_no_put_3b(&(((dmime_standard_payload_t *)payload)->data_size[0]), data_size);
+		//set the flags byte
+		((dmime_standard_payload_t *)payload)->flags = flags;
+		//set the pad byte
+		((dmime_standard_payload_t *)payload)->pad_len = padbyte;
+		//copy the data into the payload
+		memcpy(&(((dmime_standard_payload_t *)payload)->data[0]), data, data_size);
+		//pad the payload
+		memset(&(((dmime_standard_payload_t *)payload)->data[data_size]), padbyte, padlen);
+		break;
+	default:
+		_dmsg_destroy_message_chunk(result);
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported payload type");
+		break;
 
 	}
 
@@ -293,7 +293,7 @@ dmime_message_chunk_t *	_dmsg_create_message_chunk(dmime_chunk_type_t type, cons
  * @param	read		Stores number of bytes read for this chunk.
  * @return	Pointer to a Dmime message chunk object in encrypted state, NULL on error.
 */
-dmime_message_chunk_t * _dmsg_deserialize_chunk(const unsigned char *in, size_t insize, size_t *read) {
+dmime_message_chunk_t *_dmsg_deserialize_chunk(const unsigned char *in, size_t insize, size_t *read) {
 
 	dmime_chunk_key_t *key;
 	dmime_chunk_type_t type;
@@ -305,7 +305,7 @@ dmime_message_chunk_t * _dmsg_deserialize_chunk(const unsigned char *in, size_t 
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	type = (dmime_chunk_type_t) in[0];
+	type = (dmime_chunk_type_t)in[0];
 
 	if(!((key = _dmsg_get_chunk_type_key(type))->section)) {
 		RET_ERROR_PTR(ERR_UNSPEC, "chunk type is invalid");
@@ -313,9 +313,9 @@ dmime_message_chunk_t * _dmsg_deserialize_chunk(const unsigned char *in, size_t 
 
 	payload_size = _int_no_get_3b((void *)(in + 1));
 
-	num_keyslots = key->auth_keyslot + key->orig_keyslot+ key->dest_keyslot + key->recp_keyslot;
+	num_keyslots = key->auth_keyslot + key->orig_keyslot + key->dest_keyslot + key->recp_keyslot;
 	// total number of bytes to be read:
-	if((serial_size = CHUNK_HEADER_SIZE + payload_size + num_keyslots*sizeof(dmime_keyslot_t)) > insize) {
+	if((serial_size = CHUNK_HEADER_SIZE + payload_size + num_keyslots * sizeof(dmime_keyslot_t)) > insize) {
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input or chunk size");
 	}
 
@@ -349,7 +349,7 @@ dmime_message_chunk_t * _dmsg_deserialize_chunk(const unsigned char *in, size_t 
  * @param	insize		Length of input payload.
  * @return	An allocated and encoded dmime message chunk.
  */
-dmime_message_chunk_t * _dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsigned char *payload, size_t insize) {
+dmime_message_chunk_t *_dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsigned char *payload, size_t insize) {
 
 	dmime_chunk_key_t *key;
 	dmime_message_chunk_t *result;
@@ -379,7 +379,7 @@ dmime_message_chunk_t * _dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsign
 	num_keyslots = key->auth_keyslot + key->orig_keyslot + key->dest_keyslot + key->recp_keyslot;
 	serial_size = CHUNK_HEADER_SIZE + insize + num_keyslots * sizeof(dmime_keyslot_t);
 	total_size = serial_size + sizeof(dmime_message_chunk_state_t) + sizeof(size_t);
-	
+
 	if(!(result = malloc(total_size))) {
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for message chunk");
 	}
@@ -397,7 +397,7 @@ dmime_message_chunk_t * _dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsign
 		result->state = MESSAGE_CHUNK_STATE_ENCODED;
 	}
 
-	return result;	
+	return result;
 }
 
 /*
@@ -406,8 +406,8 @@ dmime_message_chunk_t * _dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsign
  * @param	chunk		Pointer to a chunk from which the data is copied.
  * @param	outsize		Stores the length of chunk data.
  * @return	Pointer to the chunk data.
- */ 
-unsigned char * _dmsg_get_chunk_data(dmime_message_chunk_t *chunk, size_t *outsize) {
+ */
+unsigned char *_dmsg_get_chunk_data(dmime_message_chunk_t *chunk, size_t *outsize) {
 
 	dmime_chunk_key_t *key;
 	size_t size;
@@ -428,37 +428,37 @@ unsigned char * _dmsg_get_chunk_data(dmime_message_chunk_t *chunk, size_t *outsi
 
 	switch(key->payload) {
 
-		case PAYLOAD_TYPE_EPHEMERAL:
-			result = &(chunk->data[0]);
+	case PAYLOAD_TYPE_EPHEMERAL:
+		result = &(chunk->data[0]);
 
-			if((size = _int_no_get_3b(&(chunk->payload_size[0]))) != EC_PUBKEY_SIZE) {
-				RET_ERROR_PTR(ERR_UNSPEC, "the ephemeral chunk contains data of invalid size");
-			}
+		if((size = _int_no_get_3b(&(chunk->payload_size[0]))) != EC_PUBKEY_SIZE) {
+			RET_ERROR_PTR(ERR_UNSPEC, "the ephemeral chunk contains data of invalid size");
+		}
 
-			break;
-		case PAYLOAD_TYPE_SIGNATURE:
-			result = &(chunk->data[0]);
+		break;
+	case PAYLOAD_TYPE_SIGNATURE:
+		result = &(chunk->data[0]);
 
-			if((size = _int_no_get_3b(&(chunk->payload_size[0]))) != ED25519_SIG_SIZE) {
-				RET_ERROR_PTR(ERR_UNSPEC, "the signature chunk contains data of invalid size");
-			}
+		if((size = _int_no_get_3b(&(chunk->payload_size[0]))) != ED25519_SIG_SIZE) {
+			RET_ERROR_PTR(ERR_UNSPEC, "the signature chunk contains data of invalid size");
+		}
 
+		size = _int_no_get_3b(&(chunk->payload_size[0]));
+		break;
+	case PAYLOAD_TYPE_STANDARD:
+
+		if(chunk->state == MESSAGE_CHUNK_STATE_ENCRYPTED) {
+			result = (unsigned char *)payload;
 			size = _int_no_get_3b(&(chunk->payload_size[0]));
-			break;
-		case PAYLOAD_TYPE_STANDARD:
+		} else {
+			result = &(((dmime_standard_payload_t *)payload)->data[0]);
+			size = _int_no_get_3b(&(((dmime_standard_payload_t *)payload)->data_size[0]));
+		}
 
-			if(chunk->state == MESSAGE_CHUNK_STATE_ENCRYPTED) {
-				result = (unsigned char *)payload;
-				size = _int_no_get_3b(&(chunk->payload_size[0]));
-			} else {
-				result = &(((dmime_standard_payload_t *)payload)->data[0]);
-				size = _int_no_get_3b(&(((dmime_standard_payload_t *)payload)->data_size[0]));
-			}
-
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk type");
-			break;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk type");
+		break;
 
 	}
 
@@ -475,7 +475,7 @@ unsigned char * _dmsg_get_chunk_data(dmime_message_chunk_t *chunk, size_t *outsi
  * @param	outsize		The size of the returned buffer.
  * @return	Pointer to the chunk data (does not allocate new memory).
  */
-unsigned char * _dmsg_get_chunk_padded_data(dmime_message_chunk_t *chunk, size_t *outsize) {
+unsigned char *_dmsg_get_chunk_padded_data(dmime_message_chunk_t *chunk, size_t *outsize) {
 
 	dmime_chunk_key_t *key;
 	size_t size;
@@ -496,25 +496,25 @@ unsigned char * _dmsg_get_chunk_padded_data(dmime_message_chunk_t *chunk, size_t
 
 	switch(key->payload) {
 
-		case PAYLOAD_TYPE_EPHEMERAL:
-		case PAYLOAD_TYPE_SIGNATURE:
-			result = &(chunk->data[0]);
+	case PAYLOAD_TYPE_EPHEMERAL:
+	case PAYLOAD_TYPE_SIGNATURE:
+		result = &(chunk->data[0]);
+		size = _int_no_get_3b(&(chunk->payload_size[0]));
+		break;
+	case PAYLOAD_TYPE_STANDARD:
+
+		if(chunk->state == MESSAGE_CHUNK_STATE_ENCRYPTED) {
+			result = (unsigned char *)payload;
 			size = _int_no_get_3b(&(chunk->payload_size[0]));
-			break;
-		case PAYLOAD_TYPE_STANDARD:
+		} else {
+			result = &(((dmime_standard_payload_t *)payload)->data_size[0]);
+			size = _int_no_get_3b(&(chunk->payload_size[0])) - ED25519_SIG_SIZE;
+		}
 
-			if(chunk->state == MESSAGE_CHUNK_STATE_ENCRYPTED) {
-				result = (unsigned char *)payload;
-				size = _int_no_get_3b(&(chunk->payload_size[0]));
-			} else {
-				result = &(((dmime_standard_payload_t *)payload)->data_size[0]);
-				size = _int_no_get_3b(&(chunk->payload_size[0])) - ED25519_SIG_SIZE;
-			}
-
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk type");
-			break;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk type");
+		break;
 	}
 
 	*outsize = size;
@@ -529,7 +529,7 @@ unsigned char * _dmsg_get_chunk_padded_data(dmime_message_chunk_t *chunk, size_t
  * @param	chunk		Pointer to the dmime message chunk with standard payload type from which the signature will be retrieved.
  * @return	Pointer to the plaintext signature.
  */
-unsigned char * _dmsg_get_chunk_plaintext_sig(dmime_message_chunk_t *chunk) {
+unsigned char *_dmsg_get_chunk_plaintext_sig(dmime_message_chunk_t *chunk) {
 
 	dmime_chunk_key_t *key;
 	unsigned char *result;

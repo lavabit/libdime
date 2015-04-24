@@ -2,11 +2,11 @@
 #include <common/error.h>
 
 int crypto_init(void) {
-	PUBLIC_FUNC_IMPL(crypto_init,);
+	PUBLIC_FUNC_IMPL(crypto_init, );
 }
 
 void crypto_shutdown(void) {
-	PUBLIC_FUNC_IMPL_VOID(crypto_shutdown,);
+	PUBLIC_FUNC_IMPL_VOID(crypto_shutdown, );
 }
 
 int verify_ec_signature(const unsigned char *hash, size_t hlen, const unsigned char *sig, size_t slen, EC_KEY *key) {
@@ -17,39 +17,39 @@ int verify_ec_sha_signature(const unsigned char *data, size_t dlen, unsigned int
 	PUBLIC_FUNC_IMPL(verify_ec_sha_signature, data, dlen, shabits, sig, slen, key);
 }
 
-unsigned char * ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *key, size_t *siglen) {
+unsigned char *ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *key, size_t *siglen) {
 	PUBLIC_FUNC_IMPL(ec_sign_data, hash, hlen, key, siglen);
 }
 
-unsigned char * ec_sign_sha_data(const unsigned char *data, size_t dlen, unsigned int shabits, EC_KEY *key, size_t *siglen) {
+unsigned char *ec_sign_sha_data(const unsigned char *data, size_t dlen, unsigned int shabits, EC_KEY *key, size_t *siglen) {
 	PUBLIC_FUNC_IMPL(ec_sign_sha_data, data, dlen, shabits, key, siglen);
 }
 
-unsigned char * serialize_ec_pubkey(EC_KEY *key, size_t *outsize) {
+unsigned char *serialize_ec_pubkey(EC_KEY *key, size_t *outsize) {
 	PUBLIC_FUNC_IMPL(serialize_ec_pubkey, key, outsize);
 }
 
-EC_KEY * deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signing) {
+EC_KEY *deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signing) {
 	PUBLIC_FUNC_IMPL(deserialize_ec_pubkey, buf, blen, signing);
 }
 
-unsigned char * serialize_ec_privkey(EC_KEY *key, size_t *outsize) {
+unsigned char *serialize_ec_privkey(EC_KEY *key, size_t *outsize) {
 	PUBLIC_FUNC_IMPL(serialize_ec_privkey, key, outsize);
 }
 
-EC_KEY * deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signing) {
+EC_KEY *deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signing) {
 	PUBLIC_FUNC_IMPL(deserialize_ec_privkey, buf, blen, signing);
 }
 
-EC_KEY * load_ec_privkey(const char *filename) {
+EC_KEY *load_ec_privkey(const char *filename) {
 	PUBLIC_FUNC_IMPL(load_ec_privkey, filename);
 }
 
-EC_KEY * load_ec_pubkey(const char *filename) {
+EC_KEY *load_ec_pubkey(const char *filename) {
 	PUBLIC_FUNC_IMPL(load_ec_pubkey, filename);
 }
 
-EC_KEY * generate_ec_keypair(int signing) {
+EC_KEY *generate_ec_keypair(int signing) {
 	PUBLIC_FUNC_IMPL(generate_ec_keypair, signing);
 }
 
@@ -57,8 +57,8 @@ void free_ec_key(EC_KEY *key) {
 	PUBLIC_FUNC_IMPL_VOID(free_ec_key, key);
 }
 
-ED25519_KEY * generate_ed25519_keypair(void) {
-	PUBLIC_FUNC_IMPL(generate_ed25519_keypair,);
+ED25519_KEY *generate_ed25519_keypair(void) {
+	PUBLIC_FUNC_IMPL(generate_ed25519_keypair, );
 }
 
 int ed25519_sign_data(const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf) {
@@ -73,11 +73,11 @@ void free_ed25519_key(ED25519_KEY *key) {
 	PUBLIC_FUNC_IMPL_VOID(free_ed25519_key, key);
 }
 
-ED25519_KEY * load_ed25519_privkey(const char *filename) {
+ED25519_KEY *load_ed25519_privkey(const char *filename) {
 	PUBLIC_FUNC_IMPL(load_ed25519_privkey, filename);
 }
 
-void * ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
+void *ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
 	PUBLIC_FUNC_IMPL(ecies_env_derivation, input, ilen, output, olen);
 }
 

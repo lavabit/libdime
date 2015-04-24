@@ -1,8 +1,7 @@
-
 /**
  * @file /magma/core/buckets/arrays.c
  *
- * @brief 	A collection of functions used to create, maintain and safely utilize arrays of pointers.
+ * @brief       A collection of functions used to create, maintain and safely utilize arrays of pointers.
  *
  * $Author$
  * $Date$
@@ -17,7 +16,7 @@
  * @param	size	the number of elements the array is capable of holding.
  * @result	NULL on failure, or a pointer to the newly allocated array on success.
  */
-array_t * ar_alloc(size_t size) {
+array_t *ar_alloc(size_t size) {
 
 	array_t *result;
 
@@ -43,7 +42,7 @@ array_t * ar_alloc(size_t size) {
 	}
 	else {
 		log_error("We were unable to allocate an array of %zu elements totaling %zu bytes.", size, sizeof(size_t) + sizeof(size_t) +
-			(size * (sizeof(uint32_t) + sizeof(void *))));
+		          (size * (sizeof(uint32_t) + sizeof(void *))));
 	}
 
 	return result;
@@ -90,7 +89,7 @@ size_t ar_length_get(array_t *array) {
 /*
  * @brief	Get the data type for a specified element in an array.
  * @note	Valid array types include ARRAY_TYPE_ARRAY, ARRAY_TYPE_STRINGER, ARRAY_TYPE_SIZER, ARRAY_TYPE_NULLER,
- * 			ARRAY_TYPE_PLACER, and ARRAY_TYPE_POINTER.
+ *                      ARRAY_TYPE_PLACER, and ARRAY_TYPE_POINTER.
  * @param	array	a pointer to the array to be examined.
  * @param	element	the index of the element in the array to be queried.
  * @return	the type of the specified array element, or ARRAY_TYPE_EMPTY on failure.
@@ -127,7 +126,7 @@ uint32_t ar_field_type(array_t *array, size_t element) {
  * @element	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a managed string with the element's data on success.
  */
-stringer_t * ar_field_st(array_t *array, size_t element) {
+stringer_t *ar_field_st(array_t *array, size_t element) {
 
 	stringer_t *result;
 
@@ -156,7 +155,7 @@ stringer_t * ar_field_st(array_t *array, size_t element) {
  * @element	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a null-terminated string with the element's data on success.
  */
-chr_t * ar_field_ns(array_t *array, size_t element) {
+chr_t *ar_field_ns(array_t *array, size_t element) {
 
 	chr_t *result;
 
@@ -185,7 +184,7 @@ chr_t * ar_field_ns(array_t *array, size_t element) {
  * @element	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to an array object with the element's data on success.
  */
-array_t * ar_field_ar(array_t *array, size_t element) {
+array_t *ar_field_ar(array_t *array, size_t element) {
 
 	array_t *result;
 
@@ -214,7 +213,7 @@ array_t * ar_field_ar(array_t *array, size_t element) {
  * @element	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a placer with the element's data on success.
  */
-placer_t * ar_field_pl(array_t *array, size_t element) {
+placer_t *ar_field_pl(array_t *array, size_t element) {
 
 	placer_t *result;
 
@@ -243,7 +242,7 @@ placer_t * ar_field_pl(array_t *array, size_t element) {
  * @element	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a generic pointer to the element's data on success.
  */
-void * ar_field_ptr(array_t *array, size_t element) {
+void *ar_field_ptr(array_t *array, size_t element) {
 
 	void *result;
 
@@ -414,7 +413,7 @@ void ar_free(array_t *array) {
  * @param	array	a pointer to the array to be copied.
  * @return	NULL on failure, or a pointer to the new copy of the array on success.
  */
-array_t * ar_dupe(array_t *array) {
+array_t *ar_dupe(array_t *array) {
 
 	size_t size;
 	uint32_t type;

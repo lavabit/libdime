@@ -83,7 +83,7 @@ int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen) {
 		RET_ERROR_INT(ERR_UNSPEC, "unable to get socket blocking mode");
 	}
 
-	if (fcntl(fd, F_SETFL, oflags|O_NONBLOCK) < 0) {
+	if (fcntl(fd, F_SETFL, oflags | O_NONBLOCK) < 0) {
 		PUSH_ERROR_SYSCALL("fcntl");
 		RET_ERROR_INT(ERR_UNSPEC, "unable to set non-blocking mode on socket");
 	}
@@ -99,20 +99,20 @@ int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen) {
 		RET_ERROR_INT(ERR_UNSPEC, "unable to establish connection to host");
 	}
 
-	switch (select(fd+1, NULL, &fds, NULL, &tv)) {
+	switch (select(fd + 1, NULL, &fds, NULL, &tv)) {
 
-		case -1:
-			PUSH_ERROR_SYSCALL("select");
-			RET_ERROR_INT(ERR_UNSPEC, "select operation on socket failed");
-			break;
-		case 0:
-			return 0;
-			break;
-		case 1:
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "select operation returned an unexpected value");
-			break;
+	case -1:
+		PUSH_ERROR_SYSCALL("select");
+		RET_ERROR_INT(ERR_UNSPEC, "select operation on socket failed");
+		break;
+	case 0:
+		return 0;
+		break;
+	case 1:
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "select operation returned an unexpected value");
+		break;
 
 	}
 

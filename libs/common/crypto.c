@@ -28,8 +28,8 @@ int _crypto_init(void) {
 	// via an external provider other than openssl.
 /*	if (!(_signing_group = EC_GROUP_new_by_curve_name(EC_SIGNING_CURVE))) {
  *		PUSH_ERROR_OPENSSL();
-		RET_ERROR_INT(ERR_UNSPEC, "could not initialize signing curve");
-	} */
+                RET_ERROR_INT(ERR_UNSPEC, "could not initialize signing curve");
+        } */
 
 	if (!(_encryption_group = EC_GROUP_new_by_curve_name(EC_ENCRYPT_CURVE))) {
 		PUSH_ERROR_OPENSSL();
@@ -85,7 +85,7 @@ int _verify_ec_signature(const unsigned char *hash, size_t hlen, const unsigned 
 	ECDSA_SIG *ec_sig;
 	int result;
 
-	if (!hash|| !hlen || !sig || !slen || !key) {
+	if (!hash || !hlen || !sig || !slen || !key) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
@@ -130,7 +130,7 @@ int _verify_ec_sha_signature(const unsigned char *data, size_t dlen, unsigned in
 		RET_ERROR_INT(ERR_UNSPEC, "unable to compute SHA hash for ECDSA signature verification operation");
 	}
 
-	return (_verify_ec_signature(hashbuf, shabits/8, sig, slen, key));
+	return (_verify_ec_signature(hashbuf, shabits / 8, sig, slen, key));
 }
 
 
@@ -142,13 +142,13 @@ int _verify_ec_sha_signature(const unsigned char *data, size_t dlen, unsigned in
  * @param	siglen	a pointer to a variable that will receive the length of the data signature buffer on success.
  * @return	NULL on failure, or a pointer to the newly allocated signature data buffer on success.
  */
-unsigned char * _ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *key, size_t *siglen) {
+unsigned char *_ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *key, size_t *siglen) {
 
 	ECDSA_SIG *signature;
 	unsigned char *buf = NULL;
 	int bsize;
 
-	if (!hash|| !hlen || !key || !siglen) {
+	if (!hash || !hlen || !key || !siglen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
@@ -180,7 +180,7 @@ unsigned char * _ec_sign_data(const unsigned char *hash, size_t hlen, EC_KEY *ke
  * @param	siglen	a pointer to a variable that will receive the length of the data signature buffer on success.
  * @return	NULL on failure, or a pointer to the newly allocated signature data buffer on success.
  */
-unsigned char * _ec_sign_sha_data(const unsigned char *data, size_t dlen, unsigned int shabits, EC_KEY *key, size_t *siglen) {
+unsigned char *_ec_sign_sha_data(const unsigned char *data, size_t dlen, unsigned int shabits, EC_KEY *key, size_t *siglen) {
 
 	unsigned char hashbuf[SHA_512_SIZE];
 
@@ -194,7 +194,7 @@ unsigned char * _ec_sign_sha_data(const unsigned char *data, size_t dlen, unsign
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to compute SHA hash for ECDSA signature operation");
 	}
 
-	return (_ec_sign_data(hashbuf, shabits/8, key, siglen));
+	return (_ec_sign_data(hashbuf, shabits / 8, key, siglen));
 }
 
 
@@ -204,7 +204,7 @@ unsigned char * _ec_sign_sha_data(const unsigned char *data, size_t dlen, unsign
  * @param	outsize	a pointer to a variable that will receive the length of the serialized key on success.
  * @return	a pointer to the serialized EC public key on success, or NULL on failure.
  */
-unsigned char * _serialize_ec_pubkey(EC_KEY *key, size_t *outsize) {
+unsigned char *_serialize_ec_pubkey(EC_KEY *key, size_t *outsize) {
 
 	unsigned char *buf = NULL;
 	int bsize;
@@ -229,10 +229,10 @@ unsigned char * _serialize_ec_pubkey(EC_KEY *key, size_t *outsize) {
  * @param	buf	a pointer to the buffer holding the EC public key in binary format.
  * @param	blen	the length, in bytes, of the buffer holding the EC public key.
  * @param	signing	if set, generate a key from the pre-defined EC signing curve;
- * 			if zero, the default encryption curve will be used instead.
+ *                      if zero, the default encryption curve will be used instead.
  * @return	a pointer to the deserialized EC public key on success, or NULL on failure.
  */
-EC_KEY * _deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signing) {
+EC_KEY *_deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signing) {
 
 	EC_KEY *result;
 	int nid;
@@ -272,7 +272,7 @@ EC_KEY * _deserialize_ec_pubkey(const unsigned char *buf, size_t blen, int signi
  * @param	outsize	a pointer to a variable that will receive the length of the serialized key on success.
  * @return	a pointer to the serialized EC private key on success, or NULL on failure.
  */
-unsigned char * _serialize_ec_privkey(EC_KEY *key, size_t *outsize) {
+unsigned char *_serialize_ec_privkey(EC_KEY *key, size_t *outsize) {
 
 	unsigned char *buf = NULL;
 	int bsize;
@@ -297,10 +297,10 @@ unsigned char * _serialize_ec_privkey(EC_KEY *key, size_t *outsize) {
  * @param	buf	a pointer to the buffer holding the EC private key in binary format.
  * @param	blen	the length, in bytes, of the buffer holding the EC private key.
  * @param	signing	if set, generate a key from the pre-defined EC signing curve;
- * 			if zero, the default encryption curve will be used instead.
+ *                      if zero, the default encryption curve will be used instead.
  * @return	a pointer to the deserialized EC private key on success, or NULL on failure.
  */
-EC_KEY * _deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signing) {
+EC_KEY *_deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signing) {
 
 	EC_KEY *result;
 	int nid;
@@ -353,78 +353,78 @@ EC_KEY * _deserialize_ec_privkey(const unsigned char *buf, size_t blen, int sign
 EC_KEY * _load_ec_privkey(const char *filename, const EC_GROUP **gptr) {
 
 
-	EC_KEY *result;
-	BIO *bio;
+        EC_KEY *result;
+        BIO *bio;
 
-	if (!filename || !gptr) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	}
+        if (!filename || !gptr) {
+                RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+        }
 
-	if (!(bio = BIO_new(BIO_s_file()))) {
-		PUSH_ERROR_OPENSSL();
-		RET_ERROR_PTR(ERR_UNSPEC, NULL);
-	}
+        if (!(bio = BIO_new(BIO_s_file()))) {
+                PUSH_ERROR_OPENSSL();
+                RET_ERROR_PTR(ERR_UNSPEC, NULL);
+        }
 
-	if ((BIO_read_filename(bio, filename)) != 1) {
-		PUSH_ERROR_OPENSSL();
-		BIO_free(bio);
-		RET_ERROR_PTR(ERR_UNSPEC, "unable to read contents of EC private keyfile");
-	}
+        if ((BIO_read_filename(bio, filename)) != 1) {
+                PUSH_ERROR_OPENSSL();
+                BIO_free(bio);
+                RET_ERROR_PTR(ERR_UNSPEC, "unable to read contents of EC private keyfile");
+        }
 
-	if (!(result = PEM_read_bio_ECPrivateKey(bio, NULL, NULL, NULL))) {
-		PUSH_ERROR_OPENSSL();
-		BIO_free(bio);
-		RET_ERROR_PTR(ERR_UNSPEC, "unable to read EC private keyfile data");
-	}
+        if (!(result = PEM_read_bio_ECPrivateKey(bio, NULL, NULL, NULL))) {
+                PUSH_ERROR_OPENSSL();
+                BIO_free(bio);
+                RET_ERROR_PTR(ERR_UNSPEC, "unable to read EC private keyfile data");
+        }
 
-	BIO_free(bio);
+        BIO_free(bio);
 
-	if (gptr && (!(*gptr = EC_KEY_get0_group(result)))) {
-		PUSH_ERROR_OPENSSL();
-		EC_KEY_free(result);
-		RET_ERROR_PTR(ERR_UNSPEC, "unable to get group for EC private key");
-	}
+        if (gptr && (!(*gptr = EC_KEY_get0_group(result)))) {
+                PUSH_ERROR_OPENSSL();
+                EC_KEY_free(result);
+                RET_ERROR_PTR(ERR_UNSPEC, "unable to get group for EC private key");
+        }
 
-	return result;
+        return result;
 */
 
 /**
- * @brief 	Load an EC private key from a file.
- * @param 	filename	the name of the filename from which the key should be loaded
+ * @brief       Load an EC private key from a file.
+ * @param       filename	the name of the filename from which the key should be loaded
  * @return	result		a pointer to the deserialized private key from the the file.
  */
-EC_KEY * _load_ec_privkey(const char *filename) {
+EC_KEY *_load_ec_privkey(const char *filename) {
 
-		char *filedata;
-		unsigned char *bin;
-		size_t size;
-		EC_KEY *result;
+	char *filedata;
+	unsigned char *bin;
+	size_t size;
+	EC_KEY *result;
 
-		if(!filename) {
-			RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-		}
+	if(!filename) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
 
-		if(!(filedata = _read_pem_data(filename, "EC PRIVATE KEY", 1))) {
-			RET_ERROR_PTR(ERR_UNSPEC, "could not read ec pubkey pem file");
-		}
+	if(!(filedata = _read_pem_data(filename, "EC PRIVATE KEY", 1))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not read ec pubkey pem file");
+	}
 
-		if(!(bin = _b64decode(filedata, strlen(filedata), &size))) {
-			RET_ERROR_PTR(ERR_UNSPEC, "could not decide b64 data");
-		}
+	if(!(bin = _b64decode(filedata, strlen(filedata), &size))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not decide b64 data");
+	}
 
-		if(!(result = _deserialize_ec_privkey(bin, size, 0))) {
-			RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize binary ec pubkey");
-		}
+	if(!(result = _deserialize_ec_privkey(bin, size, 0))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize binary ec pubkey");
+	}
 
-		return result;
+	return result;
 }
 
 /**
- * @brief 	Load an EC public key from a file.
- * @param 	filename	the name of the filename from which the key should be loaded
+ * @brief       Load an EC public key from a file.
+ * @param       filename	the name of the filename from which the key should be loaded
  * @return	result		a pointer to the deserialized public key from the the file.
  */
-EC_KEY * _load_ec_pubkey(const char *filename) {
+EC_KEY *_load_ec_pubkey(const char *filename) {
 
 	char *filedata;
 	unsigned char *bin;
@@ -455,10 +455,10 @@ EC_KEY * _load_ec_pubkey(const char *filename) {
 /**
  * @brief	Generate an EC key pair.
  * @param	signing		if set, generate a key from the pre-defined EC signing curve;
- * 				if zero, the default encryption curve will be used instead.
+ *                              if zero, the default encryption curve will be used instead.
  * @return	a newly allocated and generated EC key pair on success, or NULL on failure.
  */
-EC_KEY * _generate_ec_keypair(int signing) {
+EC_KEY *_generate_ec_keypair(int signing) {
 
 	EC_GROUP *group;
 	EC_KEY *result;
@@ -517,7 +517,7 @@ void _free_ec_key(EC_KEY *key) {
  * @brief	Generate an ed25519 key pair.
  * @return	a newly allocated and generated ed25519 key pair on success, or NULL on failure.
  */
-ED25519_KEY * _generate_ed25519_keypair(void) {
+ED25519_KEY *_generate_ed25519_keypair(void) {
 
 	ED25519_KEY *result;
 
@@ -610,7 +610,7 @@ void _free_ed25519_key(ED25519_KEY *key) {
  * @param	filename	the path of the armored file from which the ed25519 private key will be loaded.
  * @return	a pointer to a newly allocated ed25519 keypair on success, or NULL on failure.
  */
-ED25519_KEY * _load_ed25519_privkey(const char *filename) {
+ED25519_KEY *_load_ed25519_privkey(const char *filename) {
 
 	ED25519_KEY *result;
 	unsigned char *keydata;
@@ -665,7 +665,7 @@ ED25519_KEY * _load_ed25519_privkey(const char *filename) {
  * @param	olen
  * @return
  */
-void * _ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
+void *_ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
 
 	if (EVP_Digest(input, ilen, output, (unsigned int *)olen, _ecies_envelope_evp, NULL) != 1) {
 		return NULL;
@@ -697,10 +697,10 @@ int _compute_aes256_kek(EC_KEY *public_key, EC_KEY *private_key, unsigned char *
 	}
 
 	for(i = 0; i < 16; ++i) {
-		keybuf[i] = aeskey[i] ^ aeskey[i+16];
+		keybuf[i] = aeskey[i] ^ aeskey[i + 16];
 	}
 
-	memcpy(keybuf + 16, aeskey+32, 32);
+	memcpy(keybuf + 16, aeskey + 32, 32);
 	_secure_wipe(aeskey, sizeof(aeskey));
 
 	return 0;
@@ -731,7 +731,7 @@ int _get_random_bytes(void *buf, size_t len) {
 /**
  * @brief	Encrypt a data buffer using an AES-256 key (in CBC mode).
  * @param	outbuf	a pointer to the output buffer that will receive the encrypted data. NOTE: the size of this buffer must
- * 			be successfully negotiated by the caller.
+ *                      be successfully negotiated by the caller.
  * @param	data	a pointer to the data buffer to be encrypted.
  * @param	dlen	the size, in bytes, of the data buffer to be encrypted.
  * @param	key	a pointer to the 32-byte buffer holding the AES-256 encryption key for the operation.
@@ -773,7 +773,7 @@ int _encrypt_aes_256(unsigned char *outbuf, const unsigned char *data, size_t dl
 
 	result = len;
 
-	if (EVP_EncryptFinal_ex(ctx, (unsigned char *)outbuf+len, &len) != 1) {
+	if (EVP_EncryptFinal_ex(ctx, (unsigned char *)outbuf + len, &len) != 1) {
 		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "AES-256 encryption finalization failed");
 	}
@@ -789,7 +789,7 @@ int _encrypt_aes_256(unsigned char *outbuf, const unsigned char *data, size_t dl
 /**
  * @brief	Decrypt a data buffer using an AES-256 key (in CBC mode).
  * @param	outbuf	a pointer to the output buffer that will receive the decrypted data. NOTE: the size of this buffer must
- * 			be successfully negotiated by the caller.
+ *                      be successfully negotiated by the caller.
  * @param	data	a pointer to the data buffer to be decrypted.
  * @param	dlen	the size, in bytes, of the data buffer to be decrypted.
  * @param	key	a pointer to the 32-byte buffer holding the AES-256 decryption key for the operation.
@@ -831,7 +831,7 @@ int _decrypt_aes_256(unsigned char *outbuf, const unsigned char *data, size_t dl
 
 	result = len;
 
-	if (EVP_DecryptFinal_ex(ctx, (unsigned char *)outbuf+len, &len) != 1) {
+	if (EVP_DecryptFinal_ex(ctx, (unsigned char *)outbuf + len, &len) != 1) {
 		PUSH_ERROR_OPENSSL();
 		RET_ERROR_INT(ERR_UNSPEC, "AES-256 decryption finalization failed");
 	}

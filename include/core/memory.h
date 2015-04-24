@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/memory/memory.h
  *
@@ -20,13 +19,13 @@ size_t align(size_t alignment, size_t len);
 uint_t bits_count(uint64_t value);
 
 // Secure Memory Blocks
-void mm_sec_stop(void);
+void   mm_sec_stop(void);
 bool_t mm_sec_start(void);
-void mm_sec_free(void *block);
+void   mm_sec_free(void *block);
 bool_t mm_sec_secured(void *block);
 void * mm_sec_alloc(size_t len);
 void * mm_sec_realloc(void *orig, size_t len);
-bool_t mm_sec_stats(size_t *total, size_t *bytes, size_t *items) __attribute__ ((nonnull (1, 2, 3)));
+bool_t mm_sec_stats(size_t *total, size_t *bytes, size_t *items) __attribute__((nonnull(1, 2, 3)));
 
 /// memory.c
 void *   mm_alloc(size_t len);
@@ -49,6 +48,6 @@ void *   mm_wipe(void *block, size_t len);
 #define MM_SEC_POOL_LENGTH_MIN 4096
 
 // Usage: void *buffer = MEMORYBUF(length);
-#define MEMORYBUF(l) (void *)&((chr_t []){ [ 0 ... l ] = 0 })
+#define MEMORYBUF(l) (void *)&((chr_t []) { [ 0 ... l ] = 0 })
 
 #endif

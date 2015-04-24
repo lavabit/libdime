@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/indexes/cursors.c
  *
@@ -54,7 +53,7 @@ void inx_cursor_free(inx_cursor_t *cursor) {
  * @param	index	a pointer to the inx object to be traversed.
  * @return	NULL on failure, or a pointer to a new inx cursor for the specified inx object on success.
  */
-inx_cursor_t * inx_cursor_alloc(inx_t *index) {
+inx_cursor_t *inx_cursor_alloc(inx_t *index) {
 
 	inx_cursor_t *cursor = NULL;
 
@@ -82,7 +81,7 @@ multi_t inx_cursor_key_next(inx_cursor_t *cursor) {
 
 	if (cursor && cursor->inx && cursor->inx->cursor_key_next) {
 		inx_auto_read(cursor->inx);
-		key =  cursor->inx->cursor_key_next(cursor);
+		key = cursor->inx->cursor_key_next(cursor);
 		inx_auto_unlock(cursor->inx);
 	}
 
@@ -100,7 +99,7 @@ multi_t inx_cursor_key_active(inx_cursor_t *cursor) {
 
 	if (cursor && cursor->inx && cursor->inx->cursor_key_active) {
 		inx_auto_read(cursor->inx);
-		key =  cursor->inx->cursor_key_active(cursor);
+		key = cursor->inx->cursor_key_active(cursor);
 		inx_auto_unlock(cursor->inx);
 	}
 
@@ -112,7 +111,7 @@ multi_t inx_cursor_key_active(inx_cursor_t *cursor) {
  * @param	cursor	the inx cursor to be examined.
  * @return	NULL on failure, or a multi-type data object containing the key of the next inx cursor position.
  */
-void * inx_cursor_value_next(inx_cursor_t *cursor) {
+void *inx_cursor_value_next(inx_cursor_t *cursor) {
 
 	void *value = NULL;
 
@@ -130,13 +129,13 @@ void * inx_cursor_value_next(inx_cursor_t *cursor) {
  * @param	cursor	the inx cursor to be examined.
  * @return	NULL on failure, or the value at the current position of the specified inx cursor.
  */
-void * inx_cursor_value_active(inx_cursor_t *cursor) {
+void *inx_cursor_value_active(inx_cursor_t *cursor) {
 
 	void *value = NULL;
 
 	if (cursor && cursor->inx && cursor->inx->cursor_value_active) {
 		inx_auto_read(cursor->inx);
-		value =  cursor->inx->cursor_value_active(cursor);
+		value = cursor->inx->cursor_value_active(cursor);
 		inx_auto_unlock(cursor->inx);
 	}
 

@@ -19,7 +19,7 @@ static uint64_t spool_files_cleaned = 0, spool_errors = 0;
 static time_t spool_check_failure = 0, spool_creation_failure = 0;
 static pthread_rwlock_t spool_creation_lock = PTHREAD_RWLOCK_INITIALIZER;
 static pthread_mutex_t spool_error_lock = PTHREAD_MUTEX_INITIALIZER,
-spool_check_lock = PTHREAD_MUTEX_INITIALIZER;
+                       spool_check_lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 /**
@@ -39,9 +39,9 @@ uint64_t spool_error_stats(void) {
  * @brief	Get the full path to a requested spool directory.
  * @param	the spool id (MAGMA_SPOOL_BASE, MAGMA_SPOOL_DATA, or MAGMA_SPOOL_SCAN); defaults to MAGMA_SPOOL_DATA.
  * @return	NULL on failure, or a managed string pointing to the requested path inside the magma spool parent directory,
- * 			or /tmp/magma if the spool isn't configured.
+ *                      or /tmp/magma if the spool isn't configured.
  */
-stringer_t * spool_path(int_t spool) {
+stringer_t *spool_path(int_t spool) {
 
 	const chr_t *folder;
 	stringer_t *result;
@@ -127,7 +127,7 @@ int_t spool_mktemp(int_t spool, const chr_t *prefix) {
 	// Build the a template that includes the thread id and a random number to make the resulting file path harder to predict and try creating the temporary file handle.
 	// The O_EXCL+O_CREAT flags ensure we create the file or the call fails, O_SYNC indicates synchronous IO, and O_NOATIME eliminates access time tracking.
 	if ((path = spool_path(spool)) && (template = st_aprint("%.*s%s_%lu_%lu_XXXXXX", st_length_int(path), st_char_get(path), prefix, thread_get_thread_id(), _rand_get_uint64()))
-		&& (fd = mkostemp(st_char_get(template), O_EXCL | O_CREAT | O_RDWR | O_SYNC | O_NOATIME)) < 0) {
+	    && (fd = mkostemp(st_char_get(template), O_EXCL | O_CREAT | O_RDWR | O_SYNC | O_NOATIME)) < 0) {
 
 		// try again if both directories exist or we manage to create them now
 		if ((base = spool_path(MAGMA_SPOOL_BASE)) && (spool_check(base) >= 0) && (spool_check(path) >= 0)) {
@@ -136,7 +136,7 @@ int_t spool_mktemp(int_t spool, const chr_t *prefix) {
 			st_free(template);
 
 			if ((template = st_aprint("%.*s%s_%lu_%lu_XXXXXX", st_length_int(path), st_char_get(path), prefix, thread_get_thread_id(), _rand_get_uint64()))
-				&& (fd = mkostemp(st_char_get(template), O_EXCL | O_CREAT | O_RDWR | O_SYNC | O_NOATIME)) < 0) {
+			    && (fd = mkostemp(st_char_get(template), O_EXCL | O_CREAT | O_RDWR | O_SYNC | O_NOATIME)) < 0) {
 
 				// If the path is valid, but were still failing, record an error message in the log file, but only once an hour.
 				mutex_lock(&spool_error_lock);

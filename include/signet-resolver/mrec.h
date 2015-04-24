@@ -11,8 +11,8 @@
 #include <common/error.h>
 
 
-#define DIME_VERSION_NO			1
-#define DIME_RECORD_DNS_PREFIX		"_dx"
+#define DIME_VERSION_NO        1
+#define DIME_RECORD_DNS_PREFIX "_dx"
 
 
 typedef enum {
@@ -29,15 +29,15 @@ typedef enum {
 
 
 typedef struct {
-	unsigned short version;			// The DIME management record syntax version.
-	unsigned char **pubkey;			// An array of 32-byte ED25519 organizational public key(s) (POKs).
-	unsigned char **tlssig;			// An array of 64-byte TLS signature(s) for MX (or DX/KS) by the POK(s).
-	dime_msg_policy policy;			// Policy for sending/accepting messages.
-	char *syndicates;			// Alternative authoritative signet lookup sources.
-	char **dx;				// An array of CNAME(s) for DIME delivery host (if not present, then MX).
+	unsigned short version;                 // The DIME management record syntax version.
+	unsigned char **pubkey;                 // An array of 32-byte ED25519 organizational public key(s) (POKs).
+	unsigned char **tlssig;                 // An array of 64-byte TLS signature(s) for MX (or DX/KS) by the POK(s).
+	dime_msg_policy policy;                 // Policy for sending/accepting messages.
+	char *syndicates;                       // Alternative authoritative signet lookup sources.
+	char **dx;                              // An array of CNAME(s) for DIME delivery host (if not present, then MX).
 	unsigned long expiry;                   // Number of days before a cached management record is discarded.
-	dime_sub_policy subdomain;		// Determines whether subdomains will have authority over their own records.
-	int validated;				// 1 if validated by DNSSEC; 0 if not DNSSEC-protected; -1 if DNSSEC sig failed.
+	dime_sub_policy subdomain;              // Determines whether subdomains will have authority over their own records.
+	int validated;                          // 1 if validated by DNSSEC; 0 if not DNSSEC-protected; -1 if DNSSEC sig failed.
 } dime_record_t;
 
 
@@ -50,9 +50,9 @@ PUBLIC_FUNC_DECL(dime_record_t *, get_dime_record_from_file, const char *filenam
 
 
 // Internal functions.
-void _destroy_dime_record_cb(void *record);
-void _dump_dime_record_cb(FILE *, void *record, int brief);
-void * _deserialize_dime_record_cb(void *data, size_t len);
-void * _serialize_dime_record_cb(void *record, size_t *outlen);
+void  _destroy_dime_record_cb(void *record);
+void  _dump_dime_record_cb(FILE *, void *record, int brief);
+void *_deserialize_dime_record_cb(void *data, size_t len);
+void *_serialize_dime_record_cb(void *record, size_t *outlen);
 
 #endif

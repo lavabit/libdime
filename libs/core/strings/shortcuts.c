@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/shortcuts.c
  *
@@ -18,7 +17,7 @@
  */
 placer_t pl_null(void) {
 
-	return (placer_t){ .opts = PLACER_T | JOINTED | STACK | FOREIGNDATA, .data = NULL, .length = 0 };
+	return (placer_t) {.opts = PLACER_T | JOINTED | STACK | FOREIGNDATA, .data = NULL, .length = 0 };
 }
 
 /**
@@ -29,7 +28,7 @@ placer_t pl_null(void) {
  */
 placer_t pl_init(void *data, size_t len) {
 
-	return (placer_t){ .opts = PLACER_T | JOINTED | STACK | FOREIGNDATA, .data = data, .length = len };
+	return (placer_t) {.opts = PLACER_T | JOINTED | STACK | FOREIGNDATA, .data = data, .length = len };
 }
 
 placer_t pl_clone(placer_t place) {
@@ -38,7 +37,7 @@ placer_t pl_clone(placer_t place) {
 
 placer_t pl_set(placer_t place, placer_t set) {
 
-	return (placer_t){ .opts = place.opts, .data = set.data, .length = set.length };
+	return (placer_t) {.opts = place.opts, .data = set.data, .length = set.length };
 }
 
 /**
@@ -46,7 +45,7 @@ placer_t pl_set(placer_t place, placer_t set) {
  * @param	place	the input placer.
  * @return	NULL on failure or a pointer to the block of data associated with the specified placer on success.
  */
-void * pl_data_get(placer_t place) {
+void *pl_data_get(placer_t place) {
 
 	return st_data_get((stringer_t *)&place);
 }
@@ -56,7 +55,7 @@ void * pl_data_get(placer_t place) {
  * @param	place	the input placer.
  * @return	NULL on failure or a a character pointer to the block of data associated with the specified placer on success.
  */
-chr_t * pl_char_get(placer_t place) {
+chr_t *pl_char_get(placer_t place) {
 
 	return st_char_get((stringer_t *)&place);
 }

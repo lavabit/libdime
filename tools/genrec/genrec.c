@@ -46,96 +46,96 @@ int main(int argc, char *argv[]) {
 	while ((opt = getopt(argc, argv, "c:d:e:k:p:s:v:y:")) != -1) {
 
 		switch (opt) {
-			case 'k':
+		case 'k':
 
-				if (!(key = load_ed25519_privkey(optarg))) {
-					_clear_error_stack();
+			if (!(key = load_ed25519_privkey(optarg))) {
+				_clear_error_stack();
 
-					if (!(key = keys_file_fetch_sign_key(optarg))) {
-						fprintf(stderr, "Error: could not read ed25519 POK from keyfile.\n");
-						exit(EXIT_FAILURE);
-					}
-
-				}
-
-				// Derive public key from private key.
-				if (!(pubb64 = b64encode_nopad(key->public_key, ED25519_KEY_SIZE))) {
-					fprintf(stderr, "Error: Unable to base64 encode public key data.\n");
-					dump_error_stack();
+				if (!(key = keys_file_fetch_sign_key(optarg))) {
+					fprintf(stderr, "Error: could not read ed25519 POK from keyfile.\n");
 					exit(EXIT_FAILURE);
 				}
 
-				if (str_printf(&pubkey, "pok=%s", pubb64) <= 0) {
-					fprintf(stderr, "Error: unable to add DX server to record buffer.\n");
-					dump_error_stack();
-					exit(EXIT_FAILURE);
-				}
+			}
 
-				free(pubb64);
-				break;
-			case 'c':
-				certfile = optarg;
-				break;
-			case 'd':
+			// Derive public key from private key.
+			if (!(pubb64 = b64encode_nopad(key->public_key, ED25519_KEY_SIZE))) {
+				fprintf(stderr, "Error: Unable to base64 encode public key data.\n");
+				dump_error_stack();
+				exit(EXIT_FAILURE);
+			}
 
-				if (str_printf(&dx, " dx=%s", optarg) <= 0) {
-					fprintf(stderr, "Error: unable to add DX server to record buffer.\n");
-					dump_error_stack();
-					exit(EXIT_FAILURE);
-				}
+			if (str_printf(&pubkey, "pok=%s", pubb64) <= 0) {
+				fprintf(stderr, "Error: unable to add DX server to record buffer.\n");
+				dump_error_stack();
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			case 'e':
+			free(pubb64);
+			break;
+		case 'c':
+			certfile = optarg;
+			break;
+		case 'd':
 
-				if (!atoi(expiry = optarg)) {
-					fprintf(stderr, "Error: invalid DIME record expiration value was specified.\n");
-					exit(EXIT_FAILURE);
-				}
+			if (str_printf(&dx, " dx=%s", optarg) <= 0) {
+				fprintf(stderr, "Error: unable to add DX server to record buffer.\n");
+				dump_error_stack();
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			case 'p':
+			break;
+		case 'e':
 
-				if (!strcasecmp(optarg, "experimental")) {
-					msg_policy = msg_experimental;
-				} else if (!strcasecmp(optarg, "mixed")) {
-					msg_policy = msg_mixed;
-				} else if (!strcasecmp(optarg, "strict")) {
-					msg_policy = msg_strict;
-				} else {
-					fprintf (stderr, "Error: invalid DIME message policy type was specified. Must be experimental, mixed, or strict.\n");
-					exit(EXIT_FAILURE);
-				}
+			if (!atoi(expiry = optarg)) {
+				fprintf(stderr, "Error: invalid DIME record expiration value was specified.\n");
+				exit(EXIT_FAILURE);
+			}
 
-				break;
+			break;
+		case 'p':
 
-			case 's':
+			if (!strcasecmp(optarg, "experimental")) {
+				msg_policy = msg_experimental;
+			} else if (!strcasecmp(optarg, "mixed")) {
+				msg_policy = msg_mixed;
+			} else if (!strcasecmp(optarg, "strict")) {
+				msg_policy = msg_strict;
+			} else {
+				fprintf(stderr, "Error: invalid DIME message policy type was specified. Must be experimental, mixed, or strict.\n");
+				exit(EXIT_FAILURE);
+			}
 
-				if (!strcasecmp(optarg, "strict")) {
-					sub_policy = sub_strict;
-				} else if (!strcasecmp(optarg, "relaxed")) {
-					sub_policy = sub_relaxed;
-				} else if (!strcasecmp(optarg, "explicit")) {
-					sub_policy = sub_explicit;
-				} else {
-					fprintf(stderr, "Error: invalid DIME subdomain policy type was specified. Must be strict, relaxed, or explicit.\n");
-					exit(EXIT_FAILURE);
-				}
+			break;
 
-				break;
-			case 'y':
-				syndicates = optarg;
-				break;
-			case 'v':
+		case 's':
 
-				if (!(version = atoi(optarg))) {
-					fprintf(stderr, "Error: invalid DIME version number was specified.\n");
-					exit(EXIT_FAILURE);
-				}
+			if (!strcasecmp(optarg, "strict")) {
+				sub_policy = sub_strict;
+			} else if (!strcasecmp(optarg, "relaxed")) {
+				sub_policy = sub_relaxed;
+			} else if (!strcasecmp(optarg, "explicit")) {
+				sub_policy = sub_explicit;
+			} else {
+				fprintf(stderr, "Error: invalid DIME subdomain policy type was specified. Must be strict, relaxed, or explicit.\n");
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			default:
-				usage(argv[0]);
-				break;
+			break;
+		case 'y':
+			syndicates = optarg;
+			break;
+		case 'v':
+
+			if (!(version = atoi(optarg))) {
+				fprintf(stderr, "Error: invalid DIME version number was specified.\n");
+				exit(EXIT_FAILURE);
+			}
+
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 
 	}
@@ -189,15 +189,15 @@ int main(int argc, char *argv[]) {
 	BUF_strlcat(dimebuf, " pol=", sizeof(dimebuf));
 
 	switch(msg_policy) {
-		case msg_experimental:
-			BUF_strlcat(dimebuf, "experimental", sizeof(dimebuf));
-			break;
-		case msg_mixed:
-			BUF_strlcat(dimebuf, "mixed", sizeof(dimebuf));
-			break;
-		case msg_strict:
-			BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
-			break;
+	case msg_experimental:
+		BUF_strlcat(dimebuf, "experimental", sizeof(dimebuf));
+		break;
+	case msg_mixed:
+		BUF_strlcat(dimebuf, "mixed", sizeof(dimebuf));
+		break;
+	case msg_strict:
+		BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
+		break;
 	}
 
 	if (syndicates) {
@@ -217,15 +217,15 @@ int main(int argc, char *argv[]) {
 	BUF_strlcat(dimebuf, " sub=", sizeof(dimebuf));
 
 	switch(sub_policy) {
-		case sub_strict:
-			BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
-			break;
-		case sub_relaxed:
-			BUF_strlcat(dimebuf, "relaxed", sizeof(dimebuf));
-			break;
-		case sub_explicit:
-			BUF_strlcat(dimebuf, "explicit", sizeof(dimebuf));
-			break;
+	case sub_strict:
+		BUF_strlcat(dimebuf, "strict", sizeof(dimebuf));
+		break;
+	case sub_relaxed:
+		BUF_strlcat(dimebuf, "relaxed", sizeof(dimebuf));
+		break;
+	case sub_explicit:
+		BUF_strlcat(dimebuf, "explicit", sizeof(dimebuf));
+		break;
 	}
 
 	// Now we need to break this up into suitably sized chunks (TXT records longer than 255 characters must consist of

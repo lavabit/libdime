@@ -72,10 +72,10 @@ void _ssl_shutdown(void) {
  * @brief	Get an SSL context that will be used for all DMTP client connections.
  * @return	a pointer to the DMTP SSL client context on success, or NULL on failure.
  */
-SSL_CTX * _ssl_get_client_context(void) {
+SSL_CTX *_ssl_get_client_context(void) {
 
 	long ctx_options = (SSL_OP_ALL | SSL_MODE_AUTO_RETRY |
-			    SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
+	                    SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
 
 	if (_dmtp_ssl_client_ctx) {
 		return _dmtp_ssl_client_ctx;
@@ -121,7 +121,7 @@ SSL_CTX * _ssl_get_client_context(void) {
  * @return	NULL on failure, or the SSL descriptor of the newly established TLS session on success.
  *
  */
-SSL * _ssl_starttls(int fd) {
+SSL *_ssl_starttls(int fd) {
 
 	SSL_CTX *ctx;
 	SSL *result;
@@ -158,7 +158,7 @@ SSL * _ssl_starttls(int fd) {
  * @param	force_family	an optional address family (AF_INET or AF_INET6) to force the TCP connection to take.
  * @return	NULL on failure, or the SSL descriptor of the newly established TLS session on success.
  */
-SSL * _ssl_connect_host(const char *hostname, unsigned short port, int force_family) {
+SSL *_ssl_connect_host(const char *hostname, unsigned short port, int force_family) {
 
 	SSL_CTX *ctx;
 	SSL *result;
@@ -242,7 +242,7 @@ void _ssl_disconnect(SSL *handle) {
  * @brief	Perform X509 validation on a certificate presented by a remote TLS service.
  * @param	cert	a pointer to the x509 certificate to be chain-validated.
  * @param	chain	an optional pointer to the x509 certificate chain presented by the remote service;
- * 			it will be added to the root certificate store already used for validation.
+ *                      it will be added to the root certificate store already used for validation.
  * @return	-1 on general error, 0 if the certificate failed validation, or 1 if it passed validation successfully.
  */
 int _do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {
@@ -284,23 +284,23 @@ int _do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {
 
 	// Not sure if necessary?
 /*	if (!(X509_LOOKUP_load_file(lookup, _ca_file, X509_FILETYPE_PEM))) {
-		PUSH_ERROR_OPENSSL();
-		X509_STORE_free(store);
-		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to load lookup chain file: %s", _ca_file);
-	}  */
+                PUSH_ERROR_OPENSSL();
+                X509_STORE_free(store);
+                RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to load lookup chain file: %s", _ca_file);
+        }  */
 
 	// TODO: temporarily disabled... does this go back in?
 /*	if((res = X509_load_crl_file(lookup, _crl_file, X509_FILETYPE_PEM)) < 1) {
-		PUSH_ERROR_OPENSSL();
-		X509_STORE_free(store);
-		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to load CRL file: %s", _crl_file);
-	}
+                PUSH_ERROR_OPENSSL();
+                X509_STORE_free(store);
+                RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to load CRL file: %s", _crl_file);
+        }
 
-	_dbgprint(4, "Loaded a total of %d entries from CRL file.\n", res); */
+        _dbgprint(4, "Loaded a total of %d entries from CRL file.\n", res); */
 
 //	if (X509_STORE_set_flags(store, (X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL)) != 1) {
 	if (X509_STORE_set_flags(store, X509_V_FLAG_X509_STRICT) != 1) {
- 		PUSH_ERROR_OPENSSL();
+		PUSH_ERROR_OPENSSL();
 		X509_STORE_free(store);
 		RET_ERROR_INT(ERR_UNSPEC, "unable to configure X509 store");
 	}
@@ -344,8 +344,8 @@ int _do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {
  * @brief	Check to see that an issued X509 certificate matches the expected target domain name.
  * @see		_domain_wildcard_check()
  * @note	This function will check two parts of the specified certificate against the supplied domain name:
- * 		1. The CN attribute of the subject field.
- * 		2. The dnsName of the SAN extension
+ *              1. The CN attribute of the subject field.
+ *              2. The dnsName of the SAN extension
  * @param	cert	a pointer to the X509 certificate that will be matched against the specified domain name.
  * @param	domain	a null-terminated string containing the domain name to be matched against the target certificate.
  * @return	-1 on general error, 0 if a match did not occur, or 1 if the domain matched the certificate.
@@ -353,10 +353,10 @@ int _do_x509_validation(X509 *cert, STACK_OF(X509) *chain) {
 int _do_x509_hostname_check(X509 *cert, const char *domain) {
 
 /*	X509_NAME *xname;
-	STACK_OF(GENERAL_NAME) *san;
-	GENERAL_NAME *gn;
-	char buf[512], *cn, *dnsname;
-	int attempts = 0; */
+        STACK_OF(GENERAL_NAME) *san;
+        GENERAL_NAME *gn;
+        char buf[512], *cn, *dnsname;
+        int attempts = 0; */
 
 	if (!cert || !domain) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -366,57 +366,57 @@ int _do_x509_hostname_check(X509 *cert, const char *domain) {
 	return (X509_check_host(cert, (unsigned char *)domain, strlen(domain), 0));
 
 /*	if (!(xname = X509_get_subject_name(cert))) {
-		PUSH_ERROR_OPENSSL();
-		RET_ERROR_INT(ERR_UNSPEC, "could not read subject name from certificate");
-	}
+                PUSH_ERROR_OPENSSL();
+                RET_ERROR_INT(ERR_UNSPEC, "could not read subject name from certificate");
+        }
 
-	memset(buf, 0, sizeof(buf));
+        memset(buf, 0, sizeof(buf));
 
-	if ((cn = _get_cert_subject_cn(cert))) {
-		_dbgprint(2, "Checking certificate against subject CN: %s\n", cn);
-		attempts++;
+        if ((cn = _get_cert_subject_cn(cert))) {
+                _dbgprint(2, "Checking certificate against subject CN: %s\n", cn);
+                attempts++;
 
-		if (_domain_wildcard_check(cn, domain) == 1) {
-			free(cn);
-			return 1;
-		}
+                if (_domain_wildcard_check(cn, domain) == 1) {
+                        free(cn);
+                        return 1;
+                }
 
-		free(cn);
-	}
+                free(cn);
+        }
 
-	san = (STACK_OF(GENERAL_NAME) *)X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
+        san = (STACK_OF(GENERAL_NAME) *)X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
 
-	while (sk_GENERAL_NAME_num(san) > 0) {
-		gn = sk_GENERAL_NAME_pop(san);
+        while (sk_GENERAL_NAME_num(san) > 0) {
+                gn = sk_GENERAL_NAME_pop(san);
 
-		if (gn->type == GEN_DNS) {
+                if (gn->type == GEN_DNS) {
 
-			if (!(dnsname = (char *)ASN1_STRING_data(gn->d.dNSName))) {
-				continue;
-			}
+                        if (!(dnsname = (char *)ASN1_STRING_data(gn->d.dNSName))) {
+                                continue;
+                        }
 
-			// Make sure there hasn't been an attempt at nul byte poisoning.
-			if (ASN1_STRING_length(gn->d.dNSName) != strlen(dnsname)) {
-				fprintf(stderr, "Error: x509 hostname check failed because of potential name poisoning attack.\n");
-				return 0;
-			}
+                        // Make sure there hasn't been an attempt at nul byte poisoning.
+                        if (ASN1_STRING_length(gn->d.dNSName) != strlen(dnsname)) {
+                                fprintf(stderr, "Error: x509 hostname check failed because of potential name poisoning attack.\n");
+                                return 0;
+                        }
 
-			attempts++;
+                        attempts++;
 
-			if (_domain_wildcard_check(dnsname, domain) == 1) {
-				return 1;
-			}
+                        if (_domain_wildcard_check(dnsname, domain) == 1) {
+                                return 1;
+                        }
 
-		}
+                }
 
-	}
+        }
 
 // sk_GENERAL_NAME_pop_free()
-	if (!attempts) {
-		_dbgprint(1, "DX x509 name check failed: no CN or SAN was found in the certificate for comparison.\n");
-	}
+        if (!attempts) {
+                _dbgprint(1, "DX x509 name check failed: no CN or SAN was found in the certificate for comparison.\n");
+        }
 
-	return 0; */
+        return 0; */
 }
 
 
@@ -434,8 +434,8 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	OCSP_CERTID *cid;
 	OCSP_BASICRESP *basic;
 	OCSP_REQ_CTX *octx;
-	STACK_OF(OPENSSL_STRING) *ocspst;
-	STACK_OF(X509) *certstack;
+	STACK_OF(OPENSSL_STRING) * ocspst;
+	STACK_OF(X509) * certstack;
 	ASN1_GENERALIZEDTIME *revtime, *thisupd, *nextupd;
 	X509_STORE *store;
 	X509 *cert, *pcert, *issuer = NULL;
@@ -568,7 +568,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 				BIO_free(dbgbio);
 			}
 
- 		}
+		}
 
 		// Requested with a maximum clock skew time of 5 minutes, and ignore the max age option. (maybe we shouldn't).
 		if ((ret = OCSP_check_validity(thisupd, nextupd, 300, -1)) <= 0) {
@@ -584,7 +584,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 				RET_ERROR_INT(ERR_UNSPEC, "OCSP validity check failed");
 			}
 
- 			return 0;
+			return 0;
 		}
 
 		OCSP_BASICRESP_free(basic);
@@ -816,7 +816,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	// Requested with a maximum clock skew time of 5 minutes, and ignore the max age option. (maybe we shouldn't).
 	status = OCSP_check_validity(thisupd, nextupd, 300, -1);
 
- 	OCSP_REQUEST_free(request);
+	OCSP_REQUEST_free(request);
 
 	if (status <= 0) {
 
@@ -871,8 +871,8 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 		}
 
 	} else {
-			fprintf(stderr, "Error reading OCSP response next update time; setting expiration to zero.\n");
-			expiration = 0;
+		fprintf(stderr, "Error reading OCSP response next update time; setting expiration to zero.\n");
+		expiration = 0;
 	}
 
 	// No memory leak here because the OCSP response object store is marked "internal" and only a single instance of each record is passed around.
@@ -899,7 +899,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
  * @param	cert	a pointer to the X509 certificate to have its subject field parsed.
  * @return	a pointer to the X509 certificate's CN as a null-terminated string on success, or NULL on failure.
  */
-char * _get_cert_subject_cn(X509 *cert) {
+char *_get_cert_subject_cn(X509 *cert) {
 
 	X509_NAME *xname;
 	X509_NAME_ENTRY *xne;
@@ -979,7 +979,7 @@ int _verify_certificate_callback(int preverify_ok, X509_STORE_CTX *ctx) {
 
 	if ((err = X509_STORE_CTX_get_error(ctx)) != X509_V_OK) {
 		depth = X509_STORE_CTX_get_error_depth(ctx);
-		strncpy(depthstr, "[unknown]", sizeof(depthstr)-1);
+		strncpy(depthstr, "[unknown]", sizeof(depthstr) - 1);
 	}
 
 	if (depth >= 0) {
@@ -1066,7 +1066,7 @@ int _validate_self_signed(X509 *cert) {
  */
 int _domain_wildcard_check(const char *pattern, const char *domain) {
 
-	_dbgprint(5,"x509 hostname wildcard check: %s against %s ...\n", pattern, domain);
+	_dbgprint(5, "x509 hostname wildcard check: %s against %s ...\n", pattern, domain);
 
 	char *p, *pptr, *d, *dptr;
 	size_t i;
@@ -1097,8 +1097,8 @@ int _domain_wildcard_check(const char *pattern, const char *domain) {
 
 	// Simple equality check first.
 	if (!strcmp(p, d)) {
-	 	result = 1;
-	// Next try the wildcard
+		result = 1;
+		// Next try the wildcard
 	} else if (*p == '*') {
 		pptr = p + 1;
 
@@ -1128,7 +1128,7 @@ int _domain_wildcard_check(const char *pattern, const char *domain) {
  * @brief	Get an x509 certificate store populated with the root certificate bundle.
  * @return	NULL on failure, or a pointer to the x509 certificate store on success.
  */
-X509_STORE * _get_cert_store(void) {
+X509_STORE *_get_cert_store(void) {
 
 	X509_STORE *store;
 
@@ -1178,7 +1178,7 @@ void _ssl_fd_loop(SSL *connection) {
 		FD_SET(ssl_fd, &rfds);
 		FD_SET(ssl_fd, &xfds);
 
-		if (select(ssl_fd+1, &rfds, NULL, &xfds, NULL) < 0) {
+		if (select(ssl_fd + 1, &rfds, NULL, &xfds, NULL) < 0) {
 			perror("select");
 			return;
 		}
@@ -1298,10 +1298,10 @@ void _destroy_ocsp_response_cb(void *record) {
  * @param	blen	the size, in bytes, of the buffer holding the OCSP response id.
  * @return	a pointer to the output buffer with the OCSP response ID on success, or NULL on failure.
  */
-char * _get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
+char *_get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
 
 	unsigned char hashbuf[SHA_160_SIZE], *cbuf = NULL;
-	char hexbuf[SHA_160_SIZE*2+1], *cn;
+	char hexbuf[SHA_160_SIZE * 2 + 1], *cn;
 	size_t cid_size, i;
 
 	// TODO: Change this function to leverage _str_printf() ?
@@ -1332,7 +1332,7 @@ char * _get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) 
 
 	// Simple byte-to-hex conversion routine for the 20 bytes of the SHA-160 hash.
 	for (i = 0; i < sizeof(hashbuf); i++) {
-		snprintf(&(hexbuf[i*2]), 3, "%.2x", (unsigned char)hashbuf[i]);
+		snprintf(&(hexbuf[i * 2]), 3, "%.2x", (unsigned char)hashbuf[i]);
 	}
 
 	if (snprintf(buf, blen, "%s-%s", (cn ? cn : ""), hexbuf) <= 0) {
@@ -1358,7 +1358,7 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 	OCSP_RESPONSE *response = (OCSP_RESPONSE *)record;
 	OCSP_BASICRESP *basic;
 	OCSP_SINGLERESP *sresp;
-	STACK_OF(OCSP_SINGLERESP) *respstack;
+	STACK_OF(OCSP_SINGLERESP) * respstack;
 	BIGNUM *serial;
 	BIO *bio;
 	int rcode;
@@ -1428,18 +1428,18 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 		if (sresp->certStatus) {
 
 			switch (sresp->certStatus->type) {
-				case V_OCSP_CERTSTATUS_GOOD:
-					fprintf(fp, "good");
-					break;
-				case V_OCSP_CERTSTATUS_REVOKED:
-					fprintf(fp, "revoked");
-					break;
-				case V_OCSP_CERTSTATUS_UNKNOWN:
-					fprintf(fp, "unknown");
-					break;
-				default:
-					fprintf(fp, "[unknown, code = %u]", sresp->certStatus->type);
-					break;
+			case V_OCSP_CERTSTATUS_GOOD:
+				fprintf(fp, "good");
+				break;
+			case V_OCSP_CERTSTATUS_REVOKED:
+				fprintf(fp, "revoked");
+				break;
+			case V_OCSP_CERTSTATUS_UNKNOWN:
+				fprintf(fp, "unknown");
+				break;
+			default:
+				fprintf(fp, "[unknown, code = %u]", sresp->certStatus->type);
+				break;
 			}
 
 		} else {
@@ -1488,7 +1488,7 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
  * @param	len	the length, in bytes, of the data buffer to be deserialized.
  * @return	a pointer to a newly allocated OCSP_RESPONSE structure on success, or NULL on failure.
  */
-void * _deserialize_ocsp_response_cb(void *data, size_t len) {
+void *_deserialize_ocsp_response_cb(void *data, size_t len) {
 
 	OCSP_RESPONSE *response;
 
@@ -1512,7 +1512,7 @@ void * _deserialize_ocsp_response_cb(void *data, size_t len) {
  * @param	outlen	a pointer ot a variable that will receive the length of the serialized OCSP response.
  * @return	a pointer to a newly allocated buffer holding the serialized OCSP_RESPONSE on success, or NULL on failure.
  */
-void * _serialize_ocsp_response_cb(void *record, size_t *outlen) {
+void *_serialize_ocsp_response_cb(void *record, size_t *outlen) {
 
 	OCSP_RESPONSE *response = (OCSP_RESPONSE *)record;
 	unsigned char *buf = NULL;

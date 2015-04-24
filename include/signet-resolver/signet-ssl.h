@@ -11,9 +11,9 @@
 #include <common/error.h>
 
 
-#define CA_FILE			"cacert.pem"
-#define CA_DIR			"./"
-#define CRL_FILE		"crl.pem"
+#define CA_FILE  "cacert.pem"
+#define CA_DIR   "./"
+#define CRL_FILE "crl.pem"
 
 
 // The public interface.
@@ -29,7 +29,7 @@ PUBLIC_FUNC_DECL(SSL_CTX *, ssl_get_client_context,   void);
 PUBLIC_FUNC_DECL(SSL *,     ssl_starttls,             int fd);
 
 // Public certificate validation functions.
-PUBLIC_FUNC_DECL(int,       do_x509_validation,       X509 *cert, STACK_OF(X509) *chain);
+PUBLIC_FUNC_DECL(int,       do_x509_validation,       X509 *cert, STACK_OF(X509) * chain);
 PUBLIC_FUNC_DECL(int,       do_x509_hostname_check,   X509 *cert, const char *domain);
 PUBLIC_FUNC_DECL(int,       do_ocsp_validation,       SSL *connection, int *fallthrough);
 PUBLIC_FUNC_DECL(char *,    get_cert_subject_cn,      X509 *cert);

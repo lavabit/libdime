@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/host/folder.c
  *

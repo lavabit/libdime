@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/host/mappings.c
  *
@@ -19,7 +18,7 @@
  * @param	length	the length, in bytes, of the output buffer, which should be at minimum of 32 bytes.
  * @return	a pointer to a null-terminated string containing the descriptive error message.
  */
-chr_t * errno_name(int errnum, char *buffer, size_t length) {
+chr_t *errno_name(int errnum, char *buffer, size_t length) {
 
 	if (!buffer || !length) {
 		log_pedantic("Invalid output buffer supplied.");
@@ -48,7 +47,7 @@ chr_t * errno_name(int errnum, char *buffer, size_t length) {
  * @param	length	the length of the buffer to receive the output, which should be greater than 32 bytes.
  * @return	a pointer to a null-terminated string containing the textual name of the specified signal.
  */
-chr_t * signal_name(int signal, char *buffer, size_t length) {
+chr_t *signal_name(int signal, char *buffer, size_t length) {
 
 	if (!buffer || !length) {
 		log_pedantic("Invalid output buffer supplied.");

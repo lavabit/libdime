@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/engine/config/config.h
  *
@@ -36,13 +35,13 @@
 #define MAGMA_CRYPTOGRAPHY_SEED_SIZE 64
 
 // The default resource paths.
-#define MAGMA_LOGS "logs/"
-#define MAGMA_RESOURCE_FONTS "resources/fonts/"
-#define MAGMA_RESOURCE_PAGES "resources/pages/"
-#define MAGMA_RESOURCE_VIRUS "resources/virus/"
-#define MAGMA_RESOURCE_LOCATION "resources/location/"
+#define MAGMA_LOGS               "logs/"
+#define MAGMA_RESOURCE_FONTS     "resources/fonts/"
+#define MAGMA_RESOURCE_PAGES     "resources/pages/"
+#define MAGMA_RESOURCE_VIRUS     "resources/virus/"
+#define MAGMA_RESOURCE_LOCATION  "resources/location/"
 #define MAGMA_RESOURCE_TEMPLATES "resources/templates/"
-#define MAGMA_RESOURCE_CASTORE "resources/castore"
+#define MAGMA_RESOURCE_CASTORE   "resources/castore"
 
 // The default location database caching policy.
 #define MAGMA_LOCATION_CACHE CONSTANT("disable")
@@ -89,18 +88,18 @@
 #define MAGMA_SMTP_MAX_MESSAGE_SIZE 1073741824
 
 // Macros because we have a lot of these checks
-#define CONFIG_CHECK_EXISTS(option,ptype)	if (option && !file_accessible(option)) { \
+#define CONFIG_CHECK_EXISTS(option, ptype)    if (option && !file_accessible(option)) { \
 		log_critical(#ptype " specified in " #option " is not accessible: { path = %s, error = %s }", option, strerror_r(errno, _tbufptr, _tbuflen)); \
 		result = false; \
-	}
-#define CONFIG_CHECK_FILE_READABLE(x)	CONFIG_CHECK_EXISTS(x,"Filename")
-#define CONFIG_CHECK_DIR_READABLE(x)	CONFIG_CHECK_EXISTS(x,"Directory")
-#define CONFIG_CHECK_READWRITE(option,ptype)	if (option && !file_readwritable(option)) { \
+}
+#define CONFIG_CHECK_FILE_READABLE(x)         CONFIG_CHECK_EXISTS(x, "Filename")
+#define CONFIG_CHECK_DIR_READABLE(x)          CONFIG_CHECK_EXISTS(x, "Directory")
+#define CONFIG_CHECK_READWRITE(option, ptype) if (option && !file_readwritable(option)) { \
 		log_critical(#ptype " specified in " #option " is not accessible for reading and writing: { path = %s, error = %s }", option, strerror_r(errno, _tbufptr, _tbuflen)); \
 		result = false; \
-	}
-#define CONFIG_CHECK_FILE_READWRITE(x)	CONFIG_CHECK_READWRITE(x,"Filename")
-#define CONFIG_CHECK_DIR_READWRITE(x)	CONFIG_CHECK_READWRITE(x,"Directory")
+}
+#define CONFIG_CHECK_FILE_READWRITE(x)        CONFIG_CHECK_READWRITE(x, "Filename")
+#define CONFIG_CHECK_DIR_READWRITE(x)         CONFIG_CHECK_READWRITE(x, "Directory")
 
 
 

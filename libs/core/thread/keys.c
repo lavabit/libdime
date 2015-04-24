@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/thread/keys.c
  *
@@ -19,7 +18,7 @@
  * @param	destructor	if not NULL, an optional function pointer to be called at thread exit to release the data.
  * @return	0 on success, or an error number on failure.
  */
-int tkey_init(pthread_key_t *key, void(*destructor)(void*)) {
+int tkey_init(pthread_key_t *key, void (*destructor)(void *)) {
 
 #ifdef MAGMA_PEDANTIC
 	int result = pthread_key_create(key, destructor);
@@ -37,7 +36,7 @@ int tkey_init(pthread_key_t *key, void(*destructor)(void*)) {
  * @param	key		the pthread key to be queried.
  * @return	NULL on failure or a pointer to the key's thread-specific data value on success.
  */
-void * tkey_get(pthread_key_t key) {
+void *tkey_get(pthread_key_t key) {
 	return pthread_getspecific(key);
 }
 

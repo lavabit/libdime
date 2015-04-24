@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/memory/memory.c
  *
@@ -52,7 +51,7 @@ bool_t mm_empty(const void *block, size_t len) {
  * @param	len	the length, in bytes, of the data to be copied.
  * @return	a pointer to the destination buffer.
  */
-void * mm_copy(void *dst, const void *src, size_t len) {
+void *mm_copy(void *dst, const void *src, size_t len) {
 
 	return memcpy(dst, src, len);
 }
@@ -65,7 +64,7 @@ void * mm_copy(void *dst, const void *src, size_t len) {
  * @param	len		the length, in bytes, of the data buffer to be copied.
  * @return	a pointer to the specified destination buffer.
  */
-void * mm_move(void *dst, void *src, size_t len) {
+void *mm_move(void *dst, void *src, size_t len) {
 
 	return memmove(dst, src, len);
 }
@@ -81,7 +80,7 @@ void * mm_move(void *dst, void *src, size_t len) {
  *
  */
 // QUESTION: Why isn't "set" of type unsigned char?
-void * mm_set(void *block, int_t set, size_t len) {
+void *mm_set(void *block, int_t set, size_t len) {
 
 	volatile char *ptr = block;
 
@@ -103,7 +102,7 @@ void * mm_set(void *block, int_t set, size_t len) {
  * @param	len		the number of zero bytes to write to memory.
  * @see	http://gcc.gnu.org/onlinedocs/gcc-4.4.4/gcc/Function-Attributes.html
  */
-void * mm_wipe(void *block, size_t len) {
+void *mm_wipe(void *block, size_t len) {
 
 #ifdef MAGMA_PEDANTIC
 	if (!block) {
@@ -149,7 +148,7 @@ void mm_free(void *block) {
  * @param	len		the length, in bytes, of the buffer to be duplicated.
  * @result	a freshly allocated buffer containing a copy of the input data.
  */
-void * mm_dupe(void *block, size_t len) {
+void *mm_dupe(void *block, size_t len) {
 
 	void *result = NULL;
 
@@ -178,7 +177,7 @@ void * mm_dupe(void *block, size_t len) {
  * @param	len	the amount of memory to allocate.
  * @return	a valid pointer to the allocated memory on success, or NULL on error.
  */
-void * mm_alloc(size_t len) {
+void *mm_alloc(size_t len) {
 
 	void *result;
 

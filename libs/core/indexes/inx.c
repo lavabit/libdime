@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/indexes/inx.c
  *
@@ -218,7 +217,7 @@ bool_t inx_delete(inx_t *inx, multi_t key) {
  * @param	key		the target key to be found.
  * @return	NULL on failure, or the value associated with the requested key on success.
  */
-void * inx_find(inx_t *inx, multi_t key) {
+void *inx_find(inx_t *inx, multi_t key) {
 
 	void *result;
 
@@ -291,18 +290,18 @@ void inx_cleanup(inx_t *inx) {
 
 /**
  * @brief	Allocate a new inx instance.
- * @param	options	 	a value indicating the inx type. Can be M_INX_TREE for a binary tree, M_INX_LINKED for a linked list, or M_INX_HASHED for a hash tree.
+ * @param	options	        a value indicating the inx type. Can be M_INX_TREE for a binary tree, M_INX_LINKED for a linked list, or M_INX_HASHED for a hash tree.
  * @param	data_free	a function pointer to a routine to free the data associated with an inx record.
  * @return	NULL on failure or a pointer to the newly created inx object on success.
  */
-inx_t * inx_alloc(uint64_t options, void *data_free) {
+inx_t *inx_alloc(uint64_t options, void *data_free) {
 
 	inx_t *inx = NULL;
 
 	switch (options & MAGMA_INDEX_TYPE) {
-/*	case M_INX_TREE:
-		inx = tree_alloc(options, data_free);
-		break; */
+        /*	case M_INX_TREE:
+                        inx = tree_alloc(options, data_free);
+                        break; */
 	case M_INX_LINKED:
 		inx = linked_alloc(options, data_free);
 		break;
@@ -324,4 +323,3 @@ inx_t * inx_alloc(uint64_t options, void *data_free) {
 
 	return inx;
 }
-

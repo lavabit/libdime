@@ -11,8 +11,8 @@
 #include <common/error.h>
 #include "check_common.h"
 
-#define ERRMSG	"error:02001002:system library:fopen:No such file or directory:filename:100"
-#define SEP	" | "
+#define ERRMSG "error:02001002:system library:fopen:No such file or directory:filename:100"
+#define SEP    " | "
 
 START_TEST(test_openssl_error_1)
 {
@@ -66,10 +66,10 @@ END_TEST
 START_TEST(test_openssl_error_longfilename)
 {
 	ERR_clear_error();
-#define fn10	"1234567890"
-#define fn50	fn10 fn10 fn10 fn10 fn10
-#define fn250	fn50 fn50 fn50 fn50 fn50
-#define fn1000	fn250 fn250 fn250 fn250
+#define fn10   "1234567890"
+#define fn50   fn10 fn10 fn10 fn10 fn10
+#define fn250  fn50 fn50 fn50 fn50 fn50
+#define fn1000 fn250 fn250 fn250 fn250
 	ERR_put_error(ERR_LIB_SYS, SYS_F_FOPEN, ERR_R_SYS_LIB, fn1000, 1);
 	ERR_put_error(ERR_LIB_SYS, SYS_F_FOPEN, ERR_R_SYS_LIB, fn1000, 1);
 

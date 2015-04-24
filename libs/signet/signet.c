@@ -10,7 +10,7 @@
  * @param	keysfile	Null terminated string containing the name of the keyfile to be created.
  * @return	Pointer to the newly created and allocated signet_t structure or NULL on error.
 */
-signet_t * _signet_new_keysfile(signet_type_t type, const char *keysfile) {		//TODO currently creating 2 files both of which are storing the pok public and private keys.
+signet_t *_signet_new_keysfile(signet_type_t type, const char *keysfile) {              //TODO currently creating 2 files both of which are storing the pok public and private keys.
 
 	size_t enc_key_size, f_len;
 	unsigned char sign_fid, enc_fid, *ser_enc_pubkey;
@@ -29,24 +29,24 @@ signet_t * _signet_new_keysfile(signet_type_t type, const char *keysfile) {		//T
 
 	switch(type) {
 
-		case SIGNET_TYPE_ORG:
-			sign_fid = SIGNET_ORG_POK;
-			enc_fid = SIGNET_ORG_ENC_KEY;
-			keys_type = KEYS_TYPE_ORG;
-			break;
-		case SIGNET_TYPE_USER:
-			sign_fid = SIGNET_USER_SIGN_KEY;
-			enc_fid = SIGNET_USER_ENC_KEY;
-			keys_type = KEYS_TYPE_USER;
-			break;
-		case SIGNET_TYPE_SSR:
-			sign_fid = SIGNET_SSR_SIGN_KEY;
-			enc_fid = SIGNET_SSR_ENC_KEY;
-			keys_type = KEYS_TYPE_USER;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_BAD_PARAM, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		sign_fid = SIGNET_ORG_POK;
+		enc_fid = SIGNET_ORG_ENC_KEY;
+		keys_type = KEYS_TYPE_ORG;
+		break;
+	case SIGNET_TYPE_USER:
+		sign_fid = SIGNET_USER_SIGN_KEY;
+		enc_fid = SIGNET_USER_ENC_KEY;
+		keys_type = KEYS_TYPE_USER;
+		break;
+	case SIGNET_TYPE_SSR:
+		sign_fid = SIGNET_SSR_SIGN_KEY;
+		enc_fid = SIGNET_SSR_ENC_KEY;
+		keys_type = KEYS_TYPE_USER;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_BAD_PARAM, "invalid signet type");
+		break;
 
 	}
 
@@ -106,7 +106,7 @@ signet_t * _signet_new_keysfile(signet_type_t type, const char *keysfile) {		//T
  * @param	filename	Null terminated string containing the filename of the file containing the signet.
  * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
 */
-signet_t * _signet_from_file(const char *filename) {
+signet_t *_signet_from_file(const char *filename) {
 
 	char *b64_signet = NULL;
 	signet_t *signet;
@@ -119,7 +119,7 @@ signet_t * _signet_from_file(const char *filename) {
 		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not load signet from file: %s", filename);
 	}
 
-	if(!(signet = _signet_deserialize_b64(b64_signet))){
+	if(!(signet = _signet_deserialize_b64(b64_signet))) {
 		free(b64_signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize signet from base64 encoded data");
 	}
@@ -166,7 +166,7 @@ int _signet_to_file(signet_t *signet, const char *filename) {
  * @param	in_len	length of data buffer
  * @return	A pointer to a newly allocated signet_t structure type, NULL on failure.
  */
-signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
+signet_t *_signet_deserialize(const unsigned char *in, size_t in_len) {
 
 	size_t data_size = 0;
 	dime_number_t magic_num;
@@ -181,22 +181,22 @@ signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
 		RET_ERROR_PTR(ERR_UNSPEC, "supplied buffer length was too small for signet input");
 	}
 
-	magic_num = (dime_number_t) _int_no_get_2b((void *)in);
+	magic_num = (dime_number_t)_int_no_get_2b((void *)in);
 
 	switch(magic_num) {
 
-		case DIME_ORG_SIGNET:
-			type = SIGNET_TYPE_ORG;
-			break;
-		case DIME_USER_SIGNET:
-			type = SIGNET_TYPE_USER;
-			break;
-		case DIME_SSR:
-			type = SIGNET_TYPE_SSR;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "input buffer is not a signet");
-			break;
+	case DIME_ORG_SIGNET:
+		type = SIGNET_TYPE_ORG;
+		break;
+	case DIME_USER_SIGNET:
+		type = SIGNET_TYPE_USER;
+		break;
+	case DIME_SSR:
+		type = SIGNET_TYPE_SSR;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "input buffer is not a signet");
+		break;
 
 	}
 
@@ -204,7 +204,7 @@ signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create new signet");
 	}
 
-	data_size = (size_t) _int_no_get_3b(in + 2);
+	data_size = (size_t)_int_no_get_3b(in + 2);
 
 	if(!(signet->data = malloc(data_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -213,12 +213,12 @@ signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
 	}
 
 	memset(signet->data, 0, data_size);
-	memcpy(signet->data, in+SIGNET_HEADER_SIZE, data_size);
-	signet->size = (uint32_t) data_size;
+	memcpy(signet->data, in + SIGNET_HEADER_SIZE, data_size);
+	signet->size = (uint32_t)data_size;
 
 	if(_signet_parse_fields(signet) < 0) {
 		_signet_destroy(signet);
-		RET_ERROR_PTR(ERR_UNSPEC , "could not parse input buffer into signet");
+		RET_ERROR_PTR(ERR_UNSPEC, "could not parse input buffer into signet");
 	}
 
 	return signet;
@@ -230,7 +230,7 @@ signet_t * _signet_deserialize(const unsigned char *in, size_t in_len) {
  * @param	in	Null terminated array of b64 signet data.
  * @return	Pointer to newly allocated signet structure, NULL if failure.
 */
-signet_t * _signet_deserialize_b64(const char *b64_in) {
+signet_t *_signet_deserialize_b64(const char *b64_in) {
 
 	unsigned char *in;
 	size_t size = 0;
@@ -284,7 +284,7 @@ void _signet_destroy(signet_t *signet) {
  * @param	serial_size	Pointer to the value that stores the length of the array returned.
  * @return	Signet serialized into binary data. Null on error.
 */
-unsigned char * _signet_serialize(signet_t *signet, uint32_t *serial_size) {
+unsigned char *_signet_serialize(signet_t *signet, uint32_t *serial_size) {
 
 	unsigned char *serial;
 	dime_number_t number;
@@ -295,18 +295,18 @@ unsigned char * _signet_serialize(signet_t *signet, uint32_t *serial_size) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			number = DIME_ORG_SIGNET;
-			break;
-		case SIGNET_TYPE_USER:
-			number = DIME_USER_SIGNET;
-			break;
-		case SIGNET_TYPE_SSR:
-			number = DIME_SSR;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		number = DIME_ORG_SIGNET;
+		break;
+	case SIGNET_TYPE_USER:
+		number = DIME_USER_SIGNET;
+		break;
+	case SIGNET_TYPE_SSR:
+		number = DIME_SSR;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -319,8 +319,8 @@ unsigned char * _signet_serialize(signet_t *signet, uint32_t *serial_size) {
 
 	memset(serial, 0, *serial_size);
 	_int_no_put_2b(serial, (uint16_t)number);
-	_int_no_put_3b(serial+2, signet->size);
-	memcpy(serial+SIGNET_HEADER_SIZE, signet->data, signet->size);
+	_int_no_put_3b(serial + 2, signet->size);
+	memcpy(serial + SIGNET_HEADER_SIZE, signet->data, signet->size);
 
 	return serial;
 }
@@ -331,7 +331,7 @@ unsigned char * _signet_serialize(signet_t *signet, uint32_t *serial_size) {
  * @param	signet		Pointer to the target signet.
  * @return	Signet serialized into b64 data. Null on error.
 */
-char * _signet_serialize_b64(signet_t *signet) {
+char *_signet_serialize_b64(signet_t *signet) {
 
 	unsigned char *serial;
 	uint32_t serial_size = 0;
@@ -379,29 +379,29 @@ void _signet_dump(FILE *fp, signet_t *signet) {
 
 	switch(signet_type) {
 
-		case SIGNET_TYPE_ORG:
-			type = "organizational";
-			break;
-		case SIGNET_TYPE_USER:
-			type = "user";
-			break;
-		case SIGNET_TYPE_SSR:
-			type = "SSR";
-			break;
-		default:
-			fprintf(fp, "--- Unrecognized signet type (%u) could not be dumped.\n", signet_type);
+	case SIGNET_TYPE_ORG:
+		type = "organizational";
+		break;
+	case SIGNET_TYPE_USER:
+		type = "user";
+		break;
+	case SIGNET_TYPE_SSR:
+		type = "SSR";
+		break;
+	default:
+		fprintf(fp, "--- Unrecognized signet type (%u) could not be dumped.\n", signet_type);
 
-			if (get_last_error()) {
-				dump_error_stack();
-				_clear_error_stack();
-			}
+		if (get_last_error()) {
+			dump_error_stack();
+			_clear_error_stack();
+		}
 
-			return;
-			break;
+		return;
+		break;
 
 	}
 
-	fprintf(fp, "--- version: %d, size = %d, signet type = %s\n", version, signet->size+4, type);
+	fprintf(fp, "--- version: %d, size = %d, signet type = %s\n", version, signet->size + 4, type);
 
 	for(i = 0; i < SIGNET_FID_MAX + 1; ++i) {
 
@@ -439,7 +439,7 @@ void _signet_dump(FILE *fp, signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @param	fid	The target field id.
  * @return	The number of fields with specified field id. On various errors returns -1.
- * 		NOTE: int overflow should not occur because of field size lower and signet size upper bounds.
+ *              NOTE: int overflow should not occur because of field size lower and signet size upper bounds.
 */
 int _signet_get_count_fid(const signet_t *signet, unsigned char fid) {
 
@@ -512,24 +512,24 @@ signet_state_t _signet_get_state(const signet_t *signet) {
 
 	switch(type) {
 
-		case SIGNET_TYPE_ORG:
-			keys = signet_org_field_keys;
-			full_sig = SIGNET_ORG_FULL_SIG;
-			core_sig = SIGNET_ORG_CORE_SIG;
-			break;
-		case SIGNET_TYPE_USER:
-			keys = signet_user_field_keys;
-			full_sig = SIGNET_USER_FULL_SIG;
-			core_sig = SIGNET_USER_CORE_SIG;
-			break;
-		case SIGNET_TYPE_SSR:
-			keys = signet_ssr_field_keys;
-			full_sig = 0;
-			core_sig = 0;
-			break;
-		default:
-			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		keys = signet_org_field_keys;
+		full_sig = SIGNET_ORG_FULL_SIG;
+		core_sig = SIGNET_ORG_CORE_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		keys = signet_user_field_keys;
+		full_sig = SIGNET_USER_FULL_SIG;
+		core_sig = SIGNET_USER_CORE_SIG;
+		break;
+	case SIGNET_TYPE_SSR:
+		keys = signet_ssr_field_keys;
+		full_sig = 0;
+		core_sig = 0;
+		break;
+	default:
+		RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -570,7 +570,7 @@ signet_state_t _signet_get_state(const signet_t *signet) {
 	// TODO: there is substantial potential for code-reuse here for each _signet_fid_exists/_signet_upto_fid_check_required/
 	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
 
-		if((res = _signet_fid_exists(signet, full_sig) )) {
+		if((res = _signet_fid_exists(signet, full_sig))) {
 
 			if(res < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
@@ -623,7 +623,7 @@ signet_state_t _signet_get_state(const signet_t *signet) {
 
 	if(type == SIGNET_TYPE_SSR) {
 
-		if((res = _signet_fid_exists(signet, SIGNET_USER_SSR_SIG) )) {
+		if((res = _signet_fid_exists(signet, SIGNET_USER_SSR_SIG))) {
 
 			if(res < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
@@ -654,7 +654,7 @@ signet_type_t _signet_get_type(const signet_t *signet) {
 		RET_ERROR_CUST(SIGNET_TYPE_ERROR, ERR_BAD_PARAM, NULL);
 	}
 
-	return (signet_type_t) signet->type;
+	return (signet_type_t)signet->type;
 }
 
 
@@ -668,7 +668,7 @@ signet_type_t _signet_get_type(const signet_t *signet) {
  * @param	out_len	Pointer to the length of returned array.
  * @return	Array containing the binary data of the specified field, NULL if an error occurs. Caller is responsible for freeing memory.
 */
-unsigned char * _signet_fetch_fid_num(const signet_t *signet, unsigned char fid, uint32_t num, size_t *out_len) {
+unsigned char *_signet_fetch_fid_num(const signet_t *signet, unsigned char fid, uint32_t num, size_t *out_len) {
 
 	int res;
 	unsigned char *data;
@@ -719,10 +719,10 @@ unsigned char * _signet_fetch_fid_num(const signet_t *signet, unsigned char fid,
  * @param	signet		Pointer to the target signet.
  * @param	name_len	Length of the passed array containing the length of the target field name.
  * @param	name		Array containing the name of the desired undefined field.
- * @param	data_size 	Pointer to the size of the array that gets returned by the function.
+ * @param	data_size       Pointer to the size of the array that gets returned by the function.
  * @return	The array containing the data from the specified field or NULL in case of failure such as if the field was not found.
 */
-unsigned char *	_signet_fetch_undef_name(const signet_t *signet, size_t name_len, const unsigned char *name, size_t *data_size) {
+unsigned char *_signet_fetch_undef_name(const signet_t *signet, size_t name_len, const unsigned char *name, size_t *data_size) {
 
 	int res;
 	unsigned char undef_id, *data;
@@ -734,15 +734,15 @@ unsigned char *	_signet_fetch_undef_name(const signet_t *signet, size_t name_len
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			undef_id = SIGNET_ORG_UNDEFINED;
-			break;
-		case SIGNET_TYPE_USER:
-			undef_id = SIGNET_USER_UNDEFINED;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "signet type does not support undefined fields");
-			break;
+	case SIGNET_TYPE_ORG:
+		undef_id = SIGNET_ORG_UNDEFINED;
+		break;
+	case SIGNET_TYPE_USER:
+		undef_id = SIGNET_USER_UNDEFINED;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "signet type does not support undefined fields");
+		break;
 
 	}
 
@@ -762,7 +762,7 @@ unsigned char *	_signet_fetch_undef_name(const signet_t *signet, size_t name_len
 
 		if(temp->name_size == name_len) {
 
-			if(!memcmp(temp->signet->data+temp->name_offset, name, name_len)) {
+			if(!memcmp(temp->signet->data + temp->name_offset, name, name_len)) {
 
 				if(!(data = malloc(temp->data_size))) {
 					PUSH_ERROR_SYSCALL("malloc");
@@ -793,7 +793,7 @@ unsigned char *	_signet_fetch_undef_name(const signet_t *signet, size_t name_len
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to the target ed25519 public key.
 */
-ED25519_KEY * _signet_get_signkey(const signet_t *signet) {
+ED25519_KEY *_signet_get_signkey(const signet_t *signet) {
 
 	size_t key_size;
 	unsigned char fid, *serial_key;
@@ -805,18 +805,18 @@ ED25519_KEY * _signet_get_signkey(const signet_t *signet) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_POK;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_SIGN_KEY;
-			break;
-		case SIGNET_TYPE_SSR:
-			fid = SIGNET_SSR_SIGN_KEY;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_POK;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_SIGN_KEY;
+		break;
+	case SIGNET_TYPE_SSR:
+		fid = SIGNET_SSR_SIGN_KEY;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -840,7 +840,7 @@ ED25519_KEY * _signet_get_signkey(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to the target encryption public key.
 */
-EC_KEY * 	_signet_get_enckey(const signet_t *signet) {
+EC_KEY *_signet_get_enckey(const signet_t *signet) {
 
 	size_t key_size;
 	unsigned char fid, *serial_key;
@@ -852,18 +852,18 @@ EC_KEY * 	_signet_get_enckey(const signet_t *signet) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_ENC_KEY;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_ENC_KEY;
-			break;
-		case SIGNET_TYPE_SSR:
-			fid = SIGNET_SSR_ENC_KEY;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_ENC_KEY;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_ENC_KEY;
+		break;
+	case SIGNET_TYPE_SSR:
+		fid = SIGNET_SSR_ENC_KEY;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -888,7 +888,7 @@ EC_KEY * 	_signet_get_enckey(const signet_t *signet) {
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated arrays of ed25519 signing keys that have been flagged for use as message signing keys. Caller is responsible for freeing memory.
 */
-unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
+unsigned char **_signet_get_msg_sign_keys(const signet_t *signet) {
 
 	int res;
 	size_t kbuflen, key_size, num_keys = 1;
@@ -928,7 +928,7 @@ unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
 	}
 
 	// TODO: this should possibly be changed to leverage the ptr_chain* functions from libcommon.
-	kbuflen = (num_keys+1) * sizeof(unsigned char *);
+	kbuflen = (num_keys + 1) * sizeof(unsigned char *);
 
 	if(!(keys = malloc(kbuflen))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -992,7 +992,7 @@ unsigned char ** _signet_get_msg_sign_keys(const signet_t *signet) {
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 signing keys that have been flagged for use as signet signing keys. Caller is responsible for freeing memory.
 */
-unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
+unsigned char **_signet_get_signet_sign_keys(const signet_t *signet) {
 
 	int res;
 	size_t kbuflen, key_size, num_keys = 1;
@@ -1031,7 +1031,7 @@ unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
 		}
 	}
 
-	kbuflen = (num_keys+1) * sizeof(unsigned char *);
+	kbuflen = (num_keys + 1) * sizeof(unsigned char *);
 
 	if(!(keys = malloc(kbuflen))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -1096,7 +1096,7 @@ unsigned char ** _signet_get_signet_sign_keys(const signet_t *signet) {
 
 /**
  * @brief	Adds a field to the target field. If the new field can not be named explicitly, name_size and name will be ignored.
- * 		If the new field requires an explicit name function will fail if name_size is 0 or name is NULL.
+ *              If the new field requires an explicit name function will fail if name_size is 0 or name is NULL.
  * @param	signet		Pointer to the target signet.
  * @param	fid		Field id of the field to be added.
  * @param	name_size	Size of the array containing the field name.
@@ -1120,18 +1120,18 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			keys = signet_org_field_keys;
-			break;
-		case SIGNET_TYPE_USER:
-			keys = signet_user_field_keys;
-			break;
-		case SIGNET_TYPE_SSR:
-			keys = signet_ssr_field_keys;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		keys = signet_org_field_keys;
+		break;
+	case SIGNET_TYPE_USER:
+		keys = signet_user_field_keys;
+		break;
+	case SIGNET_TYPE_SSR:
+		keys = signet_ssr_field_keys;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -1156,26 +1156,26 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 
 	switch(keys[fid].bytes_data_size) {
 
-		case 0:
+	case 0:
 
-			if(data_size != keys[fid].data_size)  {
-				RET_ERROR_INT(ERR_BAD_PARAM, "signet field data size did not match required field data size");
-			}
+		if(data_size != keys[fid].data_size) {
+			RET_ERROR_INT(ERR_BAD_PARAM, "signet field data size did not match required field data size");
+		}
 
-			field_size += keys[fid].data_size;
-			break;
-		case 1:
-			maxsize = UNSIGNED_MAX_1_BYTE;
-			break;
-		case 2:
-			maxsize = UNSIGNED_MAX_2_BYTE;
-			break;
-		case 3:
-			maxsize = UNSIGNED_MAX_3_BYTE;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "inalid signet field data size");
-			break;
+		field_size += keys[fid].data_size;
+		break;
+	case 1:
+		maxsize = UNSIGNED_MAX_1_BYTE;
+		break;
+	case 2:
+		maxsize = UNSIGNED_MAX_2_BYTE;
+		break;
+	case 3:
+		maxsize = UNSIGNED_MAX_3_BYTE;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "inalid signet field data size");
+		break;
 
 	}
 
@@ -1201,7 +1201,7 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 		RET_ERROR_INT(ERR_NOMEM, NULL);
 	}
 
-	memset(signet->data+signet->size, 0, field_size);
+	memset(signet->data + signet->size, 0, field_size);
 	at = (size_t)signet->size;
 
 	for(i = fid + 1; i < SIGNET_FID_MAX; ++i) {
@@ -1230,27 +1230,27 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 
 	if(keys[fid].bytes_name_size) {
 		signet->data[at++] = name_size;
-		memcpy(signet->data+at, name, name_size);
+		memcpy(signet->data + at, name, name_size);
 		at += name_size;
 	}
 
 	switch(keys[fid].bytes_data_size) {
 
-		case 1:
-			signet->data[at] = (unsigned char)data_size;
-			break;
-		case 2:
-			_int_no_put_2b(signet->data+at, (uint16_t)data_size);
-			break;
-		case 3:
-			_int_no_put_3b(signet->data+at, (uint32_t)data_size);
-			break;
+	case 1:
+		signet->data[at] = (unsigned char)data_size;
+		break;
+	case 2:
+		_int_no_put_2b(signet->data + at, (uint16_t)data_size);
+		break;
+	case 3:
+		_int_no_put_3b(signet->data + at, (uint32_t)data_size);
+		break;
 
 	}
 
 	at += keys[fid].bytes_data_size;
 	if (data != NULL) {
-		memcpy(signet->data+at, data, data_size);
+		memcpy(signet->data + at, data, data_size);
 		at += data_size;
 	}
 
@@ -1358,7 +1358,7 @@ int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 
 	offset = temp->id_offset;
 
-	if((field_size = _signet_field_size((const signet_field_t*)temp)) < 0) {
+	if((field_size = _signet_field_size((const signet_field_t *)temp)) < 0) {
 		_signet_fid_destroy(field);
 		RET_ERROR_INT(ERR_UNSPEC, "could not calculate signet field size");
 	}
@@ -1410,15 +1410,15 @@ int _signet_remove_undef_name(signet_t *signet, size_t name_len, const unsigned 
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_UNDEFINED;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_UNDEFINED;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_UNDEFINED;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_UNDEFINED;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -1442,9 +1442,9 @@ int _signet_remove_undef_name(signet_t *signet, size_t name_len, const unsigned 
 
 		if(temp->name_size == (unsigned char)name_len) {
 
-			if(memcmp(temp->signet->data+temp->name_offset, name, name_len) == 0) {
+			if(memcmp(temp->signet->data + temp->name_offset, name, name_len) == 0) {
 				offset = temp->id_offset;
-				field_size = _signet_field_size((const signet_field_t*)temp);
+				field_size = _signet_field_size((const signet_field_t *)temp);
 				break;
 			}
 		}
@@ -1533,32 +1533,32 @@ int _signet_set_id(signet_t *signet, const char *id) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
+	case SIGNET_TYPE_ORG:
 
-			if(strchr(id, '@')) {
-				RET_ERROR_INT(ERR_BAD_PARAM, "org signet can not have an id with the '@' symbol");
-			}
+		if(strchr(id, '@')) {
+			RET_ERROR_INT(ERR_BAD_PARAM, "org signet can not have an id with the '@' symbol");
+		}
 
-			fid = SIGNET_ORG_ID;
-			break;
-		case SIGNET_TYPE_USER:
+		fid = SIGNET_ORG_ID;
+		break;
+	case SIGNET_TYPE_USER:
 
-			if(!strchr(id, '@')) {
-				RET_ERROR_INT(ERR_BAD_PARAM, "user signet id must contain the '@' symbol");
-			}
+		if(!strchr(id, '@')) {
+			RET_ERROR_INT(ERR_BAD_PARAM, "user signet id must contain the '@' symbol");
+		}
 
-			fid = SIGNET_USER_ID;
-			break;
-		case SIGNET_TYPE_SSR:
-			RET_ERROR_INT(ERR_UNSPEC, "SSR does not have an id field");
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
-			break;
+		fid = SIGNET_USER_ID;
+		break;
+	case SIGNET_TYPE_SSR:
+		RET_ERROR_INT(ERR_UNSPEC, "SSR does not have an id field");
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
-	while((result = _signet_fid_exists(signet,fid))) {
+	while((result = _signet_fid_exists(signet, fid))) {
 
 		if(result < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "error searching for field in signet");
@@ -1606,7 +1606,7 @@ int _signet_set_type(signet_t *signet, signet_type_t type) {
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to a stripped signet on success, NULL on failure.
 */
-signet_t * _signet_core_split(const signet_t *signet) {
+signet_t *_signet_core_split(const signet_t *signet) {
 
 	unsigned char fid, *data = NULL, *split;
 	size_t data_size, split_size;
@@ -1619,17 +1619,17 @@ signet_t * _signet_core_split(const signet_t *signet) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_CORE_SIG;
-			number = DIME_ORG_SIGNET;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_CORE_SIG;
-			number = DIME_USER_SIGNET;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_CORE_SIG;
+		number = DIME_ORG_SIGNET;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_CORE_SIG;
+		number = DIME_USER_SIGNET;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
+		break;
 
 	}
 
@@ -1655,10 +1655,10 @@ signet_t * _signet_core_split(const signet_t *signet) {
 
 	memset(split, 0, split_size);
 	_int_no_put_2b(split, (uint16_t)number);
-	_int_no_put_3b(split+2, (uint32_t)data_size);
+	_int_no_put_3b(split + 2, (uint32_t)data_size);
 
 	if(data) {
-		memcpy(split+SIGNET_HEADER_SIZE, data, data_size);
+		memcpy(split + SIGNET_HEADER_SIZE, data, data_size);
 		free(data);
 	}
 
@@ -1678,7 +1678,7 @@ signet_t * _signet_core_split(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to a stripped signet on success, NULL on failure.
 */
-signet_t * _signet_user_split(const signet_t *signet) {
+signet_t *_signet_user_split(const signet_t *signet) {
 
 	unsigned char *data = NULL, *split;
 	size_t data_size, split_size;
@@ -1715,7 +1715,7 @@ signet_t * _signet_user_split(const signet_t *signet) {
 
 	memset(split, 0, split_size);
 	_int_no_put_2b(split, (uint16_t)number);
-	_int_no_put_3b(split+2, (uint32_t)data_size);
+	_int_no_put_3b(split + 2, (uint32_t)data_size);
 
 	if(data) {
 		memcpy(split + SIGNET_HEADER_SIZE, data, data_size);
@@ -1740,7 +1740,7 @@ signet_t * _signet_user_split(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure;
 */
-char *	_signet_full_fingerprint(const signet_t *signet) {
+char *_signet_full_fingerprint(const signet_t *signet) {
 
 	char *b64_fingerprint;
 
@@ -1766,7 +1766,7 @@ char *	_signet_full_fingerprint(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure.
 */
-char * _signet_core_fingerprint(const signet_t *signet) {
+char *_signet_core_fingerprint(const signet_t *signet) {
 
 	char *b64_fingerprint;
 	unsigned char fid;
@@ -1777,15 +1777,15 @@ char * _signet_core_fingerprint(const signet_t *signet) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_CORE_SIG;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_CORE_SIG;
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_CORE_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_CORE_SIG;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
+		break;
 
 	}
 
@@ -1803,7 +1803,7 @@ char * _signet_core_fingerprint(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on error.
 */
-char *	_signet_user_fingerprint(const signet_t *signet) {
+char *_signet_user_fingerprint(const signet_t *signet) {
 
 	char *b64_fingerprint;
 
@@ -1828,7 +1828,7 @@ char *	_signet_user_fingerprint(const signet_t *signet) {
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint.
 */
-char * 	_signet_ssr_fingerprint(const signet_t *signet) {
+char *_signet_ssr_fingerprint(const signet_t *signet) {
 
 	char *b64_fingerprint;
 	signet_type_t type;
@@ -1857,15 +1857,15 @@ char * 	_signet_ssr_fingerprint(const signet_t *signet) {
  * @brief	Verifies a user signet, org signet or ssr for syntax, context and cryptographic validity. Does NOT perform chain of custody validation.
  * @param	signet		Pointer to the target signet_t structure.
  * @param	orgsig		Pointer to the org signet associated with the target signet IF the target signet is a user signet.
- * 				If target signet is not a user signet, orgsig should be passed as NULL.
+ *                              If target signet is not a user signet, orgsig should be passed as NULL.
  * @param	dime_pok	A NULL terminated array of pointers to ed25519 POKs from the dime record associated with the target signet if the target signet is an org signet.
- * 				If the target signet is not an org signet dime_pok should be passed as NULL;
+ *                              If the target signet is not an org signet dime_pok should be passed as NULL;
  * @return	Signet state as a signet_state_t enum type. SS_UNKNOWN on error.
 */
-signet_state_t 	_signet_full_verify(const signet_t *signet, const signet_t *orgsig, const unsigned char ** dime_pok) {
+signet_state_t  _signet_full_verify(const signet_t *signet, const signet_t *orgsig, const unsigned char **dime_pok) {
 
 	int i, res, res2, res3, pok_num;
-	unsigned char *user_key, ** org_keys;
+	unsigned char *user_key, **org_keys;
 	const char *errmsg = NULL;
 	size_t key_size;
 	signet_state_t signet_state, result = SS_FULL;
@@ -1949,15 +1949,15 @@ signet_state_t 	_signet_full_verify(const signet_t *signet, const signet_t *orgs
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not retrieve signing keys from organizational signet");
 		}
 
-		if((res = _signet_verify_signature_multikey(signet, SIGNET_USER_INITIAL_SIG, (const unsigned char **) org_keys)) > 0) {
+		if((res = _signet_verify_signature_multikey(signet, SIGNET_USER_INITIAL_SIG, (const unsigned char **)org_keys)) > 0) {
 
 			if(signet_state == SS_USER_CORE) {
 				result = SS_USER_CORE;
-			} else if((res2 = _signet_verify_signature_multikey(signet, SIGNET_USER_CORE_SIG, (const unsigned char **) org_keys)) > 0) {
+			} else if((res2 = _signet_verify_signature_multikey(signet, SIGNET_USER_CORE_SIG, (const unsigned char **)org_keys)) > 0) {
 
 				if(signet_state == SS_CORE) {
 					result = SS_CORE;
-				} else if ((res3 = _signet_verify_signature_multikey(signet, SIGNET_USER_FULL_SIG, (const unsigned char **) org_keys)) < 0) {
+				} else if ((res3 = _signet_verify_signature_multikey(signet, SIGNET_USER_FULL_SIG, (const unsigned char **)org_keys)) < 0) {
 					result = SS_UNKNOWN;
 					errmsg = "encountered error during full signature field validation";
 				} else if(!res3) {
@@ -1967,7 +1967,7 @@ signet_state_t 	_signet_full_verify(const signet_t *signet, const signet_t *orgs
 			} else if (res2 < 0) {
 				result = SS_UNKNOWN;
 				errmsg = "encountered error during core signature field validation";
-			}  else if(!res2) {
+			} else if(!res2) {
 				result = SS_UNVERIFIED;
 			}
 
@@ -2047,7 +2047,7 @@ int _signet_verify_signature_key(const signet_t *signet, unsigned char sig_fid, 
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(data = _signet_upto_fid_serialize(signet, sig_fid-1, &data_size))) {
+	if(!(data = _signet_upto_fid_serialize(signet, sig_fid - 1, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not get signet fields for signature operation");
 	}
 
@@ -2082,7 +2082,7 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 
 	int i = 0, j = 0, res = 0, result = 0;
 	unsigned char **keys = NULL;
-	ED25519_KEY * key = NULL;
+	ED25519_KEY *key = NULL;
 	signet_type_t sigtype;
 
 	if(!signet || !sig || !buf || !buf_len) {
@@ -2090,7 +2090,7 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 	}
 
 	if ((sigtype = _signet_get_type(signet)) == SIGNET_TYPE_SSR) {
-			RET_ERROR_INT(ERR_UNSPEC, "SSR cannot be used for user message signature verification");
+		RET_ERROR_INT(ERR_UNSPEC, "SSR cannot be used for user message signature verification");
 	} else if (sigtype == SIGNET_TYPE_USER) {
 
 		if(!(key = _signet_get_signkey(signet))) {
@@ -2101,7 +2101,7 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 		_free_ed25519_key(key);
 
 		if(res < 0) {
-			RET_ERROR_INT(ERR_UNSPEC, "error occurred while verifying signature"); 
+			RET_ERROR_INT(ERR_UNSPEC, "error occurred while verifying signature");
 		}
 
 		return res;
@@ -2170,15 +2170,15 @@ int _signet_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_FULL_SIG;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_FULL_SIG;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_FULL_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_FULL_SIG;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
+		break;
 
 	}
 
@@ -2206,15 +2206,15 @@ int _signet_sign_core_sig(signet_t *signet, ED25519_KEY *key) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			fid = SIGNET_ORG_CORE_SIG;
-			break;
-		case SIGNET_TYPE_USER:
-			fid = SIGNET_USER_CORE_SIG;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_CORE_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_CORE_SIG;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
+		break;
 
 	}
 
@@ -2316,7 +2316,7 @@ int _signet_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	type	signet type user org or sss (SIGNET_TYPE_USER, SIGNET_TYPE_ORG or SIGNET_TYPE_SSR)
  * @return	A pointer to a newly allocated signet_t structure type, NULL if failure.
 */
-signet_t * _signet_create(signet_type_t type) {
+signet_t *_signet_create(signet_type_t type) {
 
 	signet_t *signet;
 
@@ -2342,7 +2342,7 @@ signet_t * _signet_create(signet_type_t type) {
  * @param	slen	length of in
  * @return	0 if the checks passed, -1 if at least one failed.
 */
-int _signet_check_length(const unsigned char* in, uint32_t slen) {
+int _signet_check_length(const unsigned char *in, uint32_t slen) {
 
 	uint32_t signet_length;
 
@@ -2365,7 +2365,7 @@ int _signet_check_length(const unsigned char* in, uint32_t slen) {
  * @param	signet	A pointer to a signet_t object to be parsed.
  * @return	0 if parsing finished successfully, -1 if it failed.
 */
-int _signet_parse_fields(signet_t* signet) {
+int _signet_parse_fields(signet_t *signet) {
 
 	uint32_t field_size, name_size;
 	unsigned int at = 0;
@@ -2377,24 +2377,24 @@ int _signet_parse_fields(signet_t* signet) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			keys = signet_org_field_keys;
-			break;
-		case SIGNET_TYPE_USER:
-			keys = signet_user_field_keys;
-			break;
-		case SIGNET_TYPE_SSR:
-			keys = signet_ssr_field_keys;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "incorrect signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		keys = signet_org_field_keys;
+		break;
+	case SIGNET_TYPE_USER:
+		keys = signet_user_field_keys;
+		break;
+	case SIGNET_TYPE_SSR:
+		keys = signet_ssr_field_keys;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "incorrect signet type");
+		break;
 
 	}
 
-	for(int i=0; i<SIGNET_FID_MAX + 1; ++i) {
+	for(int i = 0; i < SIGNET_FID_MAX + 1; ++i) {
 
-		if(at == signet->size){
+		if(at == signet->size) {
 			break;
 		}
 
@@ -2426,11 +2426,11 @@ int _signet_parse_fields(signet_t* signet) {
 
 			if(i == signet->data[at]) {
 
-				if(at+1 >= signet->size) {
+				if(at + 1 >= signet->size) {
 					RET_ERROR_INT(ERR_UNSPEC, "signet size error");
 				}
 
-				signet->fields[i] = (at+1);
+				signet->fields[i] = (at + 1);
 
 				while(at < signet->size && i == signet->data[at]) {
 					++at;
@@ -2438,7 +2438,7 @@ int _signet_parse_fields(signet_t* signet) {
 
 					if(key.flags) {
 
-						if(at+1 >= signet->size) {
+						if(at + 1 >= signet->size) {
 							RET_ERROR_INT(ERR_UNSPEC, "signet size error");
 						}
 
@@ -2447,7 +2447,7 @@ int _signet_parse_fields(signet_t* signet) {
 
 					if(key.bytes_name_size) {
 
-						if(at+1 >= signet->size) {
+						if(at + 1 >= signet->size) {
 							RET_ERROR_INT(ERR_UNSPEC, "signet size error");
 						}
 
@@ -2469,14 +2469,14 @@ int _signet_parse_fields(signet_t* signet) {
 					} else if(key.bytes_data_size == 1) {
 						field_size = (unsigned char)signet->data[at];
 					} else if(key.bytes_data_size == 2) {
-						field_size = _int_no_get_2b(signet->data+at);
+						field_size = _int_no_get_2b(signet->data + at);
 					} else if(key.bytes_data_size == 3) {
-						field_size = _int_no_get_3b(signet->data+at);
+						field_size = _int_no_get_3b(signet->data + at);
 					}
 
 					at += key.bytes_data_size;
 
-					if(at+field_size > signet->size) {
+					if(at + field_size > signet->size) {
 						RET_ERROR_INT(ERR_UNSPEC, "signet size error");
 					}
 
@@ -2503,7 +2503,7 @@ int _signet_parse_fields(signet_t* signet) {
  * @param	signet	Pointer to the target signet.
  * @param	fid	The target field id.
  * @return	The length of the serialized fields, returns -1 on errors and on non-existing fields.
- * 		NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
+ *              NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
 */
 int _signet_fid_size(const signet_t *signet, unsigned char fid) {
 
@@ -2514,7 +2514,7 @@ int _signet_fid_size(const signet_t *signet, unsigned char fid) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if((res = _signet_fid_exists(signet,fid)) < 0) {
+	if((res = _signet_fid_exists(signet, fid)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error searching for field in signet");
 	} else if(!res) {
 		RET_ERROR_INT(ERR_UNSPEC, "specified field does not exist");
@@ -2548,7 +2548,7 @@ int _signet_fid_size(const signet_t *signet, unsigned char fid) {
  * @brief	Calculates the size of the target signet when serialized.
  * @param	signet	Pointer to the target signet.
  * @return	The size of signet when serialized, if no signet was passed returns -1.
- * 		NOTE: int overflow should not occur signet size s bounded well below 2^31 bits.
+ *              NOTE: int overflow should not occur signet size s bounded well below 2^31 bits.
 */
 int _signet_get_serial_size(const signet_t *signet) {
 
@@ -2565,9 +2565,9 @@ int _signet_get_serial_size(const signet_t *signet) {
  * @param	signet		Pointer to the target signet.
  * @param	dime_pok	A NULL pointer terminated array of pointers to POKs from the dime record.
  * @return	The index + 1 number of the POK from dime_pok that matches the signet POK. If an error occurs returns -1. If no POKs match returns 0.
- * 		NOTE: Could int overflow if more than 2^31 elements are passed in the dime_pok array.
+ *              NOTE: Could int overflow if more than 2^31 elements are passed in the dime_pok array.
 */
-int _signet_pok_compare(const signet_t *signet, const unsigned char ** dime_pok) {
+int _signet_pok_compare(const signet_t *signet, const unsigned char **dime_pok) {
 
 	int i = 0, res;
 	size_t out_len;
@@ -2674,7 +2674,7 @@ int _signet_verify_signature_multikey(const signet_t *signet, unsigned char sig_
  * @param	fid	Field id upto and including which the signet should be fingerprinted.
  * @return	NULL terminated string to the SHA512 base64 encoded unpadded fingerprint. NULL on error.
 */
-char * _signet_upto_fid_fingerprint(const signet_t *signet, unsigned char fid) {
+char *_signet_upto_fid_fingerprint(const signet_t *signet, unsigned char fid) {
 
 	char *b64_fingerprint;
 	unsigned char *data, hash[SHA_512_SIZE];
@@ -2713,7 +2713,7 @@ char * _signet_upto_fid_fingerprint(const signet_t *signet, unsigned char fid) {
  * @param	fid	Field id that specifies the target fields.
  * @return	Pointer to the first signet_field_t structure in the created linked list. Null if error occurred.
 */
-signet_field_t * _signet_fid_create(const signet_t *signet, unsigned char fid) {
+signet_field_t *_signet_fid_create(const signet_t *signet, unsigned char fid) {
 
 	int res;
 	uint32_t offset;
@@ -2735,18 +2735,18 @@ signet_field_t * _signet_fid_create(const signet_t *signet, unsigned char fid) {
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			key = &(signet_org_field_keys[fid]);
-			break;
-		case SIGNET_TYPE_USER:
-			key = &(signet_user_field_keys[fid]);
-			break;
-		case SIGNET_TYPE_SSR:
-			key = &(signet_ssr_field_keys[fid]);
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		key = &(signet_org_field_keys[fid]);
+		break;
+	case SIGNET_TYPE_USER:
+		key = &(signet_user_field_keys[fid]);
+		break;
+	case SIGNET_TYPE_SSR:
+		key = &(signet_ssr_field_keys[fid]);
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
+		break;
 	}
 
 	if(!key->name) {
@@ -2782,7 +2782,7 @@ signet_field_t * _signet_fid_create(const signet_t *signet, unsigned char fid) {
  * @param	key	Pointer to the field id specific key that contains information on the format of the field data.
  * @return	Pointer to the created field structure, NULL on failure.
 */
-signet_field_t * _signet_field_create(const signet_t *signet, uint32_t offset, signet_field_key_t *key) {
+signet_field_t *_signet_field_create(const signet_t *signet, uint32_t offset, signet_field_key_t *key) {
 
 	uint32_t at = offset;
 	signet_field_t *field;
@@ -2791,7 +2791,7 @@ signet_field_t * _signet_field_create(const signet_t *signet, uint32_t offset, s
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if((at+1) >= signet->size) {
+	if((at + 1) >= signet->size) {
 		RET_ERROR_PTR(ERR_UNSPEC, "offset exceeded signet size");
 	}
 
@@ -2829,28 +2829,28 @@ signet_field_t * _signet_field_create(const signet_t *signet, uint32_t offset, s
 
 	switch(key->bytes_data_size) {
 
-		case 0:
-			field->data_size = key->data_size;
-			break;
-		case 1:
-			field->data_size = (uint32_t)signet->data[at];
-			break;
-		case 2:
-			if(at + 1 >= signet->size) {
-				_signet_field_destroy(field);
-				RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
-			}
+	case 0:
+		field->data_size = key->data_size;
+		break;
+	case 1:
+		field->data_size = (uint32_t)signet->data[at];
+		break;
+	case 2:
+		if(at + 1 >= signet->size) {
+			_signet_field_destroy(field);
+			RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
+		}
 
-			field->data_size = _int_no_get_2b(signet->data+at);
-			break;
-		case 3:
-			if(at + 2 >= signet->size) {
-				_signet_field_destroy(field);
-				RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
-			}
+		field->data_size = _int_no_get_2b(signet->data + at);
+		break;
+	case 3:
+		if(at + 2 >= signet->size) {
+			_signet_field_destroy(field);
+			RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
+		}
 
-			field->data_size = _int_no_get_3b(signet->data+at);
-			break;
+		field->data_size = _int_no_get_3b(signet->data + at);
+		break;
 
 	}
 
@@ -2894,7 +2894,7 @@ void _signet_fid_destroy(signet_field_t *field) {
  * @param	field	Pointer to the signet_field_t to be destroyed.
  * @return	Pointer to the signet_field_t that was the destroyed structure was linked to, NULL if the destroyed structure was the last/only structure in the linked list, or error.
 */
-signet_field_t * _signet_field_destroy(signet_field_t *field) {
+signet_field_t *_signet_field_destroy(signet_field_t *field) {
 
 	signet_field_t *field_next = (signet_field_t *)field->next;
 
@@ -2928,55 +2928,55 @@ int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 
 	if(!(field->key->bytes_name_size)) {
 
-		if(!(name = malloc(strlen(field->key->name)+1))) {
+		if(!(name = malloc(strlen(field->key->name) + 1))) {
 			PUSH_ERROR_SYSCALL("malloc");
 			RET_ERROR_INT(ERR_NOMEM, NULL);
 		}
 
-		memset(name, 0, strlen(field->key->name)+1);
+		memset(name, 0, strlen(field->key->name) + 1);
 		memcpy(name, field->key->name, strlen(field->key->name));
 	} else {
 
-		if(!(name = malloc(field->name_size+1))) {
+		if(!(name = malloc(field->name_size + 1))) {
 			PUSH_ERROR_SYSCALL("malloc");
 			RET_ERROR_INT(ERR_NOMEM, NULL);
 		}
 
-		memset(name, 0, field->name_size+1);
-		memcpy(name, field->signet->data+field->name_offset, field->name_size);
+		memset(name, 0, field->name_size + 1);
+		memcpy(name, field->signet->data + field->name_offset, field->name_size);
 	}
 
 	switch(field->key->data_type) {
 
-		case UNICODE:								// TODO Unicode currently same as ASCII
+	case UNICODE:                                                                   // TODO Unicode currently same as ASCII
 
-			if(!(data = malloc(field->data_size+1))) {
-				PUSH_ERROR_SYSCALL("malloc");
-				free(name);
-				RET_ERROR_INT(ERR_NOMEM, NULL);
-			}
+		if(!(data = malloc(field->data_size + 1))) {
+			PUSH_ERROR_SYSCALL("malloc");
+			free(name);
+			RET_ERROR_INT(ERR_NOMEM, NULL);
+		}
 
-			memset(data, 0, field->data_size+1);
-			memcpy(data, field->signet->data+field->data_offset, field->data_size);
-			break;
-		case HEX:								// TODO
-		case B64:
+		memset(data, 0, field->data_size + 1);
+		memcpy(data, field->signet->data + field->data_offset, field->data_size);
+		break;
+	case HEX:                                                                       // TODO
+	case B64:
 
-			if(!(data = _b64encode_nopad(field->signet->data+field->data_offset, (size_t)field->data_size))) {
-				free(name);
-				RET_ERROR_INT(ERR_UNSPEC, "could not base64-encode signet field data");
-			}
+		if(!(data = _b64encode_nopad(field->signet->data + field->data_offset, (size_t)field->data_size))) {
+			free(name);
+			RET_ERROR_INT(ERR_UNSPEC, "could not base64-encode signet field data");
+		}
 
-			break;
-		case PNG:
+		break;
+	case PNG:
 
-			if(!(data = strdup(png_name))) {
-				PUSH_ERROR_SYSCALL("strdup");
-				free(name);
-				RET_ERROR_INT(ERR_NOMEM, NULL);
-			}
+		if(!(data = strdup(png_name))) {
+			PUSH_ERROR_SYSCALL("strdup");
+			free(name);
+			RET_ERROR_INT(ERR_NOMEM, NULL);
+		}
 
-			break;
+		break;
 
 	}
 
@@ -2995,10 +2995,10 @@ int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 
 
 /**
- * @brief 	Retrieves the total length of a serialized field specified by a signet_field_t structure.
+ * @brief       Retrieves the total length of a serialized field specified by a signet_field_t structure.
  * @param	field	Pointer to the signet_field_t structure that indexes the field, the size of which is retrieved.
  * @return	Length of the serialized field. -1 if error.
- * 		NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
+ *              NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
 */
 
 int _signet_field_size(const signet_field_t *field) {
@@ -3015,7 +3015,7 @@ int _signet_field_size(const signet_field_t *field) {
 	}
 
 	if(field->key->bytes_name_size) {
-		field_size += (int) (1 + field->name_size);
+		field_size += (int)(1 + field->name_size);
 	}
 
 	field_size += (field->key->bytes_data_size + field->data_size);
@@ -3070,7 +3070,7 @@ int _signet_fid_dump(FILE *fp, const signet_t *signet, unsigned int fid) {
  * @param	out_len	Pointer to the length of returned array.
  * @return	Array containing serialized fields with the specified field id, NULL if an error occurs. Caller is responsible for freeing memory after use.
 */
-unsigned char *	_signet_fid_get(const signet_t *signet, unsigned char fid, size_t *out_len) {
+unsigned char *_signet_fid_get(const signet_t *signet, unsigned char fid, size_t *out_len) {
 
 	int res;
 	unsigned char *data;
@@ -3093,7 +3093,7 @@ unsigned char *	_signet_fid_get(const signet_t *signet, unsigned char fid, size_
 	}
 
 	memset(data, 0, *out_len);
-	memcpy(data, &(signet->data[signet->fields[fid]-1]), *out_len);
+	memcpy(data, &(signet->data[signet->fields[fid] - 1]), *out_len);
 
 	return data;
 }
@@ -3106,7 +3106,7 @@ unsigned char *	_signet_fid_get(const signet_t *signet, unsigned char fid, size_
  * @param	data_size	Pointer to the length of the returned array.
  * @return	Allocated array of serialized fields, NULL on failure or if the signet was empty.
 */
-unsigned char *	_signet_upto_fid_serialize(const signet_t* signet, unsigned char fid, size_t *data_size) {
+unsigned char *_signet_upto_fid_serialize(const signet_t *signet, unsigned char fid, size_t *data_size) {
 
 	unsigned char *data;
 	unsigned int i;
@@ -3193,7 +3193,7 @@ int _signet_remove_field_at(signet_t *signet, unsigned int offset, size_t field_
 
 /**
  * @brief	Uses specified ED25519 key to sign the target signet.
- * 		The signature is placed into the field specified by the signet_fid and the signature is taken of all the fields that come before signet_fid.
+ *              The signature is placed into the field specified by the signet_fid and the signature is taken of all the fields that come before signet_fid.
  * @param	signet	Pointer to the target signet to be signed.
  * @param	signet_fid	Target field which will hold the signature, it also specifies which fields are to be signed (all the fields that come before it.)
  * @param	key	ed25519 key object containing the private key, which is used for signing.
@@ -3213,18 +3213,18 @@ int _signet_sign_fid(signet_t *signet, unsigned char signet_fid, ED25519_KEY *ke
 
 	switch(_signet_get_type(signet)) {
 
-		case SIGNET_TYPE_ORG:
-			keys = signet_org_field_keys;
-			break;
-		case SIGNET_TYPE_USER:
-			keys = signet_user_field_keys;
-			break;
-		case SIGNET_TYPE_SSR:
-			keys = signet_ssr_field_keys;
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
-			break;
+	case SIGNET_TYPE_ORG:
+		keys = signet_org_field_keys;
+		break;
+	case SIGNET_TYPE_USER:
+		keys = signet_user_field_keys;
+		break;
+	case SIGNET_TYPE_SSR:
+		keys = signet_ssr_field_keys;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+		break;
 
 	}
 
@@ -3232,7 +3232,7 @@ int _signet_sign_fid(signet_t *signet, unsigned char signet_fid, ED25519_KEY *ke
 		RET_ERROR_INT(ERR_UNSPEC, "required fields for signet signing were missing");
 	}
 
-	if(!(data = _signet_upto_fid_serialize(signet, signet_fid-1, &data_size))) {
+	if(!(data = _signet_upto_fid_serialize(signet, signet_fid - 1, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not get signet data for signature");
 	}
 
@@ -3254,7 +3254,7 @@ int _signet_sign_fid(signet_t *signet, unsigned char signet_fid, ED25519_KEY *ke
 		}
 	}
 
-	if ((res = _signet_add_field(signet, signet_fid, 0, NULL, ED25519_SIG_SIZE, (const unsigned char *) sig, 0)) < 0) {
+	if ((res = _signet_add_field(signet, signet_fid, 0, NULL, ED25519_SIG_SIZE, (const unsigned char *)sig, 0)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not add signature field to signet");
 	}
 
@@ -3270,7 +3270,7 @@ int _signet_sign_fid(signet_t *signet, unsigned char signet_fid, ED25519_KEY *ke
  * @param	len	Length of serial signet data.
  * @return	Void pointer to a signet_t structure.
 */
-void * _deserialize_signet_cb(void *data, size_t len) {
+void *_deserialize_signet_cb(void *data, size_t len) {
 
 	signet_t *result;
 
@@ -3292,7 +3292,7 @@ void * _deserialize_signet_cb(void *data, size_t len) {
  * @param	outlen	Pointer to the length of the returned string.
  * @return	Pointer to a serialized signet.
 */
-void * _serialize_signet_cb(void *record, size_t *outlen) {
+void *_serialize_signet_cb(void *record, size_t *outlen) {
 
 	unsigned char *serial;
 	void *result;
@@ -3357,4 +3357,3 @@ void _destroy_signet_cb(void *record) {
 
 	return;
 }
-

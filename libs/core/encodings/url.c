@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/encodings/url.c
  *
@@ -18,7 +17,7 @@
  * @result	true if the character is valid in a URL or false if it must be escaped.
  */
 bool_t url_valid_chr(uchr_t c) {
-	if ((c >= 'A' && c <= 'Z') ||	(c >= 'a' && c <= 'z') ||	(c >= '0' && c <= '9') || c == '-' || c == '.' || c == '_' || c == '~') {
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '.' || c == '_' || c == '~') {
 		return true;
 	}
 	return false;
@@ -27,7 +26,7 @@ bool_t url_valid_chr(uchr_t c) {
 /**
  * @brief	Check a URL string for validity.
  * @note	This function confirms that the URL consists of only legal characters and that all escaped sequences are also valid.
- * @param	s 	a managed string containing the URL to be verified.
+ * @param	s       a managed string containing the URL to be verified.
  * @return	0 on failure, or the number of valid characters in the URL if the string is valid.
  */
 size_t url_valid_st(stringer_t *s) {
@@ -64,10 +63,10 @@ size_t url_valid_st(stringer_t *s) {
 
 /**
  * @brief	Encode a data buffer as a valid URL component.
- * @param	s 	a managed string containing the data to be encoded.
+ * @param	s       a managed string containing the data to be encoded.
  * @return	NULL on failure, or a freshly allocated managed string containing the fully-escaped string suitable for use in a URL.
  */
-stringer_t * url_encode(stringer_t *s) {
+stringer_t *url_encode(stringer_t *s) {
 
 	chr_t hex[4];
 	uchr_t *p;
@@ -125,10 +124,10 @@ stringer_t * url_encode(stringer_t *s) {
 
 /**
  * @brief	Decode a URL-encoded string into its original representation.
- * @param	s 	a managed string containing the UR componentL to be decoded.
+ * @param	s       a managed string containing the UR componentL to be decoded.
  * @return	NULL on failure, or a freshly allocated managed string containing the original data represented by the URL-encoded input on success.
  */
-stringer_t * url_decode(stringer_t *s) {
+stringer_t *url_decode(stringer_t *s) {
 
 	uchr_t *p, *o;
 	stringer_t *output;
@@ -171,7 +170,7 @@ stringer_t * url_decode(stringer_t *s) {
 			}
 			// Percent signs that aren't followed by a valid hex pair are invalid, but in the interest of compatibility we'll simply let
 			// those characters through.
-			else if (len >= 1){
+			else if (len >= 1) {
 				*o++ = '%';
 				*o++ = *p++;
 				written += 2;

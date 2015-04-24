@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/core.h
  *
@@ -34,7 +33,7 @@ typedef float float_t;
 typedef enum {
 	M_TYPE_EMPTY = 0,// No value has been assigned
 	M_TYPE_MULTI,   //!< M_TYPE_MULTI is multi_t
-	M_TYPE_ENUM,		//!< M_TYPE_ENUM is enum
+	M_TYPE_ENUM,            //!< M_TYPE_ENUM is enum
 	M_TYPE_BOOLEAN, //!< M_TYPE_BOOLEAN is bool_t
 	M_TYPE_BLOCK,   //!< M_TYPE_BLOCK is void pointer
 	M_TYPE_NULLER,  //!< M_TYPE_NULLER is char pointer
@@ -57,7 +56,7 @@ enum {
 };
 
 /************ TYPE ************/
-const char * type(M_TYPE type);
+const char *type(M_TYPE type);
 /************ TYPE ************/
 
 #include <core/memory.h>

@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/encodings/hex.c
  *
@@ -86,7 +85,7 @@ size_t hex_count_st(stringer_t *s) {
  * @param output A pointer to the memory where the result should be stored or NULL if the result should only be returned.
  * @return Returns the two character hex representation of the binary input using a thread localized character buffer.
  */
-uchr_t * hex_encode_chr(byte_t b, uchr_t *output) {
+uchr_t *hex_encode_chr(byte_t b, uchr_t *output) {
 
 	int_t number;
 	uchr_t nibble[3];
@@ -107,7 +106,7 @@ uchr_t * hex_encode_chr(byte_t b, uchr_t *output) {
 		nibble[1] = (uchr_t)('0' + number);
 	}
 	else {
-		nibble[1]  = (uchr_t)('a' + (number - 10));
+		nibble[1] = (uchr_t)('a' + (number - 10));
 	}
 
 	// See if we should write the result to the output pointer.
@@ -123,10 +122,10 @@ uchr_t * hex_encode_chr(byte_t b, uchr_t *output) {
  * @brief	Convert a block of binary data into a hex string.
  * @param	b		a managed string containing the raw data to be encoded.
  * @param	output	if not NULL, a pointer to a managed string that will store the encoded output; if NULL, a new managed string will
- * 					be allocated and returned to the caller.
- * @return 	NULL on failure, or a pointer to a managed string containing the hex-encoded output on success.
+ *                                      be allocated and returned to the caller.
+ * @return      NULL on failure, or a pointer to a managed string containing the hex-encoded output on success.
  */
-stringer_t * hex_encode_st(stringer_t *b, stringer_t *output) {
+stringer_t *hex_encode_st(stringer_t *b, stringer_t *output) {
 
 	size_t len = 0;
 	uint32_t opts = 0;
@@ -144,9 +143,9 @@ stringer_t * hex_encode_st(stringer_t *b, stringer_t *output) {
 
 	// Make sure the output buffer is large enough or if output was passed in as NULL we'll attempt the allocation of our own buffer.
 	if ((result = output) && ((st_valid_avail(opts) && st_avail_get(output) < (len * 2)) ||
-			(!st_valid_avail(opts) && st_length_get(output) < (len * 2)))) {
+	                          (!st_valid_avail(opts) && st_length_get(output) < (len * 2)))) {
 		log_pedantic("The output buffer supplied is not large enough to hold the result. {avail = %zu / required = %zu}",
-				st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), len * 2);
+		             st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), len * 2);
 		return NULL;
 	}
 	else if (!output && !(result = st_alloc(len * 2))) {
@@ -177,10 +176,10 @@ stringer_t * hex_encode_st(stringer_t *b, stringer_t *output) {
  * @note	All printable ASCII data will be displayed as-is; all other characters will be shown as formatted hex pairs.
  * @param	input	a pointer to a managed string containing the data to be formatted.
  * @param	maxlen	the maximum number of bytes to be displayed. If more characters are available, an ellipsis will be shown in the middle of the string
- * 			to represent the abridged data, with only the leading and trailing characters returned as part of the display string.
+ *                      to represent the abridged data, with only the leading and trailing characters returned as part of the display string.
  * @return	NULL on failure, or a pointer to a newly allocated managed string containing the encoded debug data on success.
  */
-stringer_t * hex_encode_st_debug(stringer_t *input, size_t maxlen) {
+stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 
 	stringer_t *result;
 	chr_t *iptr, *rptr, *rstart;
@@ -189,7 +188,7 @@ stringer_t * hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	// Not the most efficient, but this is mostly for internal debugging purposes anyhow
 	total = (maxlen * 4) + 16;
 
-	if (!(result = st_alloc (total))) {
+	if (!(result = st_alloc(total))) {
 		log_error("Unable to allocate space for debug string.");
 		return NULL;
 	}
@@ -244,7 +243,7 @@ stringer_t * hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	*rptr++ = ']';
 	*rptr = 0;
 
-	st_length_set(result, (rptr-rstart));
+	st_length_set(result, (rptr - rstart));
 	return result;
 }
 
@@ -284,13 +283,13 @@ byte_t hex_decode_chr(uchr_t a, uchr_t b) {
 /**
  * @brief	Convert a hex string into a binary data blob.
  * @note	All hex strings should be composed of pairs of two hex characters representing individual bytes.
- * 			Invalid hex characters will simply be ignored during processing.
+ *                      Invalid hex characters will simply be ignored during processing.
  * @param	h		a managed string containing the input hex string to be decoded.
  * @param	output	if not NULL, a pointer to a managed string to contain the decoded binary output; if NULL, a new string
- * 					will be allocated and returned to the caller.
+ *                                      will be allocated and returned to the caller.
  * @return	a pointer to a managed string containing the decoded output, or NULL on failure.
  */
-stringer_t * hex_decode_st(stringer_t *h, stringer_t *output) {
+stringer_t *hex_decode_st(stringer_t *h, stringer_t *output) {
 
 	uint32_t opts = 0;
 	uchr_t *p = NULL, *o, c = 0;
@@ -308,9 +307,9 @@ stringer_t * hex_decode_st(stringer_t *h, stringer_t *output) {
 
 	// Make sure the output buffer is large enough or if output was passed in as NULL we'll attempt the allocation of our own buffer.
 	if ((result = output) && ((st_valid_avail(opts) && st_avail_get(output) < (valid / 2)) ||
-			(!st_valid_avail(opts) && st_length_get(output) < (valid / 2)))) {
+	                          (!st_valid_avail(opts) && st_length_get(output) < (valid / 2)))) {
 		log_pedantic("The output buffer supplied is not large enough to hold the result. {avail = %zu / required = %zu}",
-				st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), valid / 2);
+		             st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), valid / 2);
 		return NULL;
 	}
 	else if (!output && !(result = st_alloc(valid / 2))) {

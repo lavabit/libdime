@@ -1,4 +1,3 @@
-
 #include <openssl/x509v3.h>
 
 #include <signet-resolver/dmtp.h>
@@ -11,7 +10,7 @@
 #include <common/error.h>
 
 
-signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache) {
+signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) {
 
 	dmtp_session_t *session;
 	signet_t *result, *org_signet = NULL;
@@ -42,7 +41,7 @@ signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache)
 	if (use_cache && ((cached = _find_cached_object(name, &(cached_stores[cached_data_signet]))))) {
 		result = ((signet_t *)_get_cache_obj_data(cached));
 		return result;
-	// In case this returned an error.
+		// In case this returned an error.
 	} else if (use_cache) {
 
 		if (get_last_error()) {
@@ -94,7 +93,7 @@ signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache)
 		RET_ERROR_PTR(ERR_UNSPEC, "signet retrieval failed");
 	}
 
-        if (!(result = _signet_deserialize_b64(line))) {
+	if (!(result = _signet_deserialize_b64(line))) {
 		free(line);
 		_destroy_dmtp_session(session);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to decode signet received from server");
@@ -150,13 +149,13 @@ signet_t * _get_signet(const char *name, const char *fingerprint, int use_cache)
 /**
  * @brief	Establish a DMTP connection to the DX server of a provided dark domain.
  * @note	This function automatically queries the DIME management record of the domain to determine
- * 		the appropriate way to establish a connection to the domain's DX server.
- * 		This is the function that should be used by all general callers.
+ *              the appropriate way to establish a connection to the domain's DX server.
+ *              This is the function that should be used by all general callers.
  * @param	domain	a null-terminated string containing the specified dark domain.
  * @param	an optional address family (AF_INET or AF_INET6) to force the TCP connection to take.
  * @return	NULL if unable to establish a DMTP connection successfully, or a pointer to the DMTP session on success.
  */
-dmtp_session_t * _dmtp_connect(const char *domain, int force_family) {
+dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
 
 	dmtp_session_t *result = NULL;
 	dime_record_t *drec;
@@ -202,10 +201,10 @@ dmtp_session_t * _dmtp_connect(const char *domain, int force_family) {
 			dxptr++, i++;
 		}
 
-	// Case 2: There are MX record(s) for our domain.
+		// Case 2: There are MX record(s) for our domain.
 	} else {
 
-		 if ((mxptr = mxs = _get_mx_records(domain))) {
+		if ((mxptr = mxs = _get_mx_records(domain))) {
 
 			// Try a maximum of the first 3 MX records.
 			for (i = 0; (i < DMTP_MAX_MX_RETRIES) && *mxptr; i++, mxptr++) {
@@ -292,7 +291,7 @@ void _destroy_dmtp_session(dmtp_session_t *session) {
  * @param	dimerec		an optional pointer to a DIME management record to be attached to the session.
  * @return	NULL on failure, or a pointer to a newly established DMTP session on success.
  */
-dmtp_session_t * _dx_connect_standard(const char *host, const char *domain, int force_family, dime_record_t *dimerec) {
+dmtp_session_t *_dx_connect_standard(const char *host, const char *domain, int force_family, dime_record_t *dimerec) {
 
 	dmtp_session_t *result;
 	SSL *connection;
@@ -342,7 +341,7 @@ dmtp_session_t * _dx_connect_standard(const char *host, const char *domain, int 
  * @param	failover	if set, attempt to retry failed connections on the backup port (587).
  * @return	NULL on failure, or a pointer to a newly established DMTP session on success.
  */
-dmtp_session_t * _dx_connect_dual(const char *host, const char *domain, int force_family, dime_record_t *dimerec, int failover) {
+dmtp_session_t *_dx_connect_dual(const char *host, const char *domain, int force_family, dime_record_t *dimerec, int failover) {
 
 	dmtp_session_t *result;
 	int fd;
@@ -403,9 +402,9 @@ dmtp_session_t * _dx_connect_dual(const char *host, const char *domain, int forc
 /**
  * @brief	Compare the TLS certificate presented by a remote host against the TLS certificate signature field of a DIME management record.
  * @note	This function accomplishes a number of steps in the following order:
- * 		1. If the DIME record has a TLS certificate signature field, perform a comparison of it against the remote peer's certificate.
- * 		2. If necessary, perform x509 chain validation against the certificate.
- * 		3. If necessary, verify that the certificate has not been revoked by issuing an OCSP request.
+ *              1. If the DIME record has a TLS certificate signature field, perform a comparison of it against the remote peer's certificate.
+ *              2. If necessary, perform x509 chain validation against the certificate.
+ *              3. If necessary, verify that the certificate has not been revoked by issuing an OCSP request.
  * @param	session		a pointer to the DMTP session to have its TLS certificate verified.
  * @return	-1 on general error, 0 if the connection's TLS certificate failed verification, and 1 if the certificate passed verification.
  *
@@ -497,31 +496,31 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 	// The hostname is either 1. the dnsName field of the subjectAlternativeName extension, or 2. the CN field of the subject.
 	switch (_do_x509_hostname_check(cert, session->dx)) {
 
-		case 0:
-			_dbgprint(1, "DX TLS certificate failed x509 hostname check.\n");
-			return 0;
-			break;
-		case 1:
-			// do nothing
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "error encountered during x509 hostname check");
-			break;
+	case 0:
+		_dbgprint(1, "DX TLS certificate failed x509 hostname check.\n");
+		return 0;
+		break;
+	case 1:
+		// do nothing
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "error encountered during x509 hostname check");
+		break;
 
 	}
 
 	switch(_do_x509_validation(cert, SSL_get_peer_cert_chain(session->con))) {
 
-		case 0:
-			_dbgprint(1, "DX TLS certificate failed x509 chain validation.\n");
-			return 0;
-			break;
-		case 1:
-			// do nothing.
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "error encountered during x509 validation");
-			break;
+	case 0:
+		_dbgprint(1, "DX TLS certificate failed x509 chain validation.\n");
+		return 0;
+		break;
+	case 1:
+		// do nothing.
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "error encountered during x509 validation");
+		break;
 
 	}
 
@@ -534,16 +533,16 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 	// The following remaining cases undergo OCSP validation: x509 chain validation succeeded, but DIME record had no tlssig field.
 	switch(_do_ocsp_validation(session->con, NULL)) {
 
-		case 0:
-			_dbgprint(1, "DX TLS certificate failed OCSP validation.\n");
-			return 0;
-			break;
-		case 1:
-			// do nothing.
-			break;
-		default:
-			RET_ERROR_INT(ERR_UNSPEC, "error encountered during OCSP validation");
-			break;
+	case 0:
+		_dbgprint(1, "DX TLS certificate failed OCSP validation.\n");
+		return 0;
+		break;
+	case 1:
+		// do nothing.
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "error encountered during OCSP validation");
+		break;
 
 	}
 
@@ -554,7 +553,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 /**
  * @brief	Look up a named user or organizational signet.
  * @note	If the fingerprint parameter is omitted, the signet record returned by the
- * 		server will be only for the current certificate.
+ *              server will be only for the current certificate.
  * @param	session
  * @param	signame		the name of the requested organizational or user signet.
  * @param	fingerprint	if not NULL, an optional fingerprint that the returned signet MUST match.
@@ -563,7 +562,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
  *
  *
  */
-char * _dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
+char *_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
 
 	char *response, *request, *rptr, *result;
 	size_t reqlen;
@@ -606,7 +605,7 @@ char * _dmtp_get_signet(dmtp_session_t *session, const char *signame, const char
 		rptr++;
 	}
 
-	if (!*rptr || (*rptr != 'O') || !*(rptr+1) || (*(rptr+1) != 'K')) {
+	if (!*rptr || (*rptr != 'O') || !*(rptr + 1) || (*(rptr + 1) != 'K')) {
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "received malformed signet response from server");
 	}
@@ -617,12 +616,12 @@ char * _dmtp_get_signet(dmtp_session_t *session, const char *signame, const char
 		rptr++;
 	}
 
-	if ((*rptr++ != '[') || (rptr[strlen(rptr)-1] != ']')) {
+	if ((*rptr++ != '[') || (rptr[strlen(rptr) - 1] != ']')) {
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "received malformed signet response from server");
 	}
 
-	rptr[strlen(rptr)-1] = 0;
+	rptr[strlen(rptr) - 1] = 0;
 
 	if (!(result = strdup(rptr))) {
 		PUSH_ERROR_SYSCALL("strdup");
@@ -704,36 +703,36 @@ int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize,
 
 	switch(rettype) {
 
-		case return_type_default:
-			break;
-		case return_type_full:
-			strcpy(rbuf, " RETURN=FULL");
-			break;
-		case return_type_display:
-			strcpy(rbuf, " RETURN=DISPLAY");
-			break;
-		case return_type_header:
-			strcpy(rbuf, " RETURN=HEADER");
-			break;
-		default:
-			RET_ERROR_INT(ERR_BAD_PARAM, NULL);
-			break;
+	case return_type_default:
+		break;
+	case return_type_full:
+		strcpy(rbuf, " RETURN=FULL");
+		break;
+	case return_type_display:
+		strcpy(rbuf, " RETURN=DISPLAY");
+		break;
+	case return_type_header:
+		strcpy(rbuf, " RETURN=HEADER");
+		break;
+	default:
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+		break;
 
 	}
 
 	switch(dtype) {
 
-		case data_type_default:
-			break;
-		case data_type_7bit:
-			strcpy(dbuf, " DATA=7BIT");
-			break;
-		case data_type_8bit:
-			strcpy(dbuf, " DATA=8BIT");
-			break;
-		default:
-			RET_ERROR_INT(ERR_BAD_PARAM, NULL);
-			break;
+	case data_type_default:
+		break;
+	case data_type_7bit:
+		strcpy(dbuf, " DATA=7BIT");
+		break;
+	case data_type_8bit:
+		strcpy(dbuf, " DATA=8BIT");
+		break;
+	default:
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+		break;
 
 	}
 
@@ -802,7 +801,7 @@ int _dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
  * @return
  *
  */
-char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
+char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 
 	char cmd[128];
 	char *response, *token, *tokens, *commit_hash, *result;
@@ -831,14 +830,14 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 	}
 
 	// The only following mandatory piece of data is the hash.
-	if ((!(token = strtok_r(NULL, " \t", &tokens))) || (*token != '[') || (token[strlen(token)-1] != ']')) {
+	if ((!(token = strtok_r(NULL, " \t", &tokens))) || (*token != '[') || (token[strlen(token) - 1] != ']')) {
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "server DATA response was in unexpected format");
 	}
 
-	token[strlen(token)-1] = 0;
+	token[strlen(token) - 1] = 0;
 
-	if (!(commit_hash = strdup(token+1))) {
+	if (!(commit_hash = strdup(token + 1))) {
 		PUSH_ERROR_SYSCALL("strdup");
 		free(response);
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for commit hash of DATA command");
@@ -871,15 +870,15 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 	}
 
 	// The only following mandatory piece of data is the hash.
-	if ((!(token = strtok_r(NULL, " \t", &tokens))) || (*token != '[') || (token[strlen(token)-1] != ']')) {
+	if ((!(token = strtok_r(NULL, " \t", &tokens))) || (*token != '[') || (token[strlen(token) - 1] != ']')) {
 		free(commit_hash);
 		free(response);
 		RET_ERROR_PTR(ERR_UNSPEC, "server DATA response continuation was in unexpected format");
 	}
 
-	token[strlen(token)-1] = 0;
+	token[strlen(token) - 1] = 0;
 
-	if (!(result = strdup(token+1))) {
+	if (!(result = strdup(token + 1))) {
 		PUSH_ERROR_SYSCALL("strdup");
 		free(commit_hash);
 		free(response);
@@ -898,7 +897,7 @@ char * _dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
  * @param	signame		the name of the user or organizational signet to be verified.
  * @param	fingerprint	the fingerprint of the signet to be checked for updates.
  * @param	newprint	an optional pointer to a string which will be updated to point to the latest
- * 				fingerprint of the specified signet, if it is out of date.
+ *                              fingerprint of the specified signet, if it is out of date.
  * @return	-1 on general failure, 0 if the signet fingerprint was out of date, or 1 if it is the most current one.
  */
 int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char *fingerprint, char **newprint) {
@@ -937,8 +936,8 @@ int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char
 	if ((!(status = strtok_r(response, " \t", &tokens)))) {
 		PUSH_ERROR_FMT(ERR_UNSPEC, "VRFY reply was in unexpected format: %s", response);
 		free(response);
-	 	return -1;
-	// If the specified signet is current then there's really nothing much else to do.
+		return -1;
+		// If the specified signet is current then there's really nothing much else to do.
 	} else if (!strcasecmp(status, "CURRENT")) {
 		free(response);
 		return 1;
@@ -973,7 +972,7 @@ int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char
  * @param	endfp		the ending fingerprint of the signet in the queried chain of custody.
  * @return	NULL on failure, or a pointer to a string containing the signet's history on success.
  */
-char * _dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
+char *_dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
 
 	char *response, *request;
 	unsigned short rcode;
@@ -1024,7 +1023,7 @@ char * _dmtp_history(dmtp_session_t *session, const char *signame, const char *s
 }
 
 
-char * _dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribute__((__unused__))) {
+char *_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribute__((__unused__))) {
 
 	const char *stats_cmd = "STATS\r\n";
 	char *response, *rptr, *endptr, *nonce_req = NULL;
@@ -1245,7 +1244,7 @@ int _dmtp_reset(dmtp_session_t *session) {
  * @param	session		a pointer to the DMTP session across which the HELP command will be issued.
  * @return	NULL on failure or a pointer to a string containing the full server help table on success.
  */
-char * _dmtp_help(dmtp_session_t *session) {
+char *_dmtp_help(dmtp_session_t *session) {
 
 	const char *help_cmd = "HELP\r\n";
 	char *response;
@@ -1323,15 +1322,15 @@ int _dmtp_quit(dmtp_session_t *session, int do_close __attribute__((__unused__))
  * @brief	Read a CR/LF-terminated line of input from an active DMTP session.
  * @param	session		a pointer to the DMTP session from which the response line will be read.
  * @param	overflow	an optional pointer to a variable that will be set if the read operation
- * 				exceeds the size of the internal line buffer.
+ *                              exceeds the size of the internal line buffer.
  * @param	rcode		an optional pointer to a variable that will receive the numeric response
- * 				code of the DMTP reply that was just received.
+ *                              code of the DMTP reply that was just received.
  * @param	multiline	an optional parameter that if set will permit multiline DMTP responses. If
- * 				this was the final line of a multiline response, the value will be set to 1
- * 				when the function returns, or 0 if there is more content to follow.
+ *                              this was the final line of a multiline response, the value will be set to 1
+ *                              when the function returns, or 0 if there is more content to follow.
  * @return	NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server.
  */
-char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline) {
+char *_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline) {
 
 	char *result = NULL, *lbreak = NULL, *line;
 	size_t nleft;
@@ -1343,8 +1342,8 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 
 	// TODO: This needs to be removed or corrected.
 /*	if (!session->active) {
-		RET_ERROR_PTR(ERR_UNSPEC, "cannot read network line from inactive DMTP session");
-	} */
+                RET_ERROR_PTR(ERR_UNSPEC, "cannot read network line from inactive DMTP session");
+        } */
 
 	// Try to read some more into the buffer until we get enough or an error occurs.
 	nleft = sizeof(session->_inbuf) - session->_inpos - 1;
@@ -1433,8 +1432,8 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 			*overflow = 0;
 		}
 
-	// Otherwise, we can only return what we have.
-	} else if (session->_inpos){
+		// Otherwise, we can only return what we have.
+	} else if (session->_inpos) {
 		// Simple strdup() because our buffer has an extra character that is always = \x00.
 		result = strdup((char *)session->_inbuf);
 		memset(session->_inbuf, 0, sizeof(session->_inbuf));
@@ -1448,7 +1447,7 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 
 	if (!result && (lbreak || session->_inpos)) {
 		PUSH_ERROR_SYSCALL("strdup");
-	// If the caller requested line code parsing, perform this operation and free the original result.
+		// If the caller requested line code parsing, perform this operation and free the original result.
 	} else if (rcode) {
 
 		if (!(line = _parse_line_code(result, rcode, multiline))) {
@@ -1475,15 +1474,15 @@ char * _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *r
 /**
  * @brief	Read a multiple-line response from the DMTP server.
  * @note	A multiline response is designated by the presence of a hyphen between the response code and the
- * 		respones text. A regular response, or the final line of a multiline response will instead have a space.
+ *              respones text. A regular response, or the final line of a multiline response will instead have a space.
  * @param	session		a pointer to the DMTP session from which the response line(s) will be read.
  * @param	overflow	an optional pointer to a variable that will be set if the read operation
- * 				exceeds the size of the internal line buffer.
+ *                              exceeds the size of the internal line buffer.
  * @param	rcode		an optional pointer to a variable that will receive the numeric response
- * 				code of the DMTP reply that was just received.
+ *                              code of the DMTP reply that was just received.
  * @return	NULL on failure or a pointer to a string containing the next response from the DMTP server on success.
  */
-char * _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode) {
+char *_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode) {
 
 	char *line, *result = NULL, *reall_res = NULL;
 	unsigned short rc, firstrc = 0;
@@ -1561,11 +1560,11 @@ char * _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned sho
  * @param	line		a pointer to a null-terminated string to be parsed as a DMTP response line or lines.
  * @param	rcode		an opointer to a variable that will receive the numeric response code of the DMTP reply.
  * @param	multiline	an optional parameter that if set will permit multiline DMTP responses. If
- * 				this was the final line of a multiline response, the value will be set to 1
- * 				when the function returns, or 0 if there is more content to follow.
+ *                              this was the final line of a multiline response, the value will be set to 1
+ *                              when the function returns, or 0 if there is more content to follow.
  * @return	NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server.
  */
-char * _parse_line_code(const char *line, unsigned short *rcode, int *multiline) {
+char *_parse_line_code(const char *line, unsigned short *rcode, int *multiline) {
 
 	char numbuf[8];
 	const char *ptr = line;
@@ -1622,7 +1621,7 @@ char * _parse_line_code(const char *line, unsigned short *rcode, int *multiline)
 /**
  * @brief	Initiate a DMTP session over a plain TCP connection with the DMTP STARTTLS command.
  * @note	The dxname argument will be used as a parameter to the STARTTLS command for requesting a TLS
- * 		certificate explcitly by hostname.
+ *              certificate explcitly by hostname.
  * @param	session		a pointer to the DMTP session to have its transport security upgraded with TLS.
  * @param	dxname		the name of the DX server providing the TLS service of this DMTP session.
  * @return	dmtp_mode_unknown on failure or the active mode of the DMTP session as reported by the server on success.
@@ -1800,7 +1799,7 @@ int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
  * @param	rcode
  * @return	NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server on success.
  */
-char * _dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode) {
+char *_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode) {
 
 	char *result;
 
@@ -1870,4 +1869,3 @@ int _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen) {
 
 	return 0;
 }
-

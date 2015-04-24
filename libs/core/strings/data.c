@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/data.c
  *
@@ -14,7 +13,7 @@
 
 /**
  * @brief	Determine whether the specified managed string is empty or not.
- * @param	s 	the input managed string.
+ * @param	s       the input managed string.
  * @result	true if string is NULL or uninitialized or empty; false otherwise.
  */
 bool_t st_empty(stringer_t *s) {
@@ -79,24 +78,24 @@ void st_data_set(stringer_t *s, void *data) {
 	// QUESTION: Is it possible for s->data to point to a NULL value?
 
 	switch (opts & (NULLER_T | BLOCK_T | PLACER_T | MANAGED_T | MAPPED_T | JOINTED)) {
-		case (NULLER_T | JOINTED):
-			if (!(opts & FOREIGNDATA)) release(((nuller_t *)s)->data);
-			((nuller_t *)s)->data = data;
-			break;
-		case (BLOCK_T | JOINTED):
-			if (!(opts & FOREIGNDATA)) release(((block_t *)s)->data);
-			((block_t *)s)->data = data;
-			break;
-		case (MANAGED_T | JOINTED):
-			if (!(opts & FOREIGNDATA)) release(((managed_t *)s)->data);
-			((managed_t *)s)->data = data;
-			break;
-		case (PLACER_T | JOINTED):
-			if (!(opts & FOREIGNDATA)) {
-				release(((placer_t *)s)->data);
-			}
-			((placer_t *)s)->data = data;
-			break;
+	case (NULLER_T | JOINTED):
+		if (!(opts & FOREIGNDATA)) release(((nuller_t *)s)->data);
+		((nuller_t *)s)->data = data;
+		break;
+	case (BLOCK_T | JOINTED):
+		if (!(opts & FOREIGNDATA)) release(((block_t *)s)->data);
+		((block_t *)s)->data = data;
+		break;
+	case (MANAGED_T | JOINTED):
+		if (!(opts & FOREIGNDATA)) release(((managed_t *)s)->data);
+		((managed_t *)s)->data = data;
+		break;
+	case (PLACER_T | JOINTED):
+		if (!(opts & FOREIGNDATA)) {
+			release(((placer_t *)s)->data);
+		}
+		((placer_t *)s)->data = data;
+		break;
 	}
 
 	return;
@@ -107,7 +106,7 @@ void st_data_set(stringer_t *s, void *data) {
  * @param	s	the input managed string.
  * @return	NULL on failure or for an improperly constructed string; otherwise, a pointer to the string's data.
  */
-void * st_data_get(stringer_t *s) {
+void *st_data_get(stringer_t *s) {
 
 	uint32_t opts;
 	void *result = NULL;
@@ -126,24 +125,24 @@ void * st_data_get(stringer_t *s) {
 
 	switch (opts & (CONSTANT_T | NULLER_T | BLOCK_T | PLACER_T | MANAGED_T | MAPPED_T)) {
 
-		case (CONSTANT_T):
-			result = ((constant_t *)s)->data;
-			break;
-		case (NULLER_T):
-			result = ((nuller_t *)s)->data;
-			break;
-		case (BLOCK_T):
-			result = ((block_t *)s)->data;
-			break;
-		case (PLACER_T):
-			result = ((placer_t *)s)->data;
-			break;
-		case (MANAGED_T):
-			result = ((managed_t *)s)->data;
-			break;
-		case (MAPPED_T):
-			result = ((mapped_t *)s)->data;
-			break;
+	case (CONSTANT_T):
+		result = ((constant_t *)s)->data;
+		break;
+	case (NULLER_T):
+		result = ((nuller_t *)s)->data;
+		break;
+	case (BLOCK_T):
+		result = ((block_t *)s)->data;
+		break;
+	case (PLACER_T):
+		result = ((placer_t *)s)->data;
+		break;
+	case (MANAGED_T):
+		result = ((managed_t *)s)->data;
+		break;
+	case (MAPPED_T):
+		result = ((mapped_t *)s)->data;
+		break;
 	}
 
 	return result;
@@ -155,7 +154,7 @@ void * st_data_get(stringer_t *s) {
  * @param	s	the input managed string.
  * @return	NULL on failure or for an improperly constructed string; otherwise, a pointer to the string's data.
  */
-chr_t * st_char_get(stringer_t *s) {
+chr_t *st_char_get(stringer_t *s) {
 
 	return (chr_t *)st_data_get(s);
 }
@@ -166,7 +165,7 @@ chr_t * st_char_get(stringer_t *s) {
  * @param	s	the input managed string.
  * @return	NULL on failure or for an improperly constructed string; otherwise, a pointer to the string's data.
  */
-uchr_t * st_uchar_get(stringer_t *s) {
+uchr_t *st_uchar_get(stringer_t *s) {
 
 	return (uchr_t *)st_data_get(s);
 }

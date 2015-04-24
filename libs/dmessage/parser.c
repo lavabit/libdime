@@ -6,7 +6,7 @@
  * @brief	Allocates memory for an empty dmime_common_headers_t type.
  * @return	dmime_common_headers_t type.
  */
-dmime_common_headers_t * _dmsg_create_common_headers(void) {
+dmime_common_headers_t *_dmsg_create_common_headers(void) {
 
 	dmime_common_headers_t *result;
 
@@ -51,7 +51,7 @@ void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
  * @param	outsize	Stores the size of the output array.
  * @return	Returns the array of ASCII characters (not terminated by '\0') as pointer to unsigned char.
  */
-unsigned char * _dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *outsize) {
+unsigned char *_dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *outsize) {
 
 	size_t size = 0, at = 0;
 	unsigned char *result;
@@ -81,9 +81,9 @@ unsigned char * _dmsg_format_common_headers(dmime_common_headers_t *obj, size_t 
 	for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
 
 		if(obj->headers[i] && dmime_header_keys[i].label) {
-			memcpy(result+at, (unsigned char *)dmime_header_keys[i].label, dmime_header_keys[i].label_length);
+			memcpy(result + at, (unsigned char *)dmime_header_keys[i].label, dmime_header_keys[i].label_length);
 			at += dmime_header_keys[i].label_length;
-			memcpy(result+at, st_data_get(obj->headers[i]), st_length_get(obj->headers[i]));
+			memcpy(result + at, st_data_get(obj->headers[i]), st_length_get(obj->headers[i]));
 			at += st_length_get(obj->headers[i]);
 			result[at++] = (unsigned char)'\r';
 			result[at++] = (unsigned char)'\n';
@@ -158,7 +158,7 @@ dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
  * @param	insize	Input buffer size.
  * @return	A dmime_common_headers_t array of stringers containing parsed header info.
  */
-dmime_common_headers_t * _dmsg_parse_common_headers(unsigned char *in, size_t insize) {
+dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t insize) {
 
 	dmime_header_type_t type;
 	size_t at = 0, head_size;
@@ -187,7 +187,7 @@ dmime_common_headers_t * _dmsg_parse_common_headers(unsigned char *in, size_t in
 		at += dmime_header_keys[type].label_length;
 		head_size = 0;
 
-		while((at + head_size + 1) < insize && in[at + head_size] != '\r' && in[at + head_size + 1] != '\n' ) {
+		while((at + head_size + 1) < insize && in[at + head_size] != '\r' && in[at + head_size + 1] != '\n') {
 			++head_size;
 		}
 
@@ -196,7 +196,7 @@ dmime_common_headers_t * _dmsg_parse_common_headers(unsigned char *in, size_t in
 			RET_ERROR_CUST(0, ERR_UNSPEC, "invalid header syntax");
 		}
 
-		result->headers[type] = st_import(in+at, head_size);
+		result->headers[type] = st_import(in + at, head_size);
 		at += head_size + 2;
 	}
 
@@ -246,10 +246,10 @@ void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
  * @brief	Parses a binary buffer from a dmime message into a dmime origin object.
  * @param	in		Binary origin array.
  * @param	insize		Size of input array.
- * @param	
+ * @param
  * @return	Pointer to a parsed dmime object or NULL on error.
-*/ //TODO Could be shortened with a sub-routine
-dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
+*///TODO Could be shortened with a sub-routine
+dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 
 	dmime_envelope_object_t *result;
 	const char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
@@ -262,21 +262,21 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 
 	switch(type) {
 
-		case CHUNK_TYPE_ORIGIN:
-			authrecp = "Author: <";
-			authrecp_signet = "Author-Signet: [";
-			destorig = "Destination: <";
-			destorig_fp = "Destination-Signet-Fingerprint: [";
-			break;
-		case CHUNK_TYPE_DESTINATION:
-			authrecp = "Recipient: <";
-			authrecp_signet = "Recipient-Signet: [";
-			destorig = "Origin: <";
-			destorig_fp = "Origin-Signet-Fingerprint: [";
-			break;
-		default:
-			RET_ERROR_PTR(ERR_UNSPEC, "invalid envelope chunk type specified");
-			break;
+	case CHUNK_TYPE_ORIGIN:
+		authrecp = "Author: <";
+		authrecp_signet = "Author-Signet: [";
+		destorig = "Destination: <";
+		destorig_fp = "Destination-Signet-Fingerprint: [";
+		break;
+	case CHUNK_TYPE_DESTINATION:
+		authrecp = "Recipient: <";
+		authrecp_signet = "Recipient-Signet: [";
+		destorig = "Origin: <";
+		destorig_fp = "Origin-Signet-Fingerprint: [";
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid envelope chunk type specified");
+		break;
 
 	}
 
@@ -312,7 +312,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
-	if(in+at != (unsigned char *)strstr((char *)in+at, end1)) {
+	if(in + at != (unsigned char *)strstr((char *)in + at, end1)) {
 		_dmsg_destroy_envelope_object(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
@@ -344,7 +344,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
-	if(in+at != (unsigned char *)strstr((char *)in+at, end2)) {
+	if(in + at != (unsigned char *)strstr((char *)in + at, end2)) {
 		_dmsg_destroy_envelope_object(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
@@ -376,7 +376,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
-	if(in+at != (unsigned char *)strstr((char *)in+at, end1)) {
+	if(in + at != (unsigned char *)strstr((char *)in + at, end1)) {
 		_dmsg_destroy_envelope_object(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
@@ -408,7 +408,7 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
-	if(in+at != (unsigned char *)strstr((char *)in + at, end2)) {
+	if(in + at != (unsigned char *)strstr((char *)in + at, end2)) {
 		_dmsg_destroy_envelope_object(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
@@ -422,20 +422,20 @@ dmime_envelope_object_t * _dmsg_parse_envelope(const unsigned char *in, size_t i
  * @param	actor		Actor value.
  * @return	String containing human readable actor.
 */
-const char * _dmsg_actor_to_string(dmime_actor_t actor) {
+const char *_dmsg_actor_to_string(dmime_actor_t actor) {
 
 	switch(actor) {
 
-		case id_author:
-			return "Author";
-		case id_origin:
-			return "Origin";
-		case id_destination:
-			return "Destination";
-		case id_recipient:
-			return "Recipient";
-		default:
-			return "Invalid dmime actor";
+	case id_author:
+		return "Author";
+	case id_origin:
+		return "Origin";
+	case id_destination:
+		return "Destination";
+	case id_recipient:
+		return "Recipient";
+	default:
+		return "Invalid dmime actor";
 
 	}
 
@@ -447,26 +447,26 @@ const char * _dmsg_actor_to_string(dmime_actor_t actor) {
  * @param	state		Object state value.
  * @return	String containing human readable dmime object state.
 */
-const char * _dmsg_object_state_to_string(dmime_object_state_t state) {
+const char *_dmsg_object_state_to_string(dmime_object_state_t state) {
 
 	switch(state) {
 
-		case DMIME_OBJECT_STATE_NONE:
-			return "None";
-		case DMIME_OBJECT_STATE_CREATION:
-			return "Creation";
-		case DMIME_OBJECT_STATE_LOADED_ENVELOPE:
-			return "Loaded Envelope";
-		case DMIME_OBJECT_STATE_LOADED_SIGNETS:
-			return "Loaded Signets";
-		case DMIME_OBJECT_STATE_INCOMPLETE_ENVELOPE:
-			return "Incomplete Envelope";
-		case DMIME_OBJECT_STATE_INCOMPLETE_METADATA:
-			return "Incomplete Metadata";
-		case DMIME_OBJECT_STATE_COMPLETE:
-			return "Complete";
-		default:
-			return "Unknown";
+	case DMIME_OBJECT_STATE_NONE:
+		return "None";
+	case DMIME_OBJECT_STATE_CREATION:
+		return "Creation";
+	case DMIME_OBJECT_STATE_LOADED_ENVELOPE:
+		return "Loaded Envelope";
+	case DMIME_OBJECT_STATE_LOADED_SIGNETS:
+		return "Loaded Signets";
+	case DMIME_OBJECT_STATE_INCOMPLETE_ENVELOPE:
+		return "Incomplete Envelope";
+	case DMIME_OBJECT_STATE_INCOMPLETE_METADATA:
+		return "Incomplete Metadata";
+	case DMIME_OBJECT_STATE_COMPLETE:
+		return "Complete";
+	default:
+		return "Unknown";
 
 	}
 

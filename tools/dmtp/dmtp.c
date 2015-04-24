@@ -46,46 +46,46 @@ int main(int argc, char *argv[]) {
 	while ((opt = getopt(argc, argv, "46d:k:no:p:vx:")) != -1) {
 
 		switch (opt) {
-			case '4':
-				family = AF_INET;
-				break;
-			case '6':
-				family = AF_INET6;
-				break;
-			case 'd':
-				destination = optarg;
-				break;
-			case 'k':
-				keyfile = optarg;
-				break;
-			case 'n':
-				no_cache = 1;
-				break;
-			case 'o':
-				origin = optarg;
-				break;
-			case 'p':
+		case '4':
+			family = AF_INET;
+			break;
+		case '6':
+			family = AF_INET6;
+			break;
+		case 'd':
+			destination = optarg;
+			break;
+		case 'k':
+			keyfile = optarg;
+			break;
+		case 'n':
+			no_cache = 1;
+			break;
+		case 'o':
+			origin = optarg;
+			break;
+		case 'p':
 
-				if (!(port = atoi(optarg))) {
-					fprintf(stderr, "Error: specified invalid port number.\n");
-					exit(EXIT_FAILURE);
-				}
+			if (!(port = atoi(optarg))) {
+				fprintf(stderr, "Error: specified invalid port number.\n");
+				exit(EXIT_FAILURE);
+			}
 
-				if ((port != DMTP_PORT) && (port != DMTP_PORT_DUAL)) {
-					fprintf(stderr, "Error: invalid port specified; must be %u or %u.\n", DMTP_PORT, DMTP_PORT_DUAL);
-					exit(EXIT_FAILURE);
-				}
+			if ((port != DMTP_PORT) && (port != DMTP_PORT_DUAL)) {
+				fprintf(stderr, "Error: invalid port specified; must be %u or %u.\n", DMTP_PORT, DMTP_PORT_DUAL);
+				exit(EXIT_FAILURE);
+			}
 
-				break;
-			case 'v':
-				_verbose++;
-				break;
-			case 'x':
-				dxname = optarg;
-				break;
-			default:
-				usage(argv[0]);
-				break;
+			break;
+		case 'v':
+			_verbose++;
+			break;
+		case 'x':
+			dxname = optarg;
+			break;
+		default:
+			usage(argv[0]);
+			break;
 		}
 
 	}
@@ -95,11 +95,11 @@ int main(int argc, char *argv[]) {
 		dbgprint(1, "Disabling object cache.\n");
 
 		// We need to be able to use the cache, but not to load or save to disk.
-		if (set_cache_permissions(CACHE_PERM_READ|CACHE_PERM_ADD|CACHE_PERM_DELETE) < 0) {
-				fprintf(stderr, "Error: could not adjust cache permissions.\n");
-				dump_error_stack();
-				exit(EXIT_FAILURE);
-			}
+		if (set_cache_permissions(CACHE_PERM_READ | CACHE_PERM_ADD | CACHE_PERM_DELETE) < 0) {
+			fprintf(stderr, "Error: could not adjust cache permissions.\n");
+			dump_error_stack();
+			exit(EXIT_FAILURE);
+		}
 
 	}
 
@@ -160,23 +160,23 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Error: unable to load cache contents from disk.\n");
 		dump_error_stack();
 	} else if (_verbose >= 5) {
-			dbgprint(5, "Loaded object cache; dumping contents:\n");
-			_dump_cache(cached_data_unknown, 1, 1);
+		dbgprint(5, "Loaded object cache; dumping contents:\n");
+		_dump_cache(cached_data_unknown, 1, 1);
 	}
 
 	printf("Querying DIME management record for: %s\n", destination);
 
 	if (!(drec = get_dime_record(destination, &ttl, 1))) {
-			fprintf(stderr, "Failed to query DIME management record.\n");
-			dump_error_stack();
-			exit(EXIT_FAILURE);
+		fprintf(stderr, "Failed to query DIME management record.\n");
+		dump_error_stack();
+		exit(EXIT_FAILURE);
 	}
 
 /*	if (save_cache_contents() < 0) {
-		fprintf(stderr, "Error: unable to save cache contents to disk.\n");
-		dump_error_stack();
-	}
-	*/
+                fprintf(stderr, "Error: unable to save cache contents to disk.\n");
+                dump_error_stack();
+        }
+        */
 
 	if (family == AF_INET) {
 		dbgprint(0, "Forcing connection to DX server over IPv4.\n");

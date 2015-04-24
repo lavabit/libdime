@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/core/strings/replace.c
  *
@@ -15,12 +14,12 @@
 /*
  * @brief	Replace all instances of a substring inside another string.
  * @param	target			a pointer to the address of a managed string containing the haystack string, which will be overwritten with the
- * 			address of the transformed string on success.
+ *                      address of the transformed string on success.
  * @param	pattern			a managed string containing the search pattern.
  * @param	replacement		a managed string containing the data that will replace all found instances of the search pattern.
  * @return	-1 on error, or the number of times the pattern string was found in the input string.
  */
- // LOW: Function could use some serious cleanup; NEED TO TEST THIS IN UNIT TESTS
+// LOW: Function could use some serious cleanup; NEED TO TEST THIS IN UNIT TESTS
 int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replacement) {
 
 	stringer_t *output;
@@ -29,7 +28,7 @@ int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replaceme
 
 	// replacement can be blank but it can't be null
 	if (!target || st_empty_out(*target, &tptr, &tlen) || st_empty_out(pattern, &pptr, &plen) ||
-			(st_empty_out(replacement, &rptr, &rlen) && !st_char_get(replacement))) {
+	    (st_empty_out(replacement, &rptr, &rlen) && !st_char_get(replacement))) {
 		log_pedantic("Sanity check failed. Passed a NULL pointer.");
 		return -1;
 	}
@@ -54,7 +53,7 @@ int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replaceme
 	//           and hits has to be positive. So the expression will always evaluate positive.
 	// QUESTION: Shouldn't we allow the output length to be zero?
 	/*if (!hits || !(olen = tlen - (plen * hits) + (rlen * hits))) {
-		return hits;
+	        return hits;
 	}*/
 
 	if (!hits) {
@@ -111,7 +110,7 @@ int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replaceme
  * @param	replacement	the character to be substituted for the pattern character in the target string.
  * @return	a pointer to the target managed string.
  */
-stringer_t * st_swap(stringer_t *target, uchr_t pattern, uchr_t replacement) {
+stringer_t *st_swap(stringer_t *target, uchr_t pattern, uchr_t replacement) {
 
 	size_t tlen;
 	uchr_t *tptr;

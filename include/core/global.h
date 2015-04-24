@@ -1,4 +1,3 @@
-
 /**
  * @file /magma/engine/config/global/global.h
  *
@@ -52,8 +51,8 @@ typedef struct {
 
 	struct {
 		bool_t daemonize; /* Spawn a daemon process and release the console session. */
-		char * root_directory; /* Change the root path to the provided value. */
-		char * impersonate_user; /* Change the effective user account of the process to the user provided. */
+		char *root_directory;  /* Change the root path to the provided value. */
+		char *impersonate_user;  /* Change the effective user account of the process to the user provided. */
 		bool_t increase_resource_limits; /* Attempt to increase system limits. */
 		uint32_t thread_stack_size; /* How much memory should be allocated for thread stacks? */
 		uint32_t worker_threads; /* How many worker threads should we spawn? */
@@ -63,7 +62,7 @@ typedef struct {
 		uint64_t core_dump_size_limit; /* If core dumps are enabled, what size should they be limited too. */
 
 		stringer_t *domain; /* The default domain name used in new user email addresses and for unqualified login names. */
-		char * ca_store; /* Certification authority certificates will be loaded from this directory. */
+		char *ca_store;  /* Certification authority certificates will be loaded from this directory. */
 	} system;
 
 	struct {
@@ -124,7 +123,7 @@ typedef struct {
 	} iface;
 
 	// Global config section
-	chr_t * spool; /* The spool directory. */
+	chr_t *spool;  /* The spool directory. */
 	int_t page_length; /* The memory page size. This value is used to align memory mapped files to page boundaries. */
 
 	// Global variables section
@@ -135,17 +134,17 @@ typedef struct {
 
 
 /// global.c
-void            config_free(void);
-magma_keys_t *  config_key_lookup(stringer_t *name);
-bool_t          config_load_database_settings(void);
-bool_t			config_load_cmdline_settings(void);
-bool_t          config_load_defaults(void);
-bool_t          config_load_file_settings(void);
-void            config_output_help(void);
-void            config_output_settings(void);
-void			config_output_value_generic(chr_t *prefix, chr_t *name, M_TYPE type, void *val, bool_t required);
-void            config_output_value(magma_keys_t *key);
-bool_t          config_validate_settings(void);
-bool_t          config_value_set(magma_keys_t *setting, stringer_t *value);
+void                    config_free(void);
+magma_keys_t *          config_key_lookup(stringer_t *name);
+bool_t                  config_load_database_settings(void);
+bool_t                  config_load_cmdline_settings(void);
+bool_t                  config_load_defaults(void);
+bool_t                  config_load_file_settings(void);
+void                    config_output_help(void);
+void                    config_output_settings(void);
+void                    config_output_value_generic(chr_t *prefix, chr_t *name, M_TYPE type, void *val, bool_t required);
+void                    config_output_value(magma_keys_t *key);
+bool_t                  config_validate_settings(void);
+bool_t                  config_value_set(magma_keys_t *setting, stringer_t *value);
 
 #endif
