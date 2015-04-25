@@ -1335,7 +1335,7 @@ char *_get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
 		snprintf(&(hexbuf[i * 2]), 3, "%.2x", (unsigned char)hashbuf[i]);
 	}
 
-	if (snprintf(buf, blen, "%s-%s", (cn ? cn : ""), hexbuf) <= 0) {
+	if (snprintf(buf, blen, "%s-%s", cn, hexbuf) <= 0) {
 		fprintf(stderr, "Error: could not get x509 certificate id string.\n");
 	}
 
