@@ -97,8 +97,8 @@ void _dump_error(const errinfo_t *error) {
 	}
 
 	fprintf(stderr, "%s:%d [%s()]: %u (%s), errno = %d",
-	        error->filename ? error->filename : "", error->lineno, error->funcname ? error->funcname : "unknown function",
-	        error->errcode, errstring,  error->xerrno);
+	        error->filename, error->lineno, error->funcname,
+	        error->errcode, errstring, error->xerrno);
 
 	if (error->auxmsg) {
 		fprintf(stderr, ", aux = \"%s\"\n", error->auxmsg);
