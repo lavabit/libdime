@@ -9,10 +9,9 @@
 #include <common/misc.h>
 #include <common/error.h>
 
-EC_GROUP *_signing_group = NULL;
-EC_GROUP *_encryption_group = NULL;
-const EVP_MD *_ecies_envelope_evp = NULL;
-
+static EC_GROUP *_signing_group = NULL;
+static EC_GROUP *_encryption_group = NULL;
+static const EVP_MD *_ecies_envelope_evp = NULL;
 
 /*
  * @brief	Initialize the cryptographic subsystem.
