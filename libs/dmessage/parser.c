@@ -237,7 +237,6 @@ void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
 
 	free(obj);
 
-	return;
 }
 
 

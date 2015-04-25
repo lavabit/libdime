@@ -109,7 +109,6 @@ void _int_no_put_4b(void *buf, uint32_t val) {
 	bptr[2] = (val & 0x0000ff00) >> 8;
 	bptr[3] = val & 0x000000ff;
 
-	return;
 }
 
 
@@ -131,7 +130,6 @@ void _int_no_put_3b(void *buf, uint32_t val) {
 	bptr[1] = (val & 0x0000ff00) >> 8;
 	bptr[2] = val & 0x000000ff;
 
-	return;
 }
 
 
@@ -152,7 +150,6 @@ void _int_no_put_2b(void *buf, uint16_t val) {
 	bptr[0] = (val & 0x0000ff00) >> 8;
 	bptr[1] = val & 0x000000ff;
 
-	return;
 }
 
 
@@ -265,7 +262,6 @@ char *_hex_encode(const unsigned char *buf, size_t len) {
 void _set_dbg_level(unsigned int level) {
 
 	_verbose = level;
-	return;
 }
 
 
@@ -416,7 +412,6 @@ void _ptr_chain_free(void *buf) {
 
 	free(buf);
 
-	return;
 }
 
 
@@ -819,7 +814,6 @@ void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
 	__dbgprint(dbglevel, fmt, ap);
 	va_end(ap);
 
-	return;
 }
 
 
@@ -843,7 +837,6 @@ void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
 
 	vfprintf(stderr, fmt, ap);
 
-	return;
 }
 
 
@@ -1426,5 +1419,4 @@ void _secure_wipe(void *buf, size_t len) {
 	memset(buf, 0x55, len);
 	memset(buf, 0, len);
 
-	return;
 }

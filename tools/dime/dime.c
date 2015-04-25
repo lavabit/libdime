@@ -105,7 +105,6 @@ static void show_coc(const char *cocstr) {
 
 	free(datastr);
 
-	return;
 }
 
 

@@ -25,7 +25,6 @@ void pool_free(pool_t *pool) {
 	mutex_destroy(&(pool->lock));
 	sem_destroy(&(pool->available));
 	mm_free(pool);
-	return;
 }
 
 /**

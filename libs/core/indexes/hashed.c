@@ -116,7 +116,6 @@ static void hashed_bucket_set_ptr(hashed_index_t *hashed, uint32_t num, hashed_b
 	}
 #endif
 
-	return;
 }
 
 // Tacks on a bucket at the end.
@@ -133,7 +132,6 @@ static void hashed_bucket_add(hashed_bucket_t *bucket, hashed_bucket_t *new) {
 	}
 
 	bucket->next = (struct hashed_bucket_t *)new;
-	return;
 }
 
 // Add a data item to the list.
@@ -395,7 +393,6 @@ static void hashed_cursor_reset(hashed_cursor_t *cursor) {
 		cursor->serial = cursor->count = cursor->slot = 0;
 	}
 
-	return;
 }
 
 static void hashed_cursor_free(hashed_cursor_t *cursor) {
@@ -404,7 +401,6 @@ static void hashed_cursor_free(hashed_cursor_t *cursor) {
 		mm_free(cursor);
 	}
 
-	return;
 }
 
 static void *hashed_cursor_alloc(inx_t *inx) {
@@ -451,7 +447,6 @@ static void hashed_free(void *inx) {
 
 	mm_free(index->index);
 	index->index = NULL;
-	return;
 }
 
 static void hashed_truncate(void *inx) {
@@ -482,7 +477,6 @@ static void hashed_truncate(void *inx) {
 		}
 	}
 
-	return;
 }
 
 /**

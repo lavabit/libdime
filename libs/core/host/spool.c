@@ -267,7 +267,6 @@ void spool_stop(void) {
 	if (spool_files_cleaned - before > 0) log_pedantic("%lu files needed to be purged from the spool.", spool_files_cleaned - before);
 #endif
 
-	return;
 }
 
 /**

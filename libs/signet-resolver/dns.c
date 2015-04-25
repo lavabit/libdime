@@ -1108,7 +1108,6 @@ void _destroy_dnskey(dnskey_t *key) {
 	memset(key, 0, sizeof (dnskey_t));
 	free(key);
 
-	return;
 }
 
 
@@ -1139,7 +1138,6 @@ void _destroy_ds(ds_t *ds) {
 	memset(ds, 0, sizeof(ds_t));
 	free(ds);
 
-	return;
 }
 
 
@@ -1315,7 +1313,6 @@ void _dump_dns_header(ns_msg *handle) {
 	_dbgprint(3, "DNS reply header[2] - q count: %u, answer count: %u, additional count: %u, ns count: %u\n",
 	          ns_msg_count(*handle, ns_s_qd), ns_msg_count(*handle, ns_s_an), ns_msg_count(*handle, ns_s_ar), ns_msg_count(*handle, ns_s_ns));
 
-	return;
 }
 
 
@@ -1863,7 +1860,6 @@ void _free_mx_records(mx_record_t **mxs) {
 
 	free(mxs);
 
-	return;
 }
 
 
@@ -2051,7 +2047,6 @@ int _initialize_resolver(void) {
 void _destroy_dnskey_record_cb(void *record) {
 
 	_destroy_dnskey((dnskey_t *)record);
-	return;
 }
 
 
@@ -2157,7 +2152,6 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 		free(signbuf);
 	}
 
-	return;
 }
 
 
@@ -2170,7 +2164,6 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 void _destroy_ds_record_cb(void *record) {
 
 	_destroy_ds((ds_t *)record);
-	return;
 }
 
 
@@ -2212,7 +2205,6 @@ void _dump_ds_record_cb(FILE *fp, void *record, int brief) {
 		free(signbuf);
 	}
 
-	return;
 }
 
 
@@ -2496,7 +2488,6 @@ void _fixup_ds_links(void) {
                 ptr = ptr->next;
         } */
 
-	return;
 }
 
 
@@ -2541,7 +2532,6 @@ void _fixup_dnskey_validation(void) {
 
 	_unlock_cache_store(store);
 
-	return;
 }
 
 

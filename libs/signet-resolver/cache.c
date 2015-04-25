@@ -343,7 +343,6 @@ void _destroy_cache_entry(cached_object_t *entry) {
 	memset(entry, 0, sizeof(cached_object_t));
 	free(entry);
 
-	return;
 }
 
 
@@ -1158,7 +1157,6 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 		_unlock_cache_store(&(cached_stores[i]));
 	}
 
-	return;
 }
 
 
@@ -1195,7 +1193,6 @@ void _dump_cache_data(FILE *fp, const cached_object_t *obj, int brief) {
 		_clear_error_stack();
 	}
 
-	return;
 }
 
 
@@ -2266,7 +2263,6 @@ void _lock_cache_store(cached_store_t *store) {
 		perror("pthread_mutex_lock");
 	}
 
-	return;
 }
 
 
@@ -2281,7 +2277,6 @@ void _unlock_cache_store(cached_store_t *store) {
 		perror("pthread_mutex_unlock");
 	}
 
-	return;
 }
 
 

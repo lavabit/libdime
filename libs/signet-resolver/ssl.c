@@ -64,7 +64,6 @@ void _ssl_shutdown(void) {
 
 	_dbgprint(4, "Unloaded openssl library.\n");
 
-	return;
 }
 
 
@@ -234,7 +233,6 @@ void _ssl_disconnect(SSL *handle) {
 	SSL_free(handle);
 	_dbgprint(4, "SSL session and underlying socket was terminated.\n");
 
-	return;
 }
 
 
@@ -1233,7 +1231,6 @@ void _ssl_fd_loop(SSL *connection) {
 
 	}
 
-	return;
 }
 
 
@@ -1286,7 +1283,6 @@ void _destroy_ocsp_response_cb(void *record) {
 	OCSP_RESPONSE *response = (OCSP_RESPONSE *)record;
 
 	OCSP_RESPONSE_free(response);
-	return;
 }
 
 
@@ -1477,7 +1473,6 @@ void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 
 	OCSP_BASICRESP_free(basic);
 
-	return;
 }
 
 

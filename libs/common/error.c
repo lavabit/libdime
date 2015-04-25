@@ -46,7 +46,6 @@ void dump_last_error(void) {
 
 	_dump_error(_t_err_stack.error_stack_top);
 
-	return;
 }
 
 
@@ -75,7 +74,6 @@ void dump_error_stack(void) {
 		n++;
 	}
 
-	return;
 }
 
 
@@ -106,7 +104,6 @@ void _dump_error(const errinfo_t *error) {
 		fprintf(stderr, " [no aux]\n");
 	}
 
-	return;
 }
 
 
@@ -195,7 +192,6 @@ void _clear_error_stack(void) {
 	_t_err_stack.error_stack_top = NULL;
 	_t_err_stack.error_stack_overflow = 0;
 
-	return;
 }
 
 

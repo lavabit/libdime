@@ -80,7 +80,6 @@ static void linked_record_free(inx_t *index, linked_record_t *record) {
 	if (index && index->data_free) index->data_free(record->data);
 	mt_free(record->key);
 	mm_free(record);
-	return;
 }
 
 /**
@@ -369,7 +368,6 @@ static void linked_cursor_reset(linked_cursor_t *cursor) {
 		cursor->serial = cursor->position = cursor->count = 0;
 	}
 
-	return;
 }
 
 /**
@@ -383,7 +381,6 @@ static void linked_cursor_free(linked_cursor_t *cursor) {
 		mm_free(cursor);
 	}
 
-	return;
 }
 
 /**
@@ -429,7 +426,6 @@ static void linked_truncate(void *inx) {
 	}
 
 	index->index = NULL;
-	return;
 }
 
 /**
@@ -449,7 +445,6 @@ static void linked_free(void *inx) {
 	// For linked lists truncation involves the same steps as free.
 	linked_truncate(inx);
 
-	return;
 }
 
 /**

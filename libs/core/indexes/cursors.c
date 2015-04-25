@@ -22,7 +22,6 @@ void inx_cursor_reset(inx_cursor_t *cursor) {
 		cursor->inx->cursor_reset(cursor);
 	}
 
-	return;
 }
 
 /**
@@ -45,7 +44,6 @@ void inx_cursor_free(inx_cursor_t *cursor) {
 		inx_free(index);
 	}
 
-	return;
 }
 
 /**

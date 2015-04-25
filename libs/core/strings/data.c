@@ -98,7 +98,6 @@ void st_data_set(stringer_t *s, void *data) {
 		break;
 	}
 
-	return;
 }
 
 /**
@@ -196,5 +195,4 @@ void st_wipe(stringer_t *s) {
 		st_length_set(s, 0);
 	}
 
-	return;
 }

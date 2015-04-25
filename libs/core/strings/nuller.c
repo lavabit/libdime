@@ -102,7 +102,6 @@ void ns_free(chr_t *s) {
 #endif
 
 	if (s) mm_free(s);
-	return;
 }
 
 /**
@@ -197,5 +196,4 @@ void ns_wipe(chr_t *s, size_t len) {
 #endif
 
 	if (s && len) mm_set(s, 0, len);
-	return;
 }

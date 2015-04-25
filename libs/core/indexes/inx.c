@@ -20,7 +20,6 @@ void inx_unlock(inx_t *inx) {
 	if (!inx->automatic) {
 		rwlock_unlock(&(inx->lock));
 	}
-	return;
 }
 
 
@@ -28,7 +27,6 @@ void inx_auto_unlock(inx_t *inx) {
 	if (inx->automatic) {
 		rwlock_unlock(&(inx->lock));
 	}
-	return;
 }
 
 /**
@@ -40,14 +38,12 @@ void inx_lock_read(inx_t *inx) {
 	if (!inx->automatic) {
 		rwlock_lock_read(&(inx->lock));
 	}
-	return;
 }
 
 void inx_auto_read(inx_t *inx) {
 	if (inx->automatic) {
 		rwlock_lock_read(&(inx->lock));
 	}
-	return;
 }
 /**
  * @brief	Acquire a writer's lock for an inx object.
@@ -58,7 +54,6 @@ void inx_lock_write(inx_t *inx) {
 	if (!inx->automatic) {
 		rwlock_lock_write(&(inx->lock));
 	}
-	return;
 }
 
 
@@ -66,7 +61,6 @@ void inx_auto_write(inx_t *inx) {
 	if (inx->automatic) {
 		rwlock_lock_write(&(inx->lock));
 	}
-	return;
 }
 
 /**
@@ -257,7 +251,6 @@ void inx_free(inx_t *inx) {
 		mm_free(inx);
 	}
 
-	return;
 }
 
 void inx_truncate(inx_t *inx) {
@@ -273,7 +266,6 @@ void inx_truncate(inx_t *inx) {
 	inx->index_truncate(inx);
 	inx_auto_unlock(inx);
 
-	return;
 }
 
 /**
@@ -285,7 +277,6 @@ void inx_cleanup(inx_t *inx) {
 	if (inx) {
 		inx_free(inx);
 	}
-	return;
 }
 
 /**
@@ -299,9 +290,9 @@ inx_t *inx_alloc(uint64_t options, void *data_free) {
 	inx_t *inx = NULL;
 
 	switch (options & MAGMA_INDEX_TYPE) {
-        /*	case M_INX_TREE:
-                        inx = tree_alloc(options, data_free);
-                        break; */
+	/*	case M_INX_TREE:
+	                inx = tree_alloc(options, data_free);
+	                break; */
 	case M_INX_LINKED:
 		inx = linked_alloc(options, data_free);
 		break;

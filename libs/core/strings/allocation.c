@@ -85,7 +85,6 @@ void st_free(stringer_t *s) {
 		break;
 	}
 
-	return;
 }
 
 /**
@@ -100,7 +99,6 @@ void st_cleanup(stringer_t *s) {
 		st_free(s);
 	}
 
-	return;
 }
 
 /**

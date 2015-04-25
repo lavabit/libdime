@@ -153,7 +153,6 @@ static void mm_sec_chunk_merge(secured_t *chunk) {
 		chunk->length += sizeof(secured_t) + next->length;
 	}
 
-	return;
 }
 
 // Locates a properly sized chunk of memory and reserves it.
@@ -227,7 +226,6 @@ void mm_sec_free(void *block) {
 		mutex_unlock(&secure.slab.lock);
 	}
 
-	return;
 }
 
 /**
@@ -331,7 +329,6 @@ void mm_sec_stop(void) {
 
 	}
 
-	return;
 }
 
 /**

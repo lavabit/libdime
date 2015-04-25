@@ -272,7 +272,6 @@ void _signet_destroy(signet_t *signet) {
 
 	free(signet);
 
-	return;
 }
 
 
@@ -428,7 +427,6 @@ void _signet_dump(FILE *fp, signet_t *signet) {
 		}
 	}
 
-	return;
 }
 
 
@@ -2885,7 +2883,6 @@ void _signet_fid_destroy(signet_field_t *field) {
 		temp = _signet_field_destroy(temp);
 	}
 
-	return;
 }
 
 
@@ -3345,7 +3342,6 @@ void _dump_signet_cb(FILE *fp, void *record, int brief) {
 
 	_signet_dump(fp, sig);
 
-	return;
 }
 
 
@@ -3358,5 +3354,4 @@ void _destroy_signet_cb(void *record) {
 
 	_signet_destroy(record);
 
-	return;
 }

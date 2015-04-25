@@ -29,7 +29,6 @@ void _destroy_dime_record(dime_record_t *record) {
 	memset(record, 0, sizeof(dime_record_t));
 	free(record);
 
-	return;
 }
 
 
@@ -175,7 +174,6 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 		fprintf(fp, "****** This record was retrieved with an INVALID DNSSEC signature.\n");
 	}
 
-	return;
 }
 
 
@@ -188,7 +186,6 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 void _destroy_dime_record_cb(void *record) {
 
 	_destroy_dime_record((dime_record_t *)record);
-	return;
 }
 
 

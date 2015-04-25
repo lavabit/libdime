@@ -23,7 +23,6 @@ void log_disable(void) {
 	mutex_lock(&log_mutex);
 	log_enabled = false;
 	mutex_unlock(&log_mutex);
-	return;
 }
 
 /**
@@ -34,7 +33,6 @@ void log_enable(void) {
 	mutex_lock(&log_mutex);
 	log_enabled = true;
 	mutex_unlock(&log_mutex);
-	return;
 }
 
 /**
@@ -216,7 +214,6 @@ void log_rotate(void) {
 		pthread_mutex_unlock(&log_mutex);
 	}
 
-	return;
 }
 
 bool_t log_start(void) {
@@ -268,5 +265,4 @@ bool_t log_start(void) {
 void debug_hook(void) {
 
 	log_pedantic("Triggered debug hook.");
-	return;
 }

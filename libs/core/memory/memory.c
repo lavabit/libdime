@@ -23,7 +23,6 @@ void mm_cleanup(void *block) {
 		mm_free(block);
 	}
 
-	return;
 }
 
 
@@ -139,7 +138,6 @@ void mm_free(void *block) {
 		free(block);
 	}
 
-	return;
 }
 
 /**

@@ -67,7 +67,6 @@ void _crypto_shutdown(void) {
 	EVP_cleanup();
 	ERR_free_strings();
 
-	return;
 }
 
 
@@ -509,7 +508,6 @@ void _free_ec_key(EC_KEY *key) {
 
 	EC_KEY_free(key);
 
-	return;
 }
 
 
@@ -601,7 +599,6 @@ void _free_ed25519_key(ED25519_KEY *key) {
 	_secure_wipe(key, sizeof(ED25519_KEY));
 	free(key);
 
-	return;
 }
 
 

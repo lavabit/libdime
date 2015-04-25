@@ -121,7 +121,6 @@ void    _dmsg_destroy_msg(dmime_message_t *msg) {
 
 	free(msg);
 
-	return;
 }
 
 
@@ -2216,7 +2215,6 @@ void _dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list) {
 		free(list);
 	}
 
-	return;
 }
 
 
@@ -2239,7 +2237,6 @@ void _dmsg_destroy_object(dmime_object_t *object) {
 		free(object);
 	}
 
-	return;
 }
 
 

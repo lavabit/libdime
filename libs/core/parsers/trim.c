@@ -40,7 +40,6 @@ void st_trim(stringer_t *string) {
 		mm_wipe(st_char_get(string) + st_length_get(string), st_avail_get(string) - st_length_get(string));
 	}
 
-	return;
 }
 
 placer_t pl_trim(placer_t place) {

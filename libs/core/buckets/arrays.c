@@ -284,7 +284,6 @@ void ar_length_set(array_t *array, size_t used) {
 
 	*(size_t *)(array + sizeof(size_t)) = used;
 
-	return;
 }
 
 /*
@@ -403,7 +402,6 @@ void ar_free(array_t *array) {
 	// Finally, free the buffer for the array itself.
 	mm_free(array);
 
-	return;
 }
 
 /**

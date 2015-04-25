@@ -278,7 +278,6 @@ void _destroy_dmtp_session(dmtp_session_t *session) {
 
 	free(session);
 
-	return;
 }
 
 

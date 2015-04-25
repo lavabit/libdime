@@ -444,7 +444,6 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 	st_free(*message);
 	*message = result;
 
-	return;
 }
 
 /**

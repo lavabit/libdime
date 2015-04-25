@@ -39,7 +39,6 @@ void stacker_free(stacker_t *stack) {
 
 	mutex_destroy(&(stack->mutex));
 	mm_free(stack);
-	return;
 }
 
 /**

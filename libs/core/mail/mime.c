@@ -907,7 +907,6 @@ void mail_mime_free(mail_mime_t *mime) {
 	st_cleanup(mime->boundary);
 	mm_free(mime);
 
-	return;
 }
 
 /**
