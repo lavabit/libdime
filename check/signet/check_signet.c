@@ -66,16 +66,20 @@ START_TEST(check_signet_modification)
 }
 END_TEST
 
-/*	to debug signet contents
+#if 0
+static void signet_dump(const signet_t *signet) {
 
-        fprintf(stderr, "signet size: %d\nsignet data: ", signet->size);
-        for(i = 0; i< signet->size; ++i)
-                fprintf(stderr, "%d ", signet->data[i]);
-        fprintf(stderr, "\nfield indexes: ");
-        for(i = 0; i <= SIGNET_FID_MAX; ++i)
-                fprintf(stderr, "%d ", signet->fields[i]);
-        fprintf(stderr, "\n");
- */
+	fprintf(stderr, "signet size: %d\nsignet data: ", signet->size);
+	for(size_t i = 0; i < signet->size; ++i) {
+		fprintf(stderr, "%d ", signet->data[i]);
+	}
+	fprintf(stderr, "\nfield indexes: ");
+	for(size_t i = 0; i <= SIGNET_FID_MAX; ++i) {
+		fprintf(stderr, "%d ", signet->fields[i]);
+	}
+	fprintf(stderr, "\n");
+}
+#endif
 
 START_TEST(check_signet_parsing)
 {
