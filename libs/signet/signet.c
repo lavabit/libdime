@@ -149,6 +149,7 @@ int _signet_to_file(signet_t *signet, const char *filename) {
 	}
 
 	if(_write_pem_data(armored, SIGNET_PEM_TAG, filename) < 0) {
+		free(armored);
 		RET_ERROR_INT(ERR_UNSPEC, "could not write signet to PEM file");
 	}
 
