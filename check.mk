@@ -48,7 +48,8 @@ clean:
 	@rm -rf $(OBJDIRNAME) $(DEPDIRNAME)
 	@rm -f $(check_PROGRAMS)
 
-$(check_PROGRAMS): $(OBJFILES)
+$(check_PROGRAMS): $(OBJFILES) $(filter %.a,$(LIBS))
+	@echo "Linking $(GREEN)$@$(NORMAL)"
 	$(RUN)$(CC) -o $@ $(OBJFILES) $(LIBS)
 
 $(OBJDIRNAME) $(DEPDIRNAME):
