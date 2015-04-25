@@ -107,14 +107,10 @@ dmime_keyslot_t *_dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, si
 
 	case PAYLOAD_TYPE_SIGNATURE:
 		return (dmime_keyslot_t *)(&(chunk->data[0]) + ED25519_SIG_SIZE + ((num - 1) * sizeof(dmime_keyslot_t)));
-		break;
 	case PAYLOAD_TYPE_STANDARD:
 		return (dmime_keyslot_t *)(&(chunk->data[0]) + _int_no_get_3b(&(chunk->payload_size[0])) + ((num - 1) * sizeof(dmime_keyslot_t)));
-		break;
 	default:
 		RET_ERROR_PTR(ERR_UNSPEC, "there are no keyslots for this chunk");
-		break;
-
 	}
 }
 
@@ -132,8 +128,6 @@ void    _dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 
 	_secure_wipe(chunk, sizeof(dmime_message_chunk_state_t) + sizeof(size_t) + chunk->serial_size);
 	free(chunk);
-
-	return;
 }
 
 
