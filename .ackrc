@@ -1,0 +1,4 @@
+# for http://beyondgrep.com/
+
+--ignore-dir=deps/
+--ignore-dir=doxygen-doc/
