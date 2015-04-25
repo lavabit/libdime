@@ -300,9 +300,6 @@ int _str_printf(char **sbuf, const char *fmt, ...) {
 
 /**
  * @brief	Append variable-argument formatted data to a dynamically allocated null-terminated string.
- * @param	sbuf
- * @param	fmt
- * @return
  */
 int __str_printf(char **sbuf, const char *fmt, va_list ap) {
 
@@ -316,8 +313,8 @@ int __str_printf(char **sbuf, const char *fmt, va_list ap) {
 	}
 
 	va_copy(copy, ap);
-
-	total = more = vsnprintf(&tmp, 1, fmt, ap) + 1;
+	total = more = vsnprintf(&tmp, 1, fmt, copy) + 1;
+	va_end(copy);
 
 	// We already have an allocated string so we need to append to it.
 	if (*sbuf) {
@@ -331,7 +328,6 @@ int __str_printf(char **sbuf, const char *fmt, va_list ap) {
 			free(*sbuf);
 		}
 
-		va_end(copy);
 		RET_ERROR_INT(ERR_NOMEM, "unable to reallocate more space for string");
 	}
 
@@ -340,12 +336,12 @@ int __str_printf(char **sbuf, const char *fmt, va_list ap) {
 	}
 
 	endptr = result + strlen(result);
-	// Must call va_start() again.
-	va_copy(ap, copy);
-	va_end(copy);
-	retval = vsnprintf(endptr, more + 1, fmt, ap);
-	*sbuf = result;
 
+	va_copy(copy, ap);
+	retval = vsnprintf(endptr, more + 1, fmt, copy);
+	va_end(copy);
+
+	*sbuf = result;
 	return retval;
 }
 
