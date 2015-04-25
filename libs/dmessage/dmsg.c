@@ -1934,16 +1934,16 @@ dmime_message_t *_dmsg_bin_to_msg(const unsigned char *in, size_t insize) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
+	if(insize < DIME_NUMBER_SIZE) {
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid message size");
+	}
+
 	if(!(result = malloc(sizeof(dmime_message_t)))) {
 		PUSH_ERROR_SYSCALL("malloc");
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for message structure");
 	}
 
 	memset(result, 0, sizeof(dmime_message_t));
-
-	if(insize < DIME_NUMBER_SIZE) {
-		RET_ERROR_PTR(ERR_UNSPEC, "invalid message size");
-	}
 
 	if((dime_num = _int_no_get_2b(in + at)) == DIME_MSG_TRACING) {
 		tracing = 1;
