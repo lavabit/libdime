@@ -118,6 +118,7 @@ stringer_t *st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args) {
 	// Calculate the length.
 	va_copy(copy, args);
 	expected = length = vsnprintf(NULL, 0, format, copy);
+	va_end(copy);
 
 	// Allocate a properly sized buffer.
 	if (!length || !(result = st_alloc_opts(opts, length + 1)) || !(out = st_data_get(result))) {
