@@ -228,7 +228,7 @@ uint16_t _int_no_get_2b(const void *buf) {
 char *_hex_encode(const unsigned char *buf, size_t len) {
 
 	char *result;
-	size_t newlen, i;
+	size_t newlen;
 
 	if (!buf || !len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -243,7 +243,7 @@ char *_hex_encode(const unsigned char *buf, size_t len) {
 
 	memset(result, 0, newlen);
 
-	for (i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 		snprintf(&(result[i * 2]), 3, "%.2x", (unsigned char)buf[i]);
 	}
 
@@ -568,7 +568,7 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
 
 	unsigned char *o, *result;
 	const char *p;
-	size_t new_len, written = 0, i;
+	size_t new_len, written = 0;
 	int loop = 0, value = 0;
 
 	if (!buf || !len || !outlen) {
@@ -588,7 +588,7 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
 	p = buf;
 
 	// Get four characters at a time from the input buffer and decode them.
-	for (i = 0; i < len; i++) {
+	for (size_t i = 0; i < len; i++) {
 
 		// Only process legit base64 characters.
 		if ((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '+' || *p == '/') {
@@ -649,7 +649,7 @@ char *_b64encode(const unsigned char *buf, size_t len) {
 	unsigned char *o;
 	const unsigned char *p;
 	char *result;
-	size_t new_len, i;
+	size_t new_len;
 	unsigned char c1, c2, c3;
 
 	if (!buf || !len) {
@@ -670,7 +670,7 @@ char *_b64encode(const unsigned char *buf, size_t len) {
 	p = buf;
 
 	// This will process three bytes at a time.
-	for(i = 0; i < len / 3; ++i) {
+	for(size_t i = 0; i < len / 3; ++i) {
 		c1 = (*p++) & 0xFF;
 		c2 = (*p++) & 0xFF;
 		c3 = (*p++) & 0xFF;
@@ -720,15 +720,13 @@ char *_b64encode(const unsigned char *buf, size_t len) {
  */
 void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
 
-	size_t i;
-
 	if (!buf) {
 		return;
 	}
 
 	fprintf(stderr, "Dumping buf of size %u bytes ...: |", (unsigned int)len);
 
-	for(i = 0; i < len; i++) {
+	for(size_t i = 0; i < len; i++) {
 
 		if (!all_hex && (isgraph(buf[i]) || buf[i] == ' ')) {
 			fprintf(stderr, "%c", buf[i]);
@@ -759,8 +757,6 @@ void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
  */
 void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
 
-	size_t i;
-
 	if (!buf) {
 		return;
 	}
@@ -773,7 +769,7 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
 
 	fprintf(stderr, "Dumping buf of size %u bytes ...: |", (unsigned int)len);
 
-	for (i = 0; i < nouter; i++) {
+	for (size_t i = 0; i < nouter; i++) {
 
 		if ((!all_hex && isgraph(buf[i])) || buf[i] == ' ') {
 			fprintf(stderr, "%c", buf[i]);
@@ -785,7 +781,7 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
 
 	fprintf(stderr, "  ...  ");
 
-	for(i = len - nouter; i < len; i++) {
+	for(size_t i = len - nouter; i < len; i++) {
 
 		if ((!all_hex && isgraph(buf[i])) || buf[i] == ' ') {
 			fprintf(stderr, "%c", buf[i]);
@@ -1147,13 +1143,12 @@ int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
 int _is_buf_zeroed(void *buf, size_t len) {
 
 	unsigned char *ptr = (unsigned char *)buf;
-	size_t i;
 
 	if (!buf || !len) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	for(i = 0; i < len; i++) {
+	for(size_t i = 0; i < len; i++) {
 
 		if (ptr[i]) {
 			return 0;
@@ -1177,7 +1172,6 @@ int _write_pem_data(const char *b64_data, const char *tag, const char *filename)
 	FILE *fp;
 	char fbuf[BUFSIZ];
 	size_t data_size;
-	unsigned int i;
 
 	if(!b64_data || !tag || !filename) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -1193,7 +1187,7 @@ int _write_pem_data(const char *b64_data, const char *tag, const char *filename)
 
 	fprintf(fp, "-----BEGIN %s-----\n", tag);
 
-	for(i = 0; i < data_size; ++i) {
+	for(size_t i = 0; i < data_size; ++i) {
 
 		if(i % 128 == 0 && i) {
 			fprintf(fp, "\n");

@@ -15,7 +15,7 @@ bool_t st_search_cs(stringer_t *haystack, stringer_t *needle, size_t *location) 
 
 	uchr_t *h, *n;
 	bool_t result = false;
-	size_t i, j, hlen, nlen;
+	size_t hlen, nlen;
 
 	if (st_empty_out(haystack, &h, &hlen) || st_empty_out(needle, &n, &nlen)) {
 		log_pedantic("Passed an empty string.");
@@ -34,9 +34,12 @@ bool_t st_search_cs(stringer_t *haystack, stringer_t *needle, size_t *location) 
 		return false;
 	}
 
-	for (i = 0; i <= hlen - nlen && !result; i++) {
+	for (size_t i = 0; i <= hlen - nlen && !result; i++) {
+		size_t j = 0;
 
-		for (j = 0; j < nlen && (*(h + j) == *(n + j)); j++);
+		while (j < nlen && h[j] == n[j]) {
+			j++;
+		}
 
 		// In theory, j won't ever equal nlen if a non-matching character is found.
 		if (j == nlen && location) {
@@ -66,7 +69,7 @@ bool_t st_search_ci(stringer_t *haystack, stringer_t *needle, size_t *location) 
 
 	uchr_t *h, *n;
 	bool_t result = false;
-	size_t i, j, hlen, nlen;
+	size_t hlen, nlen;
 
 	if (st_empty_out(haystack, &h, &hlen) || st_empty_out(needle, &n, &nlen)) {
 		log_pedantic("Passed an empty string.");
@@ -83,9 +86,12 @@ bool_t st_search_ci(stringer_t *haystack, stringer_t *needle, size_t *location) 
 		return false;
 	}
 
-	for (i = 0; i <= hlen - nlen && !result; i++) {
+	for (size_t i = 0; i <= hlen - nlen && !result; i++) {
+		size_t j = 0;
 
-		for (j = 0; j < nlen && (lower_chr(*(h + j)) == lower_chr(*(n + j))); j++);
+		while (j < nlen && lower_chr(h[j]) == lower_chr(n[j])) {
+			j++;
+		}
 
 		// In theory, j won't ever equal nlen if a non-matching character is found.
 		if (j == nlen && location) {

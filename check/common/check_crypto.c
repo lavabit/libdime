@@ -12,7 +12,7 @@ START_TEST(check_ec_signatures)
 
 	unsigned char *rdata, *sigdata;
 	size_t dlens[] = { 16, 128, 1024, 65535 };
-	size_t i, j, rsize, siglen, last_min = 1;
+	size_t rsize, siglen, last_min = 1;
 	int res;
 
 	res = crypto_init();
@@ -21,9 +21,9 @@ START_TEST(check_ec_signatures)
 	key = generate_ec_keypair(0);
 	ck_assert_msg((key != NULL), "EC signature/verification check failed: could not generate key pair.\n");
 
-	for (i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
+	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
-		for (j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
+		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 			rdata = gen_random_data(last_min, dlens[i], &rsize);
 			ck_assert_msg((rdata != NULL), "EC signature/verification check failed: could not generate random data.\n");
 
@@ -54,7 +54,7 @@ START_TEST(check_ec_sha_signatures)
 
 	unsigned char *rdata, *sigdata;
 	size_t dlens[] = { 16, 128, 1024, 65535 };
-	size_t i, j, k, rsize, siglen, last_min = 1;
+	size_t rsize, siglen, last_min = 1;
 	unsigned int shabits;
 	int res;
 
@@ -64,11 +64,11 @@ START_TEST(check_ec_sha_signatures)
 	key = generate_ec_keypair(0);
 	ck_assert_msg((key != NULL), "EC SHA signature/verification check failed: could not generate key pair.\n");
 
-	for (i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
+	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
-		for (j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
+		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 
-			for (k = 0; k < 2; k++) {
+			for (size_t k = 0; k < 2; k++) {
 
 				if (!k) {
 					shabits = 160;
@@ -108,7 +108,7 @@ START_TEST(load_ec_key_file)
 {
 	char filename[256], *b64key;
 	EC_KEY *result, *key;
-	size_t i, size;
+	size_t size;
 	unsigned char *serial;
 	int res;
 
@@ -116,7 +116,7 @@ START_TEST(load_ec_key_file)
 
 	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
 
-	for (i = 0; i < 5; ++i) {
+	for (size_t i = 0; i < 5; ++i) {
 		key = _generate_ec_keypair(0);
 		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
 		serial = _serialize_ec_privkey(key, &size);
@@ -134,7 +134,7 @@ START_TEST(load_ec_key_file)
 		free(b64key);
 	}
 
-	for (i = 0; i < 5; i++) {
+	for (size_t i = 0; i < 5; i++) {
 		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
 		result = _load_ec_privkey(filename);
 		ck_assert_msg(result != NULL, "load_ec_privkey failed for %s", filename);
@@ -156,12 +156,12 @@ START_TEST(check_ec_serialization)
 	EC_KEY *pair, *pair2;
 	unsigned char *sbuf, *sbuf2;
 	int res;
-	size_t i, ssize, ssize2;
+	size_t ssize, ssize2;
 
 	res = crypto_init();
 	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
 
-	for (i = 0; i < N_SERIALIZATION_TESTS; i++) {
+	for (size_t i = 0; i < N_SERIALIZATION_TESTS; i++) {
 		pair = _generate_ec_keypair(0);
 		ck_assert_msg((pair != NULL), "EC serialization check failed: could not generate key pair.\n");
 
@@ -265,7 +265,7 @@ START_TEST(check_ed25519_signatures)
 	ed25519_signature sigbuf;
 	unsigned char *rdata;
 	size_t dlens[] = { 16, 128, 1024, 65535 };
-	size_t i, j, rsize, last_min = 1;
+	size_t rsize, last_min = 1;
 	int res;
 
 	res = crypto_init();
@@ -274,9 +274,9 @@ START_TEST(check_ed25519_signatures)
 	key = generate_ed25519_keypair();
 	ck_assert_msg((key != NULL), "ed25519 signature/verification check failed: could not generate key pair.\n");
 
-	for (i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
+	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
-		for (j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
+		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 			rdata = gen_random_data(last_min, dlens[i], &rsize);
 			memset(sigbuf, 0, sizeof(sigbuf));
 			ck_assert_msg((rdata != NULL), "ed25519 signature/verification check failed: could not generate random data.\n");

@@ -12,7 +12,7 @@
  */
 int _connect_host(const char *hostname, unsigned short port, int force_family) {
 
-	struct addrinfo hints, *address, *aptr;
+	struct addrinfo hints, *address;
 	char pstr[16];
 	int result, fd = -1;
 
@@ -32,7 +32,7 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
 		RET_ERROR_INT(ERR_UNSPEC, "failed to resolve host address");
 	}
 
-	for (aptr = address; aptr; aptr = aptr->ai_next) {
+	for (struct addrinfo *aptr = address; aptr; aptr = aptr->ai_next) {
 
 		// Shouldn't happen, but paranoia never hurt anybody.
 		if (force_family && (aptr->ai_family != force_family)) {

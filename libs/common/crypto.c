@@ -670,7 +670,6 @@ void *_ecies_env_derivation(const void *input, size_t ilen, void *output, size_t
 int _compute_aes256_kek(EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf) {
 
 	unsigned char aeskey[SHA_512_SIZE];
-	int i;
 
 	if (!public_key || !private_key || !keybuf) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -681,7 +680,7 @@ int _compute_aes256_kek(EC_KEY *public_key, EC_KEY *private_key, unsigned char *
 		RET_ERROR_INT(ERR_UNSPEC, "could not derive AES key from EC keypair");
 	}
 
-	for(i = 0; i < 16; ++i) {
+	for(size_t i = 0; i < 16; ++i) {
 		keybuf[i] = aeskey[i] ^ aeskey[i + 16];
 	}
 

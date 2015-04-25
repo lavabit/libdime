@@ -25,9 +25,7 @@
 
 START_TEST(check_debug_level)
 {
-	unsigned int i;
-
-	for (i = 0; i < 100; i++) {
+	for (unsigned int i = 0; i < 100; i++) {
 		set_dbg_level(i);
 		ck_assert_uint_eq(i, get_dbg_level());
 	}

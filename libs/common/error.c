@@ -114,9 +114,7 @@ void _dump_error(const errinfo_t *error) {
  */
 const char *get_error_string(unsigned int errcode) {
 
-	size_t i;
-
-	for (i = 0; i < sizeof(err_desc_table) / sizeof(err_desc_t); i++) {
+	for (size_t i = 0; i < sizeof(err_desc_table) / sizeof(err_desc_t); i++) {
 
 		if (err_desc_table[i].errcode == errcode) {
 			return err_desc_table[i].errmsg;
