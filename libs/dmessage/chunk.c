@@ -32,7 +32,7 @@ int _dmsg_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsign
 		RET_ERROR_INT(ERR_UNSPEC, "could not generate a random byte");
 	}
 
-	if(flags | ALTERNATE_PADDING_ALGORITHM_ENABLED) {
+	if(flags & ALTERNATE_PADDING_ALGORITHM_ENABLED) {
 		*padlen = 16 * rand + 16 - (dsize % 16);
 		*padbyte = rand;
 	} else {
