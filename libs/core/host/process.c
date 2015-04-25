@@ -35,6 +35,7 @@ int_t process_kill(stringer_t *name, int_t signal, int_t wait) {
 			    !st_cmp_ci_starts(st_swap(compare, '\0', ' '), name)) {
 				if ((ret = kill(pid, signal))) {
 					log_pedantic("The process could not be signaled. { signal = %i / %s }", signal, strerror_r(errno, MEMORYBUF(1024), 1024));
+					closedir(dir);
 					return -2;
 				}
 				else {
