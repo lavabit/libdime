@@ -3085,7 +3085,10 @@ unsigned char *_signet_fid_get(const signet_t *signet, unsigned char fid, size_t
 		RET_ERROR_PTR(ERR_UNSPEC, "defined field does not exist");
 	}
 
-	*out_len = _signet_fid_size(signet, fid);
+	if ((res = _signet_fid_size(signet, fid)) < 0) {
+		RET_ERROR_PTR_FMT(ERR_UNSPEC, "error retrieving size of field %u", fid);
+	}
+	*out_len = res;
 
 	if(!(data = malloc(*out_len))) {
 		PUSH_ERROR_SYSCALL("malloc");
