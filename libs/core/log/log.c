@@ -112,8 +112,6 @@ void log_internal(const char *file, const char *function, const int line, M_LOG_
 	char /***strings = NULL, */ buffer[128];
 	const char *errmsg;
 
-	va_start(args, format);
-
 	mutex_lock(&log_mutex);
 
 	// Someone has disabled the log output.
@@ -149,7 +147,9 @@ void log_internal(const char *file, const char *function, const int line, M_LOG_
 	if (output)
 		fprintf(stdout, "] = ");
 
+	va_start(args, format);
 	vfprintf(stdout, format, args);
+	va_end(args);
 
 	if (!(M_LOG_LINE_FEED_DISABLE == (options & M_LOG_LINE_FEED_DISABLE))) {
 		fprintf(stdout, "\n");
@@ -175,10 +175,6 @@ void log_internal(const char *file, const char *function, const int line, M_LOG_
 
 	fflush(stdout);
 	mutex_unlock(&log_mutex);
-
-	va_end(args);
-
-	return;
 }
 
 void log_rotate(void) {
