@@ -2993,7 +2993,7 @@ int _dmsg_msg_to_object_as_auth(dmime_object_t *obj, const dmime_message_t *msg,
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!msg->state != MESSAGE_STATE_COMPLETE) {
+	if(msg->state != MESSAGE_STATE_COMPLETE) {
 		RET_ERROR_INT(ERR_UNSPEC, "the specified dmime message is not complete");
 	}
 
