@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/hash/fletcher.c
- *
  * @brief	An implementation of the Fletcher hash algorithim.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

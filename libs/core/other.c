@@ -1,6 +1,5 @@
 #include <core/magma.h>
 
-
 /**
  * @brief	Generate a random unsigned 64 bit number.
  * @note	This is a stripped down copy of rand_get_uint64() originally dependent upon a 3rd party provider.

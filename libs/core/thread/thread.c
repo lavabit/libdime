@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/thread/thread.c
- *
  * @brief	Functions for spawning new threads, and retrieving their exit statuses.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

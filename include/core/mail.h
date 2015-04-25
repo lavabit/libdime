@@ -1,20 +1,11 @@
 /**
- * @file /magma/objects/mail/mail.h
- *
  * @brief	Functions used to interface with and manage message data.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_OBJECTS_MAIL_H
 #define MAGMA_OBJECTS_MAIL_H
 
-
 #include <core/mime.h>
-
 
 #define MAIL_MIME_RECURSION_LIMIT       16
 #define MAIL_SIGNATURES_RECURSION_LIMIT 16

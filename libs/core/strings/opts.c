@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/opts.c
- *
  * @brief	Functions for handling managed string options.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -46,7 +39,7 @@ int_t st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled) {
 /**
  * @brief	Check to see if the managed string has the specified option enabled.
  * @param	s	the managed string to be checked.
- * @opt		opt	a bitmask of the managed string options to be tested.
+ * @param	opt	a bitmask of the managed string options to be tested.
  * @return	-1 on error, 0 if opt is not set, and 1 if opt is set.
  */
 bool_t st_opt_get(stringer_t *s, uint32_t opt) {

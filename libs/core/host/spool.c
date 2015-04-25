@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/host/spool.c
- *
  * @brief	Functions for checking, creating, maintaining and using the spool.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -37,7 +30,7 @@ uint64_t spool_error_stats(void) {
 
 /**
  * @brief	Get the full path to a requested spool directory.
- * @param	the spool id (MAGMA_SPOOL_BASE, MAGMA_SPOOL_DATA, or MAGMA_SPOOL_SCAN); defaults to MAGMA_SPOOL_DATA.
+ * @param	spool the spool id (MAGMA_SPOOL_BASE, MAGMA_SPOOL_DATA, or MAGMA_SPOOL_SCAN); defaults to MAGMA_SPOOL_DATA.
  * @return	NULL on failure, or a managed string pointing to the requested path inside the magma spool parent directory,
  *                      or /tmp/magma if the spool isn't configured.
  */
@@ -177,12 +170,13 @@ int_t spool_mktemp(int_t spool, const chr_t *prefix) {
  * @brief	An internal function used by the ftw() function to cleanup the file contents of a spool directory.
  * @param	file	a pointer to a null-terminated string containing the pathname of the spool file.
  * @param	info	a pointer to a stat object containing the filesystem info of the specified file.
- * @param	the ftw type flag of the specified file (only FTW_F is handled).
+ * @param	type	the ftw type flag of the specified file (only FTW_F is handled).
  * @return	This function always returns 0.
  */
-int_t spool_check_file(const char *file, const struct stat *info __attribute__((__unused__)), int type) {
+int_t spool_check_file(const char *file, const struct stat *info, int type) {
 
 	// Development builds should overlook the ".empty" files used to force Mercurial into creating the spool directory structure.
+	(void)info;
 #ifdef MAGMA_PEDANTIC
 	if (type == FTW_F && !st_cmp_cs_eq(NULLER(basename(file)), PLACER(".empty", 6)) && info->st_size == 0) {
 		return 0;

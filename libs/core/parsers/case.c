@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/parsers/case.c
- *
  * @brief	A collection of functions used for manipulating the capitalization of characters.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

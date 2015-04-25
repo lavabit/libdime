@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/log/log.h
- *
  * @brief	The function declarations and macros needed to access the error log subsystem.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_CORE_LOG_H

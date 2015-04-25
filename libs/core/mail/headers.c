@@ -1,12 +1,5 @@
 /**
- * @file /magma/objects/mail/headers.c
- *
  * @brief	Functions used to handle mail message header information.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -289,10 +282,10 @@ placer_t mail_header_pop(stringer_t *header, size_t *position) {
 
 /**
  * @brief	Return a placer pointing to the trimmed value of a mail header.
- * @note	This function merely marks a string residing between leading whitespace and a trailing \r or \n.
+ * @note	This function merely marks a string residing between leading whitespace and a trailing \\r or \\n.
  * @param	stream	a pointer to a buffer containing the start of the mail header data.
  * @param	length	the length, in bytes, of the mail header field.
- * @retyrb	a placer containing the trimmed value of the mail header line.
+ * @return	a placer containing the trimmed value of the mail header line.
  */
 placer_t mail_store_header(chr_t *stream, size_t length) {
 

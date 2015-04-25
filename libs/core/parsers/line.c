@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/parsers/line.c
- *
  * @brief	Functions used to extract lines from within a larger block of data.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/allocation.c
- *
  * @brief	Functions used to allocate stringers.
- *
- * $Author$
- * $Date$
- * $Revision:$
- *
  */
 
 #include <core/magma.h>

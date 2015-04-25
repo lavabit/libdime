@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/classify/classify.h
- *
  * @brief	Functions used to classify characters into specific classes.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_CORE_CLASSIFY_H

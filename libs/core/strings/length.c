@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/length.c
- *
  * @brief	Fnctions used to find stringer lengths.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

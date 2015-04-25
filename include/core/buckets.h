@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/buckets/buckets.h
- *
  * @brief	The function declarations and types for the thread-safe object pool interface.
- *
- * $$Author$$
- * $$Date$$
- * $$Revision$$
- *
  */
 
 #ifndef MAGMA_CORE_BUCKETS_H

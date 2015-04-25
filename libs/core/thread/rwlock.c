@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/thread/rwlock.c
- *
  * @brief	Functions for thread coordination via a read/write lock.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

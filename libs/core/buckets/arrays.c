@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/buckets/arrays.c
- *
  * @brief       A collection of functions used to create, maintain and safely utilize arrays of pointers.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -123,7 +116,7 @@ uint32_t ar_field_type(array_t *array, size_t element) {
 /**
  * @brief	Return the value of an element in an array that holds a managed string.
  * @param	array	a pointer to the array to be examined.
- * @element	element	the index of the element in the array to be queried.
+ * @param	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a managed string with the element's data on success.
  */
 stringer_t *ar_field_st(array_t *array, size_t element) {
@@ -152,7 +145,7 @@ stringer_t *ar_field_st(array_t *array, size_t element) {
 /**
  * @brief	Return the value of an element in an array that holds a null-terminated string.
  * @param	array	a pointer to the array to be examined.
- * @element	element	the index of the element in the array to be queried.
+ * @param	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a null-terminated string with the element's data on success.
  */
 chr_t *ar_field_ns(array_t *array, size_t element) {
@@ -181,7 +174,7 @@ chr_t *ar_field_ns(array_t *array, size_t element) {
 /**
  * @brief	Return the value of an element in an array that holds another array.
  * @param	array	a pointer to the array to be examined.
- * @element	element	the index of the element in the array to be queried.
+ * @param	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to an array object with the element's data on success.
  */
 array_t *ar_field_ar(array_t *array, size_t element) {
@@ -210,7 +203,7 @@ array_t *ar_field_ar(array_t *array, size_t element) {
 /**
  * @brief	Return the value of an element in an array that holds a placer.
  * @param	array	a pointer to the array to be examined.
- * @element	element	the index of the element in the array to be queried.
+ * @param	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a pointer to a placer with the element's data on success.
  */
 placer_t *ar_field_pl(array_t *array, size_t element) {
@@ -239,7 +232,7 @@ placer_t *ar_field_pl(array_t *array, size_t element) {
 /**
  * @brief	Return the value of an element in an array that holds a pointer.
  * @param	array	a pointer to the array to be examined.
- * @element	element	the index of the element in the array to be queried.
+ * @param	element	the index of the element in the array to be queried.
  * @return	NULL on failure, or a generic pointer to the element's data on success.
  */
 void *ar_field_ptr(array_t *array, size_t element) {

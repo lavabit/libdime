@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/indexes/hashed.c
- *
  * @brief	Function declarations and types for the hashed list.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

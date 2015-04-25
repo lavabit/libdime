@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/host/host.c
- *
  * @brief	Functions to retrieve information about the operating system.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

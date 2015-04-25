@@ -990,11 +990,6 @@ int _dnskey_tag_comparator(const void *object, const void *key) {
 
 /**
  * @brief	An object cache callback for comparing two DNSKEY records based on domain label.
- * @param
- *
- *
- *
- *
  * @return	-1 if a < b, 1 if b > a, or 0 if the records were equivalent.
  */
 int _dnskey_domain_comparator(const void *object, const void *key) {
@@ -1021,11 +1016,6 @@ int _dnskey_domain_comparator(const void *object, const void *key) {
 /**
  * @brief	An object cache callback for comparing two DS records for general equivalence.
  * @note	This function is used to map a DNSKEY record to a DS record.
- *
- *
- *
- *
- *
  */
 int _ds_comparator(const void *object, const void *key) {
 
@@ -1113,7 +1103,7 @@ void _destroy_dnskey(dnskey_t *key) {
 
 /**
  * @brief	Free a DS object and its underlying data.
- * @param	key	a pointer to the DS object to be destroyed.
+ * @param	ds	a pointer to the DS object to be destroyed.
  * @return	This function returns no value.
  */
 void _destroy_ds(ds_t *ds) {
@@ -2168,8 +2158,9 @@ void _destroy_ds_record_cb(void *record) {
 
 
 /**
-* @brief	A callback handler to dump a DS record to the console.
+* @brief	A callback handler to dump a DS record to a file.
 * @note		This is an internal function used by the cache management subsystem.
+* @param	fp	the file to which the DS record is dumped.
 * @param	record  a pointer to the DS structure to be dumped.
 * @param	brief	if set, only print a brief one-line description for the requested record.
 * @return	This function returns no value.

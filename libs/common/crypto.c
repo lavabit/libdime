@@ -339,7 +339,7 @@ EC_KEY *_deserialize_ec_privkey(const unsigned char *buf, size_t blen, int signi
 	return result;
 }
 
-
+#if 0
 /**
  * @brief	Load an EC key from a file.
  * @param	filename	the name of the filename from which the key should be loaded.
@@ -385,11 +385,12 @@ EC_KEY * _load_ec_privkey(const char *filename, const EC_GROUP **gptr) {
 
         return result;
 */
+#endif
 
 /**
  * @brief       Load an EC private key from a file.
  * @param       filename	the name of the filename from which the key should be loaded
- * @return	result		a pointer to the deserialized private key from the the file.
+ * @return	a pointer to the deserialized private key from the the file.
  */
 EC_KEY *_load_ec_privkey(const char *filename) {
 
@@ -496,7 +497,6 @@ EC_KEY *_generate_ec_keypair(int signing) {
 /**
  * @brief	Free an EC keypair.
  * @param	key	a pointer to the EC keypair to be freed.
- * @return	This function returns no value.
  */
 void _free_ec_key(EC_KEY *key) {
 
@@ -506,7 +506,6 @@ void _free_ec_key(EC_KEY *key) {
 	}
 
 	EC_KEY_free(key);
-
 }
 
 
@@ -653,13 +652,7 @@ ED25519_KEY *_load_ed25519_privkey(const char *filename) {
 
 
 /**
- * @brief
  * @note	This function was taken from providers/cryptography/openssl.c
- * @param	input
- * @param	ilen
- * @param	output
- * @param	olen
- * @return
  */
 void *_ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
 
@@ -672,12 +665,8 @@ void *_ecies_env_derivation(const void *input, size_t ilen, void *output, size_t
 
 
 /**
-  *     @brief  Compute a derived AES-256 key from the intersection of a public EC key and a private EC key.
-  *     @param  key
-  *     @param  ephemeral
-  *     @param  keybuf
-  *     return
-  */
+ * @brief  Compute a derived AES-256 key from the intersection of a public EC key and a private EC key.
+ */
 int _compute_aes256_kek(EC_KEY *public_key, EC_KEY *private_key, unsigned char *keybuf) {
 
 	unsigned char aeskey[SHA_512_SIZE];

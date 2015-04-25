@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/hash/hash.h
- *
  * @brief	Declarations for hash functions that have been implemented internally.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_CORE_HASH_H

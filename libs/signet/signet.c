@@ -227,7 +227,7 @@ signet_t *_signet_deserialize(const unsigned char *in, size_t in_len) {
 
 /**
  * @brief	Deserializes a b64 signet into a signet structure.
- * @param	in	Null terminated array of b64 signet data.
+ * @param	b64_in	Null terminated array of b64 signet data.
  * @return	Pointer to newly allocated signet structure, NULL if failure.
 */
 signet_t *_signet_deserialize_b64(const char *b64_in) {
@@ -257,7 +257,7 @@ signet_t *_signet_deserialize_b64(const char *b64_in) {
 
 /**
  * @brief	Destroys a signet and frees the memory.
- * @param	Pointer to signet to be destroyed.
+ * @param	signet	Pointer to signet to be destroyed.
  * @return	void.
 */
 void _signet_destroy(signet_t *signet) {
@@ -1390,7 +1390,7 @@ int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 /**
  * @brief	Removes an undefined field from the target signet by name.
  * @param	signet		Pointer to the target signet.
- * @param	name_size	Size of the array containing the name the field with which is to be removed.
+ * @param	name_len	Size of the array containing the name the field with which is to be removed.
  * @param	name		Name of the field to be removed.
  * @return	0 on success, -1 on failure.
 */

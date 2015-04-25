@@ -1,18 +1,10 @@
 /**
- * @file /magma/core/type.c
- *
  * @brief	A function for translating the M_TYPE enum into an equivalent string, typically so that a type code can be recorded as a string in error messages.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
 
 /**
- *
  * Takes a type code and returns the fully enumerated string associated with that type.
  *
  * @param type The type code to evaluate.

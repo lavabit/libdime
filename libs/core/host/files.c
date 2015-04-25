@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/host/files.c
- *
  * @brief	Generic system file I/O operations.
- *
- * $Author$
- * $Author$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

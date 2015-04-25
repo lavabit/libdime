@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/multi.c
- *
  * @brief	Functions for handling the multi-type structure.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -170,7 +163,7 @@ uint64_t mt_get_number(multi_t multi) {
 /**
  * @brief	Get a character pointer to the value of a multi-type object.
  * @param	multi	the multi-type object to be examined.
- * @param	a pointer to the value of the input object, or NULL on failure.
+ * @return	a pointer to the value of the input object, or NULL on failure.
  */
 char *mt_get_char(multi_t multi) {
 

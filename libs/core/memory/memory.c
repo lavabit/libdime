@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/memory/memory.c
- *
  * @brief	The functions used to handle Magma memory buffers.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/hash/murmur.c
- *
  * @brief	An x64 implementation of the Murmur hash function.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

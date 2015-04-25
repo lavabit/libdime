@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/encodings/mappings.c
- *
  * @brief	Character-to-value mappings employed by the various base64 encoders.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

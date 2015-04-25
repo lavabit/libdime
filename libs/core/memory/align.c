@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/memory/align.c
- *
  * @brief	Functions for memory alignment operations.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

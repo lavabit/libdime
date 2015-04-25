@@ -1,19 +1,12 @@
 /**
- * @file /magma/core/host/mappings.c
- *
  * @brief	Map numeric system values to their string equivalents.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
 
 /**
  * @brief	Translate an error number into a descriptive, human-readable message.
- * @param	error	the error number (errno) to be looked up.
+ * @param	errnum	the error number (errno) to be looked up.
  * @param	buffer	a pointer to a character buffer that will store the error description string.
  * @param	length	the length, in bytes, of the output buffer, which should be at minimum of 32 bytes.
  * @return	a pointer to a null-terminated string containing the descriptive error message.

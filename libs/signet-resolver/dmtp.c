@@ -152,7 +152,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
  *              the appropriate way to establish a connection to the domain's DX server.
  *              This is the function that should be used by all general callers.
  * @param	domain	a null-terminated string containing the specified dark domain.
- * @param	an optional address family (AF_INET or AF_INET6) to force the TCP connection to take.
+ * @param	force_family an optional address family (AF_INET or AF_INET6) to force the TCP connection to take.
  * @return	NULL if unable to establish a DMTP connection successfully, or a pointer to the DMTP session on success.
  */
 dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
@@ -1272,16 +1272,17 @@ char *_dmtp_help(dmtp_session_t *session) {
 /**
  * @brief	Terminate an active DMTP session by issuing the QUIT command.
  * @param	session		a pointer to the DMTP session across which the QUIT command will be issued.
- * @param	do_close
- *
+ * @param	do_close	currently unused
  * @return	-1 on failure or 0 if the command was successfully executed.
  */
-int _dmtp_quit(dmtp_session_t *session, int do_close __attribute__((__unused__))) {
+int _dmtp_quit(dmtp_session_t *session, int do_close) {
 
 	const char *quit_cmd = "QUIT\r\n";
 	char *response;
 	unsigned short rcode;
 	int result = -1;
+
+	(void)do_close; /* TODO: actually use this parameter */
 
 	if (!session) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);

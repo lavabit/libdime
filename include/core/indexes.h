@@ -1,14 +1,6 @@
 /**
- * @file /magma/core/indexes/indexes.h
- *
  * @brief	Function declarations and types for the generic index interface.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
-
 
 #ifndef MAGMA_CORE_INDEXES_H
 #define MAGMA_CORE_INDEXES_H

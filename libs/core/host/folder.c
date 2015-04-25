@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/host/folder.c
- *
  * @brief	Functions for folder operations.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

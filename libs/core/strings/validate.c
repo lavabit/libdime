@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/validate.c
- *
  * @brief	A collection of functions used to validate stringer allocation option combinations.
- *
- * $Author$
- * $Date$
- * $Revision:$
- *
  */
 
 #include <core/magma.h>

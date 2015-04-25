@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/buckets/pool.c
- *
  * @brief	A collection of functions used to create, maintain and safely utilize collections of object pointers that are accessed by multiple threads.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -175,6 +168,7 @@ status_t pool_set_status(pool_t *pool, uint32_t item, status_t status) {
  * @brief	Return the first available object in a pool.
  * @note	If no object can be returned immediately, wait for the pool's configured timeout value, in seconds, for
  *                      an object to become available. If the timeout is zero, wait indefinitely.
+ * @param	pool    the pool containing the specified item.
  * @param	item	A pointer to a number that will store the zero-based indexed of the first available item in the pool.
  * @return	PL_RESERVED on success or PL_ERROR if an object couldn't be reserved.
  */

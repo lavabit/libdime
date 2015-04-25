@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/encodings/hex.c
- *
  * @brief	Functions for encoding/decoding hexadecimal data.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

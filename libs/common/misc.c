@@ -467,7 +467,7 @@ void *_ptr_chain_add(void *buf, const void *addr) {
 /**
  * @brief	Count the number of elements in a pointer chain.
  * @param	buf	the address of the pointer chain to be counted.
- * @param	the number of elements in the pointer chain, or -1 on general error.
+ * @return	the number of elements in the pointer chain, or -1 on general error.
  */
 int _count_ptr_chain(void *buf) {
 
@@ -892,15 +892,10 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
 /**
  * @brief       Compute an SHA1, SHA256, or SHA512 hash of a block of data.
  * @param	nbits	specifies the number of bits for the hash operation (160, 256, and 512 are accepted values).
- * @param	buf	a pointer to a data buffer containing the data to be hashed.
- * @param	blen	the size, in bytes, of the buffer to be hashed.
+ * @param	bufs	a pointer to a data buffer containing the data to be hashed.
  * @param	outbuf	a buffer that will contain the output of the hash operation (the caller is responsible for
  *                      allocating the correct amount of space).
  * @return	0 on success or < 0 if an error was encountered.
- *
- *
- *
- *
  */
 int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
 
@@ -1272,17 +1267,19 @@ unsigned char *_read_file_data(const char *filename, size_t *fsize) {
 /**
  * @brief	Read the contents of a specified tag inside a PEM file into a buffer.
  * @note	This function will remove all newline characters inside the tag being read.
- * @param	filename	a null-terminated string with the name of the PEM file to be parsed.
- * @param	tag		a null-terminated string with the name of a tag in the file to have its contents read into memory.
+ * @param	pemfile	the name of the PEM file to be parsed.
+ * @param	tag	the name of a tag in the file to have its contents read into memory.
  * @param	nospace		if set, strip all whitespace from the PEM file content.
  * @return	a pointer to a buffer containing the contents of the specified PEM file tag, or NULL on failure.
  */
-char *_read_pem_data(const char *pemfile, const char *tag, int nospace __attribute__((__unused__))) {
+char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 	FILE *fp;
 	const char *hyphens = "-----", *begin = "BEGIN ", *end = "END ";
 	char line[4096], *result = NULL, *ptr;
 	unsigned int in_tag = 0, in_end = 0, slen;
+
+	(void)nospace; /* TODO: use this parameter */
 
 	if (!pemfile || !tag || !strlen(tag)) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);

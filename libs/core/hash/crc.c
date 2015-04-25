@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/hash/crc.c
- *
  * @brief	An x86 implementation of the 32-bit and 64-bit CRC algorithms.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -25,7 +18,7 @@ extern const uint64_t hash_crc64_table[4][256];
 
 /**
  * @brief	Update a 32-bit CRC value with a check of additional data.
- * @param	buffer	a pointer to the data to be checked.
+ * @param	buf	a pointer to the data to be checked.
  * @param	length	the length, in bytes, of the input buffer.
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 32-bit CRC value of the specified data.
@@ -70,7 +63,7 @@ uint32_t hash_crc32(void *buffer, size_t length) {
 
 /**
  * @brief	Update a 64-bit CRC value with a check of additional data.
- * @param	buffer	a pointer to the data to be checked.
+ * @param	buf	a pointer to the data to be checked.
  * @param	length	the length, in bytes, of the input buffer.
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 64-bit CRC value of the specified data.

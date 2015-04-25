@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/compare/equal.c
- *
  * @brief	Functions to check for string equality.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

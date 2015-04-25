@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/parsers/token.c
- *
  * @brief	Functions for tokenizing strings.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

@@ -18,5 +18,4 @@
 #define MESSAGE_ENCODING_7BIT             3
 #define MESSAGE_ENCODING_8BIT             4
 
-
 #endif

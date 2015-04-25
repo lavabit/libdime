@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/strings.h
- *
  * @brief	Function declarations and types used by the different modules involved with handling stringers and null terminated strings.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_CORE_STRINGS_H
@@ -241,6 +234,5 @@ M_TYPE     mt_get_type(multi_t multi);
 bool_t     mt_is_empty(multi_t multi);
 bool_t     mt_is_number(multi_t multi);
 multi_t    mt_set_type(multi_t multi, M_TYPE target);
-
 
 #endif

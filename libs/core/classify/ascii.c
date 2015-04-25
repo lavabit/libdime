@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/classify/ascii.c
- *
  * @brief	Functions used to classify ASCII characters.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
@@ -124,7 +117,7 @@ bool_t chr_blank(uchr_t c) {
 }
 
 /**
- * @brief	Determine whether a specified character is a whitespace character (blank or \r\n\f\v).
+ * @brief	Determine whether a specified character is a whitespace character (blank or \\r\\n\\f\\v).
  * @param	c	the character to be verified.
  * @return	true if the character passed the test, or false otherwise.
  */

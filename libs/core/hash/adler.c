@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/hash/adler.c
- *
  * @brief	An x86 implementation of the Adler hash algorithm.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

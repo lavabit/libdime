@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/memory/bits.c
- *
  * @brief	A collection of functions used handle common bit manipulation tasks.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

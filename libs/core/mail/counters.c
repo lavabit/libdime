@@ -1,12 +1,5 @@
 /**
- * @file /magma/objects/mail/counters.c
- *
  * @brief	Functions used to calculate mail message metrics needed to implement business rules.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

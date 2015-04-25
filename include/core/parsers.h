@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/parsers/parsers.h
- *
  * @brief The function decelerations and types needed by the generic parsing functions.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #ifndef MAGMA_CORE_PARSERS_H
@@ -70,7 +63,6 @@ placer_t pl_trim(placer_t place);
 placer_t pl_trim_end(placer_t place);
 placer_t pl_trim_start(placer_t place);
 void     st_trim(stringer_t *string);
-
 
 #include <core/numbers.h>
 #include <core/formats.h>

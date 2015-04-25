@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/strings/data.c
- *
  * @brief	Functions used to inspect the data of managed strings.
- *
- * $Author$
- * $Author$
- * $Revision$
- *
  */
 
 #include <core/magma.h>

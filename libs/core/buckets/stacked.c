@@ -1,12 +1,5 @@
 /**
- * @file /magma/core/buckets/stacked.c
- *
  * @brief	An interface for handling FIFO stacks.
- *
- * $Author$
- * $Date$
- * $Revision$
- *
  */
 
 #include <core/magma.h>
