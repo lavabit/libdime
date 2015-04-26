@@ -123,7 +123,7 @@ stringer_t *hex_encode_st(stringer_t *b, stringer_t *output) {
 	uchr_t *p = NULL, *o;
 	stringer_t *result = NULL;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(b, &p, &len)) {
@@ -285,7 +285,7 @@ stringer_t *hex_decode_st(stringer_t *h, stringer_t *output) {
 	size_t w = 0, len = 0, valid;
 	stringer_t *result = NULL;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(h, &p, &len) || !(valid = hex_count_st(h))) {

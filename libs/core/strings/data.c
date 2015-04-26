@@ -11,7 +11,7 @@
  */
 bool_t st_empty(stringer_t *s) {
 
-	if (!s || !*((uint32_t *)s) || !st_data_get(s) || !st_length_get(s)) {
+	if (!s || s->opts == 0 || !st_data_get(s) || !st_length_get(s)) {
 		return true;
 	}
 
@@ -27,7 +27,7 @@ bool_t st_empty(stringer_t *s) {
  */
 bool_t st_empty_out(stringer_t *s, uchr_t **ptr, size_t *len) {
 
-	if (!s || *((uint32_t *)s) == 0 || !(*ptr = st_data_get(s)) || !(*len = st_length_get(s))) {
+	if (!s || s->opts == 0 || !(*ptr = st_data_get(s)) || !(*len = st_length_get(s))) {
 		return true;
 	}
 
@@ -46,7 +46,7 @@ void st_data_set(stringer_t *s, void *data) {
 	uint32_t opts;
 	void (*release)(void *buffer);
 
-	if (!s || !(opts = *((uint32_t *)s)) || !(release = opts & SECURE ? &mm_sec_free : &mm_free)) {
+	if (!s || !(opts = s->opts) || !(release = opts & SECURE ? &mm_sec_free : &mm_free)) {
 		return;
 	}
 
@@ -102,7 +102,7 @@ void *st_data_get(stringer_t *s) {
 	uint32_t opts;
 	void *result = NULL;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return NULL;
 	}
 
@@ -169,7 +169,7 @@ void st_wipe(stringer_t *s) {
 
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return;
 	}
 

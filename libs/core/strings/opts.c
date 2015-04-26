@@ -15,7 +15,7 @@ int_t st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled) {
 
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return -1;
 	} else if (!st_valid_opts((enabled ? opts | opt : (opts | opt) ^ opt))) {
 		log_pedantic("The set operation would create an illegal option combination. { opts = %s / target = %s / enabled = %s }", st_info_opts(opts, MEMORYBUF(128), 128),
@@ -30,7 +30,7 @@ int_t st_opt_set(stringer_t *s, uint32_t opt, bool_t enabled) {
 	}
 #endif
 
-	*((uint32_t *)s) = (enabled ? opts | opt : (opts | opt) ^ opt);
+	s->opts = (enabled ? opts | opt : (opts | opt) ^ opt);
 	return (enabled ? 1 : 0);
 }
 
@@ -44,7 +44,7 @@ bool_t st_opt_get(stringer_t *s, uint32_t opt) {
 
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return -1;
 	}
 #ifdef MAGMA_PEDANTIC

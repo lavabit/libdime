@@ -58,7 +58,7 @@ stringer_t *base64_encode_st(stringer_t *s, stringer_t *output) {
 	int_t c1, c2, c3, cur_line = 0;
 	stringer_t *result;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(s, &p, &len)) {
@@ -162,7 +162,7 @@ stringer_t *base64_encode_mod(stringer_t *s, stringer_t *output) {
 	size_t len, new_len;
 	int_t c1, c2, c3;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(s, &p, &len)) {
@@ -240,7 +240,7 @@ stringer_t *base64_decode_st(stringer_t *s, stringer_t *output) {
 	uint32_t opts = 0;
 	int_t loop = 0, value = 0;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(s, &p, &len)) {
@@ -376,7 +376,7 @@ stringer_t *base64_decode_mod(stringer_t *s, stringer_t *output) {
 	uint32_t opts = 0;
 	int_t loop = 0, value = 0;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
 	} else if (st_empty_out(s, &p, &len)) {

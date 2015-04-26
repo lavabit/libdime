@@ -15,7 +15,7 @@ size_t st_length_get(stringer_t *s) {
 	size_t result = 0;
 	uint32_t opts;;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return 0;
 	}
 
@@ -68,13 +68,13 @@ int_t st_length_int(stringer_t *s) {
 
 	size_t len;
 
-	if (!s || !*((uint32_t *)s)) {
+	if (!s || !s->opts) {
 		return 0;
 	}
 
 #ifdef MAGMA_PEDANTIC
-	if (!st_valid_opts(*((uint32_t *)s))) {
-		log_pedantic("Invalid string options. {opt = %u}", *((uint32_t *)s));
+	if (!st_valid_opts(s->opts)) {
+		log_pedantic("Invalid string options. {opt = %u}", s->opts);
 		return 0;
 	}
 #endif
@@ -97,7 +97,7 @@ size_t st_length_set(stringer_t *s, size_t len) {
 
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return 0;
 	}
 
@@ -146,7 +146,7 @@ size_t st_avail_get(stringer_t *s) {
 	size_t result = 0;
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return 0;
 	}
 
@@ -182,7 +182,7 @@ size_t st_avail_set(stringer_t *s, size_t avail) {
 
 	uint32_t opts;
 
-	if (!s || !(opts = *((uint32_t *)s))) {
+	if (!s || !(opts = s->opts)) {
 		return 0;
 	}
 

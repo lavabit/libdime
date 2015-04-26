@@ -86,7 +86,7 @@ int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replaceme
 		}
 	}
 
-	if (st_valid_free(*((uint32_t *)(*target)))) {
+	if (st_valid_free((*target)->opts)) {
 		st_free(*target);
 	}
 

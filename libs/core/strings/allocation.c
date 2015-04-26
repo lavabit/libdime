@@ -24,7 +24,7 @@
  */
 void st_free(stringer_t *s) {
 
-	uint32_t opts = *((uint32_t *)s);
+	uint32_t opts = s->opts;
 	void (*release)(void *buffer) = opts & SECURE ? &mm_sec_free : &mm_free;
 
 #ifdef MAGMA_PEDANTIC
@@ -262,7 +262,7 @@ stringer_t *st_dupe_opts(uint32_t opts, stringer_t *s) {
 	void *src_data;
 	stringer_t *result = NULL;
 	size_t dst_length = 0, src_length = 0;
-	uint32_t src_opts = *((uint32_t *)s);
+	uint32_t src_opts = s->opts;
 
 #ifdef MAGMA_PEDANTIC
 	if (!st_valid_opts(opts) || !st_valid_opts(src_opts)) {
@@ -331,7 +331,7 @@ stringer_t *st_dupe_opts(uint32_t opts, stringer_t *s) {
  */
 stringer_t *st_dupe(stringer_t *s) {
 
-	uint32_t opts = *((uint32_t *)s);
+	uint32_t opts = s->opts;
 
 	return st_dupe_opts(opts, s);
 }
@@ -348,8 +348,8 @@ stringer_t *st_append_opts(size_t align, stringer_t *s, stringer_t *append) {
 	size_t alen, slen = 0;
 
 	// We can only append to mapped strings or jointed managed strings.
-	if (s && !st_valid_append(*((uint32_t *)s))) {
-		log_pedantic("Invalid string options. {opt = %u}", *((uint32_t *)s));
+	if (s && !st_valid_append(s->opts)) {
+		log_pedantic("Invalid string options. {opt = %u}", s->opts);
 		return NULL;
 	}
 
@@ -537,7 +537,7 @@ stringer_t *st_realloc(stringer_t *s, size_t len) {
 	void *joint;
 	size_t original, avail;
 	stringer_t *result = NULL;
-	uint32_t opts = *((uint32_t *)s);
+	uint32_t opts = s->opts;
 	void (*release)(void *buffer) = opts & SECURE ? &mm_sec_free : &mm_free;
 	void * (*allocate)(size_t len) = opts & SECURE ? &mm_sec_alloc : &mm_alloc;
 
@@ -670,7 +670,7 @@ stringer_t *st_output(stringer_t *output, size_t len) {
 	uint32_t opts = 0;
 	stringer_t *result = NULL;
 
-	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
+	if (output && !st_valid_destination((opts = output->opts))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding a result.");
 		return NULL;
 	}
