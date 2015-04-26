@@ -52,39 +52,27 @@ uint32_t mail_count_received(stringer_t *message) {
  */
 size_t mail_header_end(stringer_t *message) {
 
-	chr_t *stream;
-	int_t header = 1;
-	size_t length, increment;
+	const chr_t *msg;
+	size_t msglen;
 
 	if (!message) {
 		log_pedantic("Received a NULL message pointer.");
 		return 0;
 	}
 
-	length = st_length_get(message);
-	stream = st_char_get(message);
+	msglen = st_length_get(message);
+	msg = st_char_get(message);
 
-	for (increment = 0; increment < length && header != 3; increment++) {
-
-		// Logic for detecting the end of the header.
-		if (header == 0 && *stream == '\n') {
-			header++;
+	for (size_t i = 0; i < msglen; i++) {
+		if (msg[i] == '\n') {
+			if (i + 1 < msglen && msg[i + 1] == '\n') {
+				return i + 2;
+			}
+			if (i + 2 < msglen && msg[i + 1] == '\r' && msg[i + 2] == '\n') {
+				return i + 3;
+			}
 		}
-		else if (header == 1 && *stream == '\n') {
-			header += 2;
-		}
-		else if (header == 1 && *stream == '\r') {
-			header++;
-		}
-		else if (header == 2 && *stream == '\n') {
-			header++;
-		}
-		else if (header != 0) {
-			header = 0;
-		}
-
-		stream++;
 	}
 
-	return increment;
+	return msglen;
 }
