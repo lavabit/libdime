@@ -106,7 +106,6 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 	va_list list;
 	void *current;
 	stringer_t *result = NULL;
-	const chr_t *cursor;
 	chr_t *out;
 	size_t length = 0, remaining;
 
@@ -119,7 +118,7 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 
 	// Iterate through and calculate the combined length of the input strings.
 	va_start(list, format);
-	for (cursor = format; *cursor; cursor++) {
+	for (const chr_t *cursor = format; *cursor; cursor++) {
 		if (*cursor == 's') {
 			current = va_arg(list, stringer_t *);
 			if (!st_empty(current)) {
@@ -145,7 +144,7 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 	// Iterate through a second time and copy the bytes into the output buffer.
 	va_start(list, format);
 
-	for (cursor = format; *cursor; cursor++) {
+	for (const chr_t *cursor = format; *cursor; cursor++) {
 		if (*cursor == 's') {
 
 			// Fetch a stringer and determine its length.

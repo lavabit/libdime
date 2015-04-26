@@ -427,7 +427,7 @@ array_t *mail_mime_type_parameters(placer_t header) {
 	stringer_t *key, *holder;
 	placer_t parameter;
 	stringer_t *pparameter = (stringer_t *)&parameter;
-	unsigned increment, tokens;
+	unsigned int tokens;
 
 	if (!(holder = mail_header_fetch_cleaned((stringer_t *)&header, PLACER("Content-Type", 12)))) {
 		return NULL;
@@ -444,7 +444,7 @@ array_t *mail_mime_type_parameters(placer_t header) {
 		return NULL;
 	}
 
-	for (increment = 1; increment < tokens; increment++) {
+	for (unsigned int increment = 1; increment < tokens; increment++) {
 		tok_get_st(holder, ';', increment, &parameter);
 
 		if ((key = mail_mime_type_parameters_key(pparameter))) {
@@ -880,7 +880,7 @@ array_t *mail_mime_split(placer_t body, stringer_t *boundary) {
  */
 void mail_mime_free(mail_mime_t *mime) {
 
-	size_t increment, elements;
+	size_t elements;
 
 	if (!mime) {
 		return;
@@ -889,7 +889,7 @@ void mail_mime_free(mail_mime_t *mime) {
 	if (mime->children) {
 		elements = ar_length_get(mime->children);
 
-		for (increment = 0; increment < elements; increment++) {
+		for (size_t increment = 0; increment < elements; increment++) {
 			mail_mime_free((mail_mime_t *)ar_field_ptr(mime->children, increment));
 		}
 
@@ -913,7 +913,7 @@ void mail_mime_free(mail_mime_t *mime) {
 mail_mime_t *mail_mime_part(stringer_t *part, uint32_t recursion) {
 
 	array_t *holder;
-	size_t elements, increment;
+	size_t elements;
 	mail_mime_t *result, *subpart;
 
 	// Recursion limiter.
@@ -955,7 +955,7 @@ mail_mime_t *mail_mime_part(stringer_t *part, uint32_t recursion) {
 
 			if ((result->children = ar_alloc(elements))) {
 
-				for (increment = 0; increment < elements; increment++) {
+				for (size_t increment = 0; increment < elements; increment++) {
 
 					if ((subpart = mail_mime_part(ar_field_st(holder, increment), recursion + 1))) {
 

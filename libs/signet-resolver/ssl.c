@@ -440,7 +440,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	struct tm tt;
 	time_t expiration;
 	char cidstr[512], *purl, *phost = NULL, *pport = NULL, *ppath = NULL;
-	int fd, pssl, i, rcode, status, reason, ret;
+	int fd, pssl, rcode, status, reason, ret;
 
 	if (!connection) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -464,7 +464,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 	_dbgprint(4, "OCSP validator: certificate chain contained %u entries.\n", sk_num((void *)certstack));
 
 	// Walk the certificate chain to determine which one issued ours.
-	for (i = 0; i < sk_num((void *)certstack); i++) {
+	for (int i = 0; i < sk_num((void *)certstack); i++) {
 		pcert = (X509 *)sk_value((void *)certstack, i);
 
 		if (!X509_check_issued(pcert, cert)) {
@@ -607,7 +607,7 @@ int _do_ocsp_validation(SSL *connection, int *fallthrough) {
 
 	// Should we support multiple values?
 	purl = NULL;
-	for (i = 0; i < sk_OPENSSL_STRING_num(ocspst); i++) {
+	for (int i = 0; i < sk_OPENSSL_STRING_num(ocspst); i++) {
 		purl = strdup(sk_OPENSSL_STRING_value(ocspst, i));
 		break;
 	}
@@ -1065,7 +1065,6 @@ int _domain_wildcard_check(const char *pattern, const char *domain) {
 	_dbgprint(5, "x509 hostname wildcard check: %s against %s ...\n", pattern, domain);
 
 	char *p, *pptr, *d, *dptr;
-	size_t i;
 	int result = 0;
 
 	if (!pattern || !domain || !*pattern || !*domain) {
@@ -1083,11 +1082,11 @@ int _domain_wildcard_check(const char *pattern, const char *domain) {
 		RET_ERROR_INT(ERR_UNSPEC, "unable to check domain wildcard because of memory allocation error");
 	}
 
-	for (i = 0; i < strlen(p); i++) {
+	for (size_t i = 0; i < strlen(p); i++) {
 		p[i] = tolower((unsigned char)p[i]);
 	}
 
-	for (i = 0; i < strlen(d); i++) {
+	for (size_t i = 0; i < strlen(d); i++) {
 		d[i] = tolower((unsigned char)d[i]);
 	}
 
@@ -1294,7 +1293,7 @@ char *_get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
 
 	unsigned char hashbuf[SHA_160_SIZE], *cbuf = NULL;
 	char hexbuf[SHA_160_SIZE * 2 + 1], *cn;
-	size_t cid_size, i;
+	size_t cid_size;
 
 	// TODO: Change this function to leverage _str_printf() ?
 
@@ -1323,7 +1322,7 @@ char *_get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
 	memset(hexbuf, 0, sizeof(hexbuf));
 
 	// Simple byte-to-hex conversion routine for the 20 bytes of the SHA-160 hash.
-	for (i = 0; i < sizeof(hashbuf); i++) {
+	for (size_t i = 0; i < sizeof(hashbuf); i++) {
 		snprintf(&(hexbuf[i * 2]), 3, "%.2x", (unsigned char)hashbuf[i]);
 	}
 

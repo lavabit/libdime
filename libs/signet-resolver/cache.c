@@ -1069,9 +1069,9 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 	cached_object_t *ptr;
 	char *tstr, ttlstr[64], *expstr;
 	time_t now;
-	size_t i, j, total;
+	size_t j, total;
 
-	for(i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
+	for(size_t i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
 
 		if ((dtype != cached_data_unknown) && (cached_stores[i].dtype != dtype)) {
 			continue;
@@ -1412,7 +1412,7 @@ int _save_cache_contents(void) {
 	cached_object_t *ptr, *towrite;
 	void *cdata;
 	const char *cfile;
-	size_t i, clen, chdr_size = 0;
+	size_t clen, chdr_size = 0;
 	int cfd;
 	uint32_t objlen;
 
@@ -1430,7 +1430,7 @@ int _save_cache_contents(void) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to open object cache file for writing: %s", cfile);
 	}
 
-	for(i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
+	for(size_t i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
 		_dbgprint(4, "Persisting cache of type: %s ...\n", cached_stores[i].description);
 
 		_lock_cache_store(&(cached_stores[i]));

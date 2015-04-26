@@ -35,7 +35,8 @@ int_t print_backtrace() {
 	void *buffer[1024];
 	char strbuf[1024];
 	int_t pipefds[2];
-	int_t nbt, nread, nfound = 0, result = 0, i;
+	int_t nbt, nfound = 0, result = 0;
+	ssize_t nread;
 
 	nbt = backtrace(buffer, (sizeof (buffer) / sizeof (void *)));
 
@@ -62,7 +63,7 @@ int_t print_backtrace() {
 			break;
 		}
 
-		for (i = 0; i < nread; i++) {
+		for (ssize_t i = 0; i < nread; i++) {
 			write(STDOUT_FILENO, &strbuf[i], 1);
 
 			if (strbuf[i] == '\n') {

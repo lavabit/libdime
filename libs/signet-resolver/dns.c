@@ -238,7 +238,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 	rrsig_rr_t *rrsigrr = (rrsig_rr_t *)rrsig;
 	unsigned char *hdata = NULL;
 	char nbuf[MAXDNAME];
-	size_t hlen = 0, i, nanswers, nmatched = 0;
+	size_t hlen = 0, nanswers, nmatched = 0;
 	uint16_t u16;
 	int result, *corder;
 
@@ -289,7 +289,7 @@ int _rsa_verify_record(const char *label, unsigned char algorithm, RSA *pubkey, 
 		RET_ERROR_INT(ERR_UNSPEC, "could not sort RRs into canonical order for signature verification");
 	}
 
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(dhandle, ns_s_an, corder[i], &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1311,7 +1311,6 @@ void *_lookup_dnskey(const char *label) {
 	unsigned char resbuf[4096];
 	int nread;
 	uint16_t nanswers, rrtype;
-	size_t i;
 
 	if ((nread = res_query(label, ns_c_in, T_DNSKEY, resbuf, sizeof(resbuf))) < 0) {
 		PUSH_ERROR_RESOLVER("res_query");
@@ -1327,7 +1326,7 @@ void *_lookup_dnskey(const char *label) {
 	_dump_dns_header(&handle);
 
 	// During the first pass we pick out all the DNSKEYs.
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1364,7 +1363,7 @@ void *_lookup_dnskey(const char *label) {
 	}
 
 	// For the second pass, we see if the RRSIGs over the DNSKEYs check out.
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1427,7 +1426,7 @@ void *_lookup_ds(const char *label) {
 	unsigned char resbuf[4096], hashbuf[64];
 	int nread;
 	uint16_t nanswers, rrtype;
-	size_t i, hsize;
+	size_t hsize;
 
 	if (!label) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -1449,7 +1448,7 @@ void *_lookup_ds(const char *label) {
 	_dump_dns_header(&handle);
 
 	// During the first pass we pick out all the DS records.
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1536,7 +1535,7 @@ void *_lookup_ds(const char *label) {
 	}
 
 	// For the second pass, we see if the RRSIGs over the DS check out.
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1601,7 +1600,7 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 	const char *lname;
 	char *result = NULL;
 	int nread, vval, dnssec_rrs = 0;
-	size_t i, nanswers, nadditional, strsize, rdleft, rsize = 0;
+	size_t nanswers, nadditional, strsize, rdleft, rsize = 0;
 	uint16_t rrtype, z;
 	uint8_t ercode, version;
 
@@ -1647,7 +1646,7 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 		RET_ERROR_PTR(ERR_UNSPEC, "DNS response contained no additional RRs");
 	}
 
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
 			PUSH_ERROR_RESOLVER("ns_parserr");
@@ -1743,7 +1742,7 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 
 	}
 
-	for(i = 0; i < nadditional; i++) {
+	for(size_t i = 0; i < nadditional; i++) {
 		_dbgprint(4, "Parsing additional RR #%u/%u ...\n", (unsigned int)i + 1, nadditional);
 
 		if (ns_parserr(&handle, ns_s_ar, i, &rr) < 0) {
@@ -1857,7 +1856,7 @@ mx_record_t **_get_mx_records(const char *qstring) {
 	unsigned char resbuf[4096];
 	char nbuf[MAXDNAME], *strptr;
 	int nread;
-	size_t i, nanswers, rsize = 0;
+	size_t nanswers, rsize = 0;
 	uint16_t rrtype, pref;
 
 	if (!qstring) {
@@ -1894,7 +1893,7 @@ mx_record_t **_get_mx_records(const char *qstring) {
 		RET_ERROR_PTR(ERR_UNSPEC, "DNS response contained no answers");
 	}
 
-	for(i = 0; i < nanswers; i++) {
+	for(size_t i = 0; i < nanswers; i++) {
 		_dbgprint(1, "---\nParsing answer #%u ...\n", (unsigned int)i + 1);
 
 		if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
@@ -2568,7 +2567,7 @@ int _sort_rrs_canonical(ns_msg *dhandle, int *ordbuf, size_t nanswers) {
   */
 int _compare_rdata(const unsigned char *rdata1, size_t rdlen1, const unsigned char *rdata2, size_t rdlen2) {
 
-	size_t i, minlen;
+	size_t minlen;
 
 	if (!rdata1 || !rdlen1) {
 		return -1;
@@ -2578,7 +2577,7 @@ int _compare_rdata(const unsigned char *rdata1, size_t rdlen1, const unsigned ch
 
 	minlen = (rdlen1 < rdlen2) ? rdlen1 : rdlen2;
 
-	for (i = 0; i < minlen; i++) {
+	for (size_t i = 0; i < minlen; i++) {
 
 		if (rdata1[i] > rdata2[i]) {
 			return 1;

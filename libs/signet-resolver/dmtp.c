@@ -162,7 +162,6 @@ dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
 	mx_record_t **mxs, **mxptr;
 	unsigned long ttl;
 	char **dxptr;
-	size_t i;
 
 	if (!domain) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -187,7 +186,7 @@ dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
 
 	// Case 1: Our record has a DX field.
 	if (drec->dx) {
-		i = 1;
+		size_t i = 1;
 		dxptr = drec->dx;
 
 		/* We must try each possible DX server in order. */
@@ -207,7 +206,7 @@ dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
 		if ((mxptr = mxs = _get_mx_records(domain))) {
 
 			// Try a maximum of the first 3 MX records.
-			for (i = 0; (i < DMTP_MAX_MX_RETRIES) && *mxptr; i++, mxptr++) {
+			for (int i = 0; (i < DMTP_MAX_MX_RETRIES) && *mxptr; i++, mxptr++) {
 				_dbgprint(1, "Attempting DMTP connection to MX hostname at %s:%u [pref %u] ...\n", (*mxptr)->name, DMTP_PORT, (*mxptr)->pref);
 
 				if (!(result = _dx_connect_standard((*mxptr)->name, domain, force_family, drec))) {

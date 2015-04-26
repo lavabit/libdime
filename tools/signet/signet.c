@@ -421,7 +421,6 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 static void examine_signet(signet_type_t type) {
 
 	const char *strtype;
-	int i;
 	signet_field_key_t *keys;
 
 	switch(type) {
@@ -446,7 +445,7 @@ static void examine_signet(signet_type_t type) {
 
 	fprintf(stdout, "\n%s field types:\n", strtype);
 
-	for(i = 0; i < SIGNET_FID_MAX; ++i) {
+	for(int i = 0; i < SIGNET_FID_MAX; ++i) {
 
 		if(keys[i].name) {
 			fprintf(stdout, "--- %-*d %-30.30s -> %-90.90s\n", 3, i, keys[i].name, keys[i].description);

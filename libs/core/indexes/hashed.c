@@ -412,7 +412,6 @@ static void *hashed_cursor_alloc(inx_t *inx) {
 
 static void hashed_free(void *inx) {
 
-	uint32_t num;
 	inx_t *index = inx;
 	hashed_index_t *hashed;
 	hashed_bucket_t *bucket, *holder;
@@ -423,7 +422,7 @@ static void hashed_free(void *inx) {
 
 	hashed = index->index;
 
-	for (num = 0; num < hashed->buckets; num++) {
+	for (uint32_t num = 0; num < hashed->buckets; num++) {
 
 		bucket = hashed_bucket_get_ptr(hashed, num);
 		while (bucket) {
@@ -444,7 +443,6 @@ static void hashed_free(void *inx) {
 
 static void hashed_truncate(void *inx) {
 
-	uint32_t num;
 	inx_t *index = inx;
 	hashed_index_t *hashed;
 	hashed_bucket_t *bucket, *holder;
@@ -455,7 +453,7 @@ static void hashed_truncate(void *inx) {
 
 	hashed = index->index;
 
-	for (num = 0; num < hashed->buckets; num++) {
+	for (uint32_t num = 0; num < hashed->buckets; num++) {
 		if ((bucket = hashed_bucket_get_ptr(hashed, num))) {
 			while (bucket) {
 				holder = bucket;

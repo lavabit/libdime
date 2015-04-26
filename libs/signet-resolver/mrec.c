@@ -634,7 +634,6 @@ dime_record_t *_get_dime_record_from_file(const char *filename, const char *doma
 	cached_object_t *cached;
 	char buf[8192];
 	FILE *fp;
-	size_t i;
 
 	if (!filename || !domain) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -650,7 +649,7 @@ dime_record_t *_get_dime_record_from_file(const char *filename, const char *doma
 	// Make sure we're at least reading a line that has some content.
 	while (fgets(buf, sizeof(buf), fp)) {
 
-		for (i = 0; i < strlen(buf); i++) {
+		for (size_t i = 0; i < strlen(buf); i++) {
 
 			if (chr_isprint(buf[i])) {
 

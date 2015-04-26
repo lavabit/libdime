@@ -365,7 +365,7 @@ char *_signet_serialize_b64(signet_t *signet) {
 void _signet_dump(FILE *fp, signet_t *signet) {
 
 	const char *type;
-	int i, res;
+	int res;
 	unsigned int version = SIGNET_VER_NO;
 	signet_type_t signet_type;
 
@@ -401,7 +401,7 @@ void _signet_dump(FILE *fp, signet_t *signet) {
 
 	fprintf(fp, "--- version: %d, size = %d, signet type = %s\n", version, signet->size + 4, type);
 
-	for(i = 0; i < SIGNET_FID_MAX + 1; ++i) {
+	for(int i = 0; i < SIGNET_FID_MAX + 1; ++i) {
 
 		if((res = _signet_fid_exists(signet, i)) < 0) {
 			fprintf(fp, "Error: field existence check failed.\n");
@@ -494,7 +494,7 @@ int _signet_fid_exists(const signet_t *signet, unsigned char fid) {
 */
 signet_state_t _signet_get_state(const signet_t *signet) {
 
-	int i, res;
+	int res;
 	unsigned char full_sig, core_sig;
 	signet_field_key_t *keys;
 	signet_field_t *field;
@@ -533,7 +533,7 @@ signet_state_t _signet_get_state(const signet_t *signet) {
 	/* check against presence of illegal fields and presence of multiple unique fields
 	Also, check field format */
 
-	for(i = 0; i < SIGNET_FID_MAX + 1; ++i) {
+	for(int i = 0; i < SIGNET_FID_MAX + 1; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -1105,7 +1105,7 @@ unsigned char **_signet_get_signet_sign_keys(const signet_t *signet) {
 */
 int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data, unsigned char flags) {
 
-	int i, res;
+	int res;
 	size_t at, field_size, signet_size;
 	void *obuf = NULL;
 	signet_field_key_t *keys;
@@ -1201,7 +1201,7 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 	memset(signet->data + signet->size, 0, field_size);
 	at = (size_t)signet->size;
 
-	for(i = fid + 1; i < SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i < SIGNET_FID_MAX; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -1257,7 +1257,7 @@ int _signet_add_field(signet_t *signet, unsigned char fid, size_t name_size, con
 		signet->fields[fid] = at - field_size + 1;
 	}
 
-	for(i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -1395,7 +1395,7 @@ int _signet_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 */
 int _signet_remove_undef_name(signet_t *signet, size_t name_len, const unsigned char *name) {
 
-	int i, num_fields, res;
+	int num_fields, res;
 	size_t field_size;
 	unsigned char fid;
 	unsigned int offset;
@@ -1453,7 +1453,7 @@ int _signet_remove_undef_name(signet_t *signet, size_t name_len, const unsigned 
 		signet->fields[fid] = 0;
 	}
 
-	for(i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
 
 		if((res = _signet_fid_exists(signet, i))) {
 
@@ -2613,13 +2613,13 @@ int _signet_pok_compare(const signet_t *signet, const unsigned char **dime_pok) 
 */
 int _signet_upto_fid_check_required(const signet_t *signet, signet_field_key_t *keys, unsigned char fid) {
 
-	int i, res;
+	int res;
 
 	if(!signet || !keys) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	for(i = fid - 1; i >= 0; --i) {
+	for(int i = fid - 1; i >= 0; --i) {
 
 		if(keys[i].required && (((res = _signet_fid_exists(signet, i))) <= 0)) {
 
@@ -3107,7 +3107,6 @@ unsigned char *_signet_fid_get(const signet_t *signet, unsigned char fid, size_t
 unsigned char *_signet_upto_fid_serialize(const signet_t *signet, unsigned char fid, size_t *data_size) {
 
 	unsigned char *data;
-	unsigned int i;
 
 	if(!signet || !data_size) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -3115,7 +3114,7 @@ unsigned char *_signet_upto_fid_serialize(const signet_t *signet, unsigned char 
 
 	*data_size = signet->size;
 
-	for(i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
+	for(int i = fid + 1; i <= SIGNET_FID_MAX; ++i) {
 
 		if(signet->fields[i]) {
 			*data_size = signet->fields[i] - 1;

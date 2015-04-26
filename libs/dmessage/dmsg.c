@@ -290,7 +290,7 @@ dmime_message_chunk_t **_dmsg_encode_display(dmime_object_t *object) {
 
 	dmime_object_chunk_t *first_chunk, *temp;
 	dmime_message_chunk_t **result;
-	int counter = 0, i, j;
+	int counter = 0;
 
 	if(!object) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -314,11 +314,11 @@ dmime_message_chunk_t **_dmsg_encode_display(dmime_object_t *object) {
 
 	memset(result, 0, ((counter + 1) * sizeof(dmime_message_chunk_t *)));
 
-	for(i = 0; i < counter; ++i) {
+	for(int i = 0; i < counter; ++i) {
 
 		if(!(result[i] = _dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
 
-			for(j = 0; j < i; ++j) {
+			for(int j = 0; j < i; ++j) {
 				_dmsg_destroy_message_chunk(result[j]);
 			}
 
@@ -342,7 +342,7 @@ dmime_message_chunk_t **_dmsg_encode_attach(dmime_object_t *object) {
 
 	dmime_object_chunk_t *first_chunk, *temp;
 	dmime_message_chunk_t **result;
-	int counter = 0, i, j;
+	int counter = 0;
 
 	if(!object) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -366,11 +366,11 @@ dmime_message_chunk_t **_dmsg_encode_attach(dmime_object_t *object) {
 
 	memset(result, 0, ((counter + 1) * sizeof(dmime_message_chunk_t *)));
 
-	for(i = 0; i < counter; ++i) {
+	for(int i = 0; i < counter; ++i) {
 
 		if(!(result[i] = _dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
 
-			for(j = 0; j < i; ++j) {
+			for(int j = 0; j < i; ++j) {
 				_dmsg_destroy_message_chunk(result[j]);
 			}
 
@@ -623,7 +623,7 @@ int _dmsg_derive_kekset(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_
 int _dmsg_encrypt_keyslot(dmime_keyslot_t *keyslot, dmime_kek_t *kek) {
 
 	dmime_keyslot_t slot;
-	int result, i;
+	int result;
 
 	if (!keyslot || !kek) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -631,7 +631,7 @@ int _dmsg_encrypt_keyslot(dmime_keyslot_t *keyslot, dmime_kek_t *kek) {
 
 	mm_set(&slot, 0, sizeof(slot));
 
-	for(i = 0; i < 16; ++i) {
+	for(size_t i = 0; i < 16; ++i) {
 		keyslot->iv[i] = keyslot->random[i] ^ keyslot->iv[i];
 	}
 
@@ -2051,7 +2051,7 @@ int _dmsg_get_kek(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek) 
 int _dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dmime_keyslot_t *decrypted) {
 
 	dmime_keyslot_t temp;
-	int i, result;
+	int result;
 
 	if(!encrypted || !kek || !decrypted) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -2066,7 +2066,7 @@ int _dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dmime_ke
 	memcpy(decrypted->aes_key, temp.aes_key, AES_256_KEY_SIZE);
 	memcpy(decrypted->random, temp.random, 16);
 
-	for(i = 0; i < 16; ++i) {
+	for(size_t i = 0; i < 16; ++i) {
 		decrypted->iv[i] = temp.random[i] ^ temp.iv[i];
 	}
 
@@ -2787,7 +2787,7 @@ int _dmsg_msg_to_object_other_headers(dmime_object_t *object, const dmime_messag
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
 /*//TODO content check
-        for(i = 0; i < data_size; ++i) {
+        for(size_t i = 0; i < data_size; ++i) {
 
                 if(!isprint(data[i]) && !isspace(data[i])) {
                         _dmsg_destroy_message_chunk(decrypted);

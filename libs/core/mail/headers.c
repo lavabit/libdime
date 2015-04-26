@@ -290,7 +290,6 @@ placer_t mail_header_pop(stringer_t *header, size_t *position) {
 placer_t mail_store_header(chr_t *stream, size_t length) {
 
 	size_t used = 0;
-	size_t increment;
 
 	// Skip leading whitespace.
 	while (length > 0 && *stream == ' ') {
@@ -298,7 +297,7 @@ placer_t mail_store_header(chr_t *stream, size_t length) {
 		stream++;
 	}
 
-	for (increment = 0; increment < length; increment++) {
+	for (size_t increment = 0; increment < length; increment++) {
 		if (*(stream + increment) == '\n' || *(stream + increment) == '\r') {
 			used = increment;
 			increment = length;
@@ -319,7 +318,7 @@ bool_t mail_headers(smtp_message_t *message) {
 
 	int_t next = 1;
 	chr_t *stream;
-	size_t length, increment;
+	size_t length;
 
 	if (!message || !message->text) {
 		log_pedantic("Invalid message passed in.");
@@ -340,7 +339,7 @@ bool_t mail_headers(smtp_message_t *message) {
 	}
 
 	// Increment through. When key headers are found, store the locations in placer's.
-	for (increment = 0; increment < length; increment++) {
+	for (size_t increment = 0; increment < length; increment++) {
 
 		// Locate the start of headers.
 		if (next == 1 && *stream != '\n') {
