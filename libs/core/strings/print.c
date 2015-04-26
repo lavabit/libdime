@@ -15,21 +15,22 @@
  */
 size_t st_vsprint(stringer_t *s, const chr_t *format, va_list args) {
 
+	uint32_t opts;
 	size_t avail, length;
-	uint32_t opts = *((uint32_t *)s);
-
-#ifdef MAGMA_PEDANTIC
-	if (!st_valid_destination(opts)) {
-		log_pedantic("Invalid string options. { opt = %u = %s }", opts, st_info_opts(opts, MEMORYBUF(128), 128));
-		return 0;
-	}
-#endif
 
 	// If the target string is NULL, we just calculate how much room would be needed.
 	if (!s) {
 		length = vsnprintf(NULL, 0, format, args);
 		return length;
 	}
+
+	opts = s->opts;
+#ifdef MAGMA_PEDANTIC
+	if (!st_valid_destination(opts)) {
+		log_pedantic("Invalid string options. { opt = %u = %s }", opts, st_info_opts(opts, MEMORYBUF(128), 128));
+		return 0;
+	}
+#endif
 
 	// Print the provided format into the newly allocated buffer.
 	length = vsnprintf(st_data_get(s), (avail = st_avail_get(s)), format, args);
