@@ -8,7 +8,7 @@ tools			:= $(signet) $(dime)
 
 # Legacy Tools
 cachedump		:= $(topdir)/tools/cachedump
-dmtp			:= $(topdir)/tools/dmtp
+dmtp			:= # $(topdir)/tools/dmtp
 ed25519			:= $(topdir)/tools/ed25519
 genrec			:= $(topdir)/tools/genrec
 x			:= $(topdir)/tools/x
@@ -54,6 +54,7 @@ libs: $(libs)
 dime: libs $(dime)
 signet: libs $(signet)
 tools: $(dime) $(signet)
+legacy-tools: $(legacy-tools)
 
 uncrustify:
 	find check include libs tools -type f -name '*.[ch]' -print \

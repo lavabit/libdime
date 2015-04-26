@@ -14,11 +14,11 @@ int main(void) {
 	SSL *s;
 	int res;
 
-//	char *hostname = "technodrome";
+//	const char *hostname = "technodrome";
 //	unsigned short port = 31301;
-	char *hostname = "www.google.com";
-//	char *hostname = "tv.eurosport.com";
-//	char *hostname = "testssl-expire.disig.sk";
+	const char *hostname = "www.google.com";
+//	const char *hostname = "tv.eurosport.com";
+//	const char *hostname = "testssl-expire.disig.sk";
 	unsigned short port = 443;
 
 	set_dbg_level(3);
@@ -36,8 +36,8 @@ int main(void) {
 	memset(&xsession, 0, sizeof(xsession));
 	xsession.drec = &xdrec;
 	xsession.con = s;
-	xsession.domain = hostname;
-	xsession.dx = hostname;
+	xsession.domain = (char *)hostname;
+	xsession.dx = (char *)hostname;
 	load_cache_contents();
 	res = verify_dx_certificate(&xsession);
 	printf("verification = %d\n", res);
