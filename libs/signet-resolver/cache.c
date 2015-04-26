@@ -2190,7 +2190,7 @@ cached_object_t *_unlink_object(cached_object_t *object, int destroy, int stale)
 /**
  * @brief	Replace one object in the cache with another.
  * @note	If shadow is not set, then the old cached object will be automatically destroyed.
- * 		Otherwise this function also makes the old cached object the new cached object's "shadow" data.
+ *              Otherwise this function also makes the old cached object the new cached object's "shadow" data.
  * @param	oobj	a pointer to the old cached object to be replaced in its cached store with the new object.
  * @param	nobj	a pointer to the new cached object that will replace the old object in the cached store.
  * @param	shadow	if set, preserve the old object as the "shadow" value of the new object.

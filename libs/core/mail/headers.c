@@ -449,177 +449,177 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
  */
 bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
-        int_t state;
-        time_t utime;
-        struct tm ltime;
-        size_t length = 0;
-        smtp_recipients_t *outbound;
-        smtp_inbound_prefs_t *inbound;
-        stringer_t *to = NULL, *from = NULL, *date = NULL, *holder = NULL, *lines = NULL, *header, *body;
-        static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z\r\n";
+	int_t state;
+	time_t utime;
+	struct tm ltime;
+	size_t length = 0;
+	smtp_recipients_t *outbound;
+	smtp_inbound_prefs_t *inbound;
+	stringer_t *to = NULL, *from = NULL, *date = NULL, *holder = NULL, *lines = NULL, *header, *body;
+	static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z\r\n";
 
-        // Generate a date.
-        if (st_empty(&(message->date))) {
+	// Generate a date.
+	if (st_empty(&(message->date))) {
 
-                // Store the current time.
-                if ((utime = time(&utime)) == -1) {
-                        log_pedantic("Unable to retrieve the current time.");
-                        return false;
-                }
+		// Store the current time.
+		if ((utime = time(&utime)) == -1) {
+			log_pedantic("Unable to retrieve the current time.");
+			return false;
+		}
 
-                // Break the time up into its component parts.
-                if (!localtime_r(&utime, &ltime)) {
-                        log_pedantic("Unable to break the current time up into its component parts.");
-                        return false;
-                }
+		// Break the time up into its component parts.
+		if (!localtime_r(&utime, &ltime)) {
+			log_pedantic("Unable to break the current time up into its component parts.");
+			return false;
+		}
 
-                if (!(date = st_alloc(1024))) {
-                        log_pedantic("Unable to allocate 1024 bytes for the date header.");
-                        return false;
-                }
+		if (!(date = st_alloc(1024))) {
+			log_pedantic("Unable to allocate 1024 bytes for the date header.");
+			return false;
+		}
 
-                // Print_t the time into a buffer according the RFC defined format.
-                state = strftime(st_char_get(date), st_avail_get(date), date_format, &ltime);
+		// Print_t the time into a buffer according the RFC defined format.
+		state = strftime(st_char_get(date), st_avail_get(date), date_format, &ltime);
 
-                if (state <= 0) {
-                        log_pedantic("Unable to build the date header.");
-                        st_free(date);
-                        return false;
-                }
+		if (state <= 0) {
+			log_pedantic("Unable to build the date header.");
+			st_free(date);
+			return false;
+		}
 
-                // Store the size of the date.
-                st_length_set(date, state);
-        }
+		// Store the size of the date.
+		st_length_set(date, state);
+	}
 
-        // Build the default from header.
-        if (st_empty(&(message->from))) {
+	// Build the default from header.
+	if (st_empty(&(message->from))) {
 
-                if (!con->smtp.mailfrom) {
-                        from = st_import("From: \r\n", 8);
-                }
-                else {
-                        from = st_merge("nsn", "From: ", con->smtp.mailfrom, "\r\n");
-                }
+		if (!con->smtp.mailfrom) {
+			from = st_import("From: \r\n", 8);
+		}
+		else {
+			from = st_merge("nsn", "From: ", con->smtp.mailfrom, "\r\n");
+		}
 
-                if (!from) {
-                        log_pedantic("Unable to build the from header line.");
-                        st_cleanup(date);
-                        return false;
-                }
+		if (!from) {
+			log_pedantic("Unable to build the from header line.");
+			st_cleanup(date);
+			return false;
+		}
 
-        }
+	}
 
-        // Build the default to header for inbound messages.
-        if (st_empty(&(message->to)) && !con->smtp.authenticated) {
+	// Build the default to header for inbound messages.
+	if (st_empty(&(message->to)) && !con->smtp.authenticated) {
 
-                if (!con->smtp.in_prefs || !con->smtp.in_prefs->rcptto) {
-                        to = st_import("To: \r\n", 6);
-                }
-                else {
-                        to = st_merge("ns", "To: ", con->smtp.in_prefs->rcptto);
-                        inbound = (smtp_inbound_prefs_t *) con->smtp.in_prefs->next;
+		if (!con->smtp.in_prefs || !con->smtp.in_prefs->rcptto) {
+			to = st_import("To: \r\n", 6);
+		}
+		else {
+			to = st_merge("ns", "To: ", con->smtp.in_prefs->rcptto);
+			inbound = (smtp_inbound_prefs_t *)con->smtp.in_prefs->next;
 
-                        while (inbound) {
-                                holder = to;
-                                to = st_merge("sns", to, ", ", inbound->rcptto);
+			while (inbound) {
+				holder = to;
+				to = st_merge("sns", to, ", ", inbound->rcptto);
 
-                                if (to) {
-                                        st_free(holder);
-                                }
-                                else {
-                                        to = holder;
-                                }
+				if (to) {
+					st_free(holder);
+				}
+				else {
+					to = holder;
+				}
 
-                                inbound = (smtp_inbound_prefs_t *)inbound->next;
-                        }
+				inbound = (smtp_inbound_prefs_t *)inbound->next;
+			}
 
-                        holder = to;
-                        to = st_merge("sn", to, "\r\n");
+			holder = to;
+			to = st_merge("sn", to, "\r\n");
 
-                        if (to) {
-                                st_free(holder);
-                        }
-                        else {
-                                to = holder;
-                        }
+			if (to) {
+				st_free(holder);
+			}
+			else {
+				to = holder;
+			}
 
-                }
+		}
 
-        }
-        // Build the default to header for outbound messages.
-        if (st_empty(&(message->to)) && con->smtp.authenticated) {
+	}
+	// Build the default to header for outbound messages.
+	if (st_empty(&(message->to)) && con->smtp.authenticated) {
 
-                if (!con->smtp.out_prefs || !con->smtp.out_prefs->recipients || !con->smtp.out_prefs->recipients->address) {
-                        to = st_import("To: \r\n", 6);
-                }
-                else {
-                        to = st_merge("ns", "To: ", con->smtp.out_prefs->recipients->address);
-                        outbound = (smtp_recipients_t *) con->smtp.out_prefs->recipients->next;
+		if (!con->smtp.out_prefs || !con->smtp.out_prefs->recipients || !con->smtp.out_prefs->recipients->address) {
+			to = st_import("To: \r\n", 6);
+		}
+		else {
+			to = st_merge("ns", "To: ", con->smtp.out_prefs->recipients->address);
+			outbound = (smtp_recipients_t *)con->smtp.out_prefs->recipients->next;
 
-                        while (outbound) {
-                                holder = to;
-                                to = st_merge("sns", to, ", ", outbound->address);
+			while (outbound) {
+				holder = to;
+				to = st_merge("sns", to, ", ", outbound->address);
 
-                                if (to) {
-                                        st_free(holder);
-                                }
-                                else {
-                                        to = holder;
-                                }
+				if (to) {
+					st_free(holder);
+				}
+				else {
+					to = holder;
+				}
 
-                                outbound = (smtp_recipients_t *)outbound->next;
-                        }
+				outbound = (smtp_recipients_t *)outbound->next;
+			}
 
-                        holder = to;
-                        to = st_merge("sn", to, "\r\n");
+			holder = to;
+			to = st_merge("sn", to, "\r\n");
 
-                        if (to) {
-                                st_free(holder);
-                        }
-                        else {
-                                to = holder;
-                        }
+			if (to) {
+				st_free(holder);
+			}
+			else {
+				to = holder;
+			}
 
-                }
+		}
 
-        }
+	}
 
-        // Combine the required headers into a single string.
-        if (date || from || to || st_empty(&(message->subject))) {
-                lines = st_merge("ssns", date, from, st_empty(&(message->subject)) ? "Subject: \r\n" : NULL, to);
-                st_cleanup(date);
-                st_cleanup(from);
-                st_cleanup(to);
-        }
+	// Combine the required headers into a single string.
+	if (date || from || to || st_empty(&(message->subject))) {
+		lines = st_merge("ssns", date, from, st_empty(&(message->subject)) ? "Subject: \r\n" : NULL, to);
+		st_cleanup(date);
+		st_cleanup(from);
+		st_cleanup(to);
+	}
 
-        // This will insert the new headers into the message body. If it fails, we just don't replace.
-        if (lines) {
+	// This will insert the new headers into the message body. If it fails, we just don't replace.
+	if (lines) {
 
-                if (message->header_length > 2) {
-                        length = message->header_length - 2;
-                }
-                else {
-                        length = 0;
-                }
+		if (message->header_length > 2) {
+			length = message->header_length - 2;
+		}
+		else {
+			length = 0;
+		}
 
-                header = PLACER(st_char_get(message->text), length);
-                body = PLACER(st_char_get(message->text) + length, st_length_get(message->text) - length);
-                holder = st_merge_opts(MAPPED_T | JOINTED | HEAP, "sss", header, lines, body);
+		header = PLACER(st_char_get(message->text), length);
+		body = PLACER(st_char_get(message->text) + length, st_length_get(message->text) - length);
+		holder = st_merge_opts(MAPPED_T | JOINTED | HEAP, "sss", header, lines, body);
 
-                st_free(lines);
+		st_free(lines);
 
-                if (!holder) {
-                        return false;
-                }
+		if (!holder) {
+			return false;
+		}
 
-                // Setup the structure with the new message.
-                st_free(message->text);
-                message->text = holder;
-                message->header_length = mail_header_end(message->text);
-                mail_headers(message);
-        }
+		// Setup the structure with the new message.
+		st_free(message->text);
+		message->text = holder;
+		message->header_length = mail_header_end(message->text);
+		mail_headers(message);
+	}
 
-        return true;
+	return true;
 }
 #endif
 
@@ -630,79 +630,79 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
  * @param	prefs	the smtp inbound preferences corresponding to the connection, with the rcptto field populated.
  * @return	NULL on failure, or a managed string containing the message data preceded by the Return-Path and Received headers on success.
  */
-stringer_t * mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *prefs) {
+stringer_t *mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *prefs) {
 
-        int_t state;
-        time_t utime;
-        struct tm ltime;
-        chr_t date_string[40];
-        stringer_t *ip, *result, *reverse;
+	int_t state;
+	time_t utime;
+	struct tm ltime;
+	chr_t date_string[40];
+	stringer_t *ip, *result, *reverse;
 
-        if (!con) {
-                log_pedantic("Passed a NULL pointer.");
-                return NULL;
-        }
+	if (!con) {
+		log_pedantic("Passed a NULL pointer.");
+		return NULL;
+	}
 
-        // Code to generate a proper timestamp.
-        if ((utime = time(&utime)) == -1) {
-                log_pedantic("Could not determine the proper time.");
-                return NULL;
-        }
+	// Code to generate a proper timestamp.
+	if ((utime = time(&utime)) == -1) {
+		log_pedantic("Could not determine the proper time.");
+		return NULL;
+	}
 
-        if (!localtime_r(&utime, &ltime)) {
-                log_pedantic("Could not determine the local time.");
-                return NULL;
-        }
+	if (!localtime_r(&utime, &ltime)) {
+		log_pedantic("Could not determine the local time.");
+		return NULL;
+	}
 
-        if ((state = strftime(date_string, 40, "%a, %d %b %Y %H:%M:%S %z", &ltime)) <= 0) {
-                log_pedantic("Could not build the date string.");
-                return NULL;
-        }
+	if ((state = strftime(date_string, 40, "%a, %d %b %Y %H:%M:%S %z", &ltime)) <= 0) {
+		log_pedantic("Could not build the date string.");
+		return NULL;
+	}
 
-        // Build the IP string.
-        else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
-                log_pedantic("Could not convert the IP into a string.");
-                return NULL;
-        }
+	// Build the IP string.
+	else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
+		log_pedantic("Could not convert the IP into a string.");
+		return NULL;
+	}
 
-        // We need to make sure the reverse DNS lookup is complete.
-        reverse = con_reverse_check(con, 20);
+	// We need to make sure the reverse DNS lookup is complete.
+	reverse = con_reverse_check(con, 20);
 
-        if (!reverse || !st_cmp_ci_eq(reverse, con->smtp.helo))
-        {
-                // The reverse matches, or doesn't exist and there is no mailfrom or it's <>.
-                if (!con->smtp.mailfrom || !st_cmp_cs_eq(con->smtp.mailfrom, CONSTANT("<>"))) {
-                        result =  st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnns", "Return-Path: <>\r\nReceived: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
-                                (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
-                                date_string, "\r\n", con->smtp.message->text);
-                }
-                // The reverse matches, or doesn't exist and there is a mailfrom to print.
-                else {
-                        result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnns", "Return-Path: <", con->smtp.mailfrom, ">\r\nReceived: from ", con->smtp.helo, " (", ip, ")\r\n\tby ",
-                                con->server->domain, (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
-                                date_string, "\r\n", con->smtp.message->text);
-                }
+	if (!reverse || !st_cmp_ci_eq(reverse, con->smtp.helo))
+	{
+		// The reverse matches, or doesn't exist and there is no mailfrom or it's <>.
+		if (!con->smtp.mailfrom || !st_cmp_cs_eq(con->smtp.mailfrom, CONSTANT("<>"))) {
+			result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnns", "Return-Path: <>\r\nReceived: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
+			                       (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
+			                       date_string, "\r\n", con->smtp.message->text);
+		}
+		// The reverse matches, or doesn't exist and there is a mailfrom to print.
+		else {
+			result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnns", "Return-Path: <", con->smtp.mailfrom, ">\r\nReceived: from ", con->smtp.helo, " (", ip, ")\r\n\tby ",
+			                       con->server->domain, (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
+			                       date_string, "\r\n", con->smtp.message->text);
+		}
 
-        }
-        // We need to print_t a reverse, but there is no mailfrom or it's <>.
-        else if (!con->smtp.mailfrom || !st_cmp_cs_eq(con->smtp.mailfrom, CONSTANT("<>"))) {
-                        result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnns", "Return-Path: <>\r\nReceived: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
-                                (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
-                                date_string, "\r\n", con->smtp.message->text);
-        }
-        // We need to print_t a reverse and the mailfrom.
-        else {
-                result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnsnnns", "Return-Path: <", con->smtp.mailfrom, ">\r\nReceived: from ", con->smtp.helo, " (", reverse,
-                        " [", ip, "])\r\n\tby ", con->server->domain,	(con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id,
-                        "\r\n\tfor <", prefs->rcptto, ">; ", date_string, "\r\n", con->smtp.message->text);
-        }
+	}
+	// We need to print_t a reverse, but there is no mailfrom or it's <>.
+	else if (!con->smtp.mailfrom || !st_cmp_cs_eq(con->smtp.mailfrom, CONSTANT("<>"))) {
+		result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnns", "Return-Path: <>\r\nReceived: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
+		                       (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", prefs->rcptto, ">; ",
+		                       date_string, "\r\n", con->smtp.message->text);
+	}
+	// We need to print_t a reverse and the mailfrom.
+	else {
+		result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnsnnns", "Return-Path: <", con->smtp.mailfrom, ">\r\nReceived: from ", con->smtp.helo, " (", reverse,
+		                       " [", ip, "])\r\n\tby ", con->server->domain,   (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id,
+		                       "\r\n\tfor <", prefs->rcptto, ">; ", date_string, "\r\n", con->smtp.message->text);
+	}
 
-        if (!result) {
-                log_pedantic("Could not build the message with the spiffy new inbound headers.");
-                return NULL;
-        }
+	if (!result) {
+		log_pedantic("Could not build the message with the spiffy new inbound headers.");
+		return NULL;
+	}
 
-        return result;
+	return result;
 }
 #endif
 
@@ -725,112 +725,111 @@ stringer_t * mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *p
 // QUESTION: This prototype is stupid. We need to pass message as stringer_t * and return a stringer_t * as well.
 void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t *id, int_t mark, uint64_t signum, uint64_t sigkey) {
 
-        uint32_t status = 0;
-        size_t position = 0;
-        placer_t line;
-        mail_message_t *modifier;
-        stringer_t *result, *cleaned, *signature, *header, *first = NULL, *second = NULL;
+	uint32_t status = 0;
+	size_t position = 0;
+	placer_t line;
+	mail_message_t *modifier;
+	stringer_t *result, *cleaned, *signature, *header, *first = NULL, *second = NULL;
 
-        if (!server || !message || !*message) {
-                log_pedantic("Passed a NULL parameter.");
-                return;
-        }
+	if (!server || !message || !*message) {
+		log_pedantic("Passed a NULL parameter.");
+		return;
+	}
 
-        if (!(result = st_dupe_opts(MAPPED_T | JOINTED | HEAP, *message))) {
-                log_pedantic("Unable to duplicate message.");
-                return;
-        }
+	if (!(result = st_dupe_opts(MAPPED_T | JOINTED | HEAP, *message))) {
+		log_pedantic("Unable to duplicate message.");
+		return;
+	}
 
-        // Label the message.
-        if ((mark & SMTP_MARK_SPAM) == SMTP_MARK_SPAM) {
-                mail_mod_subject(&result, "JUNK:");
-                status += MAIL_MARK_JUNK;
-        }
-        else if ((mark & SMTP_MARK_VIRUS) == SMTP_MARK_VIRUS) {
-                mail_mod_subject(&result, "INFECTED:");
-        }
-        else if ((mark & SMTP_MARK_SPOOF) == SMTP_MARK_SPOOF) {
-                mail_mod_subject(&result, "SPOOFED:");
-        }
-        else if ((mark & SMTP_MARK_RBL) == SMTP_MARK_RBL) {
-                mail_mod_subject(&result, "BLACKHOLED:");
-        }
-        else if ((mark & SMTP_MARK_PHISH) == SMTP_MARK_PHISH) {
-                mail_mod_subject(&result, "PHISHING:");
-        }
+	// Label the message.
+	if ((mark & SMTP_MARK_SPAM) == SMTP_MARK_SPAM) {
+		mail_mod_subject(&result, "JUNK:");
+		status += MAIL_MARK_JUNK;
+	}
+	else if ((mark & SMTP_MARK_VIRUS) == SMTP_MARK_VIRUS) {
+		mail_mod_subject(&result, "INFECTED:");
+	}
+	else if ((mark & SMTP_MARK_SPOOF) == SMTP_MARK_SPOOF) {
+		mail_mod_subject(&result, "SPOOFED:");
+	}
+	else if ((mark & SMTP_MARK_RBL) == SMTP_MARK_RBL) {
+		mail_mod_subject(&result, "BLACKHOLED:");
+	}
+	else if ((mark & SMTP_MARK_PHISH) == SMTP_MARK_PHISH) {
+		mail_mod_subject(&result, "PHISHING:");
+	}
 
-        // Remove unnecessary headers, including: Return-Path, Sender, DomainKey-Signature, DKIM-Signature.
-        if ((cleaned = st_alloc_opts(MAPPED_T | JOINTED | HEAP, (st_length_get(result) * 2) + 52)) == NULL) {
-                log_pedantic("Unable to setup a buffer for the cleaned message.");
-                st_free(result);
-                return;
-        }
+	// Remove unnecessary headers, including: Return-Path, Sender, DomainKey-Signature, DKIM-Signature.
+	if ((cleaned = st_alloc_opts(MAPPED_T | JOINTED | HEAP, (st_length_get(result) * 2) + 52)) == NULL) {
+		log_pedantic("Unable to setup a buffer for the cleaned message.");
+		st_free(result);
+		return;
+	}
 
-        header = PLACER(st_char_get(result), mail_header_end(result));
+	header = PLACER(st_char_get(result), mail_header_end(result));
 
-        while (!pl_empty(line = mail_header_pop(header, &position))) {
+	while (!pl_empty(line = mail_header_pop(header, &position))) {
 
-                if (st_cmp_ci_starts(&line, CONSTANT("Sender:")) != 0 &&
-                        st_cmp_ci_starts(&line, CONSTANT("Return-Path:")) != 0 &&
-                        st_cmp_ci_starts(&line, CONSTANT("DKIM-Signature:")) != 0 &&
-                        st_cmp_ci_starts(&line, CONSTANT("DomainKey-Signature:")) != 0) {
-                        cleaned = st_append_opts(1024, cleaned, &line);
-                }
+		if (st_cmp_ci_starts(&line, CONSTANT("Sender:")) != 0 &&
+		    st_cmp_ci_starts(&line, CONSTANT("Return-Path:")) != 0 &&
+		    st_cmp_ci_starts(&line, CONSTANT("DKIM-Signature:")) != 0 &&
+		    st_cmp_ci_starts(&line, CONSTANT("DomainKey-Signature:")) != 0) {
+			cleaned = st_append_opts(1024, cleaned, &line);
+		}
 
-        }
+	}
 
-        cleaned = st_append_opts(1024, cleaned, PLACER("Sender: Magma Mail Daemon <daemon@lavabit.com>\r\n\r\n", 52));
-        cleaned = st_append_opts(1024, cleaned, PLACER(st_char_get(result) + st_length_get(header), st_length_get(result) - st_length_get(header)));
+	cleaned = st_append_opts(1024, cleaned, PLACER("Sender: Magma Mail Daemon <daemon@lavabit.com>\r\n\r\n", 52));
+	cleaned = st_append_opts(1024, cleaned, PLACER(st_char_get(result) + st_length_get(header), st_length_get(result) - st_length_get(header)));
 
-        st_cleanup(result);
-        result = cleaned;
+	st_cleanup(result);
+	result = cleaned;
 
-        // If necessary, insert a spam signature.
-        if (signum && sigkey) {
+	// If necessary, insert a spam signature.
+	if (signum && sigkey) {
 
-                if (!(modifier = mail_message(result))) {
-                        log_pedantic("Unable to build the message structure.");
-                        st_free(result);
-                        return;
-                }
+		if (!(modifier = mail_message(result))) {
+			log_pedantic("Unable to build the message structure.");
+			st_free(result);
+			return;
+		}
 
-                mail_signature_add(modifier, server, signum, sigkey, (status & MAIL_MARK_JUNK) == MAIL_MARK_JUNK ? 1 : 0);
-                result = st_dupe(modifier->text);
-                mail_destroy(modifier);
-        }
+		mail_signature_add(modifier, server, signum, sigkey, (status & MAIL_MARK_JUNK) == MAIL_MARK_JUNK ? 1 : 0);
+		result = st_dupe(modifier->text);
+		mail_destroy(modifier);
+	}
 
-        // Split the message apart.
-        position = 0;
-        header = PLACER(st_char_get(result), mail_header_end(result));
-        while (!pl_empty(line = mail_header_pop(header, &position)) && st_length_get(&line) >= 9 && mm_cmp_ci_eq(st_data_get(&line), "Received:", 9) == 0);
+	// Split the message apart.
+	position = 0;
+	header = PLACER(st_char_get(result), mail_header_end(result));
+	while (!pl_empty(line = mail_header_pop(header, &position)) && st_length_get(&line) >= 9 && mm_cmp_ci_eq(st_data_get(&line), "Received:", 9) == 0);
 
-        if (!pl_empty(line)) {
-                first = PLACER(st_char_get(result), st_char_get(&line) - st_char_get(result));
-                second = PLACER(st_data_get(&line), st_length_get(result) - st_length_get(first));
-        }
-        else {
-                second = PLACER(st_char_get(result), st_length_get(result));
-        }
+	if (!pl_empty(line)) {
+		first = PLACER(st_char_get(result), st_char_get(&line) - st_char_get(result));
+		second = PLACER(st_data_get(&line), st_length_get(result) - st_length_get(first));
+	}
+	else {
+		second = PLACER(st_char_get(result), st_length_get(result));
+	}
 
-        // Generate the message signature, and insert.
-        if (magma.dkim.enabled && ((signature = dkim_create(id, result)))) {
-                cleaned = st_merge_opts(MAPPED_T | JOINTED | HEAP, "sss", first, signature, second);
-                st_free(signature);
+	// Generate the message signature, and insert.
+	if (magma.dkim.enabled && ((signature = dkim_create(id, result)))) {
+		cleaned = st_merge_opts(MAPPED_T | JOINTED | HEAP, "sss", first, signature, second);
+		st_free(signature);
 
-                if (cleaned) {
-                        st_cleanup(result);
-                        result = cleaned;
-                }
+		if (cleaned) {
+			st_cleanup(result);
+			result = cleaned;
+		}
 
-        }
+	}
 
-        // Setup the output.
-        if (result) {
-                st_free(*message);
-                *message = result;
-        }
+	// Setup the output.
+	if (result) {
+		st_free(*message);
+		*message = result;
+	}
 
-        return;
 }
 #endif
 
@@ -844,104 +843,104 @@ void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t
  */
 int_t mail_add_outbound_headers(connection_t *con) {
 
-        int_t state;
-        time_t utime;
-        placer_t line;
-        struct tm ltime;
-        chr_t date_string[40];
-        size_t position = 0;
-        stringer_t *new, *ip, *reverse, *dk_signature = NULL, *first = NULL, *second = NULL, *header = NULL;
+	int_t state;
+	time_t utime;
+	placer_t line;
+	struct tm ltime;
+	chr_t date_string[40];
+	size_t position = 0;
+	stringer_t *new, *ip, *reverse, *dk_signature = NULL, *first = NULL, *second = NULL, *header = NULL;
 
-        if (!con || !con->smtp.message || !con->smtp.message->text) {
-                log_pedantic("Passed a NULL pointer.");
-                return -1;
-        }
+	if (!con || !con->smtp.message || !con->smtp.message->text) {
+		log_pedantic("Passed a NULL pointer.");
+		return -1;
+	}
 
-        // Code to generate a proper timestamp.
-        if ((utime = time(&utime)) == -1) {
-                log_pedantic("Could not determine the proper time.");
-                return -1;
-        }
+	// Code to generate a proper timestamp.
+	if ((utime = time(&utime)) == -1) {
+		log_pedantic("Could not determine the proper time.");
+		return -1;
+	}
 
-        if (!localtime_r(&utime, &ltime)) {
-                log_pedantic("Could not determine the local time.");
-                return -1;
-        }
+	if (!localtime_r(&utime, &ltime)) {
+		log_pedantic("Could not determine the local time.");
+		return -1;
+	}
 
-        if ((state = strftime(date_string, 40, "%a, %d %b %Y %H:%M:%S %z", &ltime)) <= 0) {
-                log_pedantic("Could not build the date string.");
-                return -1;
-        }
+	if ((state = strftime(date_string, 40, "%a, %d %b %Y %H:%M:%S %z", &ltime)) <= 0) {
+		log_pedantic("Could not build the date string.");
+		return -1;
+	}
 
-        // Build the IP string.
-        else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
-                log_pedantic("Could not convert the IP into a string.");
-                return -1;
-        }
+	// Build the IP string.
+	else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
+		log_pedantic("Could not convert the IP into a string.");
+		return -1;
+	}
 
-        // Split the message.
-        header = PLACER(st_char_get(con->smtp.message->text), mail_header_end(con->smtp.message->text));
+	// Split the message.
+	header = PLACER(st_char_get(con->smtp.message->text), mail_header_end(con->smtp.message->text));
 
-        while (!pl_empty(line = mail_header_pop(header, &position)) && st_length_get(&line) >= 9 && !mm_cmp_ci_eq(st_char_get(&line), "Received:", 9));
+	while (!pl_empty(line = mail_header_pop(header, &position)) && st_length_get(&line) >= 9 && !mm_cmp_ci_eq(st_char_get(&line), "Received:", 9));
 
-        if (!st_empty(&line)) {
-                first = PLACER(st_char_get(con->smtp.message->text), st_char_get(&line) - st_char_get(con->smtp.message->text));
-                second = PLACER(st_data_get(&line), st_length_get(con->smtp.message->text) - st_length_get(first));
-        }
-        else {
-                second = PLACER(st_char_get(con->smtp.message->text), st_length_get(con->smtp.message->text));
-        }
+	if (!st_empty(&line)) {
+		first = PLACER(st_char_get(con->smtp.message->text), st_char_get(&line) - st_char_get(con->smtp.message->text));
+		second = PLACER(st_data_get(&line), st_length_get(con->smtp.message->text) - st_length_get(first));
+	}
+	else {
+		second = PLACER(st_char_get(con->smtp.message->text), st_length_get(con->smtp.message->text));
+	}
 
-        // Generate the message signature.
-        if (magma.dkim.enabled) {
-                dk_signature = dkim_create(con->smtp.message->id, con->smtp.message->text);
-        }
+	// Generate the message signature.
+	if (magma.dkim.enabled) {
+		dk_signature = dkim_create(con->smtp.message->id, con->smtp.message->text);
+	}
 
-        // We need to make sure the reverse DNS lookup is complete.
-        reverse = con_reverse_check(con, 20);
+	// We need to make sure the reverse DNS lookup is complete.
+	reverse = con_reverse_check(con, 20);
 
-        // Detect no HELO name.
-        if (!con->smtp.helo && reverse) {
-                con->smtp.helo = st_dupe(reverse);
-        }
-        else if (!con->smtp.helo) {
-                con->smtp.helo = st_import("none", 4);
-        }
+	// Detect no HELO name.
+	if (!con->smtp.helo && reverse) {
+		con->smtp.helo = st_dupe(reverse);
+	}
+	else if (!con->smtp.helo) {
+		con->smtp.helo = st_import("none", 4);
+	}
 
-        if (!reverse || !st_cmp_cs_eq(reverse, con->smtp.helo)) {
+	if (!reverse || !st_cmp_cs_eq(reverse, con->smtp.helo)) {
 
-                if (con->smtp.num_recipients > 1) {
-                        new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
-                                (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
-                }
-                else {
-                        new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
-                                (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
-                                date_string, "\r\n", first, dk_signature, second);
-                }
+		if (con->smtp.num_recipients > 1) {
+			new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
+			                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
+		}
+		else {
+			new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
+			                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
+			                    date_string, "\r\n", first, dk_signature, second);
+		}
 
-        }
-        else if (con->smtp.num_recipients > 1) {
-                new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
-                        (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
-        }
-        else {
-                new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
-                        (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
-                        date_string, "\r\n", first, dk_signature, second);
-        }
+	}
+	else if (con->smtp.num_recipients > 1) {
+		new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
+		                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
+	}
+	else {
+		new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
+		                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
+		                    date_string, "\r\n", first, dk_signature, second);
+	}
 
-        st_cleanup(dk_signature);
+	st_cleanup(dk_signature);
 
-        if (new) {
-                st_free(con->smtp.message->text);
-                con->smtp.message->text = new;
-        }
-        else {
-                log_pedantic("Could not build the message with the spiffy new outbound headers.");
-                return -1;
-        }
+	if (new) {
+		st_free(con->smtp.message->text);
+		con->smtp.message->text = new;
+	}
+	else {
+		log_pedantic("Could not build the message with the spiffy new outbound headers.");
+		return -1;
+	}
 
-        return 1;
+	return 1;
 }
 #endif
