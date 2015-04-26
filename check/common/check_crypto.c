@@ -1,10 +1,36 @@
 #include <stdio.h>
 
 #include <openssl/ec.h>
+#include <openssl/rand.h>
 #include <common/dcrypto.h>
 #include <common/misc.h>
-#include "check_common.h"
+#include "checks.h"
 
+#define N_SERIALIZATION_TESTS  20
+#define N_SIGNATURE_TIER_TESTS 5
+
+static unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outlen) {
+
+	unsigned char *result;
+	unsigned long rval;
+	size_t rlen;
+	int res;
+
+	ck_assert_uint_ge(maxlen, minlen);
+
+	res = RAND_pseudo_bytes((unsigned char *)&rval, sizeof(rval));
+	ck_assert(res == 0 || res == 1);
+	rlen = minlen + (rval % (maxlen - minlen + 1));
+
+	result = malloc(rlen);
+	ck_assert(result != NULL);
+
+	res = RAND_pseudo_bytes(result, rlen);
+	ck_assert(res == 0 || res == 1);
+	*outlen = rlen;
+
+	return result;
+}
 
 START_TEST(check_ec_signatures)
 {

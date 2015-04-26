@@ -1,17 +1,11 @@
 #include <dmessage/dmime.h>
 #include <dmessage/dmsg.h>
-#include "check_dmsg.h"
-
-START_TEST(check_header_parsing) {
-
-	ck_assert_msg(1 == 1, "nothing yet");
-}
-END_TEST
+#include "checks.h"
 
 /**
- * Demonstrates the way of a message from the author to the recipient.
+ * Demonstrates how a message travels from the author to the recipient.
  */
-START_TEST(check_message_encryption)
+START_TEST(test_message_encryption)
 {
 	EC_KEY *auth_enckey, *orig_enckey, *dest_enckey, *recp_enckey;
 	ED25519_KEY *auth_signkey, *orig_signkey, *dest_signkey, *recp_signkey;
@@ -243,22 +237,7 @@ END_TEST
 
 Suite *suite_check_dmsg(void) {
 
-	Suite *s;
-	TCase *tc;
-
-	s = suite_create("signet");
-	testcase(s, tc, "check common header formatting and parsing", check_header_parsing);
-	testcase(s, tc, "check message creation and encryption", check_message_encryption);
-
+	Suite *s = suite_create("signet");
+	suite_add_test(s, "message creation and encryption", test_message_encryption);
 	return s;
-}
-
-int main(void) {
-
-	SRunner *sr = srunner_create(suite_check_dmsg());
-	srunner_set_fork_status(sr, CK_NOFORK);
-	srunner_run_all(sr, CK_ENV);
-	int nr_failed = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

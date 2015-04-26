@@ -1,9 +1,7 @@
 #include <stdio.h>
 
 #include <common/misc.h>
-#include "check_common.h"
-
-
+#include "checks.h"
 
 /* 24 void set_dbg_level(unsigned int level);
  25 unsigned int get_dbg_level(void);

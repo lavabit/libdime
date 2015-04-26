@@ -8,33 +8,7 @@
 
 #include <openssl/rand.h>
 #include <common/error.h>
-#include "check_common.h"
-
-/* FIXME TODO pt -- should we move it to common/error.h or lb/error.h ?" */
-
-unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outlen) {
-
-	unsigned char *result;
-	unsigned long rval;
-	size_t rlen;
-	int res;
-
-	ck_assert_uint_ge(maxlen, minlen);
-
-	res = RAND_pseudo_bytes((unsigned char *)&rval, sizeof(rval));
-	ck_assert(res == 0 || res == 1);
-	rlen = minlen + (rval % (maxlen - minlen + 1));
-
-	result = malloc(rlen);
-	ck_assert(result != NULL);
-
-	res = RAND_pseudo_bytes(result, rlen);
-	ck_assert(res == 0 || res == 1);
-	*outlen = rlen;
-
-	return result;
-}
-
+#include "checks.h"
 
 #ifdef ERROR_API_FINISHED
 /** @brief Compute positive sum of two non-negative ints or raise errinfo error.
@@ -109,24 +83,4 @@ Suite *suite_check_errorapi(void) {
 #endif /* ERROR_API_FINISHED */
 
 	return s;
-}
-
-
-int main(void) {
-
-	SRunner *sr;
-	int nr_failed;
-
-	sr = srunner_create(suite_check_errorapi());
-	srunner_add_suite(sr, suite_check_misc());
-	srunner_add_suite(sr, suite_check_crypto());
-	srunner_add_suite(sr, suite_check_error());
-
-	fprintf(stderr, "Running tests ...\n");
-
-	srunner_run_all(sr, CK_ENV);
-	nr_failed = srunner_ntests_failed(sr);
-	srunner_free(sr);
-
-	return nr_failed != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

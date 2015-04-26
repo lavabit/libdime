@@ -2,8 +2,9 @@
 #	checks_SOURCES = ...
 #	checks_CFLAGS = ...
 #	checks_LDADD = ...
+#	CLEANFILES = ...
 #
-#	include ../checkdir.mk
+#	include .../check.mk
 
 # convenience definitions
 
@@ -47,6 +48,7 @@ all: $(check_PROGRAMS) run-checks
 clean:
 	@rm -rf $(OBJDIRNAME) $(DEPDIRNAME)
 	@rm -f $(check_PROGRAMS)
+	@rm -f $(CLEANFILES)
 
 $(check_PROGRAMS): $(OBJFILES) $(filter %.a,$(LIBS))
 	@echo "Linking $(GREEN)$@$(NORMAL)"

@@ -1,5 +1,5 @@
 #include <signet/signet.h>
-#include "check_signet.h"
+#include "checks.h"
 
 START_TEST(check_signet_modification)
 {
@@ -7,7 +7,6 @@ START_TEST(check_signet_modification)
 	size_t data_size;
 	unsigned char *data;
 	signet_t *signet;
-
 
 	ck_assert_msg((signet = _signet_create(SIGNET_TYPE_ORG)) != NULL, "could not create signet.\n");
 
@@ -225,25 +224,11 @@ START_TEST(check_signet_signing)
 }
 END_TEST
 
-
 Suite *suite_check_signet(void) {
 
-	Suite *s;
-	TCase *tc;
-
-	s = suite_create("signet");
-	testcase(s, tc, "check signet creation and field modification", check_signet_modification);
-	testcase(s, tc, "check signet parsing, serialization, deserialization", check_signet_parsing);
-	testcase(s, tc, "check signet signing and verification", check_signet_signing);
-
+	Suite *s = suite_create("signet");
+	suite_add_test(s, "check signet creation and field modification", check_signet_modification);
+	suite_add_test(s, "check signet parsing, serialization, deserialization", check_signet_parsing);
+	suite_add_test(s, "check signet signing and verification", check_signet_signing);
 	return s;
-}
-
-int main(void) {
-
-	SRunner *sr = srunner_create(suite_check_signet());
-	srunner_run_all(sr, CK_ENV);
-	int nr_failed = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
