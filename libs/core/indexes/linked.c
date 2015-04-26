@@ -238,7 +238,7 @@ static linked_node_t *linked_cursor_active(linked_cursor_t *cursor) {
 		// If the node was removed from the list we reduce the position counter. We have to assume the active node is the only one missing
 		// and that reducing the position counter will trigger the selection of the previous node below.
 		/// LOW: The logic used to find our place in an index that has been modified could be improved.
-		///		- If the index we sort the index keys, we could look for the next highest key value.
+		///   - If the index we sort the index keys, we could look for the next highest key value.
 		///   - We could store the previous node (or even the previous 10 nodes), and try searching for them instead.
 		///   - We could also add a delete path through the cursor that would include positional updates.
 		///   - We could simply make a deep copy of the entire list so that updates to the original index don't affect the iteration, or use the copy to reconcile.

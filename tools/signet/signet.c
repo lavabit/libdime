@@ -367,7 +367,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 
 /**
  * @brief	Dumps signet or ssr.
- * @param	signet_f	Filename of the signet to be dumped.
+ * @param	signet_file	Filename of the signet to be dumped.
 */
 static void dump_signet(const char *signet_file) {                      // TODO needs to dump in HEX format rather than b64
 
