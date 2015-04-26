@@ -675,7 +675,7 @@ int _dmtp_ehlo(dmtp_session_t *session, const char *domain) {
 int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype) {
 
 	char *cmd = NULL;
-	char rbuf[32], dbuf[32];
+	const char *retstr, *datastr;
 	char *response;
 	unsigned short rcode;
 
@@ -683,45 +683,42 @@ int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize,
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	memset(rbuf, 0, sizeof(rbuf));
-	memset(dbuf, 0, sizeof(dbuf));
-
 	switch(rettype) {
 
 	case return_type_default:
+		retstr = "";
 		break;
 	case return_type_full:
-		strcpy(rbuf, " RETURN=FULL");
+		retstr = " RETURN=FULL";
 		break;
 	case return_type_display:
-		strcpy(rbuf, " RETURN=DISPLAY");
+		retstr = " RETURN=DISPLAY";
 		break;
 	case return_type_header:
-		strcpy(rbuf, " RETURN=HEADER");
+		retstr = " RETURN=HEADER";
 		break;
 	default:
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 		break;
-
 	}
 
 	switch(dtype) {
 
 	case data_type_default:
+		datastr = "";
 		break;
 	case data_type_7bit:
-		strcpy(dbuf, " DATA=7BIT");
+		datastr = " DATA=7BIT";
 		break;
 	case data_type_8bit:
-		strcpy(dbuf, " DATA=8BIT");
+		datastr = " DATA=8BIT";
 		break;
 	default:
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 		break;
-
 	}
 
-	if (!_str_printf(&cmd, "MAIL FROM: <%s> [%s] SIZE=%lu%s%s\r\n", origin, "fingerprint", msgsize, rbuf, dbuf)) {
+	if (!_str_printf(&cmd, "MAIL FROM: <%s> [%s] SIZE=%lu%s%s\r\n", origin, "fingerprint", msgsize, retstr, datastr)) {
 		RET_ERROR_INT(ERR_NOMEM, "unable to construct MAIL FROM request");
 	}
 
