@@ -92,16 +92,10 @@ void _dump_error(const errinfo_t *error) {
 		errstring = "n/a";
 	}
 
-	fprintf(stderr, "%s:%d [%s()]: %u (%s), errno = %d",
+	fprintf(stderr, "%s:%d [%s()]: %u (%s), errno = %d, aux = \"%s\"\n",
 	        error->filename, error->lineno, error->funcname,
-	        error->errcode, errstring, error->xerrno);
-
-	if (error->auxmsg) {
-		fprintf(stderr, ", aux = \"%s\"\n", error->auxmsg);
-	} else {
-		fprintf(stderr, " [no aux]\n");
-	}
-
+	        error->errcode, errstring, error->xerrno,
+	        error->auxmsg);
 }
 
 
