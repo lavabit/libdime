@@ -689,11 +689,6 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 		RET_ERROR_INT(ERR_UNSPEC, "data to be encrypted must not be of size 0 and must be a multiple of 16");
 	}
 
-	if(!(outbuf = malloc(data_size))) {
-		PUSH_ERROR_SYSCALL("malloc");
-		RET_ERROR_INT(ERR_NOMEM, "could not allocate buffer for encrypted data");
-	}
-
 	//TODO RNG is used, needs review
 	if(_get_random_bytes(&(temp.iv[0]), sizeof(temp.iv))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not generate initialization vector");
@@ -702,6 +697,11 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 	if(_get_random_bytes(&(temp.aes_key[0]), sizeof(temp.aes_key))) {
 		_secure_wipe((unsigned char *)&temp, sizeof(temp));
 		RET_ERROR_INT(ERR_UNSPEC, "could not generate random key");
+	}
+
+	if(!(outbuf = malloc(data_size))) {
+		PUSH_ERROR_SYSCALL("malloc");
+		RET_ERROR_INT(ERR_NOMEM, "could not allocate buffer for encrypted data");
 	}
 
 	if((res = _encrypt_aes_256(outbuf, &(chunk->data[0]), data_size, temp.aes_key, temp.iv)) < 0) {
