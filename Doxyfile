@@ -4,6 +4,6 @@ FULL_PATH_NAMES = YES
 TAB_SIZE = 8
 OPTIMIZE_OUTPUT_FOR_C = YES
 RECURSIVE = YES
-INPUT = include libs check
+INPUT = include libs tools check
 EXTRACT_ALL = YES
 QUIET = YES
