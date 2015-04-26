@@ -78,7 +78,7 @@ size_t ar_length_get(array_t *array) {
 	return size;
 }
 
-/*
+/**
  * @brief	Get the data type for a specified element in an array.
  * @note	Valid array types include ARRAY_TYPE_ARRAY, ARRAY_TYPE_STRINGER, ARRAY_TYPE_SIZER, ARRAY_TYPE_NULLER,
  *                      ARRAY_TYPE_PLACER, and ARRAY_TYPE_POINTER.
@@ -277,7 +277,7 @@ void ar_length_set(array_t *array, size_t used) {
 
 }
 
-/*
+/**
  * @brief	Add an item to an array by placing it in the first available slot, or by appending it.
  * @note	If a previously allocated array does not have enough available room for the new item, more space will be allocated automatically.
  * @note	Arrays passed as NULL will be replaced with a freshly allocated array of size 1 to hold the new element.

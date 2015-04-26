@@ -13,7 +13,7 @@ static EC_GROUP *_signing_group = NULL;
 static EC_GROUP *_encryption_group = NULL;
 static const EVP_MD *_ecies_envelope_evp = NULL;
 
-/*
+/**
  * @brief	Initialize the cryptographic subsystem.
  * @return	-1 if any part of the initialization process failed, or 0 on success.
  */
@@ -47,7 +47,7 @@ int _crypto_init(void) {
 }
 
 
-/*
+/**
  * @brief	Shutdown the cryptographic subsystem.
  */
 void _crypto_shutdown(void) {

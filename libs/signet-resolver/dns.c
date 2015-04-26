@@ -577,7 +577,7 @@ int _load_dnskey_file(const char *filename) {
 }
 
 
-/*
+/**
  * @brief	Trace a DNSKEY backwards through its DS entry to the root, to see if it is validated.
  * @note	Chain validation works recursively on a starting DNSKEY in the following way:
  *              1. For each of the DNSKEYs that were used to sign this DNSKEY record,

@@ -2,7 +2,7 @@
 #include <dmessage/dmsg.h>
 
 
-/*
+/**
  * @brief	Allocates memory for an empty dmime_common_headers_t type.
  * @return	dmime_common_headers_t type.
  */
@@ -21,7 +21,7 @@ dmime_common_headers_t *_dmsg_create_common_headers(void) {
 }
 
 
-/*
+/**
  * @brief	Destroys a dmime_common_headers_t structure.
  * @param	obj		Headers to be destroyed.
  */
@@ -44,7 +44,7 @@ void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
 }
 
 
-/*
+/**
  * @brief	Formats the dmime_common_headers_t into a single array for the common headers chunk.
  * @param	obj		The headers to be formatted.
  * @param	outsize	Stores the size of the output array.
@@ -96,7 +96,7 @@ unsigned char *_dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *
 }
 
 
-/*
+/**
  * @brief	Reads the first bytes of the input array and determines the next header type.
  * @param	in		Input buffer.
  * @param	insize	Size of input buffer.
@@ -151,7 +151,7 @@ dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
 	return HEADER_TYPE_NONE;
 }
 
-/*
+/**
  * @brief	Parses the passed array of bytes into dmime_common_headers_t.
  * @param	in		Input buffer.
  * @param	insize	Input buffer size.
@@ -203,7 +203,7 @@ dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t ins
 }
 
 
-/*
+/**
  * @brief	Destroys a dmime_envelop_object_t structure.
  * @param	obj		Pointer to the object to be destroyed.
  */
@@ -239,11 +239,11 @@ void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
 
 
 
-/*
+/**
  * @brief	Parses a binary buffer from a dmime message into a dmime origin object.
  * @param	in		Binary origin array.
  * @param	insize		Size of input array.
- * @param
+ * @param	type		Type of the chunk.
  * @return	Pointer to a parsed dmime object or NULL on error.
 *///TODO Could be shortened with a sub-routine
 dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
@@ -414,7 +414,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 }
 
 
-/*
+/**
  * @brief	Returns a string from dmime_actor_t.
  * @param	actor		Actor value.
  * @return	String containing human readable actor.
@@ -439,7 +439,7 @@ const char *_dmsg_actor_to_string(dmime_actor_t actor) {
 }
 
 
-/*
+/**
  * @brief	Returns a string from dmime_object_state_t.
  * @param	state		Object state value.
  * @return	String containing human readable dmime object state.

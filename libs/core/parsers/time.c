@@ -74,9 +74,6 @@ stringer_t *time_print_local(stringer_t *s, chr_t *format, time_t moment) {
 	return s;
 }
 
-/***
- * Convert the localized moment to GMT time and prints the formtted string.
- */
 /**
  * @brief	Get a specified time as a formatted string converted to GMT.
  * @param	s	a managed string where the formatted time is to be stored.

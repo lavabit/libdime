@@ -1,6 +1,6 @@
 #include <dmessage/dmsg.h>
 
-/*
+/**
  * @brief	Retrieves pointer to the specified chunk type key from the global chunk key structure.
  * @param	type		Specified chunk type.
  * @return	Returns pointer to a dmime_chunk_key_t structure.
@@ -11,10 +11,12 @@ dmime_chunk_key_t *_dmsg_get_chunk_type_key(dmime_chunk_type_t type) {
 }
 
 
-/*
+/**
  * @brief	Generates a random value and calculates the padding byte and padding length for a given input size and padding algorithm
  * @param	dsize		input size
- * @param	flags		chunk flags containing the flag which specifies which padding algorithm isz used
+ * @param	flags		chunk flags containing the flag which specifies which padding algorithm is used
+ * @param	padlen		receives the length of the padding
+ * @param	padbyte		receives the byte with which to do the padding
  * @return	0 on success, all other values signify failure.
 */
 int _dmsg_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsigned char *padbyte) {
@@ -51,7 +53,7 @@ int _dmsg_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsign
 }
 
 
-/*
+/**
  * @brief	Returns the payload of the specified dmime message chunk.
  * @param	chunk		Pointer to the dmime chunk. Its type, state and payload size must be initialized.
  * @return	Void pointer to be casted to the appropriate payload structure, NULL on failure.
@@ -80,7 +82,7 @@ void *_dmsg_get_chunk_payload(dmime_message_chunk_t *chunk) {
 }
 
 
-/*
+/**
  * @brief	Returns pointer to the specified keyslot of the dmime message chunk.
  * @param	chunk		Pointer to the dmime message chunk.
  * @param	num		number of the desired keyslot.
@@ -115,7 +117,7 @@ dmime_keyslot_t *_dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, si
 }
 
 
-/*
+/**
  * @brief	Destroys dmime message chunk.
  * @param	chunk		Dmime message chunk to be destroyed.
 */
@@ -130,7 +132,7 @@ void    _dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 }
 
 
-/*
+/**
  * @brief	Allocates memory for and encodes a dmime_message_chunk_t structure with data provided.
  * @param	type		Type of chunk being created. Is necessary to calculate total number of bytes that must be allocated.
  * @param	data		Data that will be encoded into the chunk.
@@ -279,7 +281,7 @@ dmime_message_chunk_t *_dmsg_create_message_chunk(dmime_chunk_type_t type, const
 }
 
 
-/*
+/**
  * @brief	Deserializes an encrypted chunk from binary data.
  * @param	in		Pointer to the binary data of an encrypted chunk.
  * @param	insize		Maximum size of provided data (not guaranteed to contain only the chunk specified by the provided pointer).
@@ -334,9 +336,9 @@ dmime_message_chunk_t *_dmsg_deserialize_chunk(const unsigned char *in, size_t i
 }
 
 
-/*
+/**
  * @brief	Wraps a binary payload in a chunk of specified type. Only the validity of size is verified.
- * @NOTE	DO NOT USE THIS AS A GENERAL CONSTRUCTOR.
+ * @note	DO NOT USE THIS AS A GENERAL CONSTRUCTOR.
  * @param	type		Specified chunk type.
  * @param	payload		Array to binary payload to be wrapped in the message chunk.
  * @param	insize		Length of input payload.
@@ -393,7 +395,7 @@ dmime_message_chunk_t *_dmsg_wrap_chunk_payload(dmime_chunk_type_t type, unsigne
 	return result;
 }
 
-/*
+/**
  * @brief	Returns the location of the data segment of the specified chunk and stores its size.
  * NOTE:	For ephemeral and signature payload chunks it is the entire payload, for standard payload chunks it is the data section.
  * @param	chunk		Pointer to a chunk from which the data is copied.
@@ -461,7 +463,7 @@ unsigned char *_dmsg_get_chunk_data(dmime_message_chunk_t *chunk, size_t *outsiz
 }
 
 
-/*
+/**
  * @brief	Returns the pointer to the data of the chunk.
  * NOTE:	The size will include the padding.
  * @param	chunk		Pointer to the dmime message chunk the data of which will be retrieved.
@@ -516,7 +518,7 @@ unsigned char *_dmsg_get_chunk_padded_data(dmime_message_chunk_t *chunk, size_t 
 }
 
 
-/*
+/**
  * @brief	Returns the pointer to the plaintext signature of a standard payload chunk.
  * NOTE:	Signatures are ED25519_SIG_SIZE
  * @param	chunk		Pointer to the dmime message chunk with standard payload type from which the signature will be retrieved.
@@ -550,7 +552,7 @@ unsigned char *_dmsg_get_chunk_plaintext_sig(dmime_message_chunk_t *chunk) {
 	return result;
 }
 
-/*
+/**
  * @brief	Returns the flags character of a standard payload chunk.
  * @param	chunk		Pointer to a dmime message chunk with standard payload type from which the signature will be retrieved.
  * @return	The flags byte of the chunk or default flags on error.

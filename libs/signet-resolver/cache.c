@@ -190,7 +190,7 @@ const char *_get_cache_location(void) {
 }
 
 
-/*
+/**
  *  @brief	Set the pathname of the DIME management record cache file.
  *  @param	path	a null-terminated string containing the fully qualified path of the cache file to be used.
  *  @return	0 on success or -1 on failure.

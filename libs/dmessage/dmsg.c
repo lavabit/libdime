@@ -1,6 +1,6 @@
 #include <dmessage/dmsg.h>
 
-/*
+/**
  * @brief	Takes a dmime object and determines the state it is in.
  * @param	object		Dmime object, state of which will be retrieved.
  * @return	The state of dmime object.
@@ -24,7 +24,7 @@ dmime_object_state_t _dmsg_init_object_state(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Retrieves dmime message state.
  * @param	message		Pointer to a dmime message.
  * @return	dmime_message_state_t corresponding to the current state.
@@ -39,7 +39,7 @@ dmime_message_state_t _dmsg_get_message_state(const dmime_message_t *message) {
 }
 
 
-/*
+/**
  * @brief	Destroys dmime message object.
  * @param	msg		Pointer to the dmime message to be destroyed.
 */
@@ -111,7 +111,7 @@ void    _dmsg_destroy_msg(dmime_message_t *msg) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object uses it to encode an origin dmime message chunk
  * @param	object		dmime object with information that will be encoded into the origin chunk
  * @return	Pointer to a dmime message origin chunk
@@ -165,7 +165,7 @@ dmime_message_chunk_t *_dmsg_encode_origin(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object uses it to encode a destination dmime message chunk
  * @param	object		dmime object with information that will be encoded into the destination chunk
  * @return	Pointer to a dmime message destination chunk
@@ -219,7 +219,7 @@ dmime_message_chunk_t *_dmsg_encode_destination(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object uses it to encode a common metadata dmime message chunk
  * @param	object		dmime object with information that will be encoded into the common headers chunk
  * @return	Pointer to a dmime message common headers chunk
@@ -246,7 +246,7 @@ dmime_message_chunk_t *_dmsg_encode_common_headers(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object and uses it to encode other_headers metadata dmime message chunk
  * @param	object	dmime object with the other_headers data that will be encoded into the chunk
  * @return	Pointer to a dmime message other headers chunk
@@ -269,7 +269,7 @@ dmime_message_chunk_t *_dmsg_encode_other_headers(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object and encodes the display chunk into an array of dmime message chunks.
  * @param	object		Pointer to the dmime object containing the display chunk data.
  * @return	Returns a pointer to a null-pointer terminated array of dmime message chunks encoded with the display data.
@@ -321,7 +321,7 @@ dmime_message_chunk_t **_dmsg_encode_display(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object and encodes the attachment chunk into an array of dmime message chunks.
  * @param	object		Pointer to the dmime object containing the attachment chunk data.
  * @return	Returns a pointer to a null-pointer terminated array of dmime message chunks encoded with the attachment data.
@@ -373,7 +373,7 @@ dmime_message_chunk_t **_dmsg_encode_attach(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime object and encodes the envelope, metadata, display and attachment data into a dmime message.
  * @param	object		Pointer to a dmime object containing the envelope, metadata, display and attachment information.
  * @param	message		Pointer to a dmime message into which the information gets encoded.
@@ -419,9 +419,9 @@ int _dmsg_encode_msg_chunks(dmime_object_t *object, dmime_message_t *message) {
 }
 
 
-/*
+/**
  * @brief	Signs a message chunk using the specified private signing key.
- * @param	message		Pointer to a dmime message chunk to be signed.
+ * @param	chunk		Pointer to a dmime message chunk to be signed.
  * @param	signkey		Author's ed25519 private signing key.
  * @return	0 on success, all other values signify failure.
 */
@@ -465,7 +465,7 @@ int _dmsg_sign_chunk(dmime_message_chunk_t *chunk, ED25519_KEY *signkey) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime message that has only been encoded and signs every encoded chunk with the provided ed25519 private signing key.
  * @param	message		Pointer to a dmime message, the chunks of which will be signed.
  * @param	signkey		A ed25519 private signing (supposedly the author's).
@@ -519,7 +519,7 @@ int _dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey) {
 }
 
 
-/*
+/**
  * @brief	Uses the signet passed to function and an EC key to create key-encryption-key block via ECDH, with the public key being taken from the signet.
  * @param	privkey	Pointer to an EC_KEY structure containing a private EC key used for the ECDH
  * @param	signet	Pointer to a signet containing the public EC encryption key used for the ECDH
@@ -549,9 +549,9 @@ int _dmsg_set_kek(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf) {
 }
 
 
-/*
+/**
  * @brief	Populates the set of kek's (key encryption keys).
- * @param	msg		Pointer to the non-serialized dmime message that has had its ephemeral chunk allocated and is linked to all required signets.
+ * @param	object		Pointer to the non-serialized dmime message that has had its ephemeral chunk allocated and is linked to all required signets.
  * @param	ephemeral	Pointer to an ephemeral private encryption ec key used to generate the key encryption keys and initialization vectors.
  * @param	kekset		Pointer to the set of key encryption keys to be populated.
  * @result	0 on success, all other values indicate failure.
@@ -588,7 +588,7 @@ int _dmsg_derive_kekset(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_
 }
 
 
-/*
+/**
  * @brief	Encrypts keyslot with the specified AES256 key and initialization vector.
  * @param	keyslot		Pointer to the keyslot to be encrypted.
  * @param	kek		Pointer to the kek used for encrpypting the keyslot.
@@ -624,7 +624,7 @@ int _dmsg_encrypt_keyslot(dmime_keyslot_t *keyslot, dmime_kek_t *kek) {
 }
 
 
-/*
+/**
  * @brief	Takes a dmime message chunk and a kekset, generates the AES256 chunk encryption keys for the keyslots, encrypts the message, then encrypts the keyslots with the kekset.
  * @param	chunk		Pointer to the dmime message chunk to be encrypted.
  * @param	keks		Pointer to the kekset for encrypting the key slots.
@@ -780,7 +780,7 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 }
 
 
-/*
+/**
  * @brief	Takes a dmime message with chunks that have already been signed and for each chunk:
  *              fills the keyslots, encrypts the chunk and then encrypts the keyslots.
  * @param	message		Pointer to the dmime message to be encrypted.
@@ -835,7 +835,7 @@ int _dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks) {
 }
 
 
-/*
+/**
  * @brief	Derives the data needed for signing the tree signature.
  * @param	msg		Pointer to the dmime message.
  * @param	outsize		Used to store the size of the result.
@@ -967,7 +967,7 @@ unsigned char *_dmsg_tree_sig_data(const dmime_message_t *msg, size_t *outsize) 
 }
 
 
-/*
+/**
  * @brief	Calculates the serialized size of the specified sections of a dmime message.
  * @param	msg		Dmime message.
  * @param	sections	Sections specified.
@@ -1047,10 +1047,10 @@ size_t _dmsg_get_sections_size(const dmime_message_t *msg, unsigned char section
 }
 
 
-/*
+/**
  * @brief	Serializes the specified sections of a dmime message (only if encrypted).
  * @param	msg		Dmime message to be serialized.
- * @param	first		The first
+ * @param	sections	The bitmask of sections to serialize. See ::dmime_chunk_section_t.
  * @param	outsize		Stores the output size.
  * @return	Pointer to the binary array containing the binary message.
 */
@@ -1152,7 +1152,7 @@ unsigned char *_dmsg_serialize_sections(const dmime_message_t *msg, unsigned cha
 }
 
 
-/*
+/**
  * @brief	Calculates the serialized size of the specified chunks from the first to last specified chunk types.
  * @param	msg		Dmime message containing the chunks, the total serialized size of which will be calculated in the specified chunk type range.
  * @param	first		Lower bound chunk type the size of which will be calculated.
@@ -1236,7 +1236,7 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 	return size;
 }
 
-/*
+/**
  * @brief	Takes an encrypted dmime message and serializes its chunks sequentially from the first specified to the last.
  * @param	msg		Pointer to the dmime message that will be serialized.
  * @param	first		The first chunk type to be serialized.
@@ -1345,7 +1345,7 @@ unsigned char *_dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_ty
 
 
 
-/*
+/**
  * @brief	Takes an encrypted dmime message and adds the two mandatory author signature chunks (tree and full).
  * @param	message		Pointer to the dmime message that will be signed.
  * @param	signkey		Pointer to the author's ed25519 private signing key that will be used for signatures.
@@ -1411,7 +1411,7 @@ int _dmsg_add_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, 
 }
 
 
-/*
+/**
  * @brief	Takes an author signed dmime message and adds the three mandatory origin signature fields where each signature is filled with zeros.
  * @param	message		Pointer to the dmime message that will be signed.
  * @param	keks		Pointer to a set of key encryption keys used to encrypt the keyslots.
@@ -1462,7 +1462,7 @@ static int _dmsg_add_origin_sig_chunks(dmime_message_t *message, dmime_kekset_t 
 }
 
 
-/*
+/**
  * @brief       Converts a dmime object to a dmime message, fully encrypting and signing the message !!AS AN AUTHOR!!
  * @param	object		dmime object which contains all the envelope, metadata, display and attachment information.
  *                              As well as pointers to signets of author, origin, destination and recipient.
@@ -1562,7 +1562,7 @@ dmime_message_t *_dmsg_object_to_msg(dmime_object_t *object, ED25519_KEY *signke
 }
 
 
-/*
+/**
  * @brief	Converts the specified sections of a dmime message to a complete binary form. The message must be at least signed by author.
  * @param	msg		Dmime message to be converted.
  * @param	sections	Sections to be included.
@@ -1624,7 +1624,7 @@ unsigned char *_dmsg_msg_to_bin(const dmime_message_t *msg, unsigned char sectio
 }
 
 
-/*
+/**
  * @brief	Deserializes and adds a tracing object to the dmime message from the provided binary input.
  * @param	msg		Dmime message object to which the tracing object will be attached.
  * @param	in		Points to the first length byte of the array containing the binary tracing (points to the first character after the dime magic number for tracing objects).
@@ -1655,7 +1655,7 @@ size_t _dmsg_deserialize_tracing(dmime_message_t *msg, const unsigned char *in, 
 }
 
 
-/*
+/**
  * @brief	Deserializes binary message input into an array of chunks of a specified section, regardless of chunk order.
  * NOTE:	Should only be used for display and attachment sections, because all other chunks need to maintain correct sequence.
  * @param	in		Pointer to the binary data.
@@ -1720,7 +1720,7 @@ dmime_message_chunk_t **_dmsg_deserialize_section(const unsigned char *in, size_
 }
 
 
-/*
+/**
  * @brief	Deserializes and adds a dmime message chunk object to the specified dmime message from the provided binary input.
  * @param	msg		Dmime message object into which the message chunk will be deserialized.
  * @param	in		Pointer to the first byte of the binary message chunk (the first byte should be the chunk type character).
@@ -1815,7 +1815,7 @@ size_t _dmsg_deserialize_helper(dmime_message_t *msg, const unsigned char *in, s
 }
 
 
-/*
+/**
  * @brief	Converts a binary message into a dmime message. The message is assumed to be encrypted.
  * @param	in		Pointer to the binary message.
  * @param	insize		Pointer to the binary size.
@@ -1911,7 +1911,7 @@ dmime_message_t *_dmsg_bin_to_msg(const unsigned char *in, size_t insize) {
 }
 
 
-/*
+/**
  * @brief	Calculates the key encryption key for a given private encryption key and dmime message, using the ephemeral key chunk in the message
  * @param	msg		Pointer to the dmime message, which has the ephemeral key chunk to be used.
  * @param	enckey		Private EC encryption key.
@@ -1976,7 +1976,7 @@ int _dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dmime_ke
 }
 
 
-/*
+/**
  * @brief	Decrypts specified chunk as specified actor with specified key encryption key.
  * @param	chunk		Chunk to be decrypted.
  * @param	actor		Actor doing the decryption.
@@ -2096,7 +2096,7 @@ dmime_message_chunk_t *_dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_a
 }
 
 
-/*
+/**
  * @brief	Destroy dmime object chunk list.
  * @param	list		Poitner to a dmime object chunk list to be destroyed.
  */
@@ -2116,7 +2116,7 @@ void _dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list) {
 }
 
 
-/*
+/**
  * @brief	Destroy a dmime object.
  * @param	object		Pointer to dmime object to be destroyed.
  */
@@ -2137,7 +2137,7 @@ void _dmsg_destroy_object(dmime_object_t *object) {
 }
 
 
-/*
+/**
  * @brief	Retrieves author name for the following actors: author, origin, recipient.
  * @param	msg		Dmime message the author of which is retrieved.
  * @param	actor		Who is trying to get the message author.
@@ -2225,7 +2225,7 @@ dmime_object_t *_dmsg_msg_to_object_envelope(const dmime_message_t *msg, dmime_a
 }
 
 
-/*
+/**
  * @brief	Verify chunk plaintext signature using the author's signet.
  * @param	chunk		Pointer to a dmime message chunk, the plaintext signature of which will be verified.
  * @param	signet		Author's signet used to verify signature.
@@ -2263,7 +2263,7 @@ int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet)
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and loads all contents of the origin chunk into the dmime object.
  * @param	object		Pointer to the dmime object into which the chunk data will be loaded.
  * @param	msg		Pointer to the dmime message containing the origin chunk.
@@ -2378,7 +2378,7 @@ int _dmsg_msg_to_object_origin(dmime_object_t *object, const dmime_message_t *ms
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and loads all contents of the destination chunk into the dmime object.
  * @param	object		Pointer to the dmime object into which the chunk data will be loaded.
  * @param	msg		Pointer to the dmime message containing the destination chunk.
@@ -2496,7 +2496,7 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
 }
 
 
-/*
+/**
  * @brief	Verify the signatures in author tree and full signature chunks.
  * @param	object		Dmime object containing the ids and signets that the specified actor requires in order to complete message decryption and verification.
  * @param	msg		Dmime message containing the signature chunks to be verified.
@@ -2585,7 +2585,7 @@ int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t
 }
 
 
-/*
+/**
  * @brief	Decrypts and verifies the common headers metadata chunk and loads it into the dmime object.
  * @param	object		Dmime object that will have the contents of the common headers chunk loaded into it.
  * @param	msg		Dmime object which contains the common headers chunk to be decrypted and verified.
@@ -2641,7 +2641,7 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 }
 
 
-/*
+/**
  * @brief	Decrypts and verifies the other headers metadata chunk and loads it into the dmime object.
  * @param	object		Dmime object that will have the contents of the other headers chunk loaded into it.
  * @param	msg		Dmime object which contains the other headers chunk to be decrypted and verified.
@@ -2740,7 +2740,7 @@ dmime_object_chunk_t *_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigne
 }
 
 
-/*
+/**
  * @brief	Decrypts and verifies all the available display and attachment chunks and loads them into the dmime object.
  * @param	object		Dmime object that will contain the display and attachment data.
  * @param	msg		An encrypted dmime message from which display and attachment data is taken.
@@ -2867,11 +2867,11 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and extracts all the information available to the author from the message.
- * @param	object		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the author.
+ * @param	obj		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the author.
  * @param	msg		Dmime message to be decrypted.
- * @param	enckey		Author's private encryption EC key.
+ * @param	kek		Author's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
 int _dmsg_msg_to_object_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
@@ -2931,11 +2931,11 @@ int _dmsg_msg_to_object_as_auth(dmime_object_t *obj, const dmime_message_t *msg,
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and extracts all the information available to the origin from the message.
- * @param	object		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the origin.
+ * @param	obj		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the origin.
  * @param	msg		Dmime message to be decrypted.
- * @param	enckey		Origin's private encryption EC key.
+ * @param	kek		Origin's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
 int _dmsg_msg_to_object_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
@@ -2974,7 +2974,7 @@ int _dmsg_msg_to_object_as_orig(dmime_object_t *obj, const dmime_message_t *msg,
 }
 
 
-/*
+/**
  * @brief	Signs the encrypted, author signed dmime message with the origin signatures. The origin signature chunks must already exist in order for the signing to occur.
  * @param	msg		Dmime message that will be signed by the origin.
  * @param	bounce_flags	Flags indicating bounce signatures that the origin will sign.
@@ -3142,7 +3142,7 @@ int _dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounce_flag
 }
 
 
-/*
+/**
  * @brief	Verify the signatures in origin bounce and full signature chunks.
  * @param	object		Dmime object containing the ids and signets that the specified actor requires in order to complete message decryption and verification.
  * @param	msg		Dmime message containing the signature chunks to be verified.
@@ -3272,11 +3272,11 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and extracts all the information available to the destination from the message.
- * @param	object		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the destination.
+ * @param	obj		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the destination.
  * @param	msg		Dmime message to be decrypted.
- * @param	enckey		Destination's private encryption EC key.
+ * @param	kek		Destination's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
 int _dmsg_msg_to_object_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
@@ -3315,11 +3315,11 @@ int _dmsg_msg_to_object_as_dest(dmime_object_t *obj, const dmime_message_t *msg,
 }
 
 
-/*
+/**
  * @brief	Decrypts, verifies and extracts all the information available to the recipient from the message.
- * @param	object		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the recipient.
+ * @param	obj		Dmime object into which the information is extracted, it must already contain the ids and signets of all the actors available to the recipient.
  * @param	msg		Dmime message to be decrypted.
- * @param	enckey		Recipient's private encryption EC key.
+ * @param	kek		Recipient's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
 int _dmsg_msg_to_object_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
@@ -3372,7 +3372,7 @@ int _dmsg_msg_to_object_as_recp(dmime_object_t *obj, const dmime_message_t *msg,
 }
 
 
-/*
+/**
  * @brief	Dumps the contents of the dmime object.
  * @param	object		Dmime object to be dumped.
  * @return	0 on success, all other values indicate failure.

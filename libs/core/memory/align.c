@@ -4,7 +4,7 @@
 
 #include <core/magma.h>
 
-/***
+/**
  * @brief	Align a size to a specified boundary.
  * @param	alignment	the number to which the specified size should be aligned.
  * @param	length		the size, in bytes, of the memory area to be aligned.
