@@ -27,7 +27,6 @@
 #include <common/misc.h>
 #include <common/dcrypto.h>
 
-
 typedef enum {
 	SIGNET_TYPE_ERROR,
 	SIGNET_TYPE_ORG = 1,
@@ -54,13 +53,11 @@ typedef enum {
 	DIME_ENCRYPTED_MSG = 1847
 } dime_number_t;
 
-
 typedef enum {
 	KEYS_TYPE_ERROR = 0,
 	KEYS_TYPE_ORG,
 	KEYS_TYPE_USER
 } keys_type_t;
-
 
 typedef enum {
 	SIGNET_ORG_POK = 1,             /* The ed25519 public signing key of the signet holder */
@@ -98,7 +95,6 @@ typedef enum {
 	SIGNET_ORG_FULL_SIG             /* Org Signature following the ID field */
 } SIGNET_ORG_FIELD_T;
 
-
 typedef enum {
 	SIGNET_USER_SIGN_KEY = 1,       /* The ed25519 public signing key of the signet holder*/
 	SIGNET_USER_ENC_KEY,            /* The ECC public encryption key of the signet holder*/
@@ -135,7 +131,6 @@ typedef enum {
 	SIGNET_USER_FULL_SIG            /* Org Signature following the ID field */
 } SIGNET_USER_FIELD_T;
 
-
 typedef enum {
 	SIGNET_SSR_SIGN_KEY = 1,        /* The proposed ed25519 public signing key of the ssr creator*/
 	SIGNET_SSR_ENC_KEY,             /* The ed25519 ECC public encryption key of the ssr creator*/
@@ -144,19 +139,16 @@ typedef enum {
 	SIGNET_SSR_SSR_SIG,             /* User signature with user's signing key*/
 } SIGNET_SSR_FIELD_T;
 
-
 typedef enum {
 	KEYS_ORG_PRIVATE_POK = 1,
 	KEYS_ORG_PRIVATE_SOK,
 	KEYS_ORG_PRIVATE_ENC,
 } KEYS_ORG_T;
 
-
 typedef enum {
 	KEYS_USER_PRIVATE_SIGN = 1,
 	KEYS_USER_PRIVATE_ENC,
 } KEYS_USER_T;
-
 
 typedef enum {
 	SIGNET_SOK_NONE = 0x00000001,   /* This key can not be used for signing signets or messages */
@@ -164,7 +156,6 @@ typedef enum {
 	SIGNET_SOK_MSG = 0x00000101,    /* This key can only be used for signing messages */
 	SIGNET_SOK_ALL = 0x00000111     /* This key can only be used for signing signets and messages */
 } sok_flag_t;
-
 
 typedef enum {
 	SS_UNKNOWN = 0,                 /* Invalid signet, state unknown/currently unclassified */
@@ -178,8 +169,7 @@ typedef enum {
 	SS_FULL,                        /* Valid signet with ID and organizational-final-signature */
 } signet_state_t;
 
-typedef enum                            /* Currently barely used, meant to classify signet field data types*/
-{
+typedef enum {                          /* Currently barely used, meant to classify signet field data types*/
 	B64,
 	HEX,
 	PNG,
@@ -201,13 +191,12 @@ typedef struct {
 	field_data_t data_type;         /* Dump format for the field */
 
 	const char *name;
-	const char *description;                /* field type description*/
+	const char *description;        /* field type description*/
 
 } signet_field_key_t;
 
-
 /* A signet field index structure for temporary convenience organzation of field data */
-typedef struct Field {
+typedef struct signet_field_t {
 
 	const signet_t *signet;
 	signet_field_key_t *key;
@@ -219,7 +208,7 @@ typedef struct Field {
 	unsigned int name_offset;
 	unsigned int data_offset;
 
-	struct Field *next;
+	struct signet_field_t *next;
 } signet_field_t;
 
 ED25519_KEY *_deserialize_ed25519_pubkey(const unsigned char *serial_pubkey);             //TODO move crypto.c in libcommon
