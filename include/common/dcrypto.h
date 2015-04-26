@@ -28,7 +28,7 @@ typedef struct {
 } ED25519_KEY;
 
 
-// Initializion and finalization routines.
+// Initialization and finalization routines.
 PUBLIC_FUNC_DECL(int,             crypto_init,              void);
 PUBLIC_FUNC_DECL(void,            crypto_shutdown,          void);
 
@@ -67,6 +67,5 @@ PUBLIC_FUNC_DECL(int,             decrypt_aes_256,          unsigned char *outbu
 
 // Miscellaneous.
 PUBLIC_FUNC_DECL(int,             get_random_bytes,         void *buf, size_t len);
-
 
 #endif

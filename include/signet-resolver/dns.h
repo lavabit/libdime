@@ -62,22 +62,22 @@ typedef struct  {
 } __attribute__((__packed__)) dnskey_rr_flags_t;
 
 typedef struct {
-	uint16_t covered;               // The type of the rr set covered by this record.
-	uint8_t algorithm;              // The numerical id of the cryptographic algorithm used to generate the signature.
-	uint8_t labels;                 // The number of labels in the original RRSIG RR owner name.
-	uint32_t ottl;                  // The original TTL of the covered rrset as it appears in the authoritative zone.
-	uint32_t expiration;            // The expiration date after which the RRSIG record must not be used for authentication.
-	uint32_t inception;             // The inception date before which the RRSIG record must not be used for authentication.
-	uint16_t key_tag;               // A tag (selector) identifying the corresponding DNSKEY RR (which isn't necessarily unique) that validates this record.
-	unsigned char signame;          // A label identifying the owner name of the DNSKEY RR validating this signature (must not use name compression).
+	uint16_t covered;               ///< The type of the rr set covered by this record.
+	uint8_t algorithm;              ///< The numerical id of the cryptographic algorithm used to generate the signature.
+	uint8_t labels;                 ///< The number of labels in the original RRSIG RR owner name.
+	uint32_t ottl;                  ///< The original TTL of the covered rrset as it appears in the authoritative zone.
+	uint32_t expiration;            ///< The expiration date after which the RRSIG record must not be used for authentication.
+	uint32_t inception;             ///< The inception date before which the RRSIG record must not be used for authentication.
+	uint16_t key_tag;               ///< A tag (selector) identifying the corresponding DNSKEY RR (which isn't necessarily unique) that validates this record.
+	unsigned char signame;          ///< A label identifying the owner name of the DNSKEY RR validating this signature (must not use name compression).
 	// Signame is followed by the actual signature
 } __attribute__((__packed__)) rrsig_rr_t;
 
 typedef struct {
-	uint16_t key_tag;               // The keytag of the DNSKEY RR to which this record refers.
-	uint8_t algorithm;              // The algorithm used by this RR's referenced DNSKEY.
-	uint8_t digest_type;            // The type of the digest algorithm used by the digest field.
-	unsigned char digest;           // A digest of this RR's referenced DNSKEY.
+	uint16_t key_tag;               ///< The keytag of the DNSKEY RR to which this record refers.
+	uint8_t algorithm;              ///< The algorithm used by this RR's referenced DNSKEY.
+	uint8_t digest_type;            ///< The type of the digest algorithm used by the digest field.
+	unsigned char digest;           ///< A digest of this RR's referenced DNSKEY.
 } __attribute__((__packed__)) ds_rr_t;
 
 #endif
@@ -85,7 +85,7 @@ typedef struct {
 typedef struct ds ds_t;
 typedef struct dnskey dnskey_t;
 
-// Our own internal representation of certain RRs.
+/** Our own internal representation of certain RRs. */
 struct ds {
 	char *label;
 	unsigned char algorithm;
@@ -93,8 +93,8 @@ struct ds {
 	unsigned int keytag;
 	unsigned char *digest;
 	size_t diglen;
-	unsigned char validated;        // This is for the cache.
-	dnskey_t **signkeys;            // The DNSKEY(s) that were used to sign the RRSIG guaranteeing this DS.
+	unsigned char validated;        ///< This is for the cache.
+	dnskey_t **signkeys;            ///< The DNSKEY(s) that were used to sign the RRSIG guaranteeing this DS.
 };
 
 struct dnskey {
@@ -106,10 +106,10 @@ struct dnskey {
 	unsigned int keytag;
 	size_t rdlen;
 	unsigned char *rdata;
-	dnskey_t **signkeys;            // The DNSKEY(s) that were used to sign the RRSIG guaranteeing this DNSKEY.
-	ds_t **dse;                     // The DS RR(s) that match this DNSKEY record.
-	unsigned int validated;         // Has this key been validated?
-	unsigned int do_cache;          // If set, this DNSKEY will be persisted IFF it has been validated.
+	dnskey_t **signkeys;            ///< The DNSKEY(s) that were used to sign the RRSIG guaranteeing this DNSKEY.
+	ds_t **dse;                     ///< The DS RR(s) that match this DNSKEY record.
+	unsigned int validated;         ///< Has this key been validated?
+	unsigned int do_cache;          ///< If set, this DNSKEY will be persisted IFF it has been validated.
 };
 
 
@@ -173,6 +173,5 @@ int       _dnskey_tag_comparator(const void *object, const void *key);
 int       _dnskey_domain_comparator(const void *object, const void *key);
 
 size_t   _mem_append_canon(unsigned char **buf, size_t *blen, const char *name);
-
 
 #endif

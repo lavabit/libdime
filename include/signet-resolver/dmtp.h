@@ -27,12 +27,12 @@ typedef enum {
 
 
 typedef struct {
-	char *domain;           // The name of the dark domain underlying the DMTP connection.
-	char *dx;               // The canonical name of the DX that we're connected to.
-	SSL *con;               // The handle to this DMTP session's underlying SSL connection.
-	dime_record_t *drec;    // The DIME management record associated with this dark domain.
-	dmtp_mode_t mode;       // The current mode of this connection (if made through dual mode).
-	unsigned int active;    // Boolean flag: whether or not this session is active.
+	char *domain;           ///< The name of the dark domain underlying the DMTP connection.
+	char *dx;               ///< The canonical name of the DX that we're connected to.
+	SSL *con;               ///< The handle to this DMTP session's underlying SSL connection.
+	dime_record_t *drec;    ///< The DIME management record associated with this dark domain.
+	dmtp_mode_t mode;       ///< The current mode of this connection (if made through dual mode).
+	unsigned int active;    ///< Boolean flag: whether or not this session is active.
 
 	int _fd;
 	unsigned char _inbuf[DMTP_LINE_BUF_SIZE + 1];

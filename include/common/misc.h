@@ -19,7 +19,6 @@
 #define ANSI_COLOR_RESET "\x1b[0m"
 #define ALERT_PRINT(fp, x) { fprintf(fp, ANSI_COLOR_RED); x; fprintf(fp, ANSI_COLOR_RESET); fflush(fp); }
 
-
 #define SHA_160_SIZE 20
 #define SHA_256_SIZE 32
 #define SHA_512_SIZE 64

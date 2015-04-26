@@ -1,10 +1,3 @@
-/*
- * signet.h
- *
- *  Created on: Sep 11, 2014
- *      Author: iv
-*/
-
 #ifndef SIGNET_H
 #define SIGNET_H
 
@@ -82,7 +75,6 @@ PUBLIC_FUNC_DECL(int,              signet_sign_ssr_sig,         signet_t *signet
 PUBLIC_FUNC_DECL(int,              signet_sign_coc_sig,         signet_t *signet,       ED25519_KEY *key);
 
 
-/* ---------------------------------------------------------------------------------------------------------------------- */
 /*PRIVATE METHODS*/
 
 /* signet creation related functions */
@@ -123,5 +115,5 @@ void *                  _deserialize_signet_cb(void *data, size_t len);
 void *                  _serialize_signet_cb(void *record, size_t *outlen);
 void                    _destroy_signet_cb(void *record);
 void                    _dump_signet_cb(FILE *fp, void *record, int brief);
-/* ------------------------------------------------------------------------------------------------------------------------ */
+
 #endif

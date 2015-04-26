@@ -25,4 +25,5 @@ PUBLIC_FUNC_DECL(EC_KEY *,        keys_file_fetch_enc_key,   const char *filenam
 /* PRIVATE FUNCTIONS */
 
 int     _keys_check_length(const unsigned char *in, size_t in_len);
+
 #endif

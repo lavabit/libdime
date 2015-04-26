@@ -29,15 +29,15 @@ typedef enum {
 
 
 typedef struct {
-	unsigned short version;                 // The DIME management record syntax version.
-	unsigned char **pubkey;                 // An array of 32-byte ED25519 organizational public key(s) (POKs).
-	unsigned char **tlssig;                 // An array of 64-byte TLS signature(s) for MX (or DX/KS) by the POK(s).
-	dime_msg_policy policy;                 // Policy for sending/accepting messages.
-	char *syndicates;                       // Alternative authoritative signet lookup sources.
-	char **dx;                              // An array of CNAME(s) for DIME delivery host (if not present, then MX).
-	unsigned long expiry;                   // Number of days before a cached management record is discarded.
-	dime_sub_policy subdomain;              // Determines whether subdomains will have authority over their own records.
-	int validated;                          // 1 if validated by DNSSEC; 0 if not DNSSEC-protected; -1 if DNSSEC sig failed.
+	unsigned short version;                 ///< The DIME management record syntax version.
+	unsigned char **pubkey;                 ///< An array of 32-byte ED25519 organizational public key(s) (POKs).
+	unsigned char **tlssig;                 ///< An array of 64-byte TLS signature(s) for MX (or DX/KS) by the POK(s).
+	dime_msg_policy policy;                 ///< Policy for sending/accepting messages.
+	char *syndicates;                       ///< Alternative authoritative signet lookup sources.
+	char **dx;                              ///< An array of CNAME(s) for DIME delivery host (if not present, then MX).
+	unsigned long expiry;                   ///< Number of days before a cached management record is discarded.
+	dime_sub_policy subdomain;              ///< Determines whether subdomains will have authority over their own records.
+	int validated;                          ///< 1 if validated by DNSSEC; 0 if not DNSSEC-protected; -1 if DNSSEC sig failed.
 } dime_record_t;
 
 
