@@ -46,14 +46,12 @@ clean:
 	@$(RM) $(ARCHIVE) $(OBJFILES) $(DEPFILES)
 	@for d in $(sort $(dir $(OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
-	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 # Construct the static archive file
 $(ARCHIVE): $(OBJFILES)
-	@echo 'Constructing' $(RED)$@$(NORMAL)
+	@echo 'Linking' $(RED)$@$(NORMAL)
 	$(RUN)$(AR) $(ARFLAGS) $@ $(OBJFILES)
 	@$(RANLIB) $@
-	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 # Object files
 $(OBJDIR)/%.o: %.c

@@ -45,17 +45,15 @@ clean:
 	@$(RM) $(TOOL) $(OBJFILES) $(DEPFILES)
 	@for d in $(sort $(dir $(OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
-	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 # Construct the binary executable file
 $(TOOL): $(OBJFILES)
-	@echo 'Constructing' $(RED)$@$(NORMAL)
+	@echo 'Linking' $(RED)$@$(NORMAL)
 	@$(LD) $(LDFLAGS) --output='$@' $(OBJFILES) -Wl,--start-group $(STATIC) -Wl,--end-group $(DYNAMIC)
-	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 # Object files
 $(OBJDIR)/%.o: %.c
-	@echo 'Building' $(YELLOW)$<$(NORMAL)
+	@echo 'Compiling' $(YELLOW)$<$(NORMAL)
 	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	@$(CC) $(CFLAGS) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" -c "$(abspath $<)"
