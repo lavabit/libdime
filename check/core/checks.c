@@ -8,6 +8,7 @@ int main(void) {
 	srunner_add_suite(sr, suite_check_memory());
 	srunner_add_suite(sr, suite_check_host_folder());
 	srunner_add_suite(sr, suite_check_hash());
+	srunner_add_suite(sr, suite_check_mail_counters());
 
 	srunner_run_all(sr, CK_ENV);
 	int nr_failed = srunner_ntests_failed(sr);
