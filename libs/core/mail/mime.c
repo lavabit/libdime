@@ -1130,6 +1130,7 @@ stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, string
 	return result;
 }
 
+#if 0
 /**
  * @brief	Get smtp envelope data for an outbound message sent by a webmail client.
  * @param	from		a pointer to a managed string containing the sender's address.
@@ -1143,73 +1144,74 @@ stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, string
  * @return	NULL on failure or a pointer to a managed string containing the smtp envelope data that will be supplied to an smtp
  *                      relay server at the beginning of the DATA command.
  */
-/*stringer_t * mail_mime_get_smtp_envelope(stringer_t *from, inx_t *tos, inx_t *ccs, inx_t *bccs, stringer_t *subject, stringer_t *boundary, bool_t attached) {
+stringer_t *mail_mime_get_smtp_envelope(stringer_t *from, inx_t *tos, inx_t *ccs, inx_t *bccs, stringer_t *subject, stringer_t *boundary, bool_t attached) {
 
-        stringer_t *result, *firsthead = NULL;
-        stringer_t *str_to, *str_cc, *str_bcc;
-        struct tm ltime;
-        static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z";
-        chr_t date_buffer[1024];
-        time_t utime;
+	stringer_t *result, *firsthead = NULL;
+	stringer_t *str_to, *str_cc, *str_bcc;
+	struct tm ltime;
+	static const chr_t *date_format = "Date: %a, %d %b %Y %H:%M:%S %z";
+	chr_t date_buffer[1024];
+	time_t utime;
 
-        if (!from || !tos || !ccs | !bccs || !subject) {
-                log_pedantic("Could not build smtp envelope with incomplete information.");
-                return NULL;
-        }
+	if (!from || !tos || !ccs | !bccs || !subject) {
+		log_pedantic("Could not build smtp envelope with incomplete information.");
+		return NULL;
+	}
 
-        // Serialize the To, CC, and BCC data into separate strings.
-        if (!(str_to = portal_smtp_merge_headers(tos, NULLER("To: "), NULLER("\r\n")))) {
-                log_error("Could not construct To: header for smtp envelope.");
-                return NULL;
-        } else if (!(str_cc = portal_smtp_merge_headers(ccs, NULLER("CC: "), NULLER("\r\n")))) {
-                log_error("Could not construct CC: header for smtp envelope.");
-                st_free(str_to);
-                return NULL;
-        } else if (!(str_bcc = portal_smtp_merge_headers(bccs, NULLER("BCC: "), NULLER("\r\n")))) {
-                log_error("Could not construct BCC: header for smtp envelope.");
-                st_free(str_to);
-                st_free(str_cc);
-                return NULL;
-        }
+	// Serialize the To, CC, and BCC data into separate strings.
+	if (!(str_to = portal_smtp_merge_headers(tos, NULLER("To: "), NULLER("\r\n")))) {
+		log_error("Could not construct To: header for smtp envelope.");
+		return NULL;
+	} else if (!(str_cc = portal_smtp_merge_headers(ccs, NULLER("CC: "), NULLER("\r\n")))) {
+		log_error("Could not construct CC: header for smtp envelope.");
+		st_free(str_to);
+		return NULL;
+	} else if (!(str_bcc = portal_smtp_merge_headers(bccs, NULLER("BCC: "), NULLER("\r\n")))) {
+		log_error("Could not construct BCC: header for smtp envelope.");
+		st_free(str_to);
+		st_free(str_cc);
+		return NULL;
+	}
 
-        // Add the current date/time to the outbound message.
-        if (((utime = time(&utime)) == -1) || (localtime_r(&utime, &ltime) == NULL) || (strftime(date_buffer, sizeof(date_buffer), date_format, &ltime) <= 0)) {
-                log_error("Could not build smtp envelope without current time.");
-                st_free(str_to);
-                st_free(str_cc);
-                st_free(str_bcc);
-                return NULL;
-        }
+	// Add the current date/time to the outbound message.
+	if (((utime = time(&utime)) == -1) || (localtime_r(&utime, &ltime) == NULL) || (strftime(date_buffer, sizeof(date_buffer), date_format, &ltime) <= 0)) {
+		log_error("Could not build smtp envelope without current time.");
+		st_free(str_to);
+		st_free(str_cc);
+		st_free(str_bcc);
+		return NULL;
+	}
 
-        // If there are attachments, we are going to make a multipart message.
-        if (attached) {
+	// If there are attachments, we are going to make a multipart message.
+	if (attached) {
 
-                if (!(firsthead = st_merge("nsn", "Content-Type: multipart/mixed; boundary=\"------------", boundary, "\"\r\n\r\nThis is a multi-part message in MIME format.\r\n"))) {
-                        log_error("Could not build multipart header for smtp envelope.");
-                        st_free(str_to);
-                        st_free(str_cc);
-                        st_free(str_bcc);
-                        return NULL;
-                }
+		if (!(firsthead = st_merge("nsn", "Content-Type: multipart/mixed; boundary=\"------------", boundary, "\"\r\n\r\nThis is a multi-part message in MIME format.\r\n"))) {
+			log_error("Could not build multipart header for smtp envelope.");
+			st_free(str_to);
+			st_free(str_cc);
+			st_free(str_bcc);
+			return NULL;
+		}
 
-        }
+	}
 
-        //if (!(result = st_merge("nnsnsnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\nTo: ",
-        //		to, "\r\nSubject: ", subject, "\r\n", firsthead))) {
-        if (!(result = st_merge("nnsnsssnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\n",
-                                str_to, str_cc, str_bcc, "Subject: ", subject, "\r\n", firsthead))) {
-                log_error("Unable to allocate space for smtp envelope.");
-                st_free(str_to);
-                st_free(str_cc);
-                st_free(str_bcc);
-                st_cleanup(firsthead);
-                return NULL;
-        }
+	//if (!(result = st_merge("nnsnsnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\nTo: ",
+	//		to, "\r\nSubject: ", subject, "\r\n", firsthead))) {
+	if (!(result = st_merge("nnsnsssnsns", date_buffer, "\r\nFrom: ", from, "\r\nUser-Agent: lavaweb 1.0\r\nMIME-Version: 1.0\r\n",
+	                        str_to, str_cc, str_bcc, "Subject: ", subject, "\r\n", firsthead))) {
+		log_error("Unable to allocate space for smtp envelope.");
+		st_free(str_to);
+		st_free(str_cc);
+		st_free(str_bcc);
+		st_cleanup(firsthead);
+		return NULL;
+	}
 
-        st_free(str_to);
-        st_free(str_cc);
-        st_free(str_bcc);
-        st_cleanup(firsthead);
+	st_free(str_to);
+	st_free(str_cc);
+	st_free(str_bcc);
+	st_cleanup(firsthead);
 
-        return result;
-}*/
+	return result;
+}
+#endif

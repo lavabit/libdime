@@ -314,62 +314,64 @@ placer_t mail_store_header(chr_t *stream, size_t length) {
  * @param	message		a pointer to a partially populated smtp message object that contains the raw message data to be parsed.
  * @return	true on success or false on failure.
  */
-/*bool_t mail_headers(smtp_message_t *message) {
+#if 0
+bool_t mail_headers(smtp_message_t *message) {
 
-        int_t next = 1;
-        chr_t *stream;
-        size_t length, increment;
+	int_t next = 1;
+	chr_t *stream;
+	size_t length, increment;
 
-        if (!message || !message->text) {
-                log_pedantic("Invalid message passed in.");
-                return false;
-        }
+	if (!message || !message->text) {
+		log_pedantic("Invalid message passed in.");
+		return false;
+	}
 
-        // Setup
-        length = message->header_length;
-        stream = st_char_get(message->text);
+	// Setup
+	length = message->header_length;
+	stream = st_char_get(message->text);
 
-        if (length > st_length_get(message->text)) {
-                log_pedantic("The header length is longer than the message.");
-                return false;
-        }
-        else if (length != mail_header_end(message->text)) {
-                log_pedantic("An invalid header length is stored in the structure.");
-                return false;
-        }
+	if (length > st_length_get(message->text)) {
+		log_pedantic("The header length is longer than the message.");
+		return false;
+	}
+	else if (length != mail_header_end(message->text)) {
+		log_pedantic("An invalid header length is stored in the structure.");
+		return false;
+	}
 
-        // Increment through. When key headers are found, store the locations in placer's.
-        for (increment = 0; increment < length; increment++) {
+	// Increment through. When key headers are found, store the locations in placer's.
+	for (increment = 0; increment < length; increment++) {
 
-                // Locate the start of headers.
-                if (next == 1 && *stream != '\n') {
+		// Locate the start of headers.
+		if (next == 1 && *stream != '\n') {
 
-                        if (length - increment >= 3 && mm_cmp_ci_eq(stream, "To:", 3) == 0) {
-                                message->to = mail_store_header(stream + 3, length - increment - 3);
-                        }
-                        else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "From:", 5) == 0) {
-                                message->from = mail_store_header(stream + 5, length - increment - 5);
-                        }
-                        else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "Date:", 5) == 0) {
-                                message->date = mail_store_header(stream + 5, length - increment - 5);
-                        }
-                        else if (length - increment >= 8 && mm_cmp_ci_eq(stream, "Subject:", 8) == 0) {
-                                message->subject = mail_store_header(stream + 8, length - increment - 8);
-                        }
+			if (length - increment >= 3 && mm_cmp_ci_eq(stream, "To:", 3) == 0) {
+				message->to = mail_store_header(stream + 3, length - increment - 3);
+			}
+			else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "From:", 5) == 0) {
+				message->from = mail_store_header(stream + 5, length - increment - 5);
+			}
+			else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "Date:", 5) == 0) {
+				message->date = mail_store_header(stream + 5, length - increment - 5);
+			}
+			else if (length - increment >= 8 && mm_cmp_ci_eq(stream, "Subject:", 8) == 0) {
+				message->subject = mail_store_header(stream + 8, length - increment - 8);
+			}
 
-                        next = 0;
-                }
+			next = 0;
+		}
 
-                // So we check the start of the next line for a key header.
-                if (next == 0 && (*stream == '\n' || *stream == '\r')) {
-                        next = 1;
-                }
+		// So we check the start of the next line for a key header.
+		if (next == 0 && (*stream == '\n' || *stream == '\r')) {
+			next = 1;
+		}
 
-                stream++;
-        }
+		stream++;
+	}
 
-        return true;
-}*/
+	return true;
+}
+#endif
 
 /**
  * @brief	Prepend text to a Subject header line inside of a mail message.
