@@ -7,7 +7,6 @@
 /**
  * @brief	Reset the position of an inx cursor.
  * @param	cursor	a pointer to the inx cursor to be reset.
- * @return	This function returns no value.
  */
 void inx_cursor_reset(inx_cursor_t *cursor) {
 
@@ -20,7 +19,6 @@ void inx_cursor_reset(inx_cursor_t *cursor) {
 /**
  * @brief	Free an inx cursor and the inx object it points to, if the inx reference count hits zero.
  * @param	cursor	the inx cursor to be freed.
- * @return	This function returns no value.
  */
 void inx_cursor_free(inx_cursor_t *cursor) {
 

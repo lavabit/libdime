@@ -40,7 +40,6 @@ bool_t st_empty_out(stringer_t *s, uchr_t **ptr, size_t *len) {
  *@param	s		the managed string to be adjusted.
  *@param	data	the data buffer to be attached to the input managed string.
  *@note		The underlying data of s will be released, unless it contains foreign data.
- *@return	This function does not return a value.
  */
 void st_data_set(stringer_t *s, void *data) {
 
@@ -165,7 +164,6 @@ uchr_t *st_uchar_get(stringer_t *s) {
 /**
  * @brief	Wipe all of a managed string's allocated memory and if applicable, reset its length.
  * @param	s	the managed string to be wiped.
- * @return	This function returns no value.
  */
 void st_wipe(stringer_t *s) {
 

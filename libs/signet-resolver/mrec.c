@@ -9,7 +9,6 @@
 /**
  * @brief	Destroy a DIME management record and its underlying data.
  * @param	record	a pointer to the DIME management record object to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_dime_record(dime_record_t *record) {
 
@@ -38,7 +37,6 @@ void _destroy_dime_record(dime_record_t *record) {
  * @param	fp	a pointer to the file stream that will receive the dump output.
  * @param	record  a pointer to the DIME management record structure to be dumped.
  * @param	brief	if set, only print a brief one-line description for the requested record.
- * @return	This function returns no value.
  */
 void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
 
@@ -181,7 +179,6 @@ void _dump_dime_record_cb(FILE *fp, void *record, int brief) {
  * @brief	A callback handler to destroy a DIME management record.
  * @note	This is an internal function used by the cache management subsystem.
  * @param	record	a pointer to the DIME management record to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_dime_record_cb(void *record) {
 

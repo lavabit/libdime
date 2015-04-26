@@ -49,7 +49,6 @@ int _crypto_init(void) {
 
 /*
  * @brief	Shutdown the cryptographic subsystem.
- * @return	This function returns no value.
  */
 void _crypto_shutdown(void) {
 
@@ -420,8 +419,8 @@ EC_KEY *_load_ec_privkey(const char *filename) {
 
 /**
  * @brief       Load an EC public key from a file.
- * @param       filename	the name of the filename from which the key should be loaded
- * @return	result		a pointer to the deserialized public key from the the file.
+ * @param       filename	the name of the file from which the key should be loaded
+ * @return	a pointer to the deserialized public key from the the file.
  */
 EC_KEY *_load_ec_pubkey(const char *filename) {
 
@@ -539,10 +538,6 @@ ED25519_KEY *_generate_ed25519_keypair(void) {
 
 /**
  * @brief	Take an ed25519 signature of a data buffer.
- * @param	data
- * @param	dlen
- * @param	key
- * @param	sigbuf
  * @return	0 on success or -1 on failure.
  */
 int _ed25519_sign_data(const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf) {
@@ -559,10 +554,6 @@ int _ed25519_sign_data(const unsigned char *data, size_t dlen, ED25519_KEY *key,
 
 /**
  * @brief	Verify an ed25519 signature taken over a data buffer.
- * @param	data
- * @param	dlen
- * @param	key
- * @param	sigbuf
  * @return	1 if the signature matched the buffer, 0 if it did not, or -1 on failure.
  */
 int _ed25519_verify_sig(const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf) {
@@ -586,7 +577,6 @@ int _ed25519_verify_sig(const unsigned char *data, size_t dlen, ED25519_KEY *key
 /**
  * @brief	Free an ed25519 keypair.
  * @param	key	a pointer to the ed25519 keypair to be freed.
- * @return	This function returns no value.
  */
 void _free_ed25519_key(ED25519_KEY *key) {
 

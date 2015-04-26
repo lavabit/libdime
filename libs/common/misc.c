@@ -94,7 +94,6 @@ unsigned char *_b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
  * @brief	Store a 4-byte value in a buffer in network byte order.
  * @param	buf	a pointer to the data buffer where the value will be inserted.
  * @param	val	the 4 byte value to be placed in the specified buffer, in network byte order.
- * @return	This function returns no value.
  */
 void _int_no_put_4b(void *buf, uint32_t val) {
 
@@ -116,7 +115,6 @@ void _int_no_put_4b(void *buf, uint32_t val) {
  * @brief	Store a 3-byte value in a buffer in network byte order.
  * @param	buf	a pointer to the data buffer where the value will be inserted.
  * @param	val	the 3 byte value to be placed in the specified buffer, in network byte order.
- * @return	This function returns no value.
  */
 void _int_no_put_3b(void *buf, uint32_t val) {
 
@@ -137,7 +135,6 @@ void _int_no_put_3b(void *buf, uint32_t val) {
  * @brief	Store a 2-byte value in a buffer in network byte order.
  * @param	buf	a pointer to the data buffer where the value will be inserted.
  * @param	val	the 2 byte value to be placed in the specified buffer, in network byte order.
- * @return	This function returns no value.
  */
 void _int_no_put_2b(void *buf, uint16_t val) {
 
@@ -257,7 +254,6 @@ char *_hex_encode(const unsigned char *buf, size_t len) {
  *              If a debug string is printed with a level equal to or higher than the debugging level, it will be
  *              displayed to the user; otherwise it will be suppressed.
  * @param	level	the value of the new debugging level to be set.
- * @return	This function should always succeed and returns no value.
  */
 void _set_dbg_level(unsigned int level) {
 
@@ -277,9 +273,6 @@ unsigned int _get_dbg_level(void) {
 
 /**
  * @brief	Append variable-argument formatted data to a dynamically allocated null-terminated string.
- * @param	sbuf
- * @param	fmt
- * @return
  */
 int _str_printf(char **sbuf, const char *fmt, ...) {
 
@@ -395,7 +388,6 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
  * @brief	Free a pointer chain and all its member elements.
  * @note	All pointers in the chain will be free()'ed. To avoid this behavior, call free() on the pointer chain instead.
  * @param	buf	the address of the pointer chain to be freed.
- * @return	This function returns no value.
  */
 void _ptr_chain_free(void *buf) {
 
@@ -418,10 +410,7 @@ void _ptr_chain_free(void *buf) {
 /**
  * @brief	Append an address to the end of a pointer chain.
  * @param	buf	the address of the target pointer chain. If NULL, allocate a new one for the caller.
- * @param	addr
- * @return
- *
- *
+ * @param	addr	the address to be appended to the pointer chain.
  */
 void *_ptr_chain_add(void *buf, const void *addr) {
 
@@ -716,7 +705,6 @@ char *_b64encode(const unsigned char *buf, size_t len) {
  * @param	buf		a pointer to the data buffer to have its contents dumped.
  * @param	len		the size, in bytes, of the data buffer to be dumped.
  * @param	all_hex		if set, print all characters as hex codes - even printable ones.
- * @return	This function returns no value.
  */
 void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
 
@@ -753,7 +741,6 @@ void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
  * @param	len		the size, in bytes, of the data buffer to be dumped.
  * @param	nouter		the number of outer (leading and trailing) bytes to be dumped.
  * @param	all_hex		if set, print all characters as hex codes - even printable ones.
- * @return	This function returns no value.
  */
 void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
 
@@ -800,7 +787,6 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
  * @param	dbglevel	the minimum necessary debugging level to be active in order for the data to be displayed.
  * @param	fmt		the format string specifier to be used to display the user data.
  * @param	...		the variable argument list specified by the format string.
- * @return	This function returns no value.
  */
 void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
 
@@ -1397,7 +1383,6 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
  * @brief	Securely wipe a memory buffer, in preparation for deallocation.
  * @param	buf	a pointer to the data buffer to be wiped.
  * @param	len	the size, in bytes, of the data buffer to be wiped.
- * @return	This function returns no value.
  */
 void _secure_wipe(void *buf, size_t len) {
 

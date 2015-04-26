@@ -59,7 +59,6 @@ static multi_t linked_record_get_key(linked_record_t *record) {
  * @brief	Free a linked list record object and its underlying data.
  * @param	index	a pointer to the linked list containing the specified record.
  * @param	record	a pointer to the linked list record to be freed.
- * @return	This function returns no value.
  */
 static void linked_record_free(inx_t *index, linked_record_t *record) {
 
@@ -352,7 +351,6 @@ static multi_t linked_cursor_key_active(linked_cursor_t *cursor) {
 /**
  * @brief	Reset the position of a linked list cursor.
  * @param	cursor	a pointer to the linked list cursor object to be reset.
- * @return	This function returns no value.
  */
 static void linked_cursor_reset(linked_cursor_t *cursor) {
 
@@ -366,7 +364,6 @@ static void linked_cursor_reset(linked_cursor_t *cursor) {
 /**
  * @brief	Free a linked list cursor.
  * @param	cursor	a pointer to the linked list cursor object to be freed.
- * @return	This function returns no value.
  */
 static void linked_cursor_free(linked_cursor_t *cursor) {
 
@@ -398,7 +395,6 @@ static void *linked_cursor_alloc(inx_t *inx) {
 /**
  * @brief	Truncate all the nodes in a linked list, but do not free it.
  * @param	inx		a pointer to the linked list object to have all of its records truncated.
- * @return	This function returns no value.
  */
 static void linked_truncate(void *inx) {
 

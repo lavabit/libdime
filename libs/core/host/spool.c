@@ -239,7 +239,6 @@ int_t spool_cleanup(void) {
 /**
  * @brief	Clean up the file contents in the spool base directory.
  * @note	This is like a fast version of spool_cleanup().
- * @return	This function returns no value.
  */
 void spool_stop(void) {
 

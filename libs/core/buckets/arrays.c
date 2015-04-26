@@ -262,7 +262,6 @@ void *ar_field_ptr(array_t *array, size_t element) {
  * @brief	Manually set the number of used elements in an array.
  * @param	array	a pointer to the array to be adjusted.
  * @param	used	the new number of elements (less than the array's maximum size) to be set as the array's used length.
- * @return	This function returns no value.
  */
 void ar_length_set(array_t *array, size_t used) {
 

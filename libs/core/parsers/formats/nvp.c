@@ -91,7 +91,6 @@ nvp_t *nvp_alloc() {
 /**
  * @brief	Free a name/value pair object from memory.
  * @param	nvp	the name/value pair object to be freed.
- * @return	This function returns no value.
  */
 void nvp_free(nvp_t *nvp) {
 

@@ -877,7 +877,6 @@ array_t *mail_mime_split(placer_t body, stringer_t *boundary) {
 /**
  * @brief	Free a mail mime object and its underlying data, and recursively free its children parts.
  * @param	mime	a pointer to the mail mime object to be freed.
- * @return	This function returns no value.
  */
 void mail_mime_free(mail_mime_t *mime) {
 

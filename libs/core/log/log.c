@@ -10,7 +10,6 @@ pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * @brief	Disable logging.
- * @return	This function returns no value.
  */
 void log_disable(void) {
 	mutex_lock(&log_mutex);
@@ -20,7 +19,6 @@ void log_disable(void) {
 
 /**
  * @brief	Enable logging.
- * @return	This function returns no value.
  */
 void log_enable(void) {
 	mutex_lock(&log_mutex);
@@ -253,7 +251,6 @@ bool_t log_start(void) {
 /**
  * @brief	A stub routine where it is convenient to set a breakpoint in a debugger.
  * @note	This function should be called by code paths that detect sanity check failures, but that are not fatal.
- * @return	This function returns no value.
  */
 void debug_hook(void) {
 

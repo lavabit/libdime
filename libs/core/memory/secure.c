@@ -186,7 +186,6 @@ static secured_t *mm_sec_chunk_new(secured_t *block, size_t size) {
 
 /**
  * @brief	Free a secure memory block and perform a multi-pass wipe of its contents.
- * @return	This function returns no value.
  */
 void mm_sec_free(void *block) {
 
@@ -300,7 +299,6 @@ void *mm_sec_realloc(void *orig, size_t len) {
 
 /**
  * @brief	Deallocate and perform a multi-stage secure wipe of the secure memory region.
- * @return	This function returns no value.
  */
 void mm_sec_stop(void) {
 

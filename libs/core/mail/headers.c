@@ -377,7 +377,6 @@ placer_t mail_store_header(chr_t *stream, size_t length) {
  * @param	message		a pointer to the address of a managed string that contains the mail message header or mail message body, and
  *                                              will receive the value of the resulting managed string that will be allocated to hold the modified contents.
  * @param	label		a null-terminated string that will be prepended to the value of the subject header value.
- * @return	This function returns no value.
  */
 void mail_mod_subject(stringer_t **message, chr_t *label) {
 
@@ -717,7 +716,6 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
  *                                              SMTP_MARK_RBL, and SMTP_MARK_PHISH).
  * @param	signum		the optional spam signature number referenced by the teacher url.
  * @param	sigkey		the optional spam signature key for client verification in the teacher app.
- * @return	This function returns no value.
  */
 // QUESTION: This prototype is stupid. We need to pass message as stringer_t * and return a stringer_t * as well.
 /*void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t *id, int_t mark, uint64_t signum, uint64_t sigkey) {

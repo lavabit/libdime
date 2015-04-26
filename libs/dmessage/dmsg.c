@@ -42,7 +42,6 @@ dmime_message_state_t _dmsg_get_message_state(const dmime_message_t *message) {
 /*
  * @brief	Destroys dmime message object.
  * @param	msg		Pointer to the dmime message to be destroyed.
- * @return	void.
 */
 void    _dmsg_destroy_msg(dmime_message_t *msg) {
 
@@ -547,11 +546,11 @@ int _dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey) {
 
 
 /*
- * @brief       Uses the signet passed to function and an EC key to create key-encryption-key block via ECDH, with the public key being taken from the signet.
- * @param       privkey         Pointer to an EC_KEY structure containing a private EC key used for the ECDH
- * @param       signet          Pointer to a signet containing the public EC encryption key used for the ECDH
- * @param       kekbuf          key encryption key buffer tha will be set to the resulting 16 byte IV and 32 byte AES256 key
- * @return      0 on success, others on failure.
+ * @brief	Uses the signet passed to function and an EC key to create key-encryption-key block via ECDH, with the public key being taken from the signet.
+ * @param	privkey	Pointer to an EC_KEY structure containing a private EC key used for the ECDH
+ * @param	signet	Pointer to a signet containing the public EC encryption key used for the ECDH
+ * @param	kekbuf	key encryption key buffer tha will be set to the resulting 16 byte IV and 32 byte AES256 key
+ * @return	0 on success, others on failure.
 */
 int _dmsg_set_kek(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf) {
 
@@ -2200,7 +2199,6 @@ dmime_message_chunk_t *_dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_a
 /*
  * @brief	Destroy dmime object chunk list.
  * @param	list		Poitner to a dmime object chunk list to be destroyed.
- * @return	void.
  */
 void _dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list) {
 
@@ -2221,7 +2219,6 @@ void _dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list) {
 /*
  * @brief	Destroy a dmime object.
  * @param	object		Pointer to dmime object to be destroyed.
- * @return	void.
  */
 void _dmsg_destroy_object(dmime_object_t *object) {
 

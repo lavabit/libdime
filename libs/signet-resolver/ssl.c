@@ -51,7 +51,6 @@ int _ssl_initialize(void) {
 
 /**
  * @brief	Shutdown the openssl subsystem.
- * @return	This function returns no value.
  */
 void _ssl_shutdown(void) {
 
@@ -210,7 +209,6 @@ SSL *_ssl_connect_host(const char *hostname, unsigned short port, int force_fami
 /**
  * @brief	Terminate an SSL connection.
  * @param	handle	the SSL connection handle to be closed.
- * @return	This function returns no value.
  */
 void _ssl_disconnect(SSL *handle) {
 
@@ -1148,7 +1146,6 @@ X509_STORE *_get_cert_store(void) {
 /**
  * @brief       Create an fd loop (connect stdin to an ssl connection write fd, and ssl connection output to stdout).
  * @param	connection	the SSL connection handle to be passed to the control of the active console.
- * @return	This function returns no value.
  */
 void _ssl_fd_loop(SSL *connection) {
 
@@ -1276,7 +1273,6 @@ int _ocsp_response_callback(SSL *s, void *arg) {
  * @brief	A callback handler to destroy an OCSP_RESPONSE object.
  * @note	This is an internal function used by the cache management subsystem.
  * @param	record	a pointer to the OCSP_RESPONSE object to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_ocsp_response_cb(void *record) {
 
@@ -1347,7 +1343,6 @@ char *_get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t blen) {
  * @param	fp	a pointer to the file stream that will receive the dump output.
  * @param	record	a pointer to the OCSP_RESPONSE object to be dumped.
  * @param	brief	if set, only print a brief one-line description for the requested record.
- * @return	This function returns no value.
  */
 void _dump_ocsp_response_cb(FILE *fp, void *record, int brief) {
 

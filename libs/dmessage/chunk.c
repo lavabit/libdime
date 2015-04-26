@@ -118,7 +118,6 @@ dmime_keyslot_t *_dmsg_get_chunk_keyslot_by_num(dmime_message_chunk_t *chunk, si
 /*
  * @brief	Destroys dmime message chunk.
  * @param	chunk		Dmime message chunk to be destroyed.
- * @return	void.
 */
 void    _dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 

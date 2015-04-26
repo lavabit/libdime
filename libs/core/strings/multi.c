@@ -668,10 +668,6 @@ bool_t ident_mt_mt(multi_t one, multi_t two) {
  * @note	The types of the two input objects must match, or be a comparison between a managed string and null-terminated string.
  * @param	one		the first multi-type object to be compared.
  * @param	two		the second multi-type object to be compared.
- * @return
- *
- *
- *
  */
 // QUESTION: Why do we have this function AND the one above?
 // QUESTION: Not sure on the return at all. Why would failure and equality both return 0 for certain data types?

@@ -21,7 +21,6 @@
  *                      Contiguous managed:	Free header (this includes the underlying data because they are already merged)
  *
  * @param	s	the managed string to be freed.
- * @return	This function returns no value.
  */
 void st_free(stringer_t *s) {
 

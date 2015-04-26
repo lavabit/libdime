@@ -24,7 +24,6 @@ dmime_common_headers_t *_dmsg_create_common_headers(void) {
 /*
  * @brief	Destroys a dmime_common_headers_t structure.
  * @param	obj		Headers to be destroyed.
- * @return	void.
  */
 void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
 
@@ -207,7 +206,6 @@ dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t ins
 /*
  * @brief	Destroys a dmime_envelop_object_t structure.
  * @param	obj		Pointer to the object to be destroyed.
- * @return	void.
  */
 void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
 

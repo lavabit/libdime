@@ -142,7 +142,6 @@ int_t thread_cancel(pthread_t thread) {
 
 /**
  * @brief	Set the calling thread to be cancelable.
- * @return	This function returns no value.
  */
 void thread_cancel_enable(void) {
 
@@ -151,7 +150,6 @@ void thread_cancel_enable(void) {
 
 /**
  * @brief	Set the calling thread to be not cancelable.
- * @return	This function returns no value.
  */
 void thread_cancel_disable(void) {
 

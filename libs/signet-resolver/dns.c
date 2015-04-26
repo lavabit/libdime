@@ -1066,7 +1066,6 @@ int _ds_comparator(const void *object, const void *key) {
 /**
  * @brief	Free a DNSKEY object and its underlying data.
  * @param	key	a pointer to the DNSKEY object to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_dnskey(dnskey_t *key) {
 
@@ -1104,7 +1103,6 @@ void _destroy_dnskey(dnskey_t *key) {
 /**
  * @brief	Free a DS object and its underlying data.
  * @param	ds	a pointer to the DS object to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_ds(ds_t *ds) {
 
@@ -1137,7 +1135,6 @@ void _destroy_ds(ds_t *ds) {
  * @param	buf	a pointer to the beginning of the DNSKEY's RR rdata.
  * @param	len	the length, in bytes, of the DNSKEY RR's rdata.
  * @param	ttl	the TTL value indicated by the DNSKEY resource record.
- * @return
  */
 dnskey_t *_add_dnskey_entry(const char *label, const unsigned char *buf, size_t len, unsigned long ttl) {
 
@@ -1293,7 +1290,6 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 /**
  * @brief	Dump the contents of a DNS reply header.
  * @param	handle	a pointer to the DNS reply to have its header dumped to the console.
- * @return	This function returns no value.
  */
 void _dump_dns_header(ns_msg *handle) {
 
@@ -1594,10 +1590,6 @@ void *_lookup_ds(const char *label) {
  * @param	qstring		a pointer to a null-terminated string containing the DNS query string.
  * @param	ttl		if not NULL, an optional pointer to a value that will store the TTL of the retrieved record on success.
  * @param	validated
- * @return
- *
- *
- *
  */
 char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 
@@ -1836,7 +1828,6 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 /**
  * @brief	Free a collection of MX records returned by _get_mx_records().
  * @param	mxs	the array of MX records to be freed.
- * @return	This function returns no value.
  */
 void _free_mx_records(mx_record_t **mxs) {
 
@@ -2032,7 +2023,6 @@ int _initialize_resolver(void) {
  * @brief	A callback handler to destroy a DNSKEY record.
  * @note	This is an internal function used by the cache management subsystem.
  * @param	record	a pointer to the DNSKEY structure to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_dnskey_record_cb(void *record) {
 
@@ -2046,7 +2036,6 @@ void _destroy_dnskey_record_cb(void *record) {
 * @param	fp	a pointer to the file stream that will receive the dump output.
 * @param	record  a pointer to the DNSKEY structure to be dumped.
 * @param	brief	if set, only print a brief one-line description for the requested record.
-* @return	This function returns no value.
 */
 void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
 
@@ -2149,7 +2138,6 @@ void _dump_dnskey_record_cb(FILE *fp, void *record, int brief) {
  * @brief	A callback handler to destroy a DS record.
  * @note	This is an internal function used by the cache management subsystem.
  * @param	record	a pointer to the DS structure to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_ds_record_cb(void *record) {
 
@@ -2163,7 +2151,6 @@ void _destroy_ds_record_cb(void *record) {
 * @param	fp	the file to which the DS record is dumped.
 * @param	record  a pointer to the DS structure to be dumped.
 * @param	brief	if set, only print a brief one-line description for the requested record.
-* @return	This function returns no value.
 */
 void _dump_ds_record_cb(FILE *fp, void *record, int brief) {
 
@@ -2201,11 +2188,6 @@ void _dump_ds_record_cb(FILE *fp, void *record, int brief) {
 
 /**
  * @brief	A callback handler to deserialize a DS record from the object cache.
- * @param	data
- * @param	len
- * @return
- *
- *
  */
 void *_deserialize_ds_record_cb(void *data, size_t len) {
 
@@ -2241,11 +2223,6 @@ void *_deserialize_ds_record_cb(void *data, size_t len) {
 
 /**
  * @brief	A callback record to serialize a DS record for storage in the object cache.
- * @param	record
- * @param	outlen
- * @return
- *
- *
  */
 void *_serialize_ds_record_cb(void *record, size_t *outlen) {
 
@@ -2277,8 +2254,6 @@ void *_serialize_ds_record_cb(void *record, size_t *outlen) {
  * @param	data	a pointer to a buffer containing the data to be deserialized.
  * @param	len	the length, in bytes, of the data buffer to be deserialized.
  * @return	a pointer to a newly allocated dnskey_t structure on success, or NULL on failure.
- *
- *
  */
 void *_deserialize_dnskey_record_cb(void *data, size_t len) {
 
@@ -2457,7 +2432,6 @@ void *_clone_dnskey_record_cb(void *record) {
 /**
  * @brief	Link any DNSKEY entries in the cache with dangling DS pointers to the right place.
  * @note	This function should be used after the retrieval of new records, or after a cache load.
- * @return	This function returns no value.
  */
 void _fixup_ds_links(void) {
 
@@ -2486,7 +2460,6 @@ void _fixup_ds_links(void) {
  * @brief	Mark as validated any DNSKEY entries in the object cache that should be but aren't.
  * @note	The retrieval of a new, validated DNSKEY can mean that another DNSKEY in the cache that
  *              was signed by it will now be validated by virtue of transitivity.
- * @return	This function returns no value.
  */
 void _fixup_dnskey_validation(void) {
 

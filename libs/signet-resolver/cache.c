@@ -311,7 +311,6 @@ void *_get_cache_obj_data(cached_object_t *object) {
 /**
  * @brief	Destroy a cached object.
  * @param	entry	a pointer to the cached object to be destroyed.
- * @return	This function returns no value.
  */
 void _destroy_cache_entry(cached_object_t *entry) {
 
@@ -990,10 +989,6 @@ int _remove_cached_object_cmp(const void *key, cached_store_t *store, cached_sto
 
 /**
  * @brief	Clone a deep copy of a cached object for user-safe retrieval.
- * @param	obj
- * @return
- *
- *
  */
 cached_object_t *_clone_cached_object(const cached_object_t *obj) {
 
@@ -1068,7 +1063,6 @@ cached_object_t *_clone_cached_object(const cached_object_t *obj) {
  * @param	dtype		the type of the object cached store to be dumped, or cached_data_unknown for all stores.
  * @param	do_data		if non-zero, dump the type-specific data associated with the cached object.
  * @param	ephemeral	if non-zero, print out ephemeral as well as persistent cache data.
- * @return	This function returns no value.
  */
 void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 
@@ -1165,7 +1159,6 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
  * @param	fp	a pointer to the file stream across which the data should be dumped.
  * @param	obj	a pointer to the cached object to have its details dumped.
  * @param	brief	if true, print a brief one-line description of the object; otherwise, dump full object information.
- * @return	This function returns no value.
  */
 void _dump_cache_data(FILE *fp, const cached_object_t *obj, int brief) {
 
@@ -2197,7 +2190,7 @@ cached_object_t *_unlink_object(cached_object_t *object, int destroy, int stale)
 /**
  * @brief	Replace one object in the cache with another.
  * @note	If shadow is not set, then the old cached object will be automatically destroyed.
- * @		Otherwise this function also makes the old cached object the new cached object's "shadow" data.
+ * 		Otherwise this function also makes the old cached object the new cached object's "shadow" data.
  * @param	oobj	a pointer to the old cached object to be replaced in its cached store with the new object.
  * @param	nobj	a pointer to the new cached object that will replace the old object in the cached store.
  * @param	shadow	if set, preserve the old object as the "shadow" value of the new object.
@@ -2255,7 +2248,6 @@ cached_object_t *_replace_object(cached_object_t *oobj, cached_object_t *nobj, i
 /**
  * @brief	Lock a cached store for thread-safe processing.
  * @param	store	a pointer to the cached store to be locked.
- * @return	This function returns no value.
  */
 void _lock_cache_store(cached_store_t *store) {
 
@@ -2269,7 +2261,6 @@ void _lock_cache_store(cached_store_t *store) {
 /**
  * @brief	Unlock a cached storea for use by other callers.
  * @param	store	a pointer to the cached store to be unlocked.
- * @return	This function returns no value.
  */
 void _unlock_cache_store(cached_store_t *store) {
 
@@ -2281,12 +2272,9 @@ void _unlock_cache_store(cached_store_t *store) {
 
 
 /**
-  *     @brief  Evict an item from the object cache if it is stale (has expired).
-  *     @param  objptr
-  *     @return 1 if the object was evicted for being stale or 0 if it was not.
-  *
-  *
-  */
+ * @brief  Evict an item from the object cache if it is stale (has expired).
+ * @return 1 if the object was evicted for being stale or 0 if it was not.
+ */
 unsigned int _evict_if_stale(cached_object_t **objptr) {
 
 	int res;

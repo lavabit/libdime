@@ -8,7 +8,6 @@
  * @brief	Free an object pool.
  * @warning	This function will not free the underlying objects contained by the pool!
  * @param	pool	the pool to be released from memory.
- * @return	This function returns no value.
  */
 void pool_free(pool_t *pool) {
 
@@ -24,7 +23,8 @@ void pool_free(pool_t *pool) {
  * @brief	Allocate a new object pool.
  * @param	count		the number of items the pool can hold.
  * @param	timeout		a timeout for pool requests in seconds (specify 0 for infinite wait).
- * @return	NULL on failure,
+ * @return	the newly allocated object pool, or NULL on failure
+ * @see pool_free
  */
 pool_t *pool_alloc(uint32_t count, uint32_t timeout) {
 
@@ -218,7 +218,6 @@ status_t pool_pull(pool_t *pool, uint32_t *item) {
  * @brief	Return an object to a pool and set its status to PL_AVAILABLE.
  * @param	pool    the pool tracking the returned item.
  * @param	item	the identifier of the item being returned.
- * @return	This function returns no value.
  */
 void pool_release(pool_t *pool, uint32_t item) {
 	if (!pool)

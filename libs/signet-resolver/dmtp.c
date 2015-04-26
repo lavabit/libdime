@@ -244,7 +244,6 @@ dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
 /**
  * @brief	Destroy a DMTP session and its underlying data.
  * @param	session		a pointer to the DMTP session to be destroyed/disconnected.
- * @return	This function returns no value.
  */
 void _destroy_dmtp_session(dmtp_session_t *session) {
 
@@ -556,10 +555,6 @@ int _verify_dx_certificate(dmtp_session_t *session) {
  * @param	session
  * @param	signame		the name of the requested organizational or user signet.
  * @param	fingerprint	if not NULL, an optional fingerprint that the returned signet MUST match.
- * @return
- *
- *
- *
  */
 char *_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
 
@@ -678,13 +673,6 @@ int _dmtp_ehlo(dmtp_session_t *session, const char *domain) {
 
 /**
  * @brief	Issue a MAIL FROM command to the remote DMTP server.
- * @param	session
- * @param	origin
- * @param	msgsize
- * @param	rettype
- * @param	dtype
- * @return
- *
  */
 int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype) {
 
@@ -794,11 +782,6 @@ int _dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
 
 /**
  * @brief	Issue an DATA command to the remote DMTP server.
- * @param	session
- * @param	msg
- * @param	msglen
- * @return
- *
  */
 char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 

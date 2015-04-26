@@ -259,7 +259,6 @@ signet_t *_signet_deserialize_b64(const char *b64_in) {
 /**
  * @brief	Destroys a signet and frees the memory.
  * @param	signet	Pointer to signet to be destroyed.
- * @return	void.
 */
 void _signet_destroy(signet_t *signet) {
 
@@ -362,7 +361,6 @@ char *_signet_serialize_b64(signet_t *signet) {
  * @brief	Dumps signet into the specified file descriptor.
  * @param	fp	File descriptor the signet is dumped to.
  * @param	signet	Pointer to the signet_t structure to be dumped.
- * @return	void.
 */
 void _signet_dump(FILE *fp, signet_t *signet) {
 
@@ -2870,7 +2868,6 @@ signet_field_t *_signet_field_create(const signet_t *signet, uint32_t offset, si
 /**
  * @brief	Destroys a chain of signet_field_t structures starting with provided structure, does not effect the linked signet_t structure.
  * @param	field	Pointer to the first signet_field_t in the linked list to be deleted.
- * @return	void.
 */
 void _signet_fid_destroy(signet_field_t *field) {
 
@@ -3326,7 +3323,6 @@ void *_serialize_signet_cb(void *record, size_t *outlen) {
  * @param	fp	File descriptor that specifies the output destination.
  * @param	record	Void pointer to a signet_t structure.
  * @param	brief	TODO
- * @return	void.
 */
 void _dump_signet_cb(FILE *fp, void *record, int brief) {
 
@@ -3349,7 +3345,6 @@ void _dump_signet_cb(FILE *fp, void *record, int brief) {
 /**
  * @brief	Destroys a signet_t structure.
  * @param	record	Void pointer to a signet_t structure to be destroyed.
- * @return	void.
 */
 void _destroy_signet_cb(void *record) {
 

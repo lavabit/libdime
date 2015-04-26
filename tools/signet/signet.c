@@ -60,7 +60,6 @@ static void wizard_get_input(const char *prompt, char *buf, size_t bufsize) {
  * @param	keys_file	NULL terminated string containing preferred keys filename, if NULL default keysname is used.
  * @param	old_keys	NULL terminated string containing the filename to the previous keys file required to perform the chain of custody signing.
  *                              If NULL, no chain of custody signing occurs, if not NULL and desired signet is an org signet, returns an error.
- * @return	void.
 */
 static void generate_signet(const char *signet_name, const char *signet_file, const char *keys_file, const char *old_keys) {
 
@@ -248,7 +247,6 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
  * @param	ssr_f		Specified ssr filename, required for signing to occur.
  * @param	keys_f		Specified org keys file, required for signing to occur.
  * @param	signet_file	Filename for the output signet, if NULL default name based on signet_name is used.
- * @return	void.
 */
 static void sign_signet(const char *signet_name, const char *ssr_f, const char *keys_f, const char *signet_file) {
 
@@ -370,7 +368,6 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 /**
  * @brief	Dumps signet or ssr.
  * @param	signet_f	Filename of the signet to be dumped.
- * @return	void.
 */
 static void dump_signet(const char *signet_file) {                      // TODO needs to dump in HEX format rather than b64
 
@@ -420,7 +417,6 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 /**
  * @brief	Dumps field names and descriptions for the specified signet type.
  * @param	type	Signet type to be examined.
- * @return	void.
 */
 static void examine_signet(signet_type_t type) {
 

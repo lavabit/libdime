@@ -179,7 +179,6 @@ chr_t *ns_append(chr_t *s, chr_t *append) {
  * @brief	Zero out a null-terminated string.
  * @param	s	the string to be wiped.
  * @param	len	the number of bytes to be wiped at the start of the string.
- * @return	This function returns no parameters.
  */
 // QUESTION: Why are we not calculating the string length automatically?
 void ns_wipe(chr_t *s, size_t len) {

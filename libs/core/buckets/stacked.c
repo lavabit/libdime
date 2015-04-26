@@ -7,7 +7,6 @@
 /**
  * @brief	Free a stacked list and all of its underlying data nodes.
  * @param	stack	a pointer to the stacked list to be freed.
- * @return	This function returns no value.
  */
 void stacker_free(stacker_t *stack) {
 
