@@ -1,5 +1,8 @@
 #include <signet/keys.h>
 
+/** The EC private key is encoded in DER, which is variable-length. */
+#define EC_PRIVKEY_MAXSIZE 279
+
 /**
  * @brief	Creates a keys file with specified signing and encryption keys.
  * @param	type	        Type of keys file, whether the keys correspond to a user or organizational signet.
@@ -274,8 +277,8 @@ EC_KEY *_keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
 		RET_ERROR_PTR(ERR_UNSPEC, "no encryption key was found");
 	}
 
-	privkeylen = EC_PRIVKEY_SIZE;
-	if (len < at + EC_PRIVKEY_SIZE) {
+	privkeylen = EC_PRIVKEY_MAXSIZE;
+	if (len < at + EC_PRIVKEY_MAXSIZE) {
 		privkeylen = len - at;
 	}
 
