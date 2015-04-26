@@ -10,6 +10,7 @@
  * @param	buffer	a pointer to the block of data to be hashed.
  * @param	length	the length, in bytes, of the block of data to be hashed.
  * @return	the 32-bit value of the Murmur hash of the specified block of data.
+ * @see		https://code.google.com/p/smhasher/wiki/MurmurHash2
  */
 uint32_t hash_murmur32(const void *buffer, size_t length) {
 
