@@ -298,7 +298,7 @@ errinfo_t *_push_error_stack_resolver(const char *filename, const char *funcname
 	char auxmsg[256];
 
 	memset(auxmsg, 0, sizeof(auxmsg));
-	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: [%u]: %s", errfunc, herrno, hstrerror(herrno));
+	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: [%d]: %s", errfunc, herrno, hstrerror(herrno));
 
 	return (_push_error_stack(filename, funcname, lineno, ERR_RESOLVER, xerrno, auxmsg));
 }
