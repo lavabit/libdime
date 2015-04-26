@@ -23,7 +23,7 @@ extern const uint64_t hash_crc64_table[4][256];
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 32-bit CRC value of the specified data.
  */
-uint32_t hash_crc32_update(void *buf, size_t length, uint32_t crc) {
+uint32_t hash_crc32_update(const void *buf, size_t length, uint32_t crc) {
 	const uint8_t *buffer = buf;
 	const uint8_t *limit;
 	uint32_t holder;
@@ -57,7 +57,7 @@ uint32_t hash_crc32_update(void *buf, size_t length, uint32_t crc) {
  * @param	length	the length, in bytes, of the input buffer.
  * @return	the 32-bit CRC value of the specified data.
  */
-uint32_t hash_crc32(void *buffer, size_t length) {
+uint32_t hash_crc32(const void *buffer, size_t length) {
 	return hash_crc32_update(buffer, length, 0);
 }
 
@@ -68,7 +68,7 @@ uint32_t hash_crc32(void *buffer, size_t length) {
  * @param	crc		the previously computed CRC value, or 0 if this is the initial pass.
  * @return	the updated 64-bit CRC value of the specified data.
  */
-uint64_t hash_crc64_update(void *buf, size_t length, uint64_t crc) {
+uint64_t hash_crc64_update(const void *buf, size_t length, uint64_t crc) {
 	const uint8_t *buffer = buf;
 	const uint8_t *limit;
 	uint32_t holder;
@@ -98,7 +98,7 @@ uint64_t hash_crc64_update(void *buf, size_t length, uint64_t crc) {
  * @param	length	the length, in bytes, of the input buffer.
  * @return	the 64-bit CRC value of the specified data.
  */
-uint64_t hash_crc64(void *buffer, size_t length) {
+uint64_t hash_crc64(const void *buffer, size_t length) {
 	return hash_crc64_update(buffer, length, 0);
 }
 

@@ -10,7 +10,7 @@
  * @param	length	the length, in bytes, of the data to be checked.
  * @return	a 32-bit number containing the Fletcher hash of the specified data.
  */
-uint32_t hash_fletcher32(void *buffer, size_t length) {
+uint32_t hash_fletcher32(const void *buffer, size_t length) {
 	size_t input, blocks = length / 2;
 	uint32_t a = 0xffff, b = 0xffff;
 	while (blocks) {

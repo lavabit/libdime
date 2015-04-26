@@ -11,12 +11,12 @@
  * @param	length	the length, in bytes, of the block of data to be hashed.
  * @return	the 32-bit value of the Murmur hash of the specified block of data.
  */
-uint32_t hash_murmur32(void *buffer, size_t length) {
+uint32_t hash_murmur32(const void *buffer, size_t length) {
 
 	uint32_t k;
 	const int32_t r = 24;
 	int32_t h = length;
-	unsigned char *data = buffer;
+	const unsigned char *data = buffer;
 	const uint32_t m = 0x5bd1e995;
 
 	while (length >= 4) {
@@ -66,12 +66,13 @@ uint32_t hash_murmur32(void *buffer, size_t length) {
  * @param	length	the length, in bytes, of the block of data to be hashed.
  * @return	the 64-bit value of the Murmur hash of the specified block of data.
  */
-uint64_t hash_murmur64(void *buffer, size_t length) {
+uint64_t hash_murmur64(const void *buffer, size_t length) {
 
-	unsigned char *c;
+	const unsigned char *c;
 	const int32_t r = 47;
 	const uint64_t m = 0xc6a4a7935bd1e995;
-	uint64_t k, h = (length * m), *data = buffer, *end = data + (length / 8);
+	uint64_t k, h = (length * m);
+	const uint64_t *data = buffer, *end = data + (length / 8);
 
 	while (data != end) {
 		k = *data++;
@@ -84,7 +85,7 @@ uint64_t hash_murmur64(void *buffer, size_t length) {
 		h *= m;
 	}
 
-	c = (unsigned char *)data;
+	c = (const void *)data;
 
 	switch(length & 7) {
 	case 7:
