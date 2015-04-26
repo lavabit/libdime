@@ -1,7 +1,6 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -14,13 +13,9 @@
 
 #include <common/error.h>
 
-#define CONNECT_TIMEOUT 5               /* the timeout value for connection attempts, in seconds */
-
 PUBLIC_FUNC_DECL(int, connect_host, const char *hostname, unsigned short port, int force_family);
-
 
 // Private functions.
 int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen);
-
 
 #endif

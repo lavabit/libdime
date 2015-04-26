@@ -3,6 +3,8 @@
 #include <common/network.h>
 #include <common/misc.h>
 
+#define CONNECT_TIMEOUT 5               /* the timeout value for connection attempts, in seconds */
+
 /**
  * @brief	Connect to a host/tcp port in an address-independent manner, and return a file descriptor.
  * @param	hostname	the hostname of the server to connect to.
