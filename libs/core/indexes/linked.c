@@ -152,8 +152,7 @@ static bool_t linked_delete(void *inx, multi_t key) {
 	// Handle the special case where this is the first node.
 	if (index->index == node) {
 		index->index = node->next;
-	}
-	else if (node && node->prev) {
+	} else if (node && node->prev) {
 		((linked_node_t *)node->prev)->next = node->next;
 	}
 
@@ -183,8 +182,7 @@ static bool_t linked_insert(void *inx, multi_t key, void *data) {
 	if ((node = mm_alloc(sizeof(linked_node_t))) == NULL) {
 		log_info("Unable to allocate %zu bytes for a linked node.", sizeof(linked_node_t));
 		return false;
-	}
-	else if ((node->record = linked_record_alloc(key, data)) == NULL) {
+	} else if ((node->record = linked_record_alloc(key, data)) == NULL) {
 		log_info("Unable to allocate an index record.");
 		mm_free(node);
 		return false;
@@ -192,8 +190,7 @@ static bool_t linked_insert(void *inx, multi_t key, void *data) {
 
 	if (index->index == NULL) {
 		index->index = node;
-	}
-	else {
+	} else {
 		holder = index->index;
 		while (holder->next != NULL) {
 			holder = (linked_node_t *)holder->next;
@@ -278,8 +275,7 @@ static linked_node_t *linked_cursor_next(linked_cursor_t *cursor) {
 			cursor->node = (node = (linked_node_t *)node->next);
 			cursor->position++;
 		}
-	}
-	else {
+	} else {
 		cursor->node = node = cursor->inx->index;
 	}
 

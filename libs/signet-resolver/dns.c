@@ -1223,8 +1223,7 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 
 	if (rrsig->covered != htons(covered)) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "RRSIG record did not cover correct right resource type {got %u, expected %u}", ntohs(rrsig->covered), covered);
-	}
-	else if (rrsig->algorithm != NS_ALG_RSASHA1 && rrsig->algorithm != NS_ALG_RSASHA256 && rrsig->algorithm != NS_ALG_RSASHA512) {
+	} else if (rrsig->algorithm != NS_ALG_RSASHA1 && rrsig->algorithm != NS_ALG_RSASHA256 && rrsig->algorithm != NS_ALG_RSASHA512) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "RRSIG record was not encoded with RSASHA1 (%u)", rrsig->algorithm);
 	}
 
@@ -1530,7 +1529,9 @@ void *_lookup_ds(const char *label) {
 
 			}
 
-		} else { fprintf(stderr, "XXXXXXXXXXXXX: we need to handle this\n"); }
+		} else {
+			fprintf(stderr, "XXXXXXXXXXXXX: we need to handle this\n");
+		}
 
 	}
 

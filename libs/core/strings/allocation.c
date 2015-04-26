@@ -124,8 +124,7 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 			if (!st_empty(current)) {
 				length += st_length_get(current);
 			}
-		}
-		else if (*cursor == 'n') {
+		} else if (*cursor == 'n') {
 			current = va_arg(list, chr_t *);
 			if (!ns_empty(current)) {
 				length += ns_length_get(current);
@@ -162,8 +161,7 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
 				out += length;
 				remaining -= length;
 			}
-		}
-		else if (*cursor == 'n') {
+		} else if (*cursor == 'n') {
 
 			// Fetch a null terminated string and determine its length.
 			current = va_arg(list, char *);
@@ -290,8 +288,7 @@ stringer_t *st_dupe_opts(uint32_t opts, stringer_t *s) {
 	case (MAPPED_T):
 		if (src_opts & (MANAGED_T | MAPPED_T)) {
 			dst_length = st_avail_get(s);
-		}
-		else {
+		} else {
 			dst_length = st_length_get(s);
 		}
 		break;
@@ -312,8 +309,7 @@ stringer_t *st_dupe_opts(uint32_t opts, stringer_t *s) {
 	// Placer's just store the pointer.
 	if (opts & PLACER_T) {
 		st_data_set(result, src_data);
-	}
-	else {
+	} else {
 		mm_copy(st_data_get(result), src_data, src_length);
 	}
 
@@ -634,17 +630,13 @@ stringer_t *st_realloc(stringer_t *s, size_t len) {
 			*((char *)joint + len - 1) = 0;
 			result = s;
 		}
-
 		// If we increase the amount of the available space, the length parameter can remain unchanged since any existing data should be preserved.
 		else if (avail < len && ftruncate64(((mapped_t *)s)->handle, len) == 0 && (joint = mremap(((mapped_t *)s)->data, avail, len, MREMAP_MAYMOVE)) != MAP_FAILED) {
 			((mapped_t *)s)->opts = opts;
 			((mapped_t *)s)->avail = len - 1;
 			((mapped_t *)s)->data = joint;
 			result = s;
-		}
-
-
-		else {
+		} else {
 			// An error occurred. If the errno is set to EAGAIN and it's secure memory, the most likely problem is that the requested amount of memory exceeds
 			// the amount of locked memory available under this user account.
 /*				if ((((mapped_t *)s)->opts & SECURE) && errno == EAGAIN && (system_limit_cur(RLIMIT_MEMLOCK) < len ||
@@ -687,8 +679,7 @@ stringer_t *st_output(stringer_t *output, size_t len) {
 	if ((result = output) && st_avail_get(output) < len) {
 		log_pedantic("The output buffer supplied is not large enough to hold the result. {avail = %zu / required = %zu}", st_avail_get(output), len);
 		return NULL;
-	}
-	else if (!output && !(result = st_alloc(len))) {
+	} else if (!output && !(result = st_alloc(len))) {
 		log_pedantic("The memory allocation of the output buffer failed. {requested = %zu}", len);
 		return NULL;
 	}

@@ -367,8 +367,7 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
 
 		memcpy(*buf, data, dlen);
 		*blen = dlen;
-	}
-	else {
+	} else {
 
 		if (!(*buf = realloc((obuf = *buf), *blen + dlen))) {
 			PUSH_ERROR_SYSCALL("realloc");

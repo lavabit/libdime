@@ -73,7 +73,6 @@ chr_t *ns_alloc(size_t len) {
 	if ((result = mm_alloc(len + 1)) != NULL) {
 		ns_wipe(result, len);
 	}
-
 	// If no memory was allocated, discover that here.
 	else {
 		log_pedantic("Could not allocate %zu bytes.", len + 1);
@@ -159,8 +158,7 @@ chr_t *ns_append(chr_t *s, chr_t *append) {
 	// Allocate a new string if the existing string pointer is NULL.
 	if (!s) {
 		s = ns_dupe(append);
-	}
-	else if (!(slen = ns_length_get(s))) {
+	} else if (!(slen = ns_length_get(s))) {
 		ns_free(s);
 		s = ns_dupe(append);
 	}

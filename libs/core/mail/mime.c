@@ -255,8 +255,7 @@ stringer_t *mail_mime_content_encoding(placer_t header) {
 	// Make sure we got something back. Use a default value of 7bit.
 	if (characters != 0) {
 		result = st_import(stream - characters, characters);
-	}
-	else {
+	} else {
 		result = st_import("7bit", 4);
 	}
 
@@ -483,17 +482,13 @@ placer_t mail_mime_header(stringer_t *part) {
 
 		if (header == 0 && *stream == '\n') {
 			header++;
-		}
-		else if (header == 1 && *stream == '\n') {
+		} else if (header == 1 && *stream == '\n') {
 			header += 2;
-		}
-		else if (header == 1 && *stream == '\r') {
+		} else if (header == 1 && *stream == '\r') {
 			header++;
-		}
-		else if (header == 2 && *stream == '\n') {
+		} else if (header == 2 && *stream == '\n') {
 			header++;
-		}
-		else if (header != 0) {
+		} else if (header != 0) {
 			header = 0;
 		}
 
@@ -531,26 +526,19 @@ int_t mail_mime_type(placer_t header) {
 
 	if (remaining >= 21 && mm_cmp_ci_eq(stream, "multipart/alternative", 21) == 0) {
 		result = MESSAGE_TYPE_MULTI_ALTERNATIVE;
-	}
-	else if (remaining >= 17 && mm_cmp_ci_eq(stream, "multipart/related", 17) == 0) {
+	} else if (remaining >= 17 && mm_cmp_ci_eq(stream, "multipart/related", 17) == 0) {
 		result = MESSAGE_TYPE_MULTI_RELATED;
-	}
-	else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart/rfc822", 16) == 0) {
+	} else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart/rfc822", 16) == 0) {
 		result = MESSAGE_TYPE_MULTI_RFC822;
-	}
-	else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart/mixed", 15) == 0) {
+	} else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart/mixed", 15) == 0) {
 		result = MESSAGE_TYPE_MULTI_MIXED;
-	}
-	else if (remaining >= 9 && mm_cmp_ci_eq(stream, "text/html", 9) == 0) {
+	} else if (remaining >= 9 && mm_cmp_ci_eq(stream, "text/html", 9) == 0) {
 		result = MESSAGE_TYPE_HTML;
-	}
-	else if (remaining >= 9 && mm_cmp_ci_eq(stream, "text/plain", 9) == 0) {
+	} else if (remaining >= 9 && mm_cmp_ci_eq(stream, "text/plain", 9) == 0) {
 		result = MESSAGE_TYPE_PLAIN;
-	}
-	else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart", 9) == 0) {
+	} else if (remaining >= 15 && mm_cmp_ci_eq(stream, "multipart", 9) == 0) {
 		result = MESSAGE_TYPE_MULTI_UNKOWN;
-	}
-	else {
+	} else {
 		result = MESSAGE_TYPE_UNKNOWN;
 	}
 
@@ -587,17 +575,13 @@ int_t mail_mime_encoding(placer_t header) {
 
 	if (remaining >= 16 && mm_cmp_ci_eq(stream, "quoted-printable", 16) == 0) {
 		result = MESSAGE_ENCODING_QUOTED_PRINTABLE;
-	}
-	else if (remaining >= 6 && mm_cmp_ci_eq(stream, "base64", 6) == 0) {
+	} else if (remaining >= 6 && mm_cmp_ci_eq(stream, "base64", 6) == 0) {
 		result = MESSAGE_ENCODING_BASE64;
-	}
-	else if (remaining >= 4 && mm_cmp_ci_eq(stream, "8bit", 4) == 0) {
+	} else if (remaining >= 4 && mm_cmp_ci_eq(stream, "8bit", 4) == 0) {
 		result = MESSAGE_ENCODING_8BIT;
-	}
-	else if (remaining >= 4 && mm_cmp_ci_eq(stream, "7bit", 4) == 0) {
+	} else if (remaining >= 4 && mm_cmp_ci_eq(stream, "7bit", 4) == 0) {
 		result = MESSAGE_ENCODING_7BIT;
-	}
-	else {
+	} else {
 		result = MESSAGE_ENCODING_UNKNOWN;
 	}
 
@@ -703,8 +687,7 @@ uint32_t mail_mime_count(placer_t body, stringer_t *boundary) {
 	if (!(length = pl_length_get(body))) {
 		log_pedantic("Cannot count boundary marker in zero-length MIME body..");
 		return 0;
-	}
-	else if (!(boundlen = st_length_get(boundary))) {
+	} else if (!(boundlen = st_length_get(boundary))) {
 		log_pedantic("Cannot count zero-length MIME boundary.");
 		return 0;
 	}
@@ -723,12 +706,10 @@ uint32_t mail_mime_count(placer_t body, stringer_t *boundary) {
 			// Two dashes indicate the end of this mime sections.
 			if (increment + 1 <= length && mm_cmp_cs_eq(stream, "--", 2) == 0) {
 				increment = length + 1;
-			}
-			else {
+			} else {
 				result++;
 			}
-		}
-		else {
+		} else {
 			stream++;
 			increment++;
 		}
@@ -758,8 +739,7 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
 	if (!(length = pl_length_get(body))) {
 		log_pedantic("Cannot parse children from zero-length MIME body..");
 		return pl_null();
-	}
-	else if (!(boundlen = st_length_get(boundary))) {
+	} else if (!(boundlen = st_length_get(boundary))) {
 		log_pedantic("Cannot parse children from MIME body with zero-length boundary.");
 		return pl_null();;
 	}
@@ -778,13 +758,11 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
 			// Two dashes indicate the end of this mime sections.
 			if (increment < length && mm_cmp_cs_eq(stream, "--", 2) == 0) {
 				increment = length + 1;
-			}
-			else {
+			} else {
 				result++;
 			}
 
-		}
-		else {
+		} else {
 			stream++;
 			increment++;
 		}
@@ -815,8 +793,7 @@ placer_t mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child) {
 
 		if (increment + boundlen < length && mm_cmp_cs_eq(stream, bounddata, boundlen) == 0) {
 			increment = length;
-		}
-		else {
+		} else {
 			stream++;
 			increment++;
 		}

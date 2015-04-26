@@ -26,8 +26,7 @@ bool_t float_conv(stringer_t *s, float_t *number) {
 	if (st_char_get(s) == end) {
 		log_pedantic("The provided string could not be converted to a float. {s = %.*s}", st_length_int(s), st_char_get(s));
 		return false;
-	}
-	else if (output == HUGE_VALF && errno == ERANGE) {
+	} else if (output == HUGE_VALF && errno == ERANGE) {
 		log_pedantic("Numeric overflow. {s = %.*s}", st_length_int(s), st_char_get(s));
 		return false;
 	}
@@ -58,8 +57,7 @@ bool_t double_conv(stringer_t *s, double_t *number) {
 	if (st_char_get(s) == end) {
 		log_pedantic("The provided string could not be converted to a double. {s = %.*s}", st_length_int(s), st_char_get(s));
 		return false;
-	}
-	else if (output == HUGE_VALF && errno == ERANGE) {
+	} else if (output == HUGE_VALF && errno == ERANGE) {
 		log_pedantic("Numeric overflow. {s = %.*s}", st_length_int(s), st_char_get(s));
 		return false;
 	}
@@ -416,12 +414,10 @@ bool_t int64_conv_bl(void *block, size_t length, int64_t *number) {
 			if (*data == '-') {
 				*number *= -1;
 			}
-		}
-		else if (*data < '0' || *data > '9') {
+		} else if (*data < '0' || *data > '9') {
 			log_pedantic("Non numeric data found. {%c}", *data);
 			return false;
-		}
-		else {
+		} else {
 
 			before = *number;
 			*number += (*data-- - '0') * add;
@@ -495,12 +491,10 @@ bool_t int32_conv_bl(void *block, size_t length, int32_t *number) {
 			if (*data == '-') {
 				*number *= -1;
 			}
-		}
-		else if (*data < '0' || *data > '9') {
+		} else if (*data < '0' || *data > '9') {
 			log_pedantic("Non numeric data found. {%c}", *data);
 			return false;
-		}
-		else {
+		} else {
 
 			before = *number;
 			*number += (*data-- - '0') * add;
@@ -574,12 +568,10 @@ bool_t int16_conv_bl(void *block, size_t length, int16_t *number) {
 			if (*data == '-') {
 				*number *= -1;
 			}
-		}
-		else if (*data < '0' || *data > '9') {
+		} else if (*data < '0' || *data > '9') {
 			log_pedantic("Non numeric data found. {%c}", *data);
 			return false;
-		}
-		else {
+		} else {
 
 			before = *number;
 			*number += (*data-- - '0') * add;
@@ -653,12 +645,10 @@ bool_t int8_conv_bl(void *block, size_t length, int8_t *number) {
 			if (*data == '-') {
 				*number *= -1;
 			}
-		}
-		else if (*data < '0' || *data > '9') {
+		} else if (*data < '0' || *data > '9') {
 			log_pedantic("Non numeric data found. {%c}", *data);
 			return false;
-		}
-		else {
+		} else {
 
 			before = *number;
 			*number += (*data-- - '0') * add;

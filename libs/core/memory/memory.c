@@ -121,8 +121,7 @@ void mm_free(void *block) {
 #ifdef MAGMA_PEDANTIC
 	if (!block) {
 		log_pedantic("Attempted to free a NULL pointer.");
-	}
-	else if (mm_sec_secured(block)) {
+	} else if (mm_sec_secured(block)) {
 		log_pedantic("Attempting to free a block of memory inside the secure address range.");
 	}
 #endif
@@ -146,8 +145,7 @@ void *mm_dupe(void *block, size_t len) {
 #ifdef MAGMA_PEDANTIC
 	if (!block) {
 		log_pedantic("Attempting to dupe a NULL block pointer.");
-	}
-	else if (!len) {
+	} else if (!len) {
 		log_pedantic("Attempting to dupe a zero length memory block.");
 	}
 #endif

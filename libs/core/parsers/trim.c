@@ -26,8 +26,7 @@ void st_trim(stringer_t *string) {
 
 	if (start == end) {
 		st_length_set(string, 0);
-	}
-	else if (start + st_length_get(string) != end) {
+	} else if (start + st_length_get(string) != end) {
 		mm_move(st_char_get(string), start, end - start);
 		st_length_set(string, end - start);
 		mm_wipe(st_char_get(string) + st_length_get(string), st_avail_get(string) - st_length_get(string));

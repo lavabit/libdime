@@ -15,17 +15,13 @@ chr_t *errno_name(int errnum, char *buffer, size_t length) {
 
 	if (!buffer || !length) {
 		log_pedantic("Invalid output buffer supplied.");
-	}
-	else if (errnum < _sys_nerr && _sys_errlist[errnum]) {
+	} else if (errnum < _sys_nerr && _sys_errlist[errnum]) {
 		snprintf(buffer, length, "%s", _sys_errlist[errnum]);
-	}
-	else if (errnum == 41) {
+	} else if (errnum == 41) {
 		snprintf(buffer, length, "EWOULDBLOCK");
-	}
-	else if (errnum == 58) {
+	} else if (errnum == 58) {
 		snprintf(buffer, length, "EDEADLOCK");
-	}
-	else {
+	} else {
 		log_pedantic("Asked to identify an error outside the legal range. { errno = %i / nerr = %i / name = UNKNOWN }", errnum, _sys_nerr);
 		snprintf(buffer, length, "UNKNOWN");
 	}
@@ -44,20 +40,15 @@ chr_t *signal_name(int signal, char *buffer, size_t length) {
 
 	if (!buffer || !length) {
 		log_pedantic("Invalid output buffer supplied.");
-	}
-	else if (signal < SIGUNUSED) {
+	} else if (signal < SIGUNUSED) {
 		snprintf(buffer, length, "%s", sys_siglist[signal]);
-	}
-	else if (signal == SIGRTMIN) {
+	} else if (signal == SIGRTMIN) {
 		snprintf(buffer, length, "SIGRT");
-	}
-	else if (signal > SIGRTMIN && signal <= SIGRTMAX) {
+	} else if (signal > SIGRTMIN && signal <= SIGRTMAX) {
 		snprintf(buffer, length, "SIGRT+%i", signal - SIGRTMIN);
-	}
-	else if (signal < NSIG) {
+	} else if (signal < NSIG) {
 		snprintf(buffer, length, "SIGUNUSED");
-	}
-	else {
+	} else {
 		log_pedantic("Asked to identify a signal outside legal range. { signal = %i / nsig = %i / name = UNKNOWN }", signal, SIGRTMIN);
 		snprintf(buffer, length, "UNKNOWN");
 	}

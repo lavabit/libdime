@@ -44,8 +44,7 @@ size_t url_valid_st(stringer_t *s) {
 			len -= 3;
 			p += 3;
 			c++;
-		}
-		else {
+		} else {
 			result = false;
 			len = 0;
 		}
@@ -75,8 +74,7 @@ stringer_t *url_encode(stringer_t *s) {
 	for (size_t i = 0; i < len; i++) {
 		if (url_valid_chr(*p)) {
 			expected++;
-		}
-		else {
+		} else {
 			expected += 3;
 		}
 
@@ -101,8 +99,7 @@ stringer_t *url_encode(stringer_t *s) {
 				output = r;
 				written++;
 			}
-		}
-		else if (snprintf(hex, 4, "%%%02X", *p) == 3 && (r = st_append(output, PLACER(&hex[0], 3)))) {
+		} else if (snprintf(hex, 4, "%%%02X", *p) == 3 && (r = st_append(output, PLACER(&hex[0], 3)))) {
 			output = r;
 			written += 3;
 		}

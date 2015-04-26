@@ -32,8 +32,7 @@ int_t file_read(char *name, stringer_t *output) {
 	// LOW: Were loading files using a blocking read call.
 	if ((result = read(fd, st_data_get(output), st_avail_get(output))) >= 0) {
 		st_length_set(output, result);
-	}
-	else {
+	} else {
 		log_info("Could not read the file %s. {errno = %i & strerror = %s}", name, errno, strerror_r(errno, MEMORYBUF(1024), 1024));
 	}
 

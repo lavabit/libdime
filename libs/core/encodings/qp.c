@@ -28,8 +28,7 @@ stringer_t *qp_encode(stringer_t *s) {
 
 		if (*p < '!' || *p > '~' || *p == '=' || *p == ' ' || *p == '\r' || *p == '\n' || *p == '\t') {
 			expected += 3;
-		}
-		else {
+		} else {
 			expected++;
 		}
 
@@ -64,8 +63,7 @@ stringer_t *qp_encode(stringer_t *s) {
 				output = r;
 				line += 3;
 			}
-		}
-		else {
+		} else {
 
 			// If were near the line length limit this will append a soft line break before appending the next character.
 			if (line > (QP_LINE_WRAP_LENGTH - 1) && snprintf(hex, 4, "=\r\n") == 3 && (r = st_append(output, PLACER(&hex[0], 3)))) {
@@ -136,8 +134,7 @@ stringer_t *qp_decode(stringer_t *s) {
 			else if (len >= 2 && *p == '\r' && *(p + 1) == '\n') {
 				len -= 2;
 				p += 2;
-			}
-			else if (len >= 1 && *p == '\n') {
+			} else if (len >= 1 && *p == '\n') {
 				len--;
 				p++;
 			}

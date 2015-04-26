@@ -100,8 +100,7 @@ bool_t st_valid_jointed(uint32_t opts) {
 
 	if (!st_valid_opts(opts)) {
 		return false;
-	}
-	else if (!(opts & JOINTED)) {
+	} else if (!(opts & JOINTED)) {
 		return false;
 	}
 

@@ -45,11 +45,9 @@ bool_t st_search_cs(stringer_t *haystack, stringer_t *needle, size_t *location) 
 		if (j == nlen && location) {
 			result = true;
 			*location = i;
-		}
-		else if (j == nlen) {
+		} else if (j == nlen) {
 			result = true;
-		}
-		else {
+		} else {
 			h++;
 		}
 
@@ -97,11 +95,9 @@ bool_t st_search_ci(stringer_t *haystack, stringer_t *needle, size_t *location) 
 		if (j == nlen && location) {
 			result = true;
 			*location = i;
-		}
-		else if (j == nlen) {
+		} else if (j == nlen) {
 			result = true;
-		}
-		else {
+		} else {
 			h++;
 		}
 

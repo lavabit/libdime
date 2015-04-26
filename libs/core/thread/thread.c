@@ -29,13 +29,11 @@ int_t thread_launch(pthread_t *thread, void *function, void *data) {
 	if ((result = pthread_attr_init(&attributes))) {
 		log_pedantic("Could not initialize the thread attribute structure. {pthread_attr_init = %i}", result);
 		return result;
-	}
-	else if ((result = pthread_attr_setstacksize(&attributes, magma.system.thread_stack_size))) {
+	} else if ((result = pthread_attr_setstacksize(&attributes, magma.system.thread_stack_size))) {
 		log_pedantic("Could not set the stack size correctly. {pthread_attr_setstacksize = %i}", result);
 		pthread_attr_destroy(&attributes);
 		return result;
-	}
-	else if ((result = pthread_create(thread, &attributes, function, data))) {
+	} else if ((result = pthread_create(thread, &attributes, function, data))) {
 		log_pedantic("Could not initialize a new thread. {pthread_create = %i}", result);
 		pthread_attr_destroy(&attributes);
 		return result;
@@ -61,8 +59,7 @@ pthread_t *thread_alloc(void *function, void *data) {
 	if (!(result = mm_alloc(sizeof(pthread_t)))) {
 		log_pedantic("Could not allocate %zu bytes to hold the pthread_t structure.", sizeof(pthread_t));
 		return NULL;
-	}
-	else if ((ret = thread_launch(result, function, data))) {
+	} else if ((ret = thread_launch(result, function, data))) {
 		log_pedantic("An error occurred while attempting to spawn the thread. {thread_init = %i}", ret);
 		mm_free(result);
 		return NULL;

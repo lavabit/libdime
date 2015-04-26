@@ -14,8 +14,7 @@ void stacker_free(stacker_t *stack) {
 
 	if (stack == NULL) {
 		return;
-	}
-	else {
+	} else {
 		node = stack->list;
 	}
 
@@ -53,7 +52,6 @@ stacker_t *stacker_alloc(void (*free_function)(void *)) {
 		mm_free(result);
 		return NULL;
 	}
-
 	// Store the free memory function pointer.
 	else if (free_function != NULL) {
 		result->free_function = free_function;
@@ -95,8 +93,7 @@ int_t stacker_push(stacker_t *stack, void *data) {
 	if (stack == NULL || data == NULL) {
 		log_pedantic("Passed a NULL pointer.");
 		return 0;
-	}
-	else if ((node = mm_alloc(sizeof(stacker_node_t))) == NULL) {
+	} else if ((node = mm_alloc(sizeof(stacker_node_t))) == NULL) {
 		log_pedantic("Unable to allocate %zu bytes for a linked node.", sizeof(stacker_node_t));
 		return 0;
 	}
@@ -108,12 +105,10 @@ int_t stacker_push(stacker_t *stack, void *data) {
 
 	if (stack->list == NULL) {
 		stack->last = stack->list = node;
-	}
-	else if (stack->last != NULL) {
+	} else if (stack->last != NULL) {
 		stack->last->next = (struct stacker_node_t *)node;
 		stack->last = node;
-	}
-	else {
+	} else {
 		log_error("Last was NULL, but the list pointer wasn't. Finding the end the old fashioned way.");
 		holder = stack->list;
 		while (holder->next != NULL) {

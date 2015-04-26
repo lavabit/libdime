@@ -28,8 +28,7 @@
 #include <common/dcrypto.h>
 
 
-typedef enum
-{
+typedef enum {
 	SIGNET_TYPE_ERROR,
 	SIGNET_TYPE_ORG = 1,
 	SIGNET_TYPE_USER,
@@ -45,8 +44,7 @@ typedef struct {
 	unsigned char *data;
 } signet_t;
 
-typedef enum
-{
+typedef enum {
 	DIME_ORG_SIGNET = 1776,         /* File contains an organizational signet */
 	DIME_USER_SIGNET = 1789,        /* File contains a user signet */
 	DIME_SSR = 1216,                /* File contains an ssr*/
@@ -57,16 +55,14 @@ typedef enum
 } dime_number_t;
 
 
-typedef enum
-{
+typedef enum {
 	KEYS_TYPE_ERROR = 0,
 	KEYS_TYPE_ORG,
 	KEYS_TYPE_USER
 } keys_type_t;
 
 
-typedef enum
-{
+typedef enum {
 	SIGNET_ORG_POK = 1,             /* The ed25519 public signing key of the signet holder */
 	SIGNET_ORG_SOK_KEY,             /* Secondary Organization Signing keys */
 	SIGNET_ORG_ENC_KEY,             /* The ECC public encryption key of the signet holder */
@@ -103,8 +99,7 @@ typedef enum
 } SIGNET_ORG_FIELD_T;
 
 
-typedef enum
-{
+typedef enum {
 	SIGNET_USER_SIGN_KEY = 1,       /* The ed25519 public signing key of the signet holder*/
 	SIGNET_USER_ENC_KEY,            /* The ECC public encryption key of the signet holder*/
 	SIGNET_USER_ALT_KEY,            /* Alternative encryption keys for the user */
@@ -141,8 +136,7 @@ typedef enum
 } SIGNET_USER_FIELD_T;
 
 
-typedef enum
-{
+typedef enum {
 	SIGNET_SSR_SIGN_KEY = 1,        /* The proposed ed25519 public signing key of the ssr creator*/
 	SIGNET_SSR_ENC_KEY,             /* The ed25519 ECC public encryption key of the ssr creator*/
 	SIGNET_SSR_ALT_KEY,             /* Alternative encryption keys for the ssr creator */
@@ -151,23 +145,20 @@ typedef enum
 } SIGNET_SSR_FIELD_T;
 
 
-typedef enum
-{
+typedef enum {
 	KEYS_ORG_PRIVATE_POK = 1,
 	KEYS_ORG_PRIVATE_SOK,
 	KEYS_ORG_PRIVATE_ENC,
 } KEYS_ORG_T;
 
 
-typedef enum
-{
+typedef enum {
 	KEYS_USER_PRIVATE_SIGN = 1,
 	KEYS_USER_PRIVATE_ENC,
 } KEYS_USER_T;
 
 
-typedef enum
-{
+typedef enum {
 	SIGNET_SOK_NONE = 0x00000001,   /* This key can not be used for signing signets or messages */
 	SIGNET_SOK_SIGNET = 0x00000011, /* This key can only be used for signing signets */
 	SIGNET_SOK_MSG = 0x00000101,    /* This key can only be used for signing messages */
@@ -175,8 +166,7 @@ typedef enum
 } sok_flag_t;
 
 
-typedef enum
-{
+typedef enum {
 	SS_UNKNOWN = 0,                 /* Invalid signet, state unknown/currently unclassified */
 	SS_MALFORMED,                   /* Invalid signet, it either doesn't fit the field format or has multiple unique fields */
 	SS_OVERFLOW,                    /* Invalid signet due to it being too large. */

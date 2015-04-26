@@ -19,8 +19,7 @@ uint64_t tok_get_count_bl(void *block, size_t length, char token) {
 #ifdef MAGMA_PEDANTIC
 	if (!block) {
 		log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to count the tokens using a NULL string pointer. Printing stack:");
-	}
-	else if (!length) {
+	} else if (!length) {
 		log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to count the tokens inside an empty string. Printing stack:");
 	}
 #endif
@@ -66,8 +65,7 @@ int tok_get_ns(char *string, size_t length, char token, uint64_t fragment, place
 #ifdef MAGMA_PEDANTIC
 	if (!string) {
 		log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to count the tokens using a NULL string pointer. Printing stack:");
-	}
-	else if (!length) {
+	} else if (!length) {
 		log_options(M_LOG_PEDANTIC | M_LOG_STACK_TRACE, "Attempted to count the tokens inside an empty string. Printing stack:");
 	}
 #endif
@@ -107,8 +105,7 @@ int tok_get_ns(char *string, size_t length, char token, uint64_t fragment, place
 	// If we hit the token on the first character, return NULL
 	if (start == string) {
 		*value = pl_null();
-	}
-	else {
+	} else {
 		*value = pl_init(start, string - start);
 	}
 

@@ -32,8 +32,7 @@ array_t *ar_alloc(size_t size) {
 	if (result) {
 		mm_wipe(result, sizeof(size_t) + sizeof(size_t) + (size * (sizeof(uint32_t) + sizeof(void *))));
 		*(size_t *)result = size;
-	}
-	else {
+	} else {
 		log_error("We were unable to allocate an array of %zu elements totaling %zu bytes.", size, sizeof(size_t) + sizeof(size_t) +
 		          (size * (sizeof(uint32_t) + sizeof(void *))));
 	}
@@ -337,8 +336,7 @@ int_t ar_append(array_t **array, uint32_t type, void *item) {
 		ar_length_set(holder, size);
 		if (*array == NULL) {
 			*array = holder;
-		}
-		else {
+		} else {
 			mm_free(*array);
 			*array = holder;
 		}
@@ -380,8 +378,7 @@ void ar_free(array_t *array) {
 		pointer = *(void **)(array + sizeof(size_t) + sizeof(size_t) + ((size - 1) * (sizeof(uint32_t) + sizeof(void *))) + sizeof(uint32_t));
 		if (type == ARRAY_TYPE_ARRAY && pointer != NULL) {
 			ar_free(pointer);
-		}
-		else if ((type == ARRAY_TYPE_STRINGER || type == ARRAY_TYPE_PLACER) && pointer) {
+		} else if ((type == ARRAY_TYPE_STRINGER || type == ARRAY_TYPE_PLACER) && pointer) {
 			st_free(pointer);
 		}
 		// We make the assumption that if its a pointer type, its been freed by the consumer.
@@ -421,8 +418,7 @@ array_t *ar_dupe(array_t *array) {
 		pointer = *(void **)(array + sizeof(size_t) + sizeof(size_t) + ((size - 1) * (sizeof(uint32_t) + sizeof(void *))) + sizeof(uint32_t));
 		if (type == ARRAY_TYPE_ARRAY && pointer != NULL) {
 			ar_append(&result, ARRAY_TYPE_ARRAY, ar_dupe(pointer));
-		}
-		else if (type == ARRAY_TYPE_STRINGER && pointer != NULL) {
+		} else if (type == ARRAY_TYPE_STRINGER && pointer != NULL) {
 			ar_append(&result, ARRAY_TYPE_STRINGER, st_dupe(pointer));
 		}
 		// We make the assumption that if its a pointer type, its been freed by the consumer.

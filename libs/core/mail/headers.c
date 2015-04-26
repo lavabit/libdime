@@ -79,11 +79,9 @@ stringer_t *mail_header_fetch_cleaned(stringer_t *header, stringer_t *key) {
 			found = 1;
 			holder++;
 			headlen--;
-		}
-		else if (found == 1 && *holder != '\t' && *holder != ' ') {
+		} else if (found == 1 && *holder != '\t' && *holder != ' ') {
 			found = 2;
-		}
-		else {
+		} else {
 			found = 0;
 			holder++;
 			headlen--;
@@ -112,14 +110,12 @@ stringer_t *mail_header_fetch_cleaned(stringer_t *header, stringer_t *key) {
 			outlen++;
 			found = 0;
 			*holder++ = *start++;
-		}
-		else if (found == 0 && (*start == ' ' || *start == '\t')) {
+		} else if (found == 0 && (*start == ' ' || *start == '\t')) {
 			start++;
 			outlen++;
 			found = 1;
 			*holder++ = ' ';
-		}
-		else {
+		} else {
 			start++;
 		}
 
@@ -129,8 +125,7 @@ stringer_t *mail_header_fetch_cleaned(stringer_t *header, stringer_t *key) {
 	// This will trim any trailing whitespace.
 	if (outlen > 0 && *(holder - 1) == ' ') {
 		st_length_set(output, outlen - 1);
-	}
-	else {
+	} else {
 		st_length_set(output, outlen);
 	}
 
@@ -199,11 +194,9 @@ stringer_t *mail_header_fetch_all(stringer_t *header, stringer_t *key) {
 					found = 1;
 					holder++;
 					headlen--;
-				}
-				else if (found == 1 && *holder != '\t' && *holder != ' ') {
+				} else if (found == 1 && *holder != '\t' && *holder != ' ') {
 					found = 2;
-				}
-				else {
+				} else {
 					found = 0;
 					holder++;
 					headlen--;
@@ -213,8 +206,7 @@ stringer_t *mail_header_fetch_all(stringer_t *header, stringer_t *key) {
 			// Make sure the header value exists.
 			if (!output) {
 				output = st_import(start, holder - start);
-			}
-			else if ((value = st_merge("ss", output, PLACER(start, holder - start)))) {
+			} else if ((value = st_merge("ss", output, PLACER(start, holder - start)))) {
 				st_free(output);
 				output = value;
 			}
@@ -260,11 +252,9 @@ placer_t mail_header_pop(stringer_t *header, size_t *position) {
 			found = 1;
 			holder++;
 			headlen--;
-		}
-		else if (found == 1 && *holder != '\t' && *holder != ' ') {
+		} else if (found == 1 && *holder != '\t' && *holder != ' ') {
 			found = 2;
-		}
-		else {
+		} else {
 			found = 0;
 			holder++;
 			headlen--;
@@ -332,8 +322,7 @@ bool_t mail_headers(smtp_message_t *message) {
 	if (length > st_length_get(message->text)) {
 		log_pedantic("The header length is longer than the message.");
 		return false;
-	}
-	else if (length != mail_header_end(message->text)) {
+	} else if (length != mail_header_end(message->text)) {
 		log_pedantic("An invalid header length is stored in the structure.");
 		return false;
 	}
@@ -346,14 +335,11 @@ bool_t mail_headers(smtp_message_t *message) {
 
 			if (length - increment >= 3 && mm_cmp_ci_eq(stream, "To:", 3) == 0) {
 				message->to = mail_store_header(stream + 3, length - increment - 3);
-			}
-			else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "From:", 5) == 0) {
+			} else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "From:", 5) == 0) {
 				message->from = mail_store_header(stream + 5, length - increment - 5);
-			}
-			else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "Date:", 5) == 0) {
+			} else if (length - increment >= 5 && mm_cmp_ci_eq(stream, "Date:", 5) == 0) {
 				message->date = mail_store_header(stream + 5, length - increment - 5);
-			}
-			else if (length - increment >= 8 && mm_cmp_ci_eq(stream, "Subject:", 8) == 0) {
+			} else if (length - increment >= 8 && mm_cmp_ci_eq(stream, "Subject:", 8) == 0) {
 				message->subject = mail_store_header(stream + 8, length - increment - 8);
 			}
 
@@ -412,8 +398,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 
 		if (st_length_get(header) > 2) {
 			position = st_length_get(header) - 2;
-		}
-		else {
+		} else {
 			position = 0;
 		}
 
@@ -424,8 +409,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 
 	if (found == 1) {
 		result = st_merge("snnns", first, " ", label, *st_char_get(second) != ' ' ? " " : NULL, second);
-	}
-	else {
+	} else {
 		result = st_merge("snnns", first, "Subject: ", label, "\r\n", second);
 	}
 
@@ -497,8 +481,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 		if (!con->smtp.mailfrom) {
 			from = st_import("From: \r\n", 8);
-		}
-		else {
+		} else {
 			from = st_merge("nsn", "From: ", con->smtp.mailfrom, "\r\n");
 		}
 
@@ -515,8 +498,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 		if (!con->smtp.in_prefs || !con->smtp.in_prefs->rcptto) {
 			to = st_import("To: \r\n", 6);
-		}
-		else {
+		} else {
 			to = st_merge("ns", "To: ", con->smtp.in_prefs->rcptto);
 			inbound = (smtp_inbound_prefs_t *)con->smtp.in_prefs->next;
 
@@ -526,8 +508,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 				if (to) {
 					st_free(holder);
-				}
-				else {
+				} else {
 					to = holder;
 				}
 
@@ -539,8 +520,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 			if (to) {
 				st_free(holder);
-			}
-			else {
+			} else {
 				to = holder;
 			}
 
@@ -552,8 +532,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 		if (!con->smtp.out_prefs || !con->smtp.out_prefs->recipients || !con->smtp.out_prefs->recipients->address) {
 			to = st_import("To: \r\n", 6);
-		}
-		else {
+		} else {
 			to = st_merge("ns", "To: ", con->smtp.out_prefs->recipients->address);
 			outbound = (smtp_recipients_t *)con->smtp.out_prefs->recipients->next;
 
@@ -563,8 +542,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 				if (to) {
 					st_free(holder);
-				}
-				else {
+				} else {
 					to = holder;
 				}
 
@@ -576,8 +554,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 			if (to) {
 				st_free(holder);
-			}
-			else {
+			} else {
 				to = holder;
 			}
 
@@ -598,8 +575,7 @@ bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
 		if (message->header_length > 2) {
 			length = message->header_length - 2;
-		}
-		else {
+		} else {
 			length = 0;
 		}
 
@@ -659,7 +635,6 @@ stringer_t *mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *pr
 		log_pedantic("Could not build the date string.");
 		return NULL;
 	}
-
 	// Build the IP string.
 	else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
 		log_pedantic("Could not convert the IP into a string.");
@@ -669,8 +644,7 @@ stringer_t *mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *pr
 	// We need to make sure the reverse DNS lookup is complete.
 	reverse = con_reverse_check(con, 20);
 
-	if (!reverse || !st_cmp_ci_eq(reverse, con->smtp.helo))
-	{
+	if (!reverse || !st_cmp_ci_eq(reverse, con->smtp.helo)) {
 		// The reverse matches, or doesn't exist and there is no mailfrom or it's <>.
 		if (!con->smtp.mailfrom || !st_cmp_cs_eq(con->smtp.mailfrom, CONSTANT("<>"))) {
 			result = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnns", "Return-Path: <>\r\nReceived: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
@@ -746,17 +720,13 @@ void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t
 	if ((mark & SMTP_MARK_SPAM) == SMTP_MARK_SPAM) {
 		mail_mod_subject(&result, "JUNK:");
 		status += MAIL_MARK_JUNK;
-	}
-	else if ((mark & SMTP_MARK_VIRUS) == SMTP_MARK_VIRUS) {
+	} else if ((mark & SMTP_MARK_VIRUS) == SMTP_MARK_VIRUS) {
 		mail_mod_subject(&result, "INFECTED:");
-	}
-	else if ((mark & SMTP_MARK_SPOOF) == SMTP_MARK_SPOOF) {
+	} else if ((mark & SMTP_MARK_SPOOF) == SMTP_MARK_SPOOF) {
 		mail_mod_subject(&result, "SPOOFED:");
-	}
-	else if ((mark & SMTP_MARK_RBL) == SMTP_MARK_RBL) {
+	} else if ((mark & SMTP_MARK_RBL) == SMTP_MARK_RBL) {
 		mail_mod_subject(&result, "BLACKHOLED:");
-	}
-	else if ((mark & SMTP_MARK_PHISH) == SMTP_MARK_PHISH) {
+	} else if ((mark & SMTP_MARK_PHISH) == SMTP_MARK_PHISH) {
 		mail_mod_subject(&result, "PHISHING:");
 	}
 
@@ -808,8 +778,7 @@ void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t
 	if (!pl_empty(line)) {
 		first = PLACER(st_char_get(result), st_char_get(&line) - st_char_get(result));
 		second = PLACER(st_data_get(&line), st_length_get(result) - st_length_get(first));
-	}
-	else {
+	} else {
 		second = PLACER(st_char_get(result), st_length_get(result));
 	}
 
@@ -872,7 +841,6 @@ int_t mail_add_outbound_headers(connection_t *con) {
 		log_pedantic("Could not build the date string.");
 		return -1;
 	}
-
 	// Build the IP string.
 	else if (!(ip = con_addr_presentation(con, MANAGEDBUF(64)))) {
 		log_pedantic("Could not convert the IP into a string.");
@@ -887,8 +855,7 @@ int_t mail_add_outbound_headers(connection_t *con) {
 	if (!st_empty(&line)) {
 		first = PLACER(st_char_get(con->smtp.message->text), st_char_get(&line) - st_char_get(con->smtp.message->text));
 		second = PLACER(st_data_get(&line), st_length_get(con->smtp.message->text) - st_length_get(first));
-	}
-	else {
+	} else {
 		second = PLACER(st_char_get(con->smtp.message->text), st_length_get(con->smtp.message->text));
 	}
 
@@ -903,8 +870,7 @@ int_t mail_add_outbound_headers(connection_t *con) {
 	// Detect no HELO name.
 	if (!con->smtp.helo && reverse) {
 		con->smtp.helo = st_dupe(reverse);
-	}
-	else if (!con->smtp.helo) {
+	} else if (!con->smtp.helo) {
 		con->smtp.helo = st_import("none", 4);
 	}
 
@@ -913,19 +879,16 @@ int_t mail_add_outbound_headers(connection_t *con) {
 		if (con->smtp.num_recipients > 1) {
 			new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
 			                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
-		}
-		else {
+		} else {
 			new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", ip, ")\r\n\tby ", con->server->domain,
 			                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
 			                    date_string, "\r\n", first, dk_signature, second);
 		}
 
-	}
-	else if (con->smtp.num_recipients > 1) {
+	} else if (con->smtp.num_recipients > 1) {
 		new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
 		                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "; ", date_string, "\r\n", first, dk_signature, second);
-	}
-	else {
+	} else {
 		new = st_merge_opts(MAPPED_T | JOINTED | HEAP, "nsnsnsnsnsnsnnnsss", "Received: from ", con->smtp.helo, " (", reverse, " [", ip, "])\r\n\tby ", con->server->domain,
 		                    (con->smtp.esmtp == false) ? " with SMTP id " : " with ESMTP id ", con->smtp.message->id, "\r\n\tfor <", con->smtp.out_prefs->recipients->address, ">; ",
 		                    date_string, "\r\n", first, dk_signature, second);
@@ -936,8 +899,7 @@ int_t mail_add_outbound_headers(connection_t *con) {
 	if (new) {
 		st_free(con->smtp.message->text);
 		con->smtp.message->text = new;
-	}
-	else {
+	} else {
 		log_pedantic("Could not build the message with the spiffy new outbound headers.");
 		return -1;
 	}

@@ -89,16 +89,14 @@ uchr_t *hex_encode_chr(byte_t b, uchr_t *output) {
 	// The first character.
 	if ((number = b / 16) < 10) {
 		nibble[0] = (uchr_t)('0' + number);
-	}
-	else {
+	} else {
 		nibble[0] = (uchr_t)('a' + (number - 10));
 	}
 
 	// The second character..
 	if ((number = b % 16) < 10) {
 		nibble[1] = (uchr_t)('0' + number);
-	}
-	else {
+	} else {
 		nibble[1] = (uchr_t)('a' + (number - 10));
 	}
 
@@ -128,8 +126,7 @@ stringer_t *hex_encode_st(stringer_t *b, stringer_t *output) {
 	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
-	}
-	else if (st_empty_out(b, &p, &len)) {
+	} else if (st_empty_out(b, &p, &len)) {
 		log_pedantic("The input block does not appear to hold any data ready for encoding. {%slen = %zu}", p ? "" : "p = NULL / ", len);
 		return NULL;
 	}
@@ -140,8 +137,7 @@ stringer_t *hex_encode_st(stringer_t *b, stringer_t *output) {
 		log_pedantic("The output buffer supplied is not large enough to hold the result. {avail = %zu / required = %zu}",
 		             st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), len * 2);
 		return NULL;
-	}
-	else if (!output && !(result = st_alloc(len * 2))) {
+	} else if (!output && !(result = st_alloc(len * 2))) {
 		log_pedantic("The output buffer memory allocation request failed. {requested = %zu}", len * 2);
 		return NULL;
 	}
@@ -292,8 +288,7 @@ stringer_t *hex_decode_st(stringer_t *h, stringer_t *output) {
 	if (output && !st_valid_destination((opts = *((uint32_t *)output)))) {
 		log_pedantic("An output string was supplied but it does not represent a buffer capable of holding the output.");
 		return NULL;
-	}
-	else if (st_empty_out(h, &p, &len) || !(valid = hex_count_st(h))) {
+	} else if (st_empty_out(h, &p, &len) || !(valid = hex_count_st(h))) {
 		log_pedantic("The input block does not appear to hold any data ready for decoding. {%slen = %zu}", p ? "" : "p = NULL / ", len);
 		return NULL;
 	}
@@ -304,8 +299,7 @@ stringer_t *hex_decode_st(stringer_t *h, stringer_t *output) {
 		log_pedantic("The output buffer supplied is not large enough to hold the result. {avail = %zu / required = %zu}",
 		             st_valid_avail(opts) ? st_avail_get(output) : st_length_get(output), valid / 2);
 		return NULL;
-	}
-	else if (!output && !(result = st_alloc(valid / 2))) {
+	} else if (!output && !(result = st_alloc(valid / 2))) {
 		log_pedantic("The output buffer memory allocation request failed. {requested = %zu}", (valid / 2));
 		return NULL;
 	}
@@ -318,8 +312,7 @@ stringer_t *hex_decode_st(stringer_t *h, stringer_t *output) {
 		if (hex_valid_chr(*p)) {
 			if (!c) {
 				c = *p;
-			}
-			else {
+			} else {
 				*o++ = hex_decode_chr(c, *p);
 				c = 0;
 				w++;

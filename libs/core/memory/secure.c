@@ -120,8 +120,7 @@ static secured_t *mm_sec_chunk_prev(secured_t *chunk) {
 
 	if (chunk == secure.slab.data) {
 		prev = NULL;
-	}
-	else {
+	} else {
 		prev = (secured_t *)secure.slab.data;
 		while ((next = mm_sec_chunk_next(prev)) && next != chunk) prev = next;
 	}
@@ -172,8 +171,7 @@ static secured_t *mm_sec_chunk_new(secured_t *block, size_t size) {
 			}
 
 			loop = false;
-		}
-		else {
+		} else {
 			chunk = mm_sec_chunk_next(chunk);
 		}
 	}
@@ -288,8 +286,7 @@ void *mm_sec_realloc(void *orig, size_t len) {
 	// Requests that would shrink the chunk by less than 256 bytes probably aren't worth the overhead to process.
 	if (len <= olen && (olen - len) >= 256) {
 		result = orig;
-	}
-	else if ((result = mm_sec_alloc(len))) {
+	} else if ((result = mm_sec_alloc(len))) {
 		mm_copy(result, orig, len < olen ? len : olen);
 		mm_sec_free(orig);
 	}

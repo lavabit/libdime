@@ -46,12 +46,10 @@ static uint32_t hashed_bucket(uint32_t buckets, multi_t key) {
 
 			result = (((count = bits_count(result)) % 2) ? result + count : result - count);
 			result = (buckets <= result ? (buckets - 1) : result);
-		}
-		else {
+		} else {
 			result = (result % buckets);
 		}
-	}
-	else {
+	} else {
 		result = hash_fletcher32(mt_get_char(key), mt_get_length(key)) % buckets;
 	}
 

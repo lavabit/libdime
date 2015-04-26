@@ -482,8 +482,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
 
 	}
 	// If the DIME record had no TLS signature field, then there's no way we can accept a self-signed certificate.
-	else if (selfsign)
-	{
+	else if (selfsign) {
 		_dbgprint(0, "Error verifying DX certificate: self-signed certificates require the DIME management record TLS signature field.\n");
 		return 0;
 	}

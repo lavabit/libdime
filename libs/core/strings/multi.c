@@ -569,7 +569,6 @@ bool_t ident_mt_mt(multi_t one, multi_t two) {
 		} else if (mt_get_type(one) == M_TYPE_NULLER && mt_get_type(two) == M_TYPE_STRINGER) {
 			result = (st_cmp_cs_eq(PLACER(one.val.ns, ns_length_get(one.val.ns)), two.val.st) == 0);
 		}
-
 		// For now, this function only supports comparing non-matched types if both types are strings.
 		else {
 			log_pedantic("Invalid multi-type comparison.");
@@ -682,7 +681,6 @@ int32_t cmp_mt_mt(multi_t one, multi_t two) {
 		} else if (mt_get_type(one) == M_TYPE_NULLER && mt_get_type(two) == M_TYPE_STRINGER) {
 			result = st_cmp_cs_eq(NULLER(one.val.ns), two.val.st);
 		}
-
 		// For now, this function only supports comparing non-matched types if both types are strings.
 		else {
 			log_pedantic("Invalid multi-type comparison.");

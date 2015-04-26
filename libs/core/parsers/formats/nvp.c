@@ -73,8 +73,7 @@ nvp_t *nvp_alloc() {
 	if ((result = mm_alloc(sizeof(nvp_t))) == NULL) {
 		log_info("Could not allocate %zu bytes.", sizeof(nvp_t));
 		return NULL;
-	}
-	else if ((result->pairs = inx_alloc(M_INX_HASHED, &st_free)) == NULL) {
+	} else if ((result->pairs = inx_alloc(M_INX_HASHED, &st_free)) == NULL) {
 		log_info("Could not allocate the key/value index.");
 		mm_free(result);
 		return NULL;

@@ -42,19 +42,16 @@ stringer_t *spool_path(int_t spool) {
 	// Use the spool value to determine the folder.
 	if (spool == MAGMA_SPOOL_BASE) {
 		folder = "";
-	}
-	else if (spool == MAGMA_SPOOL_SCAN) {
+	} else if (spool == MAGMA_SPOOL_SCAN) {
 		folder = "scan/";
-	}
-	else {
+	} else {
 		folder = "data/";
 	}
 
 	// If the spool directory isn't configured, fall back to using /tmp/magma/ instead.
 	if (magma.spool) {
 		result = st_merge_opts(NULLER_T | CONTIGUOUS | HEAP, "nnn", magma.spool, (*(magma.spool + ns_length_get(magma.spool) - 1) == '/' ? "" : "/"), folder);
-	}
-	else {
+	} else {
 		result = st_merge_opts(NULLER_T | CONTIGUOUS | HEAP, "nn", "/tmp/magma/", folder);
 	}
 
@@ -189,8 +186,7 @@ static int_t spool_check_file(const char *file, const struct stat *info, int typ
 			mutex_lock(&spool_error_lock);
 			spool_errors++;
 			mutex_unlock(&spool_error_lock);
-		}
-		else {
+		} else {
 			spool_files_cleaned++;
 		}
 	}
@@ -290,8 +286,7 @@ bool_t spool_start(void) {
 
 			st_free(path);
 			path = NULL;
-		}
-		else {
+		} else {
 			log_critical("Spool location is invalid.");
 			result = false;
 		}

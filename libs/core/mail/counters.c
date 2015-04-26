@@ -30,11 +30,9 @@ uint32_t mail_count_received(stringer_t *message) {
 			// Detect the end of a header.
 			if (*(ptr + 1) == '\r' && *(ptr + 2) == '\n') {
 				i = len;
-			}
-			else if (*(ptr + 1) == '\n') {
+			} else if (*(ptr + 1) == '\n') {
 				i = len;
-			}
-			else if (st_cmp_ci_starts(PLACER(ptr + 1, len - i - 1), PLACER("Received:", 9)) == 0) {
+			} else if (st_cmp_ci_starts(PLACER(ptr + 1, len - i - 1), PLACER("Received:", 9)) == 0) {
 				result++;
 			}
 

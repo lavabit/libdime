@@ -81,8 +81,7 @@ int_t st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replaceme
 			for (size_t j = 0; j < rlen; j++) {
 				*optr++ = *(rptr + j);
 			}
-		}
-		else {
+		} else {
 			*optr++ = *tptr++;
 		}
 	}
