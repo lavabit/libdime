@@ -432,7 +432,7 @@ EC_KEY *_load_ec_pubkey(const char *filename) {
 
 	char *filedata;
 	unsigned char *bin;
-	size_t size;
+	size_t binsize;
 	EC_KEY *result;
 
 	if(!filename) {
@@ -443,11 +443,17 @@ EC_KEY *_load_ec_pubkey(const char *filename) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not read ec pubkey pem file");
 	}
 
-	if(!(bin = _b64decode(filedata, strlen(filedata), &size))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not decide b64 data");
+	bin = _b64decode(filedata, strlen(filedata), &binsize);
+	_secure_wipe(filedata, strlen(filedata));
+	free(filedata);
+	if(!bin) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not decode b64 data");
 	}
 
-	if(!(result = _deserialize_ec_pubkey(bin, size, 0))) {
+	result = _deserialize_ec_pubkey(bin, binsize, 0);
+	_secure_wipe(bin, binsize);
+	free(bin);
+	if(!result) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize binary ec pubkey");
 	}
 
