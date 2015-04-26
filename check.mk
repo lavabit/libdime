@@ -52,7 +52,7 @@ clean:
 
 $(check_PROGRAMS): $(OBJFILES) $(filter %.a,$(LIBS))
 	@echo "Linking $(GREEN)$@$(NORMAL)"
-	$(RUN)$(CC) -o $@ $(OBJFILES) $(LIBS)
+	$(RUN)$(CC) -o $@ $(OBJFILES) $(LIBS) $(CDEBUG)
 
 $(OBJDIRNAME) $(DEPDIRNAME):
 	@test -d $@ || mkdir $@
@@ -64,7 +64,7 @@ $(OBJDIRNAME)/%.o : %.c | $(OBJDIRNAME) $(DEPDIRNAME)
 	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 		-e 's/$$/ :/' -e 's/^ *//' < $(df).d.tmp >> $(df).d ; \
 		rm -f $(df).d.tmp
-	$(RUN)$(CC) $(CFLAGS) $(ALL_INC_CCOPT) -fPIC -c $< -o $@
+	$(RUN)$(CC) $(CFLAGS) $(ALL_INC_CCOPT) -fPIC -c "$(abspath $<)" -o "$@"
 
 run-checks: $(check_PROGRAMS)
 	./$(check_PROGRAMS)
