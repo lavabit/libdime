@@ -1,11 +1,8 @@
-/**
- * @brief	A function for translating the M_TYPE enum into an equivalent string, typically so that a type code can be recorded as a string in error messages.
- */
-
 #include <core/magma.h>
 
 /**
  * Takes a type code and returns the fully enumerated string associated with that type.
+ * Is typically used for recording the type code as a string in error messages.
  *
  * @param type The type code to evaluate.
  * @return Null terminated string containing type name. String is stored in static buffer and returned as a pointer.

@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The function declarations and macros needed to access the error log subsystem.
  */
 

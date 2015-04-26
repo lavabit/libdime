@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The global configuration structure used for overall system settings, and functions to initialize it at startup and free it at shutdown.
  */
 

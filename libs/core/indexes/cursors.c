@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The generic index interface for handling cursors.
  */
 

@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of functions used to extract information from stringer options.
  */
 

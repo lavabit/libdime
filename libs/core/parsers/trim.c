@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to trim whitespace from strings.
  */
 

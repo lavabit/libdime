@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to compare the starts of strings with other strings.
  */
 

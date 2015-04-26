@@ -1,5 +1,6 @@
 /**
- * @brief The function decelerations and types needed by the generic parsing functions.
+ * @file
+ * @brief Functions and types needed for generic parsing.
  */
 
 #ifndef MAGMA_CORE_PARSERS_H

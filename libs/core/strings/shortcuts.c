@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of shortcuts used to call various string functions using sensible default values.
  */
 

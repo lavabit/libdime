@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to encode and decode data in various formats.
  */
 

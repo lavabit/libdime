@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief The functions used to allocate and manipulate blocks of memory off the heap and inside the secured address space.
  */
 

@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions to retrieve information about the operating system.
  */
 

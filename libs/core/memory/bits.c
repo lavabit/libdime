@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of functions used handle common bit manipulation tasks.
  */
 

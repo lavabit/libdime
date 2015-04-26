@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Internal logging functions. This function should be accessed using the appropriate macro.
  */
 

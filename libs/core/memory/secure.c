@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for allocating secure memory. Secure buffers should always be used to hold sensitive information.
  */
 

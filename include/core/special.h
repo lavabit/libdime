@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Declarations for functions involved in extracting data from specialized formats.
  */
 

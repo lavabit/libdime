@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of functions used to validate stringer allocation option combinations.
  */
 

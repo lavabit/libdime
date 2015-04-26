@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of functions used for manipulating the capitalization of characters.
  */
 

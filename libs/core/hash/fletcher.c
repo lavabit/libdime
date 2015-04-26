@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	An implementation of the Fletcher hash algorithim.
  */
 

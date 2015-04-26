@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for encoding/decoding hexadecimal data.
  */
 

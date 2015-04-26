@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Function declarations and types used by the structured format parsers.
  */
 

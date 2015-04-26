@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for handling managed string options.
  */
 

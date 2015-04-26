@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	An x86 implementation of the 32-bit and 64-bit CRC algorithms.
  */
 

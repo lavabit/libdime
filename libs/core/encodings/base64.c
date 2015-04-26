@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for base64 encoding/decoding of data.
  */
 

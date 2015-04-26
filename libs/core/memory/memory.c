@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The functions used to handle Magma memory buffers.
  */
 

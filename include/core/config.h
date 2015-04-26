@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The entry point for all configuration modules used by magma.
  */
 

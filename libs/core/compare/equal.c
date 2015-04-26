@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions to check for string equality.
  */
 

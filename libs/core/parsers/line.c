@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to extract lines from within a larger block of data.
  */
 

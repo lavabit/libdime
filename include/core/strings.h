@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Function declarations and types used by the different modules involved with handling stringers and null terminated strings.
  */
 

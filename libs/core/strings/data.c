@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to inspect the data of managed strings.
  */
 

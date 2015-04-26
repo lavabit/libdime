@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to classify characters into specific classes.
  */
 

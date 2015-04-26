@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Function declarations for various data and string comparison functions.
  */
 

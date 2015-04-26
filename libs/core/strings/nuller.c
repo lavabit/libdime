@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for handling null terminated strings.
  */
 

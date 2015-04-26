@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Structures used to control SMTP connections/sessions.
  */
 

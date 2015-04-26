@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for checking, creating, maintaining and using the spool.
  */
 

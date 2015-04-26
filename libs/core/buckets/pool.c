@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of functions used to create, maintain and safely utilize collections of object pointers that are accessed by multiple threads.
  */
 

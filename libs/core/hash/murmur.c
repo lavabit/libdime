@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	An x64 implementation of the Murmur hash function.
  */
 

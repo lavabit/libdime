@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	String search functions.
  */
 

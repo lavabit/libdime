@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A modified base32 encoding routine (zbase32) which selects characters to enhance readability.
  *                      zbase32 strings may be used in URLs without any further encoding.
  */

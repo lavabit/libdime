@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for printing formatted data to managed strings.
  */
 

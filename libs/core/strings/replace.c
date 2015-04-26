@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used for string replacement.
  */
 

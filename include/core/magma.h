@@ -1,5 +1,6 @@
 /**
- * @brief The global include file. This header includes both system headers and Magma module headers.
+ * @file
+ * @brief The global include file.\ This header includes both system headers and Magma module headers.
  */
 
 #ifndef MAGMA_H

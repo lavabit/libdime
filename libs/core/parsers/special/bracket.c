@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for extracting a value inside a pair of brackets.
  */
 

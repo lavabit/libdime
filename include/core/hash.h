@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Declarations for hash functions that have been implemented internally.
  */
 

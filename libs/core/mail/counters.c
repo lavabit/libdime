@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to calculate mail message metrics needed to implement business rules.
  */
 

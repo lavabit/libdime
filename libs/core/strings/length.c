@@ -1,5 +1,6 @@
 /**
- * @brief	Fnctions used to find stringer lengths.
+ * @file
+ * @brief	Functions used to find stringer lengths.
  */
 
 #include <core/magma.h>

@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for counting the digit places in a number, including the sign character for signed numbers.
  */
 

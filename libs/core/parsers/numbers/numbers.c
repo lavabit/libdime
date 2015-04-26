@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for converting different string types into binary numbers.
  */
 

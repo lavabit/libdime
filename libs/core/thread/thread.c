@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for spawning new threads, and retrieving their exit statuses.
  */
 

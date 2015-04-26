@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions for thread coordination via a read/write lock.
  */
 

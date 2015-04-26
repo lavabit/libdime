@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	An x86 implementation of the Adler hash algorithm.
  */
 

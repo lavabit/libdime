@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to parse and manipulate MIME messages.
  */
 

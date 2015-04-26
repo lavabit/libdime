@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	A collection of types, declarations and includes needed when accessing the core module and the type definitions needed to parse the header files that follow.
  */
 

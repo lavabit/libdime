@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to handle mail message header information.
  */
 

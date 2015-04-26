@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	The function declarations and types for the thread-safe object pool interface.
  */
 

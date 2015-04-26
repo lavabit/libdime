@@ -1,4 +1,5 @@
 /**
+ * @file
  * @brief	Functions used to compare the ends of strings with other strings.
  */
 
