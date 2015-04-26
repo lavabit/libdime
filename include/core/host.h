@@ -39,7 +39,6 @@ int_t   process_kill(stringer_t *name, int_t signal, int_t wait);
 
 /// spool.c
 int_t         spool_check(stringer_t *path);
-int_t         spool_check_file(const char *file, const struct stat *info, int type);
 int_t         spool_cleanup(void);
 uint64_t      spool_error_stats(void);
 int_t         spool_mktemp(int_t spool, const chr_t *prefix);
