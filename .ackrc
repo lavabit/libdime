@@ -2,3 +2,4 @@
 
 --ignore-dir=deps/
 --ignore-dir=doxygen-doc/
+--sort-files
