@@ -2885,15 +2885,15 @@ void _signet_fid_destroy(signet_field_t *field) {
 */
 signet_field_t *_signet_field_destroy(signet_field_t *field) {
 
-	signet_field_t *field_next = (signet_field_t *)field->next;
+	signet_field_t *next;
 
 	if(!field) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
+	next = field->next;
 	free(field);
-
-	return field_next;
+	return next;
 }
 
 
