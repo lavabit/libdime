@@ -438,6 +438,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 
 }
 
+#if 0
 /**
  * @brief	Generate any missing required headers for an smtp message object.
  * @note	These required headers include To, From, Subject and Date, and if they are absent, they will be
@@ -446,7 +447,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
  * @param	message		the smtp message object to be updated for any missing required headers.
  * @return	true on success or false on failure.
  */
-/*bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
+bool_t mail_add_required_headers(connection_t *con, smtp_message_t *message) {
 
         int_t state;
         time_t utime;
@@ -619,15 +620,17 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
         }
 
         return true;
-}*/
+}
+#endif
 
+#if 0
 /**
  * @brief	Prepend the Return-Path: and Received: headers to an inbound smtp message.
  * @param	con		the connection across which the inbound smtp message was accepted.
  * @param	prefs	the smtp inbound preferences corresponding to the connection, with the rcptto field populated.
  * @return	NULL on failure, or a managed string containing the message data preceded by the Return-Path and Received headers on success.
  */
-/*stringer_t * mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *prefs) {
+stringer_t * mail_add_inbound_headers(connection_t *con, smtp_inbound_prefs_t *prefs) {
 
         int_t state;
         time_t utime;
@@ -700,8 +703,10 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
         }
 
         return result;
-} */
+}
+#endif
 
+#if 0
 /**
  * @brief	Add necessary headers to a forwarded mail message.
  * @note	This function will prepend tags to the Subject line like "JUNK", "INFECTED", "SPOOFED", etc.
@@ -718,7 +723,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
  * @param	sigkey		the optional spam signature key for client verification in the teacher app.
  */
 // QUESTION: This prototype is stupid. We need to pass message as stringer_t * and return a stringer_t * as well.
-/*void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t *id, int_t mark, uint64_t signum, uint64_t sigkey) {
+void mail_add_forward_headers(server_t *server, stringer_t **message, stringer_t *id, int_t mark, uint64_t signum, uint64_t sigkey) {
 
         uint32_t status = 0;
         size_t position = 0;
@@ -826,8 +831,10 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
         }
 
         return;
-} */
+}
+#endif
 
+#if 0
 /**
  * @brief	Add a Received: header and dkim signature to an outbound relayed smtp message.
  * @note	If the message already has a Received header, the dkim signature will be inserted right before the first instance.
@@ -835,7 +842,7 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
  * @return	NULL on failure, or a managed string containing the message data preceded by the Received header
  *                      and including the dkim signature on success.
  */
-/*int_t mail_add_outbound_headers(connection_t *con) {
+int_t mail_add_outbound_headers(connection_t *con) {
 
         int_t state;
         time_t utime;
@@ -937,4 +944,4 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 
         return 1;
 }
-*/
+#endif
