@@ -792,14 +792,14 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 		memcpy(&(keyslot->aes_key[0]), &(temp.aes_key[0]), sizeof(temp.aes_key));
 
 		if(_dmsg_encrypt_keyslot(keyslot, &((*keks)[id_recipient]))) {
-			_secure_wipe((unsigned char *)&temp, sizeof(temp));
-			_secure_wipe((unsigned char *)keyslot, sizeof(keyslot));
+			_secure_wipe(&temp, sizeof(temp));
+			_secure_wipe(keyslot, sizeof(*keyslot));
 			RET_ERROR_INT(ERR_UNSPEC, "could not encrypt keyslot");
 		}
 
 	}
 
-	_secure_wipe((unsigned char *)&temp, sizeof(temp));
+	_secure_wipe(&temp, sizeof(temp));
 	chunk->state = MESSAGE_CHUNK_STATE_ENCRYPTED;
 
 	return 0;
