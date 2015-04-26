@@ -45,8 +45,6 @@ dmime_message_state_t _dmsg_get_message_state(const dmime_message_t *message) {
 */
 void    _dmsg_destroy_msg(dmime_message_t *msg) {
 
-	int i;
-
 	if(!msg) {
 		return;
 	}
@@ -75,27 +73,18 @@ void    _dmsg_destroy_msg(dmime_message_t *msg) {
 		_dmsg_destroy_message_chunk(msg->other_headers);
 	}
 
-	i = 0;
-
 	if(msg->display) {
-
-		while(msg->display[i]) {
-			_dmsg_destroy_message_chunk(msg->display[i++]);
+		for (size_t i = 0; msg->display[i]; i++) {
+			_dmsg_destroy_message_chunk(msg->display[i]);
 		}
-
 	}
-
 	free(msg->display);
-	i = 0;
 
 	if(msg->attach) {
-
-		while(msg->attach[i]) {
-			_dmsg_destroy_message_chunk(msg->attach[i++]);
+		for (size_t i = 0; msg->attach[i]; i++) {
+			_dmsg_destroy_message_chunk(msg->attach[i]);
 		}
-
 	}
-
 	free(msg->attach);
 
 	if(msg->author_tree_sig) {
@@ -119,7 +108,6 @@ void    _dmsg_destroy_msg(dmime_message_t *msg) {
 	}
 
 	free(msg);
-
 }
 
 
@@ -485,8 +473,6 @@ int _dmsg_sign_chunk(dmime_message_chunk_t *chunk, ED25519_KEY *signkey) {
 */
 int _dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey) {
 
-	int i = 0;
-
 	if(!message || !signkey) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
@@ -512,31 +498,19 @@ int _dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey) {
 	}
 
 	if(message->display) {
-
-		while(message->display[i]) {
-
+		for (size_t i = 0; message->display[i]; i++) {
 			if(_dmsg_sign_chunk(message->display[i], signkey)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not sign display chunk");
 			}
-
-			++i;
 		}
-
 	}
 
-	i = 0;
-
 	if(message->attach) {
-
-		while(message->attach[i]) {
-
+		for (size_t i = 0; message->attach[i]; i++) {
 			if(_dmsg_sign_chunk(message->attach[i], signkey)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not sign attachment chunk");
 			}
-
-			++i;
 		}
-
 	}
 
 	message->state = MESSAGE_STATE_CHUNKS_SIGNED;
@@ -815,8 +789,6 @@ int _dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks) { //
 */
 int _dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks) {
 
-	int i = 0;
-
 	if(!message || !keks) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
@@ -842,31 +814,19 @@ int _dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks) {
 	}
 
 	if(message->display) {
-
-		while(message->display[i]) {
-
+		for (size_t i = 0; message->display[i]; i++) {
 			if(_dmsg_encrypt_chunk(message->display[i], keks)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not encrypt display chunks");
 			}
-
-			++i;
 		}
-
 	}
 
-	i = 0;
-
 	if(message->attach) {
-
-		while(message->attach[i]) {
-
+		for (size_t i = 0; message->attach[i]; i++) {
 			if(_dmsg_encrypt_chunk(message->attach[i], keks)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not encrypt attachment chunks");
 			}
-
-			++i;
 		}
-
 	}
 
 	message->state = MESSAGE_STATE_ENCRYPTED;
@@ -883,7 +843,7 @@ int _dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks) {
 */// TODO this is probably too long and can be shortened but not sure how.
 unsigned char *_dmsg_tree_sig_data(const dmime_message_t *msg, size_t *outsize) {
 
-	unsigned int i, chunk_count = 0;
+	unsigned int chunk_count = 0;
 	unsigned char *result;
 
 	if(!msg || !outsize) {
@@ -914,26 +874,16 @@ unsigned char *_dmsg_tree_sig_data(const dmime_message_t *msg, size_t *outsize) 
 		++chunk_count;
 	}
 
-	i = 0;
-
 	if(msg->display) {
-
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 			++chunk_count;
-			++i;
 		}
-
 	}
 
-	i = 0;
-
 	if(msg->attach) {
-
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 			++chunk_count;
-			++i;
 		}
-
 	}
 
 	if(!(result = malloc(chunk_count * SHA_512_SIZE))) {
@@ -993,36 +943,24 @@ unsigned char *_dmsg_tree_sig_data(const dmime_message_t *msg, size_t *outsize) 
 		++chunk_count;
 	}
 
-	i = 0;
-
 	if(msg->display) {
-
-		while(msg->display[i]) {
-
+		for (size_t i = 0; msg->display[i]; i++) {
 			if(_compute_sha_hash(512, &(msg->display[i]->type), msg->display[i]->serial_size, result + (SHA_512_SIZE * chunk_count))) {
 				free(result);
 				RET_ERROR_PTR(ERR_UNSPEC, "could not hash a display chunk");
 			}
-
-			++i;
 			++chunk_count;
 		}
-
 	}
 
 	if(msg->attach) {
-
-		while(msg->attach[i]) {
-
+		for (size_t i = 0; msg->attach[i]; i++) {
 			if(_compute_sha_hash(512, &(msg->attach[i]->type), msg->attach[i]->serial_size, result + (SHA_512_SIZE * chunk_count))) {
 				free(result);
 				RET_ERROR_PTR(ERR_UNSPEC, "could not hash an attachment chunk");
 			}
-
-			++i;
 			++chunk_count;
 		}
-
 	}
 
 	return result;
@@ -1038,7 +976,6 @@ unsigned char *_dmsg_tree_sig_data(const dmime_message_t *msg, size_t *outsize) 
 size_t _dmsg_get_sections_size(const dmime_message_t *msg, unsigned char sections) {
 
 	size_t size = 0, last = 0;
-	unsigned int i;
 
 	if(!msg) {
 		RET_ERROR_UINT(ERR_BAD_PARAM, NULL);
@@ -1064,36 +1001,26 @@ size_t _dmsg_get_sections_size(const dmime_message_t *msg, unsigned char section
 		size += msg->other_headers->serial_size;
 	}
 
-	i = 0;
-
 	if((CHUNK_SECTION_DISPLAY & sections) && msg->display) {
-
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 			last = size;            // last is used to check for size overflow
-			size += msg->display[i++]->serial_size;
+			size += msg->display[i]->serial_size;
 
 			if(last > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
-
 		}
-
 	}
 
-	i = 0;
-
 	if((CHUNK_SECTION_ATTACH & sections) && msg->attach) {
-
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 			last = size;
-			size += msg->attach[i++]->serial_size;
+			size += msg->attach[i]->serial_size;
 
 			if(last > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
-
 		}
-
 	}
 
 	if(msg->author_tree_sig && (_dmsg_get_chunk_type_key(CHUNK_TYPE_SIG_AUTHOR_TREE)->section & sections)) {
@@ -1130,7 +1057,7 @@ size_t _dmsg_get_sections_size(const dmime_message_t *msg, unsigned char section
 unsigned char *_dmsg_serialize_sections(const dmime_message_t *msg, unsigned char sections, size_t *outsize) {
 
 	size_t total_size;
-	unsigned int i, at = 0;
+	size_t at = 0;
 	unsigned char *result;
 
 	if(!msg || !outsize) {
@@ -1178,26 +1105,18 @@ unsigned char *_dmsg_serialize_sections(const dmime_message_t *msg, unsigned cha
 		at += msg->other_headers->serial_size;
 	}
 
-	i = 0;
-
 	if((CHUNK_SECTION_DISPLAY & sections) && msg->display) {
-
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 			memcpy(result + at, &(msg->display[i]->type), msg->display[i]->serial_size);
-			at += msg->display[i++]->serial_size;
+			at += msg->display[i]->serial_size;
 		}
-
 	}
 
-	i = 0;
-
 	if((CHUNK_SECTION_ATTACH & sections) && msg->attach) {
-
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 			memcpy(result + at, &(msg->attach[i]->type), msg->attach[i]->serial_size);
-			at += msg->attach[i++]->serial_size;
+			at += msg->attach[i]->serial_size;
 		}
-
 	}
 
 	if(CHUNK_SECTION_SIG & sections) {
@@ -1243,7 +1162,6 @@ unsigned char *_dmsg_serialize_sections(const dmime_message_t *msg, unsigned cha
 size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last) {
 
 	size_t size = 0, temp;
-	unsigned int i;
 
 	if(!msg) {
 		RET_ERROR_UINT(ERR_BAD_PARAM, NULL);
@@ -1273,36 +1191,26 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 		size += msg->other_headers->serial_size;
 	}
 
-	i = 0;
-
 	if((first <= CHUNK_TYPE_DISPLAY_CONTENT) && (CHUNK_TYPE_DISPLAY_CONTENT <= last) && msg->display) {
-
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 			temp = size;            // last is used to check for size overflow
-			size += msg->display[i++]->serial_size;
+			size += msg->display[i]->serial_size;
 
 			if(temp > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
-
 		}
-
 	}
 
-	i = 0;
-
 	if((first <= CHUNK_TYPE_ATTACH_CONTENT) && (CHUNK_TYPE_ATTACH_CONTENT <= last) && msg->attach) {
-
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 			temp = size;
-			size += msg->attach[i++]->serial_size;
+			size += msg->attach[i]->serial_size;
 
 			if(temp > size) {
 				RET_ERROR_UINT(ERR_UNSPEC, "message size is exceeding the maximum size");
 			}
-
 		}
-
 	}
 
 	if(msg->author_tree_sig && (first <= CHUNK_TYPE_SIG_AUTHOR_TREE) && (CHUNK_TYPE_SIG_AUTHOR_TREE <= last)) {
@@ -1339,7 +1247,7 @@ size_t _dmsg_get_chunks_size(const dmime_message_t *msg, dmime_chunk_type_t firs
 unsigned char *_dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize) {
 
 	size_t total_size;
-	unsigned int i, at = 0;
+	size_t at = 0;
 	unsigned char *result;
 
 	if(!msg || !outsize) {
@@ -1391,26 +1299,18 @@ unsigned char *_dmsg_serialize_chunks(const dmime_message_t *msg, dmime_chunk_ty
 		at += msg->other_headers->serial_size;
 	}
 
-	i = 0;
-
 	if((CHUNK_TYPE_DISPLAY_CONTENT <= last) && (first <= CHUNK_TYPE_DISPLAY_CONTENT) && msg->display) {
-
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 			memcpy(result + at, &(msg->display[i]->type), msg->display[i]->serial_size);
-			at += msg->display[i++]->serial_size;
+			at += msg->display[i]->serial_size;
 		}
-
 	}
 
-	i = 0;
-
 	if((CHUNK_TYPE_ATTACH_CONTENT <= last) && (first <= CHUNK_TYPE_ATTACH_CONTENT) && msg->attach) {
-
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 			memcpy(result + at, &(msg->attach[i]->type), msg->attach[i]->serial_size);
-			at += msg->attach[i++]->serial_size;
+			at += msg->attach[i]->serial_size;
 		}
-
 	}
 
 	memset(result + at, 0, ED25519_SIG_SIZE + 5);
@@ -2852,7 +2752,7 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 	dmime_actor_t actor;
 	dmime_message_chunk_t *decrypted;
 	dmime_object_chunk_t *chunk, *last = NULL;
-	int i = 0, res;
+	int res;
 	unsigned char *data;
 	size_t data_size;
 
@@ -2874,7 +2774,7 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 
 	if(msg->display) {
 
-		while(msg->display[i]) {
+		for (size_t i = 0; msg->display[i]; i++) {
 
 			if(!(decrypted = _dmsg_decrypt_chunk(msg->display[i], actor, kek))) {
 				_dmsg_destroy_object_chunk_list(object->display);
@@ -2914,17 +2814,13 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 				last->next = chunk;
 				last = chunk;
 			}
-
-			++i;
 		}
 
 	}
 
-	i = 0;
-
 	if(msg->attach) {
 
-		while(msg->attach[i]) {
+		for (size_t i = 0; msg->attach[i]; i++) {
 
 			if(!(decrypted = _dmsg_decrypt_chunk(msg->attach[i], actor, kek))) {
 				_dmsg_destroy_object_chunk_list(object->attach);
@@ -2964,10 +2860,7 @@ int _dmsg_msg_to_object_content(dmime_object_t *object, const dmime_message_t *m
 				chunk->next = chunk;
 				last = chunk;
 			}
-
-			++i;
 		}
-
 	}
 
 	return 0;
@@ -3487,7 +3380,6 @@ int _dmsg_msg_to_object_as_recp(dmime_object_t *obj, const dmime_message_t *msg,
 int _dmsg_dump_object(dmime_object_t *object) {
 
 	dmime_object_chunk_t *display;
-	int i = 1;
 
 	if(!object) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -3525,9 +3417,8 @@ int _dmsg_dump_object(dmime_object_t *object) {
 		printf("Other Headers :\n %.*s\n", (int)st_length_get(object->other_headers), (char *)st_data_get(object->other_headers));
 		display = object->display;
 
-		while(display) {
-			printf("Display %d     :\n %.*s\n", i, (int)display->data_size, display->data);
-			++i;
+		for (unsigned int i = 0; display; i++) {
+			printf("Display %d     :\n %.*s\n", i + 1, (int)display->data_size, display->data);
 			display = display->next;
 		}
 

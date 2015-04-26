@@ -963,9 +963,9 @@ unsigned char **_signet_get_msg_sign_keys(const signet_t *signet) {
 	temp = _signet_fid_create(signet, SIGNET_ORG_POK);
 	memcpy(keys[0], &(temp->signet->data[temp->data_offset]), key_size);
 	_signet_fid_destroy(temp);
+
 	size_t i = 1;
 	temp = field;
-
 	while(temp) {
 
 		if(((unsigned char)temp->flags) & SIGNET_SOK_MSG) {
@@ -1861,7 +1861,7 @@ char *_signet_ssr_fingerprint(const signet_t *signet) {
 */
 signet_state_t  _signet_full_verify(const signet_t *signet, const signet_t *orgsig, const unsigned char **dime_pok) {
 
-	int i, res, res2, res3, pok_num;
+	int res, res2, res3, pok_num;
 	unsigned char *user_key, **org_keys;
 	const char *errmsg = NULL;
 	size_t key_size;
@@ -1975,12 +1975,9 @@ signet_state_t  _signet_full_verify(const signet_t *signet, const signet_t *orgs
 			result = SS_UNVERIFIED;
 		}
 
-		i = 0;
-
-		while(org_keys[i]) {
-			free(org_keys[i++]);
+		for (size_t i = 0; org_keys[i]; i++) {
+			free(org_keys[i]);
 		}
-
 		free(org_keys);
 
 		if (result == SS_UNKNOWN) {
@@ -2077,7 +2074,7 @@ int _signet_verify_signature_key(const signet_t *signet, unsigned char sig_fid, 
 */
 int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len) {
 
-	int i = 0, j = 0, res = 0, result = 0;
+	int res, result = 0;
 	unsigned char **keys = NULL;
 	ED25519_KEY *key = NULL;
 	signet_type_t sigtype;
@@ -2110,7 +2107,7 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 		RET_ERROR_INT(ERR_UNSPEC, "error retrieving signing keys from signet");
 	}
 
-	while(keys[i]) {
+	for (size_t i = 0; keys[i]; i++) {
 
 		if(!(key = _deserialize_ed25519_pubkey(keys[i]))) {
 			PUSH_ERROR(ERR_UNSPEC, "error deserializing ed25519 key");
@@ -2131,14 +2128,11 @@ int _signet_verify_message_sig(const signet_t *signet, ed25519_signature sig, co
 			result = 1;
 			break;
 		}
-
-		++i;
 	}
 
-	while(keys[j]) {
-		free(keys[j++]);
+	for (size_t j = 0; keys[j]; j++) {
+		free(keys[j]);
 	}
-
 	free(keys);
 
 	if (result < 0) {
