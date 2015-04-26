@@ -488,7 +488,7 @@ placer_t mail_mime_header(stringer_t *part) {
 			header++;
 		} else if (header == 2 && *stream == '\n') {
 			header++;
-		} else if (header != 0) {
+		} else {
 			header = 0;
 		}
 
