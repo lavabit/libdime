@@ -1,5 +1,5 @@
 # This must be run first. It stores the absolute path to the DIME directory. 
-topdir 	:= $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+topdir			:= $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 # Tools
 dime			:= $(topdir)/tools/dime
@@ -22,14 +22,9 @@ libdmessage		:= $(topdir)/libs/dmessage
 libsignet-resolver	:= $(topdir)/libs/signet-resolver
 libs			:= $(libcore) $(libcommon) $(libsignet) $(libdmessage) $(libsignet-resolver)
 
-# Foreign Dependencies
-libdonna		:= $(topdir)/deps/sources/donna
-libopenssl		:= $(topdir)/deps/sources/openssl
-foreign			:= # $(libopenssl) $(libdonna)
-
 checks			:= $(topdir)/check/common $(topdir)/check/core $(topdir)/check/dime $(topdir)/check/signet $(topdir)/check/dmessage
 
-.PHONY: all check clean $(libs) $(tools) $(legacy-tools) $(checks)
+.PHONY: all check clean uncrustify doxygen coverage $(libs) $(tools) $(legacy-tools) $(checks)
 
 all: $(libs) $(tools)
 
@@ -57,5 +52,14 @@ tools: $(dime) $(signet)
 legacy-tools: $(legacy-tools)
 
 uncrustify:
-	find check include libs tools -type f -name '*.[ch]' -print \
+	@find check include libs tools -type f -name '*.[ch]' -print \
 	| uncrustify -c uncrustify.cfg -F- --no-backup -l C
+
+coverage:
+	@$(MAKE) -s clean
+	@$(MAKE) -s check CDEBUG="-O0 -g --coverage"
+	@mkdir -p ~/public_html/libdime-coverage
+	@gcovr -r . --branches --html --html-details -o ~/public_html/libdime-coverage/index.html
+
+doxygen:
+	@doxygen
