@@ -191,7 +191,11 @@ typedef struct __attribute__((packed)) {
 	unsigned char aes_key[AES_256_KEY_SIZE];
 } dmime_keyslot_t;
 
-// message chunk
+/**
+ * One chunk of a DIME message.
+ *
+ * @see ::_dmsg_destroy_message_chunk
+ */
 typedef struct __attribute__((packed)) {
 	dmime_message_chunk_state_t state;
 	size_t serial_size;                             // this size is used to serialize the chunk which follows

@@ -239,6 +239,7 @@ dmime_message_chunk_t *_dmsg_encode_common_headers(dmime_object_t *object) {
 	}
 
 	if(!(result = _dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS))) {
+		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
