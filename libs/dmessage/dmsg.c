@@ -199,6 +199,7 @@ dmime_message_chunk_t *_dmsg_encode_destination(dmime_object_t *object) {
 
 	if(!(origin_signet_fingerprint_b64 = _signet_core_fingerprint(object->signet_origin))) {
 		free(recipient_crypto_signet_b64);
+		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate fingerprint");
 	}
 
 	if(!(data = st_merge("nsnnnsnnn", "Recipient: <", object->recipient, ">\r\nRecipient-Signet: [", recipient_crypto_signet_b64, "]\r\nOrigin: <", object->origin, ">\r\nOrigin-Signet-Fingerprint: [", origin_signet_fingerprint_b64, "]\r\n"))) {
