@@ -418,11 +418,11 @@ void _signet_dump(FILE *fp, signet_t *signet) {
 		}
 
 		if(i == SIGNET_USER_INITIAL_SIG && signet_type == SIGNET_TYPE_USER) {
-			fprintf(fp, "------- End user crypto. portion     ------------------------------------------------------------------------------------------\n");
+			fprintf(fp, "%-34s    %s\n", "------- End user crypto. portion", "------------------------------------------------------------------------------------------");
 		}
 
 		if((i == SIGNET_USER_CORE_SIG && signet_type == SIGNET_TYPE_USER) || (i == SIGNET_ORG_CORE_SIG && signet_type == SIGNET_TYPE_ORG)) {
-			fprintf(fp, "------- End core signet portion      ------------------------------------------------------------------------------------------\n");
+			fprintf(fp, "%-34s    %s\n", "------- End core signet portion", "------------------------------------------------------------------------------------------");
 		}
 	}
 
@@ -2975,7 +2975,7 @@ int _signet_field_dump(FILE *fp, const signet_field_t *field) {
 		nbuf = name;
 	}
 
-	fprintf(fp, "%-25.25s -> %-90.90s\n", nbuf, data ? data : "(null)");
+	fprintf(fp, "%-26.26s -> %-90.90s%s\n", nbuf, data ? data : "(null)", data && strlen(data) > 90 ? "..." : "");
 	free(name);
 	free(data);
 
