@@ -2632,6 +2632,7 @@ int _dmsg_msg_to_object_common_headers(dmime_object_t *object, const dmime_messa
 	}
 
 	if(!(object->common_headers = _dmsg_parse_common_headers(data, data_size))) {
+		_dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not parse common headers chunk data");
 	}
 
