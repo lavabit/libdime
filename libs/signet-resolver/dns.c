@@ -4,7 +4,7 @@
 #include <common/misc.h>
 #include <common/error.h>
 
-#define INITIALIZE_DNS { if (!_dns_initialized && (_initialize_resolver() < 0)) { RET_ERROR_PTR(ERR_UNSPEC, "failed to initialize DNS resolver"); } }
+#define INITIALIZE_DNS() { if (!_dns_initialized && (_initialize_resolver() < 0)) { RET_ERROR_PTR(ERR_UNSPEC, "failed to initialize DNS resolver"); } }
 
 static int _dns_initialized = 0;
 
@@ -1609,7 +1609,7 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	INITIALIZE_DNS;
+	INITIALIZE_DNS();
 
 	// The default state, unless there's an error or a validation failure, is unvalidated.
 	if (validated) {
@@ -1864,7 +1864,7 @@ mx_record_t **_get_mx_records(const char *qstring) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	INITIALIZE_DNS;
+	INITIALIZE_DNS();
 
 	if ((nread = res_query(qstring, ns_c_in, ns_t_mx, resbuf, sizeof(resbuf))) < 0) {
 		PUSH_ERROR_RESOLVER("res_query");
