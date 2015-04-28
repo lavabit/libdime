@@ -3236,6 +3236,7 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 			_free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "error during validation of origin display bounce signaure");
 		} else if(!result) {
+			_free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "origin display bounce signature is invalid");
 		}
 
