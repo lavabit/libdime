@@ -28,13 +28,6 @@ DEPDIR			= .deps
 OBJFILES		= $(patsubst %.c,$(OBJDIR)/%.o,$(SRCFILES))
 DEPFILES		= $(patsubst %.c,$(DEPDIR)/%.d,$(SRCFILES))
 
-# So we can tell the user what happened
-ifdef MAKECMDGOALS
-TARGETGOAL		= $(MAKECMDGOALS)
-else
-TARGETGOAL		= $(.DEFAULT_GOAL)
-endif
-
 # Shortcuts
 .PHONY: all clean libs $(basename $(ARCHIVE))
 all: $(ARCHIVE)
@@ -44,8 +37,7 @@ $(basename $(ARCHIVE)): $(ARCHIVE)
 # Delete the archive along with the generated object and dependency files
 clean:
 	@$(RM) $(ARCHIVE) $(OBJFILES) $(DEPFILES)
-	@for d in $(sort $(dir $(OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
-	@for d in $(sort $(dir $(DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
+	@$(RM) -r $(OBJDIR) $(DEPDIR)
 
 # Construct the static archive file
 $(ARCHIVE): $(OBJFILES)
@@ -56,8 +48,7 @@ $(ARCHIVE): $(OBJFILES)
 # Object files
 $(OBJDIR)/%.o: %.c
 	@echo 'Compiling' $(YELLOW)$<$(NORMAL)
-	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
-	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
+	@$(MKDIR) $(DEPDIR)/$(dir $<) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" -c "$(abspath $<)"
 
 # If we've already generated dependency files, use them to see if a rebuild is required

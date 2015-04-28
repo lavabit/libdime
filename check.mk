@@ -32,7 +32,7 @@ CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
 
 check_PROGRAMS	= checks
-CC		=  gcc
+CC		= gcc
 LIBS 		= $(checks_LDADD) $(CHECK_LIBS) -lz -lresolv
 CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) $(CWARNS) $(CDEBUG) -I../../include -std=gnu99
 SRCFILES	= $(checks_SOURCES)
