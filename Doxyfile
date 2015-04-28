@@ -1,5 +1,6 @@
 PROJECT_NAME = "Dark Internet Mail Environment"
 OUTPUT_DIRECTORY = doxygen-doc
+HTML_OUTPUT = .
 FULL_PATH_NAMES = YES
 TAB_SIZE = 8
 OPTIMIZE_OUTPUT_FOR_C = YES
@@ -8,3 +9,4 @@ INPUT = include libs tools check
 EXTRACT_ALL = YES
 QUIET = YES
 EXTRACT_STATIC = YES
+GENERATE_LATEX = NO
