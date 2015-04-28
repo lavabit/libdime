@@ -1704,6 +1704,7 @@ char *_get_txt_record(const char *qstring, unsigned long *ttl, int *validated) {
 
 		} else if (rrtype == ns_t_txt) {
 
+			free(result);
 			if (!(result = malloc(rdleft + 1))) {
 				PUSH_ERROR_SYSCALL("malloc");
 				RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for TXT record answer");
