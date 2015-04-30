@@ -94,7 +94,7 @@ START_TEST(check_ec_sha_signatures)
 
 		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 
-			for (size_t k = 0; k < 2; k++) {
+			for (size_t k = 0; k < 3; k++) {
 
 				if (!k) {
 					shabits = 160;
