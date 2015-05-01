@@ -113,7 +113,6 @@ void *mm_wipe(void *block, size_t len) {
  * @brief	Free a block of memory.
  * @note	block can point to either a secure or insecure memory block.
  * @param	block	a pointer to the block to be freed.
- * @result	This function does not return any value.
  */
 // QUESTION: the note of this function really makes no sense when compared to the pedantic block below.
 void mm_free(void *block) {
