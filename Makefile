@@ -60,6 +60,7 @@ coverage:
 	@$(MAKE) -s check CDEBUG="-O0 -g --coverage"
 	@mkdir -p ~/public_html/libdime-coverage
 	@gcovr -r . --branches --html --html-details -o ~/public_html/libdime-coverage/index.html
+	@$(MAKE) -s clean
 
 doxygen:
 	@doxygen
