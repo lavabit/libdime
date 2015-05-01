@@ -24,18 +24,20 @@ libs			:= $(libcore) $(libcommon) $(libsignet) $(libdmessage) $(libsignet-resolv
 
 checks			:= $(topdir)/check/common $(topdir)/check/core $(topdir)/check/dime $(topdir)/check/signet $(topdir)/check/dmessage
 
-.PHONY: all check clean uncrustify doxygen coverage $(libs) $(tools) $(legacy-tools) $(checks)
+.PHONY: all check clean
 
 all: $(libs) $(tools)
+
+check: $(checks)
 
 clean:
 	@$(foreach dir, $(libs) $(tools) $(legacy-tools) $(checks), $(MAKE) --directory=$(dir) clean; )
 
+.PHONY: $(libs) $(tools) $(legacy-tools) $(checks)
+
 $(libs) $(tools) $(legacy-tools) $(checks):
 	$(MAKE) --jobs=8 --directory=$@ $(TARGET)
 	$(if $(TARGET), $(MAKE) $(TARGET))
-
-check: $(checks)
 
 $(checks): all
 
@@ -51,6 +53,8 @@ signet: libs $(signet)
 tools: $(dime) $(signet)
 legacy-tools: $(legacy-tools)
 
+.PHONY: uncrustify doxygen coverage clang-scan
+
 uncrustify:
 	@find check include libs tools -type f -name '*.[ch]' -print \
 	| uncrustify -c uncrustify.cfg -F- --no-backup -l C
@@ -64,3 +68,8 @@ coverage:
 
 doxygen:
 	@doxygen
+
+clang-scan:
+	@$(MAKE) -s clean
+	@scan-build -o ~/public_html/clang-scan $(MAKE)
+	@$(MAKE) -s clean
