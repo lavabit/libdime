@@ -5,13 +5,12 @@ include $(topdir)/common.mk
 DEFINES			:= -D_REENTRANT -D__USE_GNU -D__GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compilation
-CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -rdynamic -fmessage-length=0 -MMD
+CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -fmessage-length=0 -MMD
 
 # Linker Flags
 LDFLAGS			:= -rdynamic $(CDEBUG)
 
 # External programs
-CC			:= gcc
 RM			:= rm -f
 MKDIR			:= mkdir -p
 

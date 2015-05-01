@@ -5,15 +5,13 @@ include $(topdir)/common.mk
 DEFINES			:= -D_REENTRANT -D_GNU_SOURCE -DFORTIFY_SOURCE=2
 
 # Compiler Flags
-CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -rdynamic -fmessage-length=0 -MMD
+CFLAGS			:= $(CWARNS) $(CDEBUG) -std=gnu99 -fPIC -fmessage-length=0 -MMD
 
 # Archiver Flags
 ARFLAGS			:= rcs
 
 # External programs
 AR			:= ar
-LD			:= gcc
-CC			:= gcc
 MV			:= mv -f
 RM			:= rm -f
 RMDIR			:= rmdir --parents --ignore-fail-on-non-empty
