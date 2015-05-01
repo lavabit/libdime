@@ -19,5 +19,5 @@ FULL_PATH_NAMES = YES
 OPTIMIZE_OUTPUT_FOR_C = YES
 GENERATE_LATEX = NO
 
-ALIASES += free_using{1}="\par Deallocation\nTo free the returned value, call \ref \1."
-ALIASES += free_using_free="\par Deallocation\nTo free the returned value, call \c free."
+ALIASES += free_usingref{1}="\par Deallocation\nTo free the returned value, call \ref \1."
+ALIASES += free_using{1}="\par Deallocation\nTo free the returned value, call \c \1."

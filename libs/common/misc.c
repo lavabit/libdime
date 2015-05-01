@@ -28,6 +28,7 @@ unsigned char _base64_vals[128] =
  * @param	buf	a pointer to the data buffer to be base-64 encoded.
  * @param	len	the length, in bytes, of the buffer to be encoded.
  * @return	a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
+ * @free_using{free}
  */
 char *_b64encode_nopad(const unsigned char *buf, size_t len) {
 
@@ -57,6 +58,7 @@ char *_b64encode_nopad(const unsigned char *buf, size_t len) {
  * @param	len	the length, in bytes, of the buffer to be decoded.
  * @param	outlen	a pointer to a variable to receive the length of the decoded data.
  * @return	a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
+ * @free_using{free}
  */
 unsigned char *_b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
 
@@ -221,6 +223,7 @@ uint16_t _int_no_get_2b(const void *buf) {
  * @param	buf	a pointer to the data buffer to be encoded as a hex string.
  * @param	len	the size, in bytes, of the buffer to be processed.
  * @return	NULL on failure, or a newly allocated null-terminated string containing the hex encoded input on success.
+ * @free_using{free}
  */
 char *_hex_encode(const unsigned char *buf, size_t len) {
 
@@ -478,6 +481,7 @@ int _count_ptr_chain(void *buf) {
  * @brief	Clone a pointer chain.
  * @param	buf	a pointer to the pointer chain to be cloned.
  * @return	a pointer to the cloned pointer chain on success, or NULL on failure.
+ * @free_usingref{ptr_chain_free}
  */
 void *_ptr_chain_clone(void *buf) {
 
@@ -517,7 +521,7 @@ void *_ptr_chain_clone(void *buf) {
  * @param	time	the time to be converted to a human-readable string.
  * @param	local	if set, return the time string as a local time; if not, as UTC.
  * @return	a string containing the formatted date-time; or NULL on errors.
- * @free_using_free
+ * @free_using{free}
  */
 char *_get_chr_date(time_t time, int local) {
 
@@ -552,6 +556,7 @@ char *_get_chr_date(time_t time, int local) {
  * @param	len	the length, in bytes, of the buffer to be decoded.
  * @param	outlen	a pointer to a variable to receive the length of the decoded data.
  * @return	a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
+ * @free_using{free}
  */
 unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
 
@@ -632,6 +637,7 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
  * @param	buf	a pointer to the data buffer to be base-64 encoded.
  * @param	len	the length, in bytes, of the buffer to be encoded.
  * @return	a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
+ * @free_using{free}
  */
 char *_b64encode(const unsigned char *buf, size_t len) {
 
@@ -964,6 +970,7 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
  * @param	data	a pointer to the data buffer that stores the encoded RSA public key in binary form.
  * @param	dlen	the length, in bytes, of the data buffer.
  * @return	a pointer to an RSA public key structure on success, or NULL on failure.
+ * @free_using{RSA_free}
  */
 RSA *_decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 
@@ -1033,6 +1040,7 @@ RSA *_decode_rsa_pubkey(unsigned char *data, size_t dlen) {
  * @param	pubkey	a pointer to the RSA public key to be encoded.
  * @param	enclen	a pointer to a size_t that will receive the total size of the encoded public key on completion.
  * @return	a pointer to a buffer containing the encoded RSA public key as binary data on success, or NULL on failure.
+ * @free_using{free}
  */
 unsigned char *_encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
 
@@ -1196,6 +1204,7 @@ int _write_pem_data(const char *b64_data, const char *tag, const char *filename)
  * @param	filename	a null-terminated string with the name of the file to have its contents read into memory.
  * @param	fsize		a pointer to a variable that will receive the length, in bytes, of the read data.
  * @return	a pointer to a buffer containing the raw contents of the specified file, or NULL on failure.
+ * @free_using{free}
  */
 unsigned char *_read_file_data(const char *filename, size_t *fsize) {
 
@@ -1251,6 +1260,7 @@ unsigned char *_read_file_data(const char *filename, size_t *fsize) {
  * @param	tag	the name of a tag in the file to have its contents read into memory.
  * @param	nospace		if set, strip all whitespace from the PEM file content.
  * @return	a pointer to a buffer containing the contents of the specified PEM file tag, or NULL on failure.
+ * @free_using{free}
  */
 char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
