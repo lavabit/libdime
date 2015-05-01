@@ -47,6 +47,7 @@ $(ARCHIVE): $(OBJFILES)
 $(OBJDIR)/%.o: %.c
 	@echo 'Compiling' $(YELLOW)$<$(NORMAL)
 	@$(MKDIR) $(DEPDIR)/$(dir $<) $(OBJDIR)/$(dir $<)
+	@#$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@".i -E "$(abspath $<)"
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$<) $(DEFINES) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" -c "$(abspath $<)"
 
 # If we've already generated dependency files, use them to see if a rebuild is required
