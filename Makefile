@@ -62,8 +62,8 @@ uncrustify:
 coverage:
 	@$(MAKE) -s clean
 	@$(MAKE) -s check CDEBUG="-O0 -g --coverage"
-	@mkdir -p ~/public_html/libdime-coverage
-	@gcovr -r . --branches --html --html-details -o ~/public_html/libdime-coverage/index.html
+	@mkdir -p ~/public_html/libdime/coverage
+	@gcovr -r . --branches --html --html-details -o ~/public_html/libdime/coverage/index.html
 	@$(MAKE) -s clean
 
 doxygen:
@@ -71,5 +71,5 @@ doxygen:
 
 clang-scan:
 	@$(MAKE) -s clean
-	@scan-build -o ~/public_html/clang-scan $(MAKE)
+	@scan-build -o ~/public_html/libdime/clang-scan $(MAKE)
 	@$(MAKE) -s clean
