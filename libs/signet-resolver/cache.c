@@ -1221,12 +1221,13 @@ int _load_cache_contents(void) {
 
 		_dbgprint(4, "Cache file was not found... creating.\n");
 
-		if (creat(cfile, S_IRWXU) < 0) {
+		if ((cfd = creat(cfile, S_IRWXU)) < 0) {
 			PUSH_ERROR_SYSCALL("creat");
 			free(cfile);
 			RET_ERROR_INT(ERR_UNSPEC, "unable to create cache file");
 		}
 
+		close(cfd);
 		free(cfile);
 		return 0;
 	}
