@@ -513,10 +513,10 @@ void *_ptr_chain_clone(void *buf) {
 
 
 /**
- * @brief	Get the human representation of a specified UNIX time.
+ * @brief	Get the human-readable, US-specific representation of a specified UNIX time.
  * @param	time	the time to be converted to a human-readable string.
  * @param	local	if set, return the time string as a local time; if not, as UTC.
- * @return	a NULL-terminated string containing the formatted date-time.
+ * @return	a string containing the formatted date-time, which must be freed later with \c free; or NULL on errors.
  */
 char *_get_chr_date(time_t time, int local) {
 
