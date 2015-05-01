@@ -79,7 +79,7 @@ size_t hex_count_st(stringer_t *s) {
  * @param output A pointer to the memory where the result should be stored or NULL if the result should only be returned.
  * @return Returns the two character hex representation of the binary input using a thread localized character buffer.
  */
-uchr_t *hex_encode_chr(byte_t b, uchr_t *output) {
+static uchr_t *hex_encode_chr(byte_t b, uchr_t *output) {
 
 	int_t number;
 	uchr_t nibble[3];
@@ -172,7 +172,8 @@ stringer_t *hex_encode_st(stringer_t *b, stringer_t *output) {
 stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 
 	stringer_t *result;
-	chr_t *iptr, *rptr, *rstart;
+	uchr_t *iptr;
+	chr_t *rptr, *rstart;
 	size_t total, pass_len;
 
 	// Not the most efficient, but this is mostly for internal debugging purposes anyhow
@@ -184,7 +185,7 @@ stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	}
 
 	rstart = rptr = st_char_get(result);
-	iptr = st_char_get(input);
+	iptr = st_uchar_get(input);
 	*rptr++ = '[';
 
 	if (maxlen >= st_length_get(input)) {
@@ -197,7 +198,7 @@ stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	for (size_t i = 0; i < pass_len; i++) {
 
 		if (chr_printable(*iptr) || (*iptr == '\r') || (*iptr == '\n') || (*iptr == '\t')) {
-			*rptr++ = *iptr++;
+			*rptr++ = (chr_t)*iptr++;
 		} else {
 			*rptr++ = '\\';
 			*rptr++ = 'x';
@@ -214,12 +215,12 @@ stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 		*rptr++ = '.';
 		*rptr++ = '.';
 		*rptr++ = ' ';
-		iptr = st_char_get(input) + st_length_get(input) - (maxlen / 2);
+		iptr = st_uchar_get(input) + st_length_get(input) - (maxlen / 2);
 
 		for (size_t i = 0; i < pass_len; i++) {
 
 			if (chr_printable(*iptr) || (*iptr == '\r') || (*iptr == '\n') || (*iptr == '\t')) {
-				*rptr++ = *iptr++;
+				*rptr++ = (chr_t)*iptr++;
 			} else {
 				*rptr++ = '\\';
 				*rptr++ = 'x';
@@ -233,7 +234,7 @@ stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen) {
 	*rptr++ = ']';
 	*rptr = 0;
 
-	st_length_set(result, (rptr - rstart));
+	st_length_set(result, (size_t)(rptr - rstart));
 	return result;
 }
 

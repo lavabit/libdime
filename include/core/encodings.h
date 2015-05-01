@@ -62,7 +62,6 @@ size_t      hex_count_st(stringer_t *s);
 size_t      hex_valid_st(stringer_t *s);
 stringer_t *hex_decode_st(stringer_t *h, stringer_t *output);
 stringer_t *hex_encode_st(stringer_t *b, stringer_t *output);
-uchr_t *    hex_encode_chr(byte_t b, uchr_t *output);
 stringer_t *hex_encode_st_debug(stringer_t *input, size_t maxlen);
 
 /// qp.c

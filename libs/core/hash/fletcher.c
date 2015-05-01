@@ -14,11 +14,13 @@
 uint32_t hash_fletcher32(const void *buffer, size_t length) {
 	size_t input, blocks = length / 2;
 	uint32_t a = 0xffff, b = 0xffff;
+	const uint16_t *buf = buffer;
+
 	while (blocks) {
 		input = blocks > 360 ? 360 : blocks;
 		blocks -= input;
 		do {
-			a += *((uint16_t *)buffer++);
+			a += *buf++;
 			b += a;
 		} while (--input);
 		a = (a & 0xffff) + (a >> 16);

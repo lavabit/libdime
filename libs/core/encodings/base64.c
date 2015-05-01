@@ -53,7 +53,8 @@ stringer_t *base64_encode_opts(stringer_t *s, uint32_t opts, bool_t modified) {
  */
 stringer_t *base64_encode_st(stringer_t *s, stringer_t *output) {
 
-	uchr_t *p, *o;
+	uchr_t *p;
+	chr_t *o;
 	size_t len, new_len;
 	uint32_t opts = 0;
 	int_t c1, c2, c3, cur_line = 0;
@@ -157,7 +158,8 @@ stringer_t *base64_encode_st(stringer_t *s, stringer_t *output) {
  */
 stringer_t *base64_encode_mod(stringer_t *s, stringer_t *output) {
 
-	uchr_t *p, *o;
+	uchr_t *p;
+	chr_t *o;
 	stringer_t *result;
 	uint32_t opts = 0;
 	size_t len, new_len;

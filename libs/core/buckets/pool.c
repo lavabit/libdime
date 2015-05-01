@@ -25,7 +25,7 @@ void pool_free(pool_t *pool) {
  * @param	count		the number of items the pool can hold.
  * @param	timeout		a timeout for pool requests in seconds (specify 0 for infinite wait).
  * @return	the newly allocated object pool, or NULL on failure
- * @see pool_free
+ * @free_using{pool_free}
  */
 pool_t *pool_alloc(uint32_t count, uint32_t timeout) {
 
@@ -52,7 +52,7 @@ pool_t *pool_alloc(uint32_t count, uint32_t timeout) {
 	pool->count = count;
 	pool->timeout = timeout;
 
-	pool->status = (status_t *)((char *)pool + sizeof(pool_t));
+	pool->status = (status_t *)(void *)((char *)pool + sizeof(pool_t));
 	pool->objects = (void *)((char *)pool + sizeof(pool_t) + ((sizeof(status_t) * count)));
 
 	if (sem_init(&(pool->available), 0, count)) {
@@ -92,7 +92,7 @@ uint32_t pool_get_available(pool_t *pool) {
 	int available;
 	if (!pool || !sem_getvalue(&(pool->available), &available))
 		return 0;
-	return available;
+	return (uint32_t)available;
 }
 
 /**

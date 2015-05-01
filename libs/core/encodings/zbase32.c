@@ -13,7 +13,8 @@
  */
 stringer_t *zbase32_encode(stringer_t *s) {
 
-	uchr_t *p, *o;
+	uchr_t *p;
+	chr_t *o;
 	stringer_t *output;
 	size_t len, written = 0;
 	uint32_t v = 0, bits = 0;
@@ -33,7 +34,7 @@ stringer_t *zbase32_encode(stringer_t *s) {
 	o = st_data_get(output);
 
 	for (size_t i = 0; i < len; i++) {
-		v = v | (*p++ << bits);
+		v |= (uint32_t)*p++ << bits;
 		bits += 8;
 
 		while (bits >= 5) {
@@ -94,7 +95,7 @@ stringer_t *zbase32_decode(stringer_t *s) {
 		bits += 5;
 
 		if (bits >= 8) {
-			*o++ = v;
+			*o++ = v & 0xff;
 			bits -= 8;
 			v = v >> 8;
 			written++;
