@@ -13,9 +13,10 @@
  * @param	output	a managed string where the results of the file read operation will be stored.
  * @return	-1 on failure or the number of bytes read from the file on success.
  */
-int_t file_read(char *name, stringer_t *output) {
+ssize_t file_read(char *name, stringer_t *output) {
 
-	int_t fd, result;
+	int_t fd;
+	ssize_t result;
 
 	if (!output) {
 		log_pedantic("File read operation performed with NULL output buffer.");

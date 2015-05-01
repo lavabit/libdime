@@ -17,7 +17,7 @@ enum {
 
 /// files.c
 stringer_t *  file_load(char *name);
-int_t         file_read(char *name, stringer_t *output);
+ssize_t       file_read(char *name, stringer_t *output);
 int_t         get_temp_file_handle(chr_t *pdir, stringer_t **tmpname);
 bool_t        file_accessible(const chr_t *path);
 bool_t        file_readwritable(const chr_t *path);
