@@ -149,10 +149,11 @@ char *_get_dime_dir_location(const char *suffix) {
  * @brief	Get the full pathname of the DIME cache file.
  * @note	The default location returned by this function can be overridden by setting the DIME_CACHE_FILE environment variable.
  * @return	NULL on failure, or a null-terminated string containing the filename of the DIME object cache file on success.
+ * @free_using{free}
  */
-const char *_get_cache_location(void) {
+char *_get_cache_location(void) {
 
-	const char *result;
+	char *result;
 	char *cfile = NULL;
 
 	// If the path has already been set explicitly, return that.
@@ -1197,7 +1198,7 @@ int _load_cache_contents(void) {
 	cached_store_t *store;
 	cached_object_t *obj;
 	void *cdata = NULL, *udata, *reall_res = NULL;
-	const char *cfile;
+	char *cfile;
 	char ttlstr[64], *tstr, *expstr;
 	unsigned char *uptr;
 	time_t now;
@@ -1222,11 +1223,14 @@ int _load_cache_contents(void) {
 
 		if (creat(cfile, S_IRWXU) < 0) {
 			PUSH_ERROR_SYSCALL("creat");
+			free(cfile);
 			RET_ERROR_INT(ERR_UNSPEC, "unable to create cache file");
 		}
 
+		free(cfile);
 		return 0;
 	}
+	free(cfile);
 
 	// The file consists of a sequence of object chunk lengths and data.
 	while (1) {
@@ -1410,7 +1414,7 @@ int _save_cache_contents(void) {
 
 	cached_object_t *ptr, *towrite;
 	void *cdata;
-	const char *cfile;
+	char *cfile;
 	size_t clen, chdr_size = 0;
 	int cfd;
 	uint32_t objlen;
@@ -1426,8 +1430,11 @@ int _save_cache_contents(void) {
 
 	if ((cfd = open(cfile, (O_CREAT | O_TRUNC | O_WRONLY), (S_IRWXU))) < 0) {
 		PUSH_ERROR_SYSCALL("open");
-		RET_ERROR_INT_FMT(ERR_UNSPEC, "unable to open object cache file for writing: %s", cfile);
+		PUSH_ERROR_FMT(ERR_UNSPEC, "unable to open object cache file for writing: %s", cfile);
+		free(cfile);
+		return -1;
 	}
+	free(cfile);
 
 	for(size_t i = 1; i < sizeof(cached_stores) / sizeof(cached_store_t); i++) {
 		_dbgprint(4, "Persisting cache of type: %s ...\n", cached_stores[i].description);

@@ -79,7 +79,7 @@ extern cached_store_t cached_stores[];
 PUBLIC_FUNC_DECL(int,               load_cache_contents,          void);
 PUBLIC_FUNC_DECL(int,               save_cache_contents,          void);
 PUBLIC_FUNC_DECL(char *,            get_dime_dir_location,        const char *suffix);
-PUBLIC_FUNC_DECL(const char *,      get_cache_location,           void);
+PUBLIC_FUNC_DECL(char *,            get_cache_location,           void);
 PUBLIC_FUNC_DECL(int,               set_cache_location,           const char *path);
 PUBLIC_FUNC_DECL(int,               set_cache_permissions,        unsigned long flags);
 

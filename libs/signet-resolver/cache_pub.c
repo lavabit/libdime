@@ -61,7 +61,7 @@ char *get_dime_dir_location(const char *suffix) {
 	PUBLIC_FUNC_IMPL(get_dime_dir_location, suffix);
 }
 
-const char *get_cache_location(void) {
+char *get_cache_location(void) {
 	PUBLIC_FUNC_IMPL(get_cache_location, );
 }
 
