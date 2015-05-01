@@ -109,7 +109,7 @@ bool_t mt_is_number(multi_t multi) {
 /**
  * @brief	Get the value of a numerical multi-type object.
  * @param	multi	the multi-type object to be examined.
- * @result	the numerical value of the input object, or 0 on failure.
+ * @return	the numerical value of the input object, or 0 on failure.
  */
 uint64_t mt_get_number(multi_t multi) {
 
@@ -306,7 +306,7 @@ size_t mt_get_length(multi_t multi) {
 /**
  * @brief	Get the data type associated with a multi-type object.
  * @param	multi	the multi-type object to be examined.
- * @result	the data type of the input object, or EMPTY on failure.
+ * @return	the data type of the input object, or EMPTY on failure.
  */
 // QUESTION: Wtf is this routine coded like this?
 M_TYPE mt_get_type(multi_t multi) {
@@ -380,7 +380,7 @@ M_TYPE mt_get_type(multi_t multi) {
  * @brief	Set the data type of a multi-type data object.
  * @param	multi	the multi-type object to be adjusted.
  * @param	target	the value of the new data type for the input object.
- * @result	a copy of the modified multi-type data object.
+ * @return	a copy of the modified multi-type data object.
  */
 multi_t mt_set_type(multi_t multi, M_TYPE target) {
 

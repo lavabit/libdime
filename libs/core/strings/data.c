@@ -8,7 +8,7 @@
 /**
  * @brief	Determine whether the specified managed string is empty or not.
  * @param	s       the input managed string.
- * @result	true if string is NULL or uninitialized or empty; false otherwise.
+ * @return	true if string is NULL or uninitialized or empty; false otherwise.
  */
 bool_t st_empty(stringer_t *s) {
 

@@ -1749,7 +1749,7 @@ size_t _mem_append_serialized_array_cb(unsigned char **buf, size_t *blen, const 
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	len		the size of the data chunk to be deserialized from the input buffer.
- * @result	1 on success or 0 on failure.
+ * @return	1 on success or 0 on failure.
  */
 unsigned int _deserialize_data(unsigned char *dst, unsigned char **bufptr, const unsigned char *bufend, size_t len) {
 
@@ -1777,7 +1777,7 @@ unsigned int _deserialize_data(unsigned char *dst, unsigned char **bufptr, const
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	olen		an optional pointer to receive the size of the deserialized data on success.
- * @result	a pointer to a newly allocated buffer containing the deserialized data on success, or NULL on failure.
+ * @return	a pointer to a newly allocated buffer containing the deserialized data on success, or NULL on failure.
  */
 unsigned char *_deserialize_vardata(unsigned char **bufptr, const unsigned char *bufend, size_t *olen) {
 
@@ -1819,7 +1819,7 @@ unsigned char *_deserialize_vardata(unsigned char **bufptr, const unsigned char 
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
- * @result	1 on success or 0 on failure.
+ * @return	1 on success or 0 on failure.
  */
 unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsigned char *bufend) {
 
@@ -1868,7 +1868,7 @@ unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsig
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	itemsize	the size, in bytes, of the fixed-sized objects to be deserialized.
- * @result	1 on success or 0 on failure.
+ * @return	1 on success or 0 on failure.
  */
 unsigned int _deserialize_array(unsigned char ***dst, unsigned char **bufptr, const unsigned char *bufend, size_t itemsize) {
 
@@ -1947,7 +1947,7 @@ unsigned int _deserialize_array(unsigned char ***dst, unsigned char **bufptr, co
  * @param	bufptr		a pointer to the address of the input buffer holding the data to be deserialized,
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
- * @result	1 on success or 0 on failure.
+ * @return	1 on success or 0 on failure.
  */
 unsigned int _deserialize_str_array(char ***dst, unsigned char **bufptr, const unsigned char *bufend) {
 
@@ -2017,7 +2017,7 @@ unsigned int _deserialize_str_array(char ***dst, unsigned char **bufptr, const u
  *                              which will be updated after the operation to point to the next available data.
  * @param	bufend		a pointer to the end of the input buffer for validation purposes.
  * @param	dfn		a custom deserialization function that will be used to deserialize the user data from the input buffer.
- * @result	1 on success or 0 on failure.
+ * @return	1 on success or 0 on failure.
  */
 unsigned int _deserialize_array_cb(unsigned char ***dst, unsigned char **bufptr, const unsigned char *bufend, custom_deserializer_t dfn) {
 

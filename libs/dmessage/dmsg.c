@@ -557,7 +557,7 @@ int _dmsg_set_kek(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf) {
  * @param	object		Pointer to the non-serialized dmime message that has had its ephemeral chunk allocated and is linked to all required signets.
  * @param	ephemeral	Pointer to an ephemeral private encryption ec key used to generate the key encryption keys and initialization vectors.
  * @param	kekset		Pointer to the set of key encryption keys to be populated.
- * @result	0 on success, all other values indicate failure.
+ * @return	0 on success, all other values indicate failure.
  */
 int _dmsg_derive_kekset(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset) {
 

@@ -8,7 +8,7 @@
 /**
  * @brief	Allocate an array of a specified number of elements.
  * @param	size	the number of elements the array is capable of holding.
- * @result	NULL on failure, or a pointer to the newly allocated array on success.
+ * @return	NULL on failure, or a pointer to the newly allocated array on success.
  */
 array_t *ar_alloc(size_t size) {
 

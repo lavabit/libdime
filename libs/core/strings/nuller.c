@@ -99,7 +99,7 @@ void ns_free(chr_t *s) {
 /**
  * @brief	Duplicate a null-terminated string.
  * @param	s	the null-terminated string to be duplicated.
- * @result	NULL on failure, or a pointer to a copy of the input string.
+ * @return	NULL on failure, or a pointer to a copy of the input string.
  */
 chr_t *ns_dupe(chr_t *s) {
 
