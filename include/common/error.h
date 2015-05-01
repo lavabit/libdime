@@ -4,19 +4,18 @@
 #include <stdio.h>
 #include <errno.h>
 
+#define RET_ERROR_INT(errorcode, auxmsg)      do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return -1; } while (0)
+#define RET_ERROR_UINT(errorcode, auxmsg)     do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return 0; } while (0)
+#define RET_ERROR_PTR(errorcode, auxmsg)      do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return NULL; } while (0)
+#define RET_ERROR_CUST(retval, errorcode, auxmsg) do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return retval; } while (0)
 
-#define RET_ERROR_INT(ec, ax)      do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return -1; } while (0)
-#define RET_ERROR_UINT(ec, ax)     do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return 0; } while (0)
-#define RET_ERROR_PTR(ec, ax)      do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return NULL; } while (0)
-#define RET_ERROR_CUST(rv, ec, ax) do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); return rv; } while (0)
+#define RET_ERROR_INT_FMT(errorcode, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return -1; } while (0)
+#define RET_ERROR_UINT_FMT(errorcode, fmt, ...)   do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return 0; } while (0)
+#define RET_ERROR_PTR_FMT(errorcode, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return NULL; } while (0)
+#define RET_ERROR_CUST_FMT(retval, errorcode, fmt, ...) do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return retval; } while (0)
 
-#define RET_ERROR_INT_FMT(ec, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return -1; } while (0)
-#define RET_ERROR_UINT_FMT(ec, fmt, ...)   do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return 0; } while (0)
-#define RET_ERROR_PTR_FMT(ec, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); return NULL; } while (0)
-#define RET_ERROR_CUST_FMT(rv, ec, f, ...) do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, f, __VA_ARGS__); return rv; } while (0)
-
-#define PUSH_ERROR(ec, ax)           do { _push_error_stack(__FILE__, __func__, __LINE__, ec, errno, ax); } while (0)
-#define PUSH_ERROR_FMT(ec, fmt, ...) do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, ec, errno, fmt, __VA_ARGS__); } while (0)
+#define PUSH_ERROR(errorcode, auxmsg)           do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); } while (0)
+#define PUSH_ERROR_FMT(errorcode, fmt, ...)     do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); } while (0)
 
 #define PUSH_ERROR_SYSCALL(func)  do { _push_error_stack_syscall(__FILE__, __func__, __LINE__, errno, func); } while (0)
 #define PUSH_ERROR_OPENSSL()      do { _push_error_stack_openssl(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno); } while (0)
@@ -24,19 +23,21 @@
 
 #define PUBLIC_FUNC_PROLOGUE() { _clear_error_stack(); }
 
-#define PUBLIC_FUNC_IMPL(x, ...)                 PUBLIC_FUNC_PROLOGUE(); return (_ ## x(__VA_ARGS__))
-#define PUBLIC_FUNC_IMPL_VOID(x, ...)            PUBLIC_FUNC_PROLOGUE(); _ ## x(__VA_ARGS__)
-#define PUBLIC_FUNC_IMPL_VA1(x, p1)              PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p1); __ ## x(p1, ap); va_end(ap); return; }
-#define PUBLIC_FUNC_IMPL_VA1_RET(ret, x, p1)     PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p1); result = __ ## x(p1, ap); va_end(ap); return result; }
-#define PUBLIC_FUNC_IMPL_VA2(x, p1, p2)          PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p2); __ ## x(p1, p2, ap); va_end(ap); return; }
-#define PUBLIC_FUNC_IMPL_VA2_RET(ret, x, p1, p2) PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p2); result = __ ## x(p1, p2, ap); va_end(ap); return result; }
+#define PUBLIC_FUNC_IMPL(funcname, ...)                 PUBLIC_FUNC_PROLOGUE(); return (_ ## funcname(__VA_ARGS__))
+#define PUBLIC_FUNC_IMPL_VOID(funcname, ...)            PUBLIC_FUNC_PROLOGUE(); _ ## funcname(__VA_ARGS__)
+#define PUBLIC_FUNC_IMPL_VA1(funcname, p1)              PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p1); __ ## funcname(p1, ap); va_end(ap); return; }
+#define PUBLIC_FUNC_IMPL_VA1_RET(ret, funcname, p1)     PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p1); result = __ ## funcname(p1, ap); va_end(ap); return result; }
+#define PUBLIC_FUNC_IMPL_VA2(funcname, p1, p2)          PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p2); __ ## funcname(p1, p2, ap); va_end(ap); return; }
+#define PUBLIC_FUNC_IMPL_VA2_RET(ret, funcname, p1, p2) PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p2); result = __ ## funcname(p1, p2, ap); va_end(ap); return result; }
 
-#define PUBLIC_FUNC_DECL(ret, x, ...) ret x(__VA_ARGS__); \
-	ret _ ## x(__VA_ARGS__)
+#define PUBLIC_FUNC_DECL(rettype, funcname, ...) \
+	rettype funcname(__VA_ARGS__); \
+	rettype _ ## funcname(__VA_ARGS__)
 
-#define PUBLIC_FUNC_DECL_VA(ret, x, ...) ret x(__VA_ARGS__, ...); \
-	ret _ ## x(__VA_ARGS__, ...); \
-	ret __ ## x(__VA_ARGS__, va_list ap)
+#define PUBLIC_FUNC_DECL_VA(rettype, funcname, ...) \
+	rettype funcname(__VA_ARGS__, ...); \
+	rettype _ ## funcname(__VA_ARGS__, ...); \
+	rettype __ ## funcname(__VA_ARGS__, va_list ap)
 
 #define ERR_SYSCALL   1
 #define ERR_OPENSSL   2
