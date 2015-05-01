@@ -1132,9 +1132,8 @@ void _dump_cache(cached_data_type_t dtype, int do_data, int ephemeral) {
 				fprintf(stderr, "\n");
 			}
 
-			if (expstr) {
-				free(expstr);
-			}
+			free(tstr);
+			free(expstr);
 
 			if (do_data) {
 				_dump_cache_data(stderr, ptr, 0);
