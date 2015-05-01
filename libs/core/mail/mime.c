@@ -5,7 +5,7 @@
 
 #include <core/magma.h>
 
-media_type_t media_types[] = {
+static const media_type_t media_types[] = {
 	{ "",       true,  "application/octet-stream"},
 	{ ".aif",   true,  "audio/aiff" },
 	{ ".aiff",  true,  "audio/aiff" },

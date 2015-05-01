@@ -5,11 +5,11 @@
 
 #include <core/magma.h>
 
-const chr_t *st_option_flags[] = {
+static const chr_t *st_option_flags[] = {
 	"FOREIGNDATA"
 };
 
-const chr_t *st_option_types[] = {
+static const chr_t *st_option_types[] = {
 	"UNKNOWN",
 	"CONSTANT",
 	"PLACER",
@@ -19,13 +19,13 @@ const chr_t *st_option_types[] = {
 	"MAPPED"
 };
 
-const chr_t *st_option_layouts[] = {
+static const chr_t *st_option_layouts[] = {
 	"UNKNOWN",
 	"CONTIGUOUS",
 	"JOINTED"
 };
 
-const chr_t *st_option_allocators[] = {
+static const chr_t *st_option_allocators[] = {
 	"UNKNOWN",
 	"STACK",
 	"HEAP",

@@ -5,9 +5,9 @@
 
 #include <core/magma.h>
 
-uint64_t log_date;
-bool_t log_enabled = true;
-pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
+static uint64_t log_date;
+static bool_t log_enabled = true;
+static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * @brief	Disable logging.

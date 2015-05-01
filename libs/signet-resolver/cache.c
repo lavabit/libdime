@@ -16,11 +16,11 @@
 
 
 // The permissions for the cache - all of them by default.
-unsigned int _cache_flags = CACHE_PERM_DEFAULT;
+static unsigned int _cache_flags = CACHE_PERM_DEFAULT;
 
-char *_cachefile = NULL;
-char *_dime_dir = NULL;
-uid_t _last_uid = 0;
+static char *_cachefile = NULL;
+static char *_dime_dir = NULL;
+static uid_t _last_uid = 0;
 
 // This is the global table that stores all the cache management functions for the different types of data supported by the object cache.
 cached_store_t cached_stores[cached_data_signet + 1] = {
