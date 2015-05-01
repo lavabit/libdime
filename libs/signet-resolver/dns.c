@@ -1205,7 +1205,8 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 	rrsig_rr_t *rrsig;
 	dnskey_t *signing_key;
 	const unsigned char *strptr = rdata;
-	char nbuf[MAXDNAME], *timestr;
+	char nbuf[MAXDNAME];
+	char *inception_timestr, *expiration_timestr, *now_timestr;
 	time_t tnow;
 	size_t rdleft = rdlen;
 	int lsignlen, result;
@@ -1227,20 +1228,22 @@ int _validate_rrsig_rr(const char *label, ns_msg *dhandle, unsigned short covere
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "RRSIG record was not encoded with RSASHA1 (%u)", rrsig->algorithm);
 	}
 
-	timestr = _get_chr_date(ntohl(rrsig->inception), 1);
+	inception_timestr = _get_chr_date(ntohl(rrsig->inception), 1);
+	expiration_timestr = _get_chr_date(ntohl(rrsig->expiration), 1);
 	_dbgprint(3, "  algorithm: %u, covered: %u, labels: %u, Original ttl: %d, key tag: %d, expiration: %s, inception: %s\n",
 	          rrsig->algorithm, ntohs(rrsig->covered), rrsig->labels, ntohl(rrsig->ottl), ntohs(rrsig->key_tag),
-	          _get_chr_date(ntohl(rrsig->expiration), 1), timestr ? timestr : "[error]");
-	timestr ? free(timestr) : _clear_error_stack();
+	          expiration_timestr ? expiration_timestr : "[error]", inception_timestr ? inception_timestr : "[error]");
+	free(inception_timestr);
+	free(expiration_timestr);
 
 	if (time(&tnow) == ((time_t)-1)) {
 		PUSH_ERROR_SYSCALL("time");
 		RET_ERROR_INT(ERR_UNSPEC, "unable to get current time");
 	}
 
-	timestr = _get_chr_date(tnow, 1);
-	_dbgprint(5, "  NOW: %s\n", timestr ? timestr : "[error]");
-	timestr ? free(timestr) : _clear_error_stack();
+	now_timestr = _get_chr_date(tnow, 1);
+	_dbgprint(5, "  NOW: %s\n", now_timestr ? now_timestr : "[error]");
+	free(now_timestr);
 
 	if (tnow < ntohl(rrsig->inception)) {
 		RET_ERROR_INT(ERR_UNSPEC, "current time is before RR inception time");
