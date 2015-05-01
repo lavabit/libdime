@@ -21,6 +21,20 @@ some of that code doesn't qualify as a unit test, since it just feeds
 random numbers to the functions and checks that the code doesn't crash.
 You can take that code to get an idea of how things work.
 
+See http://check.sourceforge.net/doc/check_html/ for help. Check makes
+heavy use of environment variables to adjust the verboseness of the unit
+tests. Look up their names in the Check documentation:
+
+* CK_RUN_CASE = name of a test case, runs only that test
+* CK_RUN_SUITE = name of a test suite, runs only that suite
+* CK_VERBOSITY = silent | minimal | normal | verbose
+* CK_FORK = no, to debug segmentation faults
+* CK_DEFAULT_TIMEOUT = float, in seconds; 0 means no timeout
+* CK_TIMEOUT_MULTIPLIER = integer, default 1
+* CK_LOG_FILE_NAME = filename, to redirect the output
+* CK_XML_LOG_FILE_NAME = XML log file name
+* CK_TAP_LOG_FILE_NAME = Test Anything Protocol log file name
+
 Write unit tests for the tools
 ====
 
