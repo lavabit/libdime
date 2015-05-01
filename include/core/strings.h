@@ -162,8 +162,8 @@ stringer_t *st_aprint(const chr_t *format, ...) __attribute__((format(printf, 1,
 stringer_t *st_aprint_opts(uint32_t opts, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
 stringer_t *st_quick(stringer_t *s, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
 size_t      st_sprint(stringer_t *s, const chr_t *format, ...) __attribute__((format(printf, 2, 3)));
-stringer_t *st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args);
-size_t      st_vsprint(stringer_t *s, const chr_t *format, va_list args);
+stringer_t *st_vaprint_opts(uint32_t opts, const chr_t *format, va_list args) __attribute__((format(printf, 2, 0)));
+size_t      st_vsprint(stringer_t *s, const chr_t *format, va_list args) __attribute__((format(printf, 2, 0)));
 
 /// replace.c
 int_t         st_replace(stringer_t **target, stringer_t *pattern, stringer_t *replacement);
