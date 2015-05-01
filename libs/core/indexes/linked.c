@@ -418,7 +418,6 @@ static void linked_truncate(void *inx) {
  * @brief	Free a linked list object and all of its records.
  * @see		linked_truncate()
  * @param	inx		a pointer to the linked list object to be freed.
- * @result	This function returns no value.
  */
 static void linked_free(void *inx) {
 

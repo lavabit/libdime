@@ -8,7 +8,6 @@
 /**
  * @brief	Unlock an inx object.
  * @param	inx		a pointer to the inx object to be unlocked.
- * @result	This function returns no value.
  */
 void inx_unlock(inx_t *inx) {
 	if (!inx->automatic) {
@@ -26,7 +25,6 @@ void inx_auto_unlock(inx_t *inx) {
 /**
  * @brief	Acquire a reader's lock for an inx object.
  * @param	inx		a pointer to the inx object to be locked.
- * @result	This function returns no value.
  */
 void inx_lock_read(inx_t *inx) {
 	if (!inx->automatic) {
@@ -42,7 +40,6 @@ void inx_auto_read(inx_t *inx) {
 /**
  * @brief	Acquire a writer's lock for an inx object.
  * @param	inx		a pointer to the inx object to be locked.
- * @result	This function returns no value.
  */
 void inx_lock_write(inx_t *inx) {
 	if (!inx->automatic) {

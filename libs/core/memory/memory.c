@@ -9,7 +9,6 @@
  * @brief	Performed a checked memory free.
  * @see		mm_cleanup
  * @param	block	the block of memory to be freed.
- * @result	This function returns no value.
  */
 void mm_cleanup(void *block) {
 

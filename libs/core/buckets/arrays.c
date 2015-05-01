@@ -359,7 +359,6 @@ int_t ar_append(array_t **array, uint32_t type, void *item) {
 /**
  * @brief	Free an array object and all of its underlying elements.
  * @note	Array elements that are managed strings, and aren't empty or of ARRAY_TYPE_POINTER will be freed.
- * @result	This function returns no value.
  */
 void ar_free(array_t *array) {
 

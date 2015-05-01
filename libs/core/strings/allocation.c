@@ -84,7 +84,6 @@ void st_free(stringer_t *s) {
  * @brief	A checked managed string free front-end function.
  * @see		st_free()
  * @param	s	the managed string to be freed.
- * @result	This function returns no value.
  */
 void st_cleanup(stringer_t *s) {
 

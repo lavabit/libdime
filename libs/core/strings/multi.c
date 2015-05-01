@@ -451,7 +451,6 @@ multi_t mt_set_type(multi_t multi, M_TYPE target) {
 /**
  * @brief	Free the data underlying a multi-type data object (for managed and null-terminated strings).
  * @param	multi	the multi-type object to be freed.
- * @result	This function returns no value.
  */
 void mt_free(multi_t multi) {
 

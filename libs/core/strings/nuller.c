@@ -85,7 +85,6 @@ chr_t *ns_alloc(size_t len) {
 /**
  * @brief	Free a null-terminated string.
  * @param	s	the string to be freed.
- * @result	This function returns no value.
  */
 void ns_free(chr_t *s) {
 
