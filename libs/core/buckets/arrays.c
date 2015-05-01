@@ -13,6 +13,7 @@
 array_t *ar_alloc(size_t size) {
 
 	array_t *result;
+	size_t resultsize;
 
 	// We can't create zero length arrays.
 	if (!size) {
@@ -27,15 +28,15 @@ array_t *ar_alloc(size_t size) {
 	}
 
 	// Allocate room for the size, the used number, and then a uint32_t plus a pointer for each element.
-	result = malloc(sizeof(size_t) + sizeof(size_t) + (size * (sizeof(uint32_t) + sizeof(void *))));
+	resultsize = sizeof(size_t) + sizeof(size_t) + (size * (sizeof(uint32_t) + sizeof(void *)));
+	result = malloc(resultsize);
 
 	// Verify the allocation, clear and set the size parameter.
 	if (result) {
-		mm_wipe(result, sizeof(size_t) + sizeof(size_t) + (size * (sizeof(uint32_t) + sizeof(void *))));
+		mm_wipe(result, resultsize);
 		*(size_t *)result = size;
 	} else {
-		log_error("We were unable to allocate an array of %zu elements totaling %zu bytes.", size, sizeof(size_t) + sizeof(size_t) +
-		          (size * (sizeof(uint32_t) + sizeof(void *))));
+		log_error("We were unable to allocate an array of %zu elements totaling %zu bytes.", size, resultsize);
 	}
 
 	return result;
