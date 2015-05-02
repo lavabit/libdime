@@ -31,3 +31,5 @@ endif
 CDEBUG	?= -Os -ggdb -g3
 
 VERBOSE	?= no
+
+USE_VALGRIND	?= no
