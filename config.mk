@@ -28,6 +28,6 @@ ifeq ($(CC),gcc)
 #CWARNS	+= -Wpedantic
 endif
 
-CDEBUG	?= -O0 -ggdb -g3
+CDEBUG	?= -Os -ggdb -g3
 
 VERBOSE	?= no
