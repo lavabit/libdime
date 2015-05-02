@@ -960,7 +960,16 @@ unsigned char **_signet_get_msg_sign_keys(const signet_t *signet) {
 		memset(keys[i], 0, key_size);
 	}
 
-	temp = _signet_fid_create(signet, SIGNET_ORG_POK);
+	if ((temp = _signet_fid_create(signet, SIGNET_ORG_POK)) == NULL) {
+		for(size_t j = 0; j < num_keys; ++j) {
+			free(keys[j]);
+		}
+		free(keys);
+		if(field) {
+			_signet_fid_destroy(field);
+		}
+		RET_ERROR_PTR(ERR_UNSPEC, NULL);
+	}
 	memcpy(keys[0], &(temp->signet->data[temp->data_offset]), key_size);
 	_signet_fid_destroy(temp);
 
