@@ -602,27 +602,28 @@ stringer_t *mail_mime_boundary(placer_t header) {
 	chr_t *stream;
 	int_t quote = 0;
 	size_t length, bounder;
-	stringer_t *holder, *haystack, *boundary, *content;
+	stringer_t *holder, *boundary, *content;
+	placer_t haystack;
 
 	// Get the content type line from the header.
 	if ((content = mail_header_fetch_all((stringer_t *)&header, PLACER("Content-Type", 12)))) {
-		haystack = PLACER(st_char_get(content), st_length_get(content));
+		haystack = pl_init(st_char_get(content), st_length_get(content));
 	}
 	// If there is no content line, search the entire header.
 	else {
-		haystack = (stringer_t *)&header;
+		haystack = pl_init(pl_char_get(header), pl_length_get(header));
 	}
 
 	// Find the boundary.
-	if (!st_search_ci(haystack, PLACER("boundary", 8), &bounder)) {
+	if (!st_search_ci((stringer_t *)&haystack, PLACER("boundary", 8), &bounder)) {
 		log_pedantic("We couldn't find the MIME boundary.");
 		st_cleanup(content);
 		return NULL;
 	}
 
 	// Get setup.
-	length = st_length_get(haystack) - bounder;
-	stream = st_char_get(haystack) + bounder + 8;
+	length = pl_length_get(haystack) - bounder;
+	stream = pl_char_get(haystack) + bounder + 8;
 
 	// Skip the garbage.
 	while (length != 0 && quote == 0 && (*stream == '"' || *stream == ' ' || *stream == '\r' || *stream == '\n' || *stream == '\t' || *stream == '=')) {
