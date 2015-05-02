@@ -96,7 +96,7 @@ static const media_type_t media_types[] = {
  * @param	extension	a pointer to a null-terminated string containing the file extension to be looked up, starting with a period.
  * @return	a pointer to a media type object corresponding to the media type of the specified file extension.
  */
-const media_type_t *mail_mime_get_media_type(chr_t *extension) {
+const media_type_t *mail_mime_get_media_type(const chr_t *extension) {
 
 	size_t cmplen = ns_length_get(extension) + 1;
 
@@ -1054,7 +1054,8 @@ stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, string
 
 	stringer_t *result, *encoded;
 	const media_type_t *mtype;
-	chr_t *fstart, *extptr = NULL;
+	chr_t *fstart;
+	const chr_t *extptr = "";
 	const chr_t *ctype;
 	size_t flen;
 
@@ -1064,21 +1065,10 @@ stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, string
 
 	// First get the extension of the filename so we can look up the media type.
 	if (!st_empty_out(filename, (uchr_t **)&fstart, &flen)) {
-		extptr = fstart + flen + 1;
-
-		while (extptr >= fstart) {
-
-			if (*extptr == '.') {
-				break;
-			}
-
-			extptr--;
+		extptr = memrchr(fstart, '.', flen);
+		if (extptr == NULL) {
+			extptr = "";
 		}
-
-		if (extptr < fstart) {
-			extptr = NULL;
-		}
-
 	}
 
 	mtype = mail_mime_get_media_type(extptr);
