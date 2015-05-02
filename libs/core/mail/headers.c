@@ -368,12 +368,13 @@ bool_t mail_headers(smtp_message_t *message) {
  */
 void mail_mod_subject(stringer_t **message, chr_t *label) {
 
+	char empty[] = "";
 	int_t found = 0;
 	stringer_t *result;
 	size_t position = 0;
-	placer_t line;
+	placer_t line, first = pl_init(empty, 0), second = pl_init(empty, 0);
 	stringer_t *pline = (stringer_t *)&line;
-	stringer_t *header, *first = NULL, *second = NULL;
+	stringer_t *header;
 
 	if (!message || !*message || !label) {
 		log_pedantic("Passed a NULL pointer.");
@@ -385,14 +386,14 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 
 	while (found != 1 && !pl_empty((line = mail_header_pop(header, &position)))) {
 		if (st_length_get(pline) >= 8) {
-			found = st_cmp_ci_starts(pline, CONSTANT("Subject:")) == 0 ? 1 : 0;
+			found = st_cmp_ci_starts(pline, CONSTANT("Subject:")) == 0;
 		}
 	}
 
 	// Subject found.
 	if (found == 1) {
-		first = PLACER(st_data_get(*message), (st_char_get(pline) + 8) - st_char_get(*message));
-		second = PLACER(st_data_get(pline) + 8, st_length_get(*message) - st_length_get(first));
+		first = pl_init(st_data_get(*message), (st_char_get(pline) + 8) - st_char_get(*message));
+		second = pl_init(st_data_get(pline) + 8, st_length_get(*message) - pl_length_get(first));
 	}
 	// Subject not found.
 	else {
@@ -404,12 +405,12 @@ void mail_mod_subject(stringer_t **message, chr_t *label) {
 		}
 
 		// If none exists, we will create our own Subject line and insert it right before the final trailing newlines of the subject.
-		first = PLACER(st_char_get(*message), position);
-		second = PLACER(st_char_get(*message) + position, st_length_get(*message) - position);
+		first = pl_init(st_char_get(*message), position);
+		second = pl_init(st_char_get(*message) + position, st_length_get(*message) - position);
 	}
 
 	if (found == 1) {
-		result = st_merge("snnns", first, " ", label, *st_char_get(second) != ' ' ? " " : NULL, second);
+		result = st_merge("snnns", first, " ", label, *pl_char_get(second) != ' ' ? " " : NULL, second);
 	} else {
 		result = st_merge("snnns", first, "Subject: ", label, "\r\n", second);
 	}
