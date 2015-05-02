@@ -589,7 +589,7 @@ signet_state_t _signet_get_state(const signet_t *signet) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
 			}
 
-			if(_signet_upto_fid_check_required(signet, keys, core_sig) < 0) {
+			if((res = _signet_upto_fid_check_required(signet, keys, core_sig)) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required field");
 			} else if (res) {
 				return SS_CORE;
