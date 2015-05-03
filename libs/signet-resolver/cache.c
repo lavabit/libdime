@@ -1004,7 +1004,7 @@ cached_object_t *_clone_cached_object(const cached_object_t *obj) {
 
 	if (!(store = _get_cached_store_by_type(obj->dtype))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "attempted to clone cached data of unrecognized type");
-	} else if (!store->clone && !(store->serialize || store->deserialize)) {
+	} else if (!store->clone && !(store->serialize && store->deserialize)) {
 		RET_ERROR_PTR(ERR_UNSPEC, "cached data store lacks proper serialization handler(s)");
 	}
 
