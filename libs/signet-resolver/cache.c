@@ -1754,18 +1754,19 @@ size_t _mem_append_serialized_array_cb(unsigned char **buf, size_t *blen, const 
  */
 unsigned int _deserialize_data(unsigned char *dst, unsigned char **bufptr, const unsigned char *bufend, size_t len) {
 
-	unsigned long left = (unsigned long)bufend - (unsigned long)*bufptr;
+	size_t left;
 
 	if (!dst || !bufptr || !bufend) {
 		RET_ERROR_UINT(ERR_BAD_PARAM, NULL);
 	}
 
+	left = bufend - *bufptr;
 	if (len > left) {
-		RET_ERROR_UINT_FMT(ERR_UNSPEC, "could not deserialize data due to buffer underflow (%u of %lu bytes)", (unsigned int)len, left);
+		RET_ERROR_UINT_FMT(ERR_UNSPEC, "could not deserialize data due to buffer underflow (%zu of %zu bytes)", len, left);
 	}
 
 	memcpy(dst, *bufptr, len);
-	*bufptr = *bufptr + len;
+	*bufptr += len;
 
 	return 1;
 }
