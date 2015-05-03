@@ -1,7 +1,215 @@
-#include <signet/keys.h>
+#include "signet/keys.h"
 
-/** The EC private key is encoded in DER, which is variable-length. */
-#define EC_PRIVKEY_MAXSIZE 279
+static int             keys_check_length(const unsigned char *in, size_t in_len);
+
+static EC_KEY *        keys_fetch_enc_key(const char *filename);
+
+static ED25519_KEY *   keys_fetch_sign_key(const char *filename);
+
+/* keys files no currently encrypted TODO */
+static int             keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename);
+
+static unsigned char * keys_file_serialize(const char *filename, size_t *len);
+
+static EC_KEY *        keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len);
+
+static ED25519_KEY *   keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len);
+
+static keys_type_t     keys_type_get(const unsigned char *bin_keys, size_t len);
+
+/* not implemented yet TODO*/
+static int             keys_file_add_sok(ED25519_KEY *sok, const char *filename);
+
+
+
+/* PRIVATE FUNCTIONS */
+
+
+/**
+ * @brief	Checks the size of the keys buffer for consistency.
+ * @param	in	Keys buffer.
+ * @param	in_len	Keys buffer size.
+ * @return	0 if the length checks pass, -1 if they do not.
+*/
+static int keys_check_length(const unsigned char *in, size_t in_len) {
+
+	uint32_t signet_length;
+
+	if (!in || (in_len < SIGNET_HEADER_SIZE)) {
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	}
+
+	signet_length = _int_no_get_3b((void *)(in + 2));
+
+	if ((in_len - SIGNET_HEADER_SIZE) != signet_length) {
+		RET_ERROR_INT(ERR_UNSPEC, "length does not match input size");
+	}
+
+	return 0;
+}
+
+/**
+ * @brief	Retrieves the keys type (user or organizational) from the keys binary.
+ * @param	bin_keys	Pointer to the keys buffer.
+ * @param	len		Length of the keys buffer.
+ * @return	Keys type on success, KEYS_TYPE_ERROR on error.
+*/
+static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
+
+	dime_number_t number;
+
+	if(!bin_keys) {
+		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
+	} else if(keys_check_length(bin_keys, len) < 0) {
+		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
+	}
+
+	number = (dime_number_t)_int_no_get_2b((void *)bin_keys);
+
+	if (number == DIME_ORG_KEYS) {
+		return KEYS_TYPE_ORG;
+	} else if (number == DIME_USER_KEYS) {
+		return KEYS_TYPE_USER;
+	}
+
+	RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_UNSPEC, "DIME number is not keys file type");
+}
+
+/**
+ * @brief	Retrieves the encryption key from the keys binary.
+ * @param	bin_keys        Pointer to the keys buffer.
+ * @param	len		Length of the keys buffer.
+ * @return	Pointer to elliptic curve key, NULL if an error occurred.
+*/
+static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len) {
+
+	unsigned char sign_fid, enc_fid;
+	size_t at = 0, privkeylen;
+	EC_KEY *enc_key;
+
+	if(!bin_keys) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	} else if(keys_check_length(bin_keys, len) < 0) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
+
+	switch(keys_type_get(bin_keys, len)) {
+
+	case KEYS_TYPE_ORG:
+		sign_fid = KEYS_ORG_PRIVATE_POK;
+		enc_fid = KEYS_ORG_PRIVATE_ENC;
+		break;
+	case KEYS_TYPE_USER:
+		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		enc_fid = KEYS_USER_PRIVATE_ENC;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
+		break;
+
+	}
+
+	at = KEYS_HEADER_SIZE;
+
+	if(bin_keys[at] == sign_fid) {
+		at += ED25519_KEY_SIZE + 1;
+	}
+
+	if(len < at + 1) {
+		RET_ERROR_PTR(ERR_UNSPEC, "keys buffer too small for encryption key");
+	}
+
+	if(bin_keys[at++] != enc_fid) {
+		RET_ERROR_PTR(ERR_UNSPEC, "no encryption key was found");
+	}
+
+	privkeylen = EC_PRIVKEY_MAXSIZE;
+	if (len < at + EC_PRIVKEY_MAXSIZE) {
+		privkeylen = len - at;
+	}
+
+	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, privkeylen, 0))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize encryption key");
+	}
+
+	return enc_key;
+}
+
+/**
+ * @brief	Retrieves the signing key from the keys binary.
+ * @param	bin_keys	Pointer to the keys buffer.
+ * @param	len		Length of the keys buffer.
+ * @return	Pointer to ed25519 signing key, NULL if an error occurred.
+*/
+static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len) {
+
+	unsigned char sign_fid;
+	unsigned int at = 0;
+	ED25519_KEY *sign_key;
+
+	if(!bin_keys) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	} else if(keys_check_length(bin_keys, len) < 0) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	} else if(len < KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, "keys buffer too small for signing key");
+	}
+
+	switch(keys_type_get(bin_keys, len)) {
+
+	case KEYS_TYPE_ORG:
+		sign_fid = KEYS_ORG_PRIVATE_POK;
+		break;
+	case KEYS_TYPE_USER:
+		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
+		break;
+
+	}
+
+	at = KEYS_HEADER_SIZE;
+
+	if(bin_keys[at++] != sign_fid) {
+		RET_ERROR_PTR(ERR_UNSPEC, "no signing key was found");
+	}
+
+	if(!(sign_key = _deserialize_ed25519_privkey(bin_keys + KEYS_HEADER_SIZE + 1))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize ed25119 signing key");
+	}
+
+	return sign_key;
+}
+
+/**
+ * @brief	Retrieves the keys binary from the keys file.
+ * @param	filename	Null terminated string containing specified filename.
+ * @param	len		Pointer to the length of the output.
+ * @return	Pointer to the keys binary string, this memory needs to be wipe before being freed. NULL on error.
+*/
+static unsigned char *keys_file_serialize(const char *filename, size_t *len) {
+
+	char *b64_keys = NULL;
+	unsigned char *serial_keys = NULL;
+
+	if(!filename || !len) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
+
+	if(!(b64_keys = _read_pem_data(filename, SIGNET_PRIVATE_KEYCHAIN, 1))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys from PEM file");
+	}
+
+	if(!(serial_keys = _b64decode(b64_keys, strlen(b64_keys), len))) {
+		free(b64_keys);
+		RET_ERROR_PTR(ERR_UNSPEC, "could not base64 decode the keys");
+	}
+
+	free(b64_keys);
+
+	return serial_keys;
+}
 
 /**
  * @brief	Creates a keys file with specified signing and encryption keys.
@@ -11,7 +219,7 @@
  * @param	filename	Pointer to the NULL terminated string containing the filename for the keys file.
  * @return	0 on success, -1 on failure.
 */
-int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
+static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 
 	char *b64_keys = NULL;
 	size_t serial_size = 0, enc_size = 0;
@@ -89,119 +297,12 @@ int _keys_to_file(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, cons
 	return 0;
 }
 
-
-/**
- * @brief	Retrieves the keys binary from the keys file.
- * @param	filename	Null terminated string containing specified filename.
- * @param	len		Pointer to the length of the output.
- * @return	Pointer to the keys binary string, this memory needs to be wipe before being freed. NULL on error.
-*/
-unsigned char *_keys_get_binary(const char *filename, size_t *len) {
-
-	char *b64_keys = NULL;
-	unsigned char *serial_keys = NULL;
-
-	if(!filename || !len) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	}
-
-	if(!(b64_keys = _read_pem_data(filename, SIGNET_PRIVATE_KEYCHAIN, 1))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys from PEM file");
-	}
-
-	if(!(serial_keys = _b64decode(b64_keys, strlen(b64_keys), len))) {
-		free(b64_keys);
-		RET_ERROR_PTR(ERR_UNSPEC, "could not base64 decode the keys");
-	}
-
-	free(b64_keys);
-
-	return serial_keys;
-}
-
-
-/**
- * @brief	Retrieves the keys type (user or organizational) from the keys binary.
- * @param	bin_keys	Pointer to the keys buffer.
- * @param	len		Length of the keys buffer.
- * @return	Keys type on success, KEYS_TYPE_ERROR on error.
-*/
-keys_type_t _keys_get_type(const unsigned char *bin_keys, size_t len) {
-
-	dime_number_t number;
-
-	if(!bin_keys) {
-		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
-	} else if(_keys_check_length(bin_keys, len) < 0) {
-		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
-	}
-
-	number = (dime_number_t)_int_no_get_2b((void *)bin_keys);
-
-	if (number == DIME_ORG_KEYS) {
-		return KEYS_TYPE_ORG;
-	} else if (number == DIME_USER_KEYS) {
-		return KEYS_TYPE_USER;
-	}
-
-	RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_UNSPEC, "DIME number is not keys file type");
-}
-
-
-/**
- * @brief	Retrieves the signing key from the keys binary.
- * @param	bin_keys	Pointer to the keys buffer.
- * @param	len		Length of the keys buffer.
- * @return	Pointer to ed25519 signing key, NULL if an error occurred.
-*/
-ED25519_KEY *_keys_fetch_sign_key(const unsigned char *bin_keys, size_t len) {
-
-	unsigned char sign_fid;
-	unsigned int at = 0;
-	ED25519_KEY *sign_key;
-
-	if(!bin_keys) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(_keys_check_length(bin_keys, len) < 0) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(len < KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, "keys buffer too small for signing key");
-	}
-
-	switch(_keys_get_type(bin_keys, len)) {
-
-	case KEYS_TYPE_ORG:
-		sign_fid = KEYS_ORG_PRIVATE_POK;
-		break;
-	case KEYS_TYPE_USER:
-		sign_fid = KEYS_USER_PRIVATE_SIGN;
-		break;
-	default:
-		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
-		break;
-
-	}
-
-	at = KEYS_HEADER_SIZE;
-
-	if(bin_keys[at++] != sign_fid) {
-		RET_ERROR_PTR(ERR_UNSPEC, "no signing key was found");
-	}
-
-	if(!(sign_key = _deserialize_ed25519_privkey(bin_keys + KEYS_HEADER_SIZE + 1))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize ed25119 signing key");
-	}
-
-	return sign_key;
-}
-
-
 /**
  * @brief	Retrieves the signing key from the keys file.
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the ed25519 signing key.
 */
-ED25519_KEY *_keys_file_fetch_sign_key(const char *filename) {
+static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -213,11 +314,11 @@ ED25519_KEY *_keys_file_fetch_sign_key(const char *filename) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(keys_bin = _keys_get_binary(filename, &keys_len))) {
+	if(!(keys_bin = keys_file_serialize(filename, &keys_len))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys binary string");
 	}
 
-	key = _keys_fetch_sign_key(keys_bin, keys_len);
+	key = keys_serial_get_sign_key(keys_bin, keys_len);
 	_secure_wipe(keys_bin, keys_len);
 	free(keys_bin);
 
@@ -228,74 +329,12 @@ ED25519_KEY *_keys_file_fetch_sign_key(const char *filename) {
 	return key;
 }
 
-
-/**
- * @brief	Retrieves the encryption key from the keys binary.
- * @param	bin_keys        Pointer to the keys buffer.
- * @param	len		Length of the keys buffer.
- * @return	Pointer to elliptic curve key, NULL if an error occurred.
-*/
-EC_KEY *_keys_fetch_enc_key(const unsigned char *bin_keys, size_t len) {
-
-	unsigned char sign_fid, enc_fid;
-	size_t at = 0, privkeylen;
-	EC_KEY *enc_key;
-
-	if(!bin_keys) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(_keys_check_length(bin_keys, len) < 0) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	}
-
-	switch(_keys_get_type(bin_keys, len)) {
-
-	case KEYS_TYPE_ORG:
-		sign_fid = KEYS_ORG_PRIVATE_POK;
-		enc_fid = KEYS_ORG_PRIVATE_ENC;
-		break;
-	case KEYS_TYPE_USER:
-		sign_fid = KEYS_USER_PRIVATE_SIGN;
-		enc_fid = KEYS_USER_PRIVATE_ENC;
-		break;
-	default:
-		RET_ERROR_PTR(ERR_UNSPEC, "invalid keys type");
-		break;
-
-	}
-
-	at = KEYS_HEADER_SIZE;
-
-	if(bin_keys[at] == sign_fid) {
-		at += ED25519_KEY_SIZE + 1;
-	}
-
-	if(len < at + 1) {
-		RET_ERROR_PTR(ERR_UNSPEC, "keys buffer too small for encryption key");
-	}
-
-	if(bin_keys[at++] != enc_fid) {
-		RET_ERROR_PTR(ERR_UNSPEC, "no encryption key was found");
-	}
-
-	privkeylen = EC_PRIVKEY_MAXSIZE;
-	if (len < at + EC_PRIVKEY_MAXSIZE) {
-		privkeylen = len - at;
-	}
-
-	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, privkeylen, 0))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize encryption key");
-	}
-
-	return enc_key;
-}
-
-
 /**
  * @brief	Retrieves the encryption key from the keys file.
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the elliptic curve encryption key.
 */
-EC_KEY *_keys_file_fetch_enc_key(const char *filename) {
+static EC_KEY *keys_fetch_enc_key(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -307,11 +346,11 @@ EC_KEY *_keys_file_fetch_enc_key(const char *filename) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(keys_bin = _keys_get_binary(filename, &keys_len))) {
+	if(!(keys_bin = keys_file_serialize(filename, &keys_len))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys binary string");
 	}
 
-	key = _keys_fetch_enc_key(keys_bin, keys_len);
+	key = keys_serial_get_enc_key(keys_bin, keys_len);
 	_secure_wipe(keys_bin, keys_len);
 	free(keys_bin);
 
@@ -323,27 +362,30 @@ EC_KEY *_keys_file_fetch_enc_key(const char *filename) {
 }
 
 
-/* PRIVATE FUNCTIONS */
+/* PUBLIC FUNCTIONS */
 
-/**
- * @brief	Checks the size of the keys buffer for consistency.
- * @param	in	Keys buffer.
- * @param	in_len	Keys buffer size.
- * @return	0 if the length checks pass, -1 if they do not.
-*/
-int _keys_check_length(const unsigned char *in, size_t in_len) {
+/* keys files no currently encrypted TODO */
+int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 
-	uint32_t signet_length;
+	PUBLIC_FUNC_PROLOGUE();
+	return keys_file_create(type, sign_key, enc_key, filename);
+}
 
-	if (!in || (in_len < SIGNET_HEADER_SIZE)) {
-		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
-	}
+/* not implemented yet TODO*/
+int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
 
-	signet_length = _int_no_get_3b((void *)(in + 2));
+	PUBLIC_FUNC_PROLOGUE();
+	return keys_file_add_sok(sok, filename);
+}
 
-	if ((in_len - SIGNET_HEADER_SIZE) != signet_length) {
-		RET_ERROR_INT(ERR_UNSPEC, "length does not match input size");
-	}
+ED25519_KEY *dime_keys_fetch_sign_key(const char *filename) {
 
-	return 0;
+	PUBLIC_FUNC_PROLOGUE();
+	return keys_fetch_sign_key(filename);
+}
+
+EC_KEY *dime_keys_fetch_enc_key(const char *filename) {
+
+	PUBLIC_FUNC_PROLOGUE();
+	return dime_keys_fetch_enc_key(filename);
 }
