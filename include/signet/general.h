@@ -23,9 +23,9 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <common/error.h>
-#include <common/misc.h>
-#include <common/dcrypto.h>
+#include "common/error.h"
+#include "common/misc.h"
+#include "common/dcrypto.h"
 
 typedef enum {
 	SIGNET_TYPE_ERROR,
@@ -151,10 +151,11 @@ typedef enum {
 } KEYS_USER_T;
 
 typedef enum {
-	SIGNET_SOK_NONE = 0x00000001,   /**< This key can not be used for signing signets or messages */
-	SIGNET_SOK_SIGNET = 0x00000011, /**< This key can only be used for signing signets */
-	SIGNET_SOK_MSG = 0x00000101,    /**< This key can only be used for signing messages */
-	SIGNET_SOK_ALL = 0x00000111     /**< This key can only be used for signing signets and messages */
+	SIGNET_SOK_NONE =     0b00000000,   /**< Can not be used for signing anything */
+	SIGNET_SOK_SIGNET =   0b00000001,   /**< Can be used for signing signets */
+	SIGNET_SOK_MSG =      0b00000010,   /**< Can be used for signing messages */
+	SIGNET_SOK_TLS =      0b00000100,   /**< Can be used for signing TLS certificates */
+	SIGNET_SOK_SOFTWARE = 0b00001000    /**< Can be used for signing software */
 } sok_flag_t;
 
 typedef enum {
