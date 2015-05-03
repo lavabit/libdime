@@ -1825,7 +1825,7 @@ unsigned char *_deserialize_vardata(unsigned char **bufptr, const unsigned char 
  */
 unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsigned char *bufend) {
 
-	unsigned char *bptr = *bufptr;
+	unsigned char *bptr;
 	size_t rsize;
 
 	if (!dst || !bufptr || !*bufptr || !bufend) {
@@ -1839,6 +1839,7 @@ unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsig
 		return 1;
 	}
 
+	bptr = *bufptr;
 	while (*bptr && bptr < bufend) {
 		bptr++;
 	}
@@ -1847,7 +1848,7 @@ unsigned int _deserialize_string(char **dst, unsigned char **bufptr, const unsig
 		RET_ERROR_UINT(ERR_UNSPEC, "string deserialization failed due to buffer underflow");
 	}
 
-	rsize = (unsigned long)bptr - (unsigned long)*bufptr + 1;
+	rsize = bptr - *bufptr + 1;
 
 	if (!(*dst = malloc(rsize))) {
 		PUSH_ERROR_SYSCALL("malloc");
