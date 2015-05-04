@@ -366,26 +366,18 @@ static EC_KEY *keys_fetch_enc_key(const char *filename) {
 
 /* keys files no currently encrypted TODO */
 int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
-
-	PUBLIC_FUNC_PROLOGUE();
-	return keys_file_create(type, sign_key, enc_key, filename);
+	PUBLIC_FUNCTION_IMPLEMENT(keys_file_create, type, sign_key, enc_key, filename);
 }
 
 /* not implemented yet TODO*/
 int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
-
-	PUBLIC_FUNC_PROLOGUE();
-	return keys_file_add_sok(sok, filename);
+	PUBLIC_FUNCTION_IMPLEMENT(keys_file_add_sok, sok, filename);
 }
 
 ED25519_KEY *dime_keys_fetch_sign_key(const char *filename) {
-
-	PUBLIC_FUNC_PROLOGUE();
-	return keys_fetch_sign_key(filename);
+	PUBLIC_FUNCTION_IMPLEMENT(keys_fetch_sign_key, filename);
 }
 
 EC_KEY *dime_keys_fetch_enc_key(const char *filename) {
-
-	PUBLIC_FUNC_PROLOGUE();
-	return dime_keys_fetch_enc_key(filename);
+	PUBLIC_FUNCTION_IMPLEMENT(dime_keys_fetch_enc_key, filename);
 }

@@ -23,12 +23,17 @@
 
 #define PUBLIC_FUNC_PROLOGUE() { _clear_error_stack(); }
 
+/* old public function implementations */
 #define PUBLIC_FUNC_IMPL(funcname, ...)                 PUBLIC_FUNC_PROLOGUE(); return (_ ## funcname(__VA_ARGS__))
 #define PUBLIC_FUNC_IMPL_VOID(funcname, ...)            PUBLIC_FUNC_PROLOGUE(); _ ## funcname(__VA_ARGS__)
 #define PUBLIC_FUNC_IMPL_VA1(funcname, p1)              PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p1); __ ## funcname(p1, ap); va_end(ap); return; }
 #define PUBLIC_FUNC_IMPL_VA1_RET(ret, funcname, p1)     PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p1); result = __ ## funcname(p1, ap); va_end(ap); return result; }
 #define PUBLIC_FUNC_IMPL_VA2(funcname, p1, p2)          PUBLIC_FUNC_PROLOGUE(); { va_list ap; va_start(ap, p2); __ ## funcname(p1, p2, ap); va_end(ap); return; }
 #define PUBLIC_FUNC_IMPL_VA2_RET(ret, funcname, p1, p2) PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p2); result = __ ## funcname(p1, p2, ap); va_end(ap); return result; }
+
+/* new public function implementations */
+#define PUBLIC_FUNCTION_IMPLEMENT(funcname, ...)        PUBLIC_FUNC_PROLOGUE(); return (funcname(__VA_ARGS__))
+#define PUBLIC_FUNCTION_IMPLEMENT_VOID(funcname, ...)   PUBLIC_FUNC_PROLOGUE(); funcname(__VA_ARGS__)
 
 #define PUBLIC_FUNC_DECL(rettype, funcname, ...) \
 	rettype funcname(__VA_ARGS__); \

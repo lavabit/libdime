@@ -241,6 +241,8 @@ const char *signet_state_to_str(signet_state_t state) {
 		return "overflow";
 	case SS_INCOMPLETE:
 		return "incomplete";
+	case SS_BROKEN_COC:
+		return "broken chain of custody";
 	case SS_UNVERIFIED:
 		return "unverified";
 	case SS_SSR:

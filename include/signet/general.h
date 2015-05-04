@@ -163,7 +163,8 @@ typedef enum {
 	SS_MALFORMED,                   /**< Invalid signet, it either doesn't fit the field format or has multiple unique fields */
 	SS_OVERFLOW,                    /**< Invalid signet due to it being too large. */
 	SS_INCOMPLETE,                  /**< Invalid signet, it is missing fields required to fit one of the valid categories, likely unsigned */
-	SS_UNVERIFIED,                  /**< Invalid signet, one or more signatures can not be verified */
+	SS_UNVERIFIED,                  /**< Invalid signet, one or more signatures can not be verified TODO change name*/
+	SS_BROKEN_COC,			/**< Invalid signet due to chain of custody signature being invalid*/
 	SS_SSR,                         /**< Valid unsigned SSR */
 	SS_USER_CORE,                   /**< Valid core of a user signet with all fields after the Ssr-signature removed */
 	SS_CORE,                        /**< Valid signet without ID and organizational-final-signature */
