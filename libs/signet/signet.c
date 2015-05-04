@@ -79,6 +79,7 @@ static int                     sgnt_verify_message_sig(const signet_t *signet, e
  * @brief	Returns	a new signet_t structure.
  * @param	type	signet type user org or sss (SIGNET_TYPE_USER, SIGNET_TYPE_ORG or SIGNET_TYPE_SSR)
  * @return	A pointer to a newly allocated signet_t structure type, NULL if failure.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_create_signet(signet_type_t type) {
 
@@ -1157,6 +1158,7 @@ void _destroy_signet_cb(void *record) {
  * @param	type		Signet type, org, user or ssr (SIGNET_TYPE_ORG, SIGNET_TYPE_USER or SIGNET_TYPE_SSR).
  * @param	keysfile	Null terminated string containing the name of the keyfile to be created.
  * @return	Pointer to the newly created and allocated signet_t structure or NULL on error.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile) {
 
@@ -1253,6 +1255,7 @@ static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysf
  * @brief	Loads signet_t structure from a PEM formatted file specified by filename.
  * @param	filename	Null terminated string containing the filename of the file containing the signet.
  * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_file_to_signet(const char *filename) {
 
@@ -1314,6 +1317,7 @@ static int sgnt_file_create(signet_t *signet, const char *filename) {
  * @param	in	data buffer that should contain the binary form of a signet
  * @param	in_len	length of data buffer
  * @return	A pointer to a newly allocated signet_t structure type, NULL on failure.
+ * @free_using{sgnt_destroy_signet}
  */
 static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
 
@@ -1378,6 +1382,7 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
  * @brief	Deserializes a b64 signet into a signet structure.
  * @param	b64_in	Null terminated array of b64 signet data.
  * @return	Pointer to newly allocated signet structure, NULL if failure.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_serial_b64_to_signet(const char *b64_in) {
 
@@ -1430,6 +1435,7 @@ static void sgnt_destroy_signet(signet_t *signet) {
  * @param	signet		Pointer to the target signet.
  * @param	serial_size	Pointer to the value that stores the length of the array returned.
  * @return	Signet serialized into binary data. Null on error.
+ * @free_using{free}
 */
 static unsigned char *sgnt_serial_get_binary(signet_t *signet, uint32_t *serial_size) {
 
@@ -1477,6 +1483,7 @@ static unsigned char *sgnt_serial_get_binary(signet_t *signet, uint32_t *serial_
  * @brief	Serializes a signet structure into b64 data.
  * @param	signet		Pointer to the target signet.
  * @return	Signet serialized into b64 data. Null on error.
+ * @free_using{free}
 */
 static char *sgnt_serial_signet_to_b64(signet_t *signet) {
 
@@ -1937,6 +1944,7 @@ static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t 
  * @brief	Retrieves the public signing key from the signet, if the signet is an org signet only retrieves the POK.
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to the target ed25519 public key.
+ * @free_using{free_ed25519_key}
 */
 static ED25519_KEY *sgnt_fetch_signkey(const signet_t *signet) {
 
@@ -1984,6 +1992,7 @@ static ED25519_KEY *sgnt_fetch_signkey(const signet_t *signet) {
  * @brief	Retrieves the public encryption key from the signet, if the signet is a user signet only retrieves the main encryption key (not alternate).
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to the target encryption public key.
+ * @free_using{free_ec_key}
 */
 static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
 
@@ -2032,6 +2041,7 @@ static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a message.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated arrays of ed25519 signing keys that have been flagged for use as message signing keys. Caller is responsible for freeing memory.
+ * @free_using{ptr_chain_free}
 */
 static unsigned char **sgnt_fetch_msg_sign_keys(const signet_t *signet) {
 
@@ -2136,6 +2146,7 @@ static unsigned char **sgnt_fetch_msg_sign_keys(const signet_t *signet) {
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a signet.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 signing keys that have been flagged for use as signet signing keys. Caller is responsible for freeing memory.
+ * @free_using{ptr_chain_free}
 */
 static unsigned char **sgnt_fetch_signet_sign_keys(const signet_t *signet) {
 
@@ -2782,6 +2793,7 @@ static int sgnt_type_set(signet_t *signet, signet_type_t type) {
  * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to a stripped signet on success, NULL on failure.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_split_core(const signet_t *signet) {
 
@@ -2854,6 +2866,7 @@ static signet_t *sgnt_split_core(const signet_t *signet) {
  * @brief	Creates a copy of the target user signet with all fields beyond the INITIAL signature stripped off.
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to a stripped signet on success, NULL on failure.
+ * @free_using{sgnt_destroy_signet}
 */
 static signet_t *sgnt_split_user(const signet_t *signet) {
 
@@ -2916,6 +2929,7 @@ static signet_t *sgnt_split_user(const signet_t *signet) {
  * @brief	Takes a SHA512 fingerprint of the entire user or org signet.
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure;
+ * @free_using{free}
 */
 static char *sgnt_fingerprint_full(const signet_t *signet) {
 
@@ -2942,6 +2956,7 @@ static char *sgnt_fingerprint_full(const signet_t *signet) {
  * @note	To take an SSR fingerprint, use the signet_ssr_fingerprint() function.
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure.
+ * @free_using{free}
 */
 static char *sgnt_fingerprint_core(const signet_t *signet) {
 
@@ -2979,6 +2994,7 @@ static char *sgnt_fingerprint_core(const signet_t *signet) {
  * @note	To take an SSR fingerprint, use the signet_ssr_fingerprint() function.
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on error.
+ * @free_using{free}
 */
 static char *sgnt_fingerprint_user(const signet_t *signet) {
 
@@ -3004,6 +3020,7 @@ static char *sgnt_fingerprint_user(const signet_t *signet) {
  * @brief	Takes a SHA512 fingerprint of a user signet or an ssr with all fields after the SSR signature stripped off.
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint.
+ * @free_using{free}
 */
 static char *sgnt_fingerprint_ssr(const signet_t *signet) {
 
@@ -3099,6 +3116,8 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 					return SS_BROKEN_COC;
 				}
 			}
+		} else if(!res && previous) {
+			return SS_BROKEN_COC;
 		}
 
 		return SS_SSR;
@@ -3181,10 +3200,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			result = SS_UNVERIFIED;
 		}
 
-		for (size_t i = 0; org_keys[i]; i++) {
-			free(org_keys[i]);
-		}
-		free(org_keys);
+		ptr_chain_free(org_keys);
 
 		if (result == SS_UNKNOWN) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, errmsg);
@@ -3213,6 +3229,8 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 					return SS_BROKEN_COC;
 				}
 			}
+		} else if(!res && previous) {
+			return SS_BROKEN_COC;
 		}
 
 	} else {
@@ -3361,10 +3379,7 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
 		}
 	}
 
-	for (size_t j = 0; keys[j]; j++) {
-		free(keys[j]);
-	}
-	free(keys);
+	ptr_chain_free(keys);
 
 	if (result < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error occurred while verifying signature");
@@ -3549,11 +3564,11 @@ int dime_sgnt_create_undefined_field(signet_t *signet, size_t name_size, const u
 }
 
 void dime_sgnt_destroy_signet(signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_destroy_signet, signet);
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_destroy_signet, signet);
 }
 
 void dime_sgnt_dump_signet(FILE *fp, signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_dump_signt, fp, signet);
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_dump_signt, fp, signet);
 }
 
 EC_KEY *dime_sgnt_fetch_enckey(const signet_t *signet) {

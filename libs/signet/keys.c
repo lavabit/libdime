@@ -80,6 +80,7 @@ static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
  * @param	bin_keys        Pointer to the keys buffer.
  * @param	len		Length of the keys buffer.
  * @return	Pointer to elliptic curve key, NULL if an error occurred.
+ * @free_using{free_ec_key}
 */
 static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len) {
 
@@ -136,10 +137,11 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 }
 
 /**
- * @brief	Retrieves the signing key from the keys binary.
+ * @brief Retrieves the signing key from the keys binary.
  * @param	bin_keys	Pointer to the keys buffer.
  * @param	len		Length of the keys buffer.
  * @return	Pointer to ed25519 signing key, NULL if an error occurred.
+ * @free_using{free_ed25519_key}
 */
 static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len) {
 
@@ -187,6 +189,7 @@ static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size
  * @param	filename	Null terminated string containing specified filename.
  * @param	len		Pointer to the length of the output.
  * @return	Pointer to the keys binary string, this memory needs to be wipe before being freed. NULL on error.
+ * @free_using{free}
 */
 static unsigned char *keys_file_serialize(const char *filename, size_t *len) {
 
@@ -301,6 +304,7 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
  * @brief	Retrieves the signing key from the keys file.
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the ed25519 signing key.
+ * @free_using{free_ed25519_key}
 */
 static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
 
@@ -333,6 +337,7 @@ static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
  * @brief	Retrieves the encryption key from the keys file.
  * @param	filename	Null terminated filename string.
  * @return	Pointer to the elliptic curve encryption key.
+ * @free_using{free_ec_key}
 */
 static EC_KEY *keys_fetch_enc_key(const char *filename) {
 
