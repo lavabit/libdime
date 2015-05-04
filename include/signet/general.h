@@ -63,6 +63,7 @@ typedef enum {
 	SIGNET_ORG_POK = 1,             /**< The ed25519 public signing key of the signet holder */
 	SIGNET_ORG_SOK_KEY,             /**< Secondary Organization Signing keys */
 	SIGNET_ORG_ENC_KEY,             /**< The ECC public encryption key of the signet holder */
+	SIGNET_ORG_CRYPTO_SIG,          /**< Org signature of all previous fields */
 	SIGNET_ORG_NAME = 16,
 	SIGNET_ORG_ADDRESS,
 	SIGNET_ORG_PROVINCE,
@@ -156,7 +157,7 @@ typedef enum {
 	SIGNET_SOK_MSG =      0b00000010,   /**< Can be used for signing messages */
 	SIGNET_SOK_TLS =      0b00000100,   /**< Can be used for signing TLS certificates */
 	SIGNET_SOK_SOFTWARE = 0b00001000    /**< Can be used for signing software */
-} sok_flag_t;
+} sok_permissions_t;
 
 typedef enum {
 	SS_UNKNOWN = 0,                 /**< Invalid signet, state unknown/currently unclassified */
@@ -184,7 +185,6 @@ typedef struct {
 
 	unsigned int required;          /**< is this field required*/
 	unsigned int unique;            /**< can there be multiple fields of this identifier */
-	unsigned int flags;             /**< Does this field have a byte for flags */
 
 	unsigned char bytes_name_size;  /**< Is this a defined field */
 	unsigned char bytes_data_size;  /**< Number of bytes for this */
@@ -202,7 +202,6 @@ typedef struct signet_field_t {
 
 	const signet_t *signet;
 	signet_field_key_t *key;
-	unsigned char flags;
 	unsigned char name_size;
 	unsigned int data_size;
 

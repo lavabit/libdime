@@ -11,10 +11,9 @@
  * @param	fid		Field id of the field to be added.
  * @param	data_size	Size of the array containing the field data.
  * @param	data		Field data.
- * @param	flags		New field flags, ignored if the fields with specified field id do not support flags.
  * @return	0 on success, -1 on failure.
 */
-int 			dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data, unsigned char flags);
+int 			dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 
 /**
  * @brief	Returns	a new signet_t structure.
@@ -40,7 +39,6 @@ signet_t *              dime_sgnt_create_signet_w_keys(signet_type_t type, const
  * @param	name		Pointer to  field name.
  * @param	data_size	Size of field data.
  * @param	data		Pointer to field data.
- * @param	flags		Field flags.
  * @return	0 on success, -1 on failure.
 */
 int                     dime_sgnt_create_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data);
@@ -237,10 +235,9 @@ unsigned char *         dime_sgnt_serial_get_binary(signet_t *signet, uint32_t *
  * @param	fid			Field id which specifies the fields to be replaced with the new field.
  * @param	data_size	Size of field data array.
  * @param	data		Array contaning field data.
- * @param	flags		Byte containing field flags.
  * @return	0 on success, -1 on failure.
 */
-int                     dime_sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data, unsigned char flags);
+int                     dime_sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 
 /**
  * @brief	Sets the ID of the signet to the specified NULL terminated string.
@@ -250,6 +247,15 @@ int                     dime_sgnt_set_defined_field(signet_t *signet, unsigned c
  * @return	0 on success, -1 on failure.
 */
 int                     dime_sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id);
+
+/**
+ * @brief	Sets the signing key (pok - primary signing key in case of an org signet).
+ * @param	signet	Pointer to the target signet.
+ * @param	key	Public signing key to be set as the signing key of the signet.
+ * @param	format	Format specifier byte, dictating the format.
+ * @return	0 on success, -1 on failure.
+*/
+int			dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
 
 /**
  * @brief	Checks for the presence of all required fields that come before the chain of custody signature field and adds the SSR signature.
@@ -343,8 +349,6 @@ signet_state_t          dime_sgnt_validate_all(const signet_t *signet, const sig
  * @return	1 on successful verification, 0 if the signature could not be verified, -1 if an error occurred.
 */
 int                     dime_sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len);
-
-
 
 
 
