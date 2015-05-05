@@ -305,15 +305,15 @@ int			dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char fo
 int                     dime_sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key);
 
 /**
- * @brief	Checks for the presence of all required fields that come before the CORE signature and signs all the fields that come before the CORE signature field
+ * @brief	Signs an SSR or an incomplete ORG signet with the cryptographic signature after checking for the presence of all previous required fields.
  * @param	signet	Pointer to the target signet_t structure.
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-int                     dime_sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *key);
+int                     dime_sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key);
 
 /**
- * @brief	Checks for the presence of all required fields that come before the FULL signature and signs the entire target signet using the specified key.
+ * @brief	Checks for the presence of all required fields that come before the full signature and signs all the fields that come before the CORE signature field
  * @param	signet	Pointer to the target signet_t structure.
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
@@ -321,12 +321,12 @@ int                     dime_sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *k
 int                     dime_sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key);
 
 /**
- * @brief	Signs an incomplete user signet with the INITIAL signature after checking for the presence of all previous required fields.
+ * @brief	Checks for the presence of all required fields that come before the FULL signature and signs the entire target signet using the specified key.
  * @param	signet	Pointer to the target signet_t structure.
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-int                     dime_sgnt_sign_initial_sig(signet_t *signet, ED25519_KEY *key);
+int                     dime_sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key);
 
 /**
  * @brief	Checks for the presence of all required fields that come before the SSR signature field and adds the SSR signature.
@@ -337,20 +337,20 @@ int                     dime_sgnt_sign_initial_sig(signet_t *signet, ED25519_KEY
 int                     dime_sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key);
 
 /**
- * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
- * @param	signet	Pointer to the target signet.
- * @return	Pointer to a stripped signet on success, NULL on failure.
- * @free_using{dime_sgnt_destroy_signet}
-*/
-signet_t *              dime_sgnt_split_core(const signet_t *signet);
-
-/**
  * @brief	Creates a copy of the target user signet with all fields beyond the INITIAL signature stripped off.
  * @param	signet	Pointer to the target signet.
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_split_user(const signet_t *signet);
+signet_t *              dime_sgnt_split_crypto(const signet_t *signet);
+
+/**
+ * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
+ * @param	signet	Pointer to the target signet.
+ * @return	Pointer to a stripped signet on success, NULL on failure.
+ * @free_using{dime_sgnt_destroy_signet}
+*/
+signet_t *              dime_sgnt_split_full(const signet_t *signet);
 
 /**
  * @brief	Retrieves the signet type, org or user (SIGNET_TYPE_ORG or SIGNET_TYPE_USER)

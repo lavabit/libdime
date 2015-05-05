@@ -64,13 +64,13 @@ static int                     sgnt_set_defined_field(signet_t *signet, unsigned
 static int                     sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id);
 static int                     sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
 static int                     sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key);
 static int                     sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_KEY *key);
 static int                     sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_initial_sig(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key);
 static int                     sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key);
-static signet_t *              sgnt_split_core(const signet_t *signet);
-static signet_t *              sgnt_split_user(const signet_t *signet);
+static signet_t *              sgnt_split_crypto(const signet_t *signet);
+static signet_t *              sgnt_split_full(const signet_t *signet);
 static signet_type_t           sgnt_type_get(const signet_t *signet);
 static int                     sgnt_type_set(signet_t *signet, signet_type_t type);
 static signet_state_t          sgnt_validate_all(const signet_t *signet, const signet_t *previous, const signet_t *orgsig, const unsigned char **dime_pok);
@@ -1556,11 +1556,11 @@ static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
 			return;
 		}
 
-		if(i == SIGNET_USER_INITIAL_SIG && signet_type == SIGNET_TYPE_USER) {
+		if(i == SIGNET_USER_CRYPTO_SIG && signet_type == SIGNET_TYPE_USER) {
 			fprintf(fp, "%-34s    %s\n", "------- End user crypto. portion", "------------------------------------------------------------------------------------------");
 		}
 
-		if((i == SIGNET_USER_CORE_SIG && signet_type == SIGNET_TYPE_USER) || (i == SIGNET_ORG_CORE_SIG && signet_type == SIGNET_TYPE_ORG)) {
+		if((i == SIGNET_USER_FULL_SIG && signet_type == SIGNET_TYPE_USER) || (i == SIGNET_ORG_FULL_SIG && signet_type == SIGNET_TYPE_ORG)) {
 			fprintf(fp, "%-34s    %s\n", "------- End core signet portion", "------------------------------------------------------------------------------------------");
 		}
 	}
@@ -1625,7 +1625,6 @@ static int sgnt_fid_exists(const signet_t *signet, unsigned char fid) {
 }
 
 
-// TODO a lot of possibility for reusability with sgnt_fid_exists and sgnt_fid_validate_required_upto_fid
 /**
  * @brief	Checks the state of the specified signet, performing all non-cryptographic checks.
  * @param	signet	Pointer to the target signet.
@@ -1634,7 +1633,7 @@ static int sgnt_fid_exists(const signet_t *signet, unsigned char fid) {
 static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 
 	int res;
-	unsigned char full_sig, core_sig;
+	unsigned char full_sig, core_sig, crypto_sig;
 	signet_field_key_t *keys;
 	signet_field_t *field;
 	signet_type_t type;
@@ -1650,13 +1649,15 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 
 	case SIGNET_TYPE_ORG:
 		keys = signet_org_field_keys;
+		crypto_sig = SIGNET_ORG_CRYPTO_SIG;
+		id_sig = SIGNET_ORG_ID_SIG;
 		full_sig = SIGNET_ORG_FULL_SIG;
-		core_sig = SIGNET_ORG_CORE_SIG;
 		break;
 	case SIGNET_TYPE_USER:
 		keys = signet_user_field_keys;
+		crypto_sig = SIGNET_USER_CRYPTO_SIG;
+		id_sig = SIGNET_USER_ID_SIG;
 		full_sig = SIGNET_USER_FULL_SIG;
-		core_sig = SIGNET_USER_CORE_SIG;
 		break;
 	case SIGNET_TYPE_SSR:
 		keys = signet_ssr_field_keys;
@@ -1703,17 +1704,15 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 	}
 
 	/* Check signatures and required fields to determine the signet state*/
-	// TODO: there is substantial potential for code-reuse here for each _signet_fid_exists/_signet_upto_fid_check_required/
 	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
 
-		if((res = sgnt_fid_exists(signet, full_sig))) {
+		if((res = sgnt_fid_exists(signet, id_sig))) {
 
 			if(res < 0) {
-				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
+				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for identifiable signature field in signet");
 			}
 
-
-			if((res = sgnt_validate_required_upto_fid(signet, keys, full_sig)) < 0) {
+			if((res = sgnt_validate_required_upto_fid(signet, keys, id_sig)) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required field");
 			} else if (res) {
 				return SS_FULL;
@@ -1722,13 +1721,13 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 			}
 		}
 
-		if((res = sgnt_fid_exists(signet, core_sig))) {
+		if((res = sgnt_fid_exists(signet, full_sig))) {
 
 			if(res < 0) {
-				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
+				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for full signature field in signet");
 			}
 
-			if(sgnt_validate_required_upto_fid(signet, keys, core_sig) < 0) {
+			if(sgnt_validate_required_upto_fid(signet, keys, full_sig) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required field");
 			} else if (res) {
 				return SS_CORE;
@@ -1736,18 +1735,14 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 				return SS_INCOMPLETE;
 			}
 		}
-	}
 
-	/* Check user-signet specific states */
-	if(type == SIGNET_TYPE_USER) {
-
-		if((res = sgnt_fid_exists(signet, SIGNET_USER_INITIAL_SIG))) {
+		if((res = sgnt_fid_exists(signet, crypto_sig))) {
 
 			if(res < 0) {
-				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of specified field in signet");
+				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for crypto signature field in signet");
 			}
 
-			if((res = sgnt_validate_required_upto_fid(signet, keys, SIGNET_USER_INITIAL_SIG)) < 0) {
+			if((res = sgnt_validate_required_upto_fid(signet, keys, crypto_sig)) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required fields");
 			} else if(res) {
 				return SS_USER_CORE;
@@ -1762,7 +1757,7 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 		if((res = sgnt_fid_exists(signet, SIGNET_USER_SSR_SIG))) {
 
 			if(res < 0) {
-				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for field in signet");
+				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error searching for ssr signature field in signet");
 			}
 
 			if((res = sgnt_validate_required_upto_fid(signet, keys, SIGNET_USER_SSR_SIG)) < 0) {
@@ -2948,7 +2943,7 @@ static int sgnt_type_set(signet_t *signet, signet_type_t type) {
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split_core(const signet_t *signet) {
+static signet_t *sgnt_split_full(const signet_t *signet) {
 
 	unsigned char fid, *data = NULL, *split;
 	size_t data_size, split_size;
@@ -2962,11 +2957,11 @@ static signet_t *sgnt_split_core(const signet_t *signet) {
 	switch(sgnt_type_get(signet)) {
 
 	case SIGNET_TYPE_ORG:
-		fid = SIGNET_ORG_CORE_SIG;
+		fid = SIGNET_ORG_FULL_SIG;
 		number = DIME_ORG_SIGNET;
 		break;
 	case SIGNET_TYPE_USER:
-		fid = SIGNET_USER_CORE_SIG;
+		fid = SIGNET_USER_FULL_SIG;
 		number = DIME_USER_SIGNET;
 		break;
 	default:
@@ -3021,7 +3016,7 @@ static signet_t *sgnt_split_core(const signet_t *signet) {
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split_user(const signet_t *signet) {
+static signet_t *sgnt_split_crypto(const signet_t *signet) {
 
 	unsigned char *data = NULL, *split;
 	size_t data_size, split_size;
@@ -3036,7 +3031,7 @@ static signet_t *sgnt_split_user(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
 	}
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, SIGNET_USER_INITIAL_SIG, &data_size))) {
+	if(!(data = sgnt_serial_from_upto_fid(signet, SIGNET_USER_CRYPTO_SIG, &data_size))) {
 
 		if(get_last_error()) {
 			RET_ERROR_PTR(ERR_UNSPEC, "could not serialize specified signet fields");
@@ -3123,10 +3118,10 @@ static char *sgnt_fingerprint_core(const signet_t *signet) {
 	switch(sgnt_type_get(signet)) {
 
 	case SIGNET_TYPE_ORG:
-		fid = SIGNET_ORG_CORE_SIG;
+		fid = SIGNET_ORG_FULL_SIG;
 		break;
 	case SIGNET_TYPE_USER:
-		fid = SIGNET_USER_CORE_SIG;
+		fid = SIGNET_USER_FULL_SIG;
 		break;
 	default:
 		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
@@ -3161,7 +3156,7 @@ static char *sgnt_fingerprint_user(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
 	}
 
-	if(!(b64_fingerprint = sgnt_fingerprint_upto_fid(signet, SIGNET_USER_INITIAL_SIG))) {
+	if(!(b64_fingerprint = sgnt_fingerprint_upto_fid(signet, SIGNET_USER_CRYPTO_SIG))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not base-64 encode full signet fingerprint");
 	}
 
@@ -3295,7 +3290,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 
 		pok_num -= 1;
 
-		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_CORE_SIG, dime_pok[pok_num])) < 0) {
+		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_FULL_SIG, dime_pok[pok_num])) < 0) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
 		} else if(!res) {
 			return SS_UNVERIFIED;
@@ -3305,7 +3300,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			return SS_CORE;
 		}
 
-		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_FULL_SIG, dime_pok[pok_num])) < 0) {
+		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_ID_SIG, dime_pok[pok_num])) < 0) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
 		} else if(!res) {
 			return SS_UNVERIFIED;
@@ -3325,15 +3320,15 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not retrieve signing keys from organizational signet");
 		}
 
-		if((res = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_INITIAL_SIG, org_keys)) > 0) {
+		if((res = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_CRYPTO_SIG, org_keys)) > 0) {
 
 			if(signet_state == SS_USER_CORE) {
 				result = SS_USER_CORE;
-			} else if((res2 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_CORE_SIG, org_keys)) > 0) {
+			} else if((res2 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_FULL_SIG, org_keys)) > 0) {
 
 				if(signet_state == SS_CORE) {
 					result = SS_CORE;
-				} else if ((res3 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_FULL_SIG, org_keys)) < 0) {
+				} else if ((res3 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_ID_SIG, org_keys)) < 0) {
 					result = SS_UNKNOWN;
 					errmsg = "encountered error during full signature field validation";
 				} else if(!res3) {
@@ -3542,6 +3537,42 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
+static int sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
+
+	unsigned char fid;
+
+	if(!signet || !key) {
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	}
+
+	switch(sgnt_type_get(signet)) {
+
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_ID_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_ID_SIG;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
+		break;
+
+	}
+
+	if((_signet_sign_fid(signet, fid, key)) < 0) {
+		RET_ERROR_INT(ERR_UNSPEC, "could not take full signet signature");
+	}
+
+	return 0;
+}
+
+
+/**
+ * @brief	Checks for the presence of all required fields that come before the CORE signature and signs all the fields that come before the CORE signature field
+ * @param	signet	Pointer to the target signet_t structure.
+ * @param	key	Specified ed25519 key used for signing.
+ * @return	0 on success, -1 on failure.
+*/
 static int sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
 
 	unsigned char fid;
@@ -3565,42 +3596,6 @@ static int sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
 	}
 
 	if((_signet_sign_fid(signet, fid, key)) < 0) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not take full signet signature");
-	}
-
-	return 0;
-}
-
-
-/**
- * @brief	Checks for the presence of all required fields that come before the CORE signature and signs all the fields that come before the CORE signature field
- * @param	signet	Pointer to the target signet_t structure.
- * @param	key	Specified ed25519 key used for signing.
- * @return	0 on success, -1 on failure.
-*/
-static int sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *key) {
-
-	unsigned char fid;
-
-	if(!signet || !key) {
-		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
-	}
-
-	switch(sgnt_type_get(signet)) {
-
-	case SIGNET_TYPE_ORG:
-		fid = SIGNET_ORG_CORE_SIG;
-		break;
-	case SIGNET_TYPE_USER:
-		fid = SIGNET_USER_CORE_SIG;
-		break;
-	default:
-		RET_ERROR_INT(ERR_UNSPEC, "unsupported signet type");
-		break;
-
-	}
-
-	if((_signet_sign_fid(signet, fid, key)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not sign signet");
 	}
 
@@ -3614,21 +3609,34 @@ static int sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_initial_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
+
+	signet_type_t type;
+	unsigned char fid;
 
 	if(!signet || !key) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(sgnt_type_get(signet) != SIGNET_TYPE_SSR) {
-		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+	switch(type = sgnt_type_get(signet)) {
+
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_CRYPTO_SIG;
+		break;
+	case SIGNET_TYPE_SSR:
+		fid = SIGNET_USER_CRYPTO_SIG;
+
+		if(sgnt_type_set(signet, SIGNET_TYPE_USER) < 0) {
+			RET_ERROR_INT(ERR_UNSPEC, "could not change signet type to user from ssr");
+		}
+
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type for crypto signature");
+
 	}
 
-	if(sgnt_type_set(signet, SIGNET_TYPE_USER) < 0) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not change signet type to user from ssr");
-	}
-
-	if((sgnt_sign_field(signet, SIGNET_USER_INITIAL_SIG, key)) < 0) {
+	if((sgnt_sign_field(signet, fid, key)) < 0) {
 
 		if(sgnt_type_set(signet, SIGNET_TYPE_SSR) < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "could not change signet type from user back to ssr after signing failed");
@@ -3824,28 +3832,28 @@ int dime_sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_coc_sig, signet, key);
 }
 
-int dime_sgnt_sign_core_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_core_sig, signet, key);
+int dime_sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_crypto_sig, signet, key);
 }
 
 int dime_sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_full_sig, signet, key);
 }
 
-int dime_sgnt_sign_initial_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_initial_sig, signet, key);
+int dime_sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_id_sig, signet, key);
 }
 
 int dime_sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_ssr_sig, signet, key);
 }
 
-signet_t *dime_sgnt_split_core(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_core, signet);
+signet_t *dime_sgnt_split_crypto(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_crypto, signet);
 }
 
-signet_t *dime_sgnt_split_user(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_user, signet);
+signet_t *dime_sgnt_split_full(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_full, signet);
 }
 
 signet_type_t dime_sgnt_type_get(const signet_t *signet) {

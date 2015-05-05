@@ -91,9 +91,9 @@ typedef enum {
 	SIGNET_ORG_ONION_DELIVERY_CERT,
 	SIGNET_ORG_UNDEFINED = 251,     /**< Unicode undefined field*/
 	SIGNET_ORG_PHOTO,               /**< Organizational photo*/
-	SIGNET_ORG_CORE_SIG,            /**< ORG signature*/
+	SIGNET_ORG_FULL_SIG,            /**< ORG signature*/
 	SIGNET_ORG_ID,                  /**< Org Signet ID */
-	SIGNET_ORG_FULL_SIG             /**< Org Signature following the ID field */
+	SIGNET_ORG_ID_SIG             /**< Org Signature following the ID field */
 } SIGNET_ORG_FIELD_T;
 
 typedef enum {
@@ -102,7 +102,7 @@ typedef enum {
 	SIGNET_USER_ALT_KEY,            /**< Alternative encryption keys for the user */
 	SIGNET_USER_COC_SIG,            /**< Chain of custody signature by user's previous signing key*/
 	SIGNET_USER_SSR_SIG,            /**< User signature with user's signing key*/
-	SIGNET_USER_INITIAL_SIG,        /**< Initial signature by the organization's signing key*/
+	SIGNET_USER_CRYPTO_SIG,        /**< Initial signature by the organization's signing key*/
 	SIGNET_USER_NAME = 16,
 	SIGNET_USER_ADDRESS,
 	SIGNET_USER_PROVINCE,
@@ -127,9 +127,9 @@ typedef enum {
 	SIGNET_USER_ENDORSEMENTS,
 	SIGNET_USER_UNDEFINED = 251,    /**< ASCII undefined field*/
 	SIGNET_USER_PHOTO,              /**< User photo*/
-	SIGNET_USER_CORE_SIG,           /**< Final Organizational Signature*/
+	SIGNET_USER_FULL_SIG,           /**< Final Organizational Signature*/
 	SIGNET_USER_ID,                 /**< User Signet ID */
-	SIGNET_USER_FULL_SIG            /**< Org Signature following the ID field */
+	SIGNET_USER_ID_SIG            /**< Org Signature following the ID field */
 } SIGNET_USER_FIELD_T;
 
 typedef enum {
