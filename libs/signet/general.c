@@ -244,15 +244,15 @@ const char *signet_state_to_str(signet_state_t state) {
 		return "incomplete";
 	case SS_BROKEN_COC:
 		return "broken chain of custody";
-	case SS_UNVERIFIED:
+	case SS_INVALID:
 		return "unverified";
 	case SS_SSR:
 		return "SSR";
-	case SS_USER_CORE:
+	case SS_CRYPTO:
 		return "user cryptographic portion";
-	case SS_CORE:
-		return "id-stripped signet";
 	case SS_FULL:
+		return "id-stripped signet";
+	case SS_ID:
 		return "full signet";
 
 	}

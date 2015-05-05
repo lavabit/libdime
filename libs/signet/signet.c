@@ -1715,7 +1715,7 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 			if((res = sgnt_validate_required_upto_fid(signet, keys, id_sig)) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required field");
 			} else if (res) {
-				return SS_FULL;
+				return SS_ID;
 			} else {
 				return SS_INCOMPLETE;
 			}
@@ -1730,7 +1730,7 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 			if(sgnt_validate_required_upto_fid(signet, keys, full_sig) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required field");
 			} else if (res) {
-				return SS_CORE;
+				return SS_FULL;
 			} else {
 				return SS_INCOMPLETE;
 			}
@@ -1745,7 +1745,7 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 			if((res = sgnt_validate_required_upto_fid(signet, keys, crypto_sig)) < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not determine existence of required fields");
 			} else if(res) {
-				return SS_USER_CORE;
+				return SS_CRYPTO;
 			} else {
 				return SS_INCOMPLETE;
 			}
@@ -2115,7 +2115,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 		RET_ERROR_PTR(ERR_UNSPEC, "target must an organizational signet");
 	}
 
-	if(sgnt_validate_structure(signet) < SS_CORE) {
+	if(sgnt_validate_structure(signet) < SS_CRYPTO) {
 		RET_ERROR_PTR(ERR_UNSPEC, "signet structure is not valid for signing key retrieval");
 	}
 
@@ -2152,7 +2152,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 	field = list;
 
 	if(!(keys[0] = sgnt_fetch_signkey(signet))) {
-		free_ed25519_key_chain(keys);
+		_free_ed25519_key_chain(keys);
 		sgnt_destroy_field_list(list);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch signet signing key");
 	}
@@ -2162,7 +2162,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 		if(!(signet->data[field->data_offset] ^ perm)) {
 
 			if(!(keys[key_count] = sgnt_fetch_sok_num(signet, list_count))) {
-				free_ed25519_key_chain(keys);
+				_free_ed25519_key_chain(keys);
 				sgnt_destroy_field_list(list);
 				RET_ERROR_PTR(ERR_UNSPEC, "could not fetch signet sok");
 			}
@@ -3212,7 +3212,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 	unsigned char *user_key, *prev_key;
 	const char *errmsg = NULL;
 	size_t key_size;
-	signet_state_t signet_state, result = SS_FULL;
+	signet_state_t signet_state, result = SS_ID;
 	signet_type_t type;
 
 	if(!signet) {
@@ -3221,7 +3221,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 
 	signet_state = sgnt_validate_structure(signet);
 
-	if(signet_state <= SS_UNVERIFIED) {
+	if(signet_state <= SS_INVALID) {
 		return signet_state;
 	}
 
@@ -3239,7 +3239,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 		if(res < 0) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
 		} else if(!res) {
-			return SS_UNVERIFIED;
+			return SS_INVALID;
 		}
 
 		if((res = sgnt_fid_exists(signet, SIGNET_SSR_COC_SIG))) {
@@ -3276,7 +3276,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_BAD_PARAM, NULL);
 		}
 
-		if(signet_state <= SS_USER_CORE) {
+		if(signet_state <= SS_SSR) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid state for organizational signet");
 		}
 
@@ -3290,26 +3290,43 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 
 		pok_num -= 1;
 
-		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_FULL_SIG, dime_pok[pok_num])) < 0) {
-			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
-		} else if(!res) {
-			return SS_UNVERIFIED;
-		}
+		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_CRYPTO_SIG, dime_pok[pok_num])) == 1) {
 
-		if(signet_state == SS_CORE) {
-			return SS_CORE;
-		}
+			if(signet_state == SS_CRYPTO) {
+				result = SS_CRYPTO;
+			} else if((res2 = sgnt_validate_sig_field(signet, SIGNET_ORG_FULL_SIG, dime_pok[pok_num])) == 1) {
 
-		if((res = sgnt_validate_sig_field(signet, SIGNET_ORG_ID_SIG, dime_pok[pok_num])) < 0) {
-			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
-		} else if(!res) {
-			return SS_UNVERIFIED;
+				if(signet_state == SS_FULL) {
+					result == SS_FULL;
+				} else if((res3 = sgnt_validate_sig_field(signet, SIGNET_ORG_ID_SIG, dime_pok[pok_num])) < 0) {
+					result = SS_UNKNOWN;
+					errmsg = "encountered error during id signature field validation";
+				} else if(!res3) {
+					result = SS_INVALID;
+				}
+
+			} else if(res2 < 0) {
+				result = SS_UNKNOWN;
+				errmsg = "encountered error during full signature field validation";
+			} else {
+				result = SS_INVALID;
+			}
+
+		} else if(res < 0) {
+			result = SS_UNKNOWN;
+			errmsg = "encountered error during crypto signature field validation";
+		} else {
+			result = SS_INVALID;
 		}
 
 	} else if(type == SIGNET_TYPE_USER) {
 
 		if(!orgsig) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_BAD_PARAM, NULL);
+		}
+
+		if(signet_state <= SS_SSR) {
+			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid state for user signet");
 		}
 
 		if(sgnt_type_get(orgsig) != SIGNET_TYPE_ORG) {
@@ -3320,60 +3337,56 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not retrieve signing keys from organizational signet");
 		}
 
-		if((res = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_CRYPTO_SIG, org_keys)) > 0) {
+		if((res = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_CRYPTO_SIG, org_keys)) == 1) {
 
-			if(signet_state == SS_USER_CORE) {
-				result = SS_USER_CORE;
-			} else if((res2 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_FULL_SIG, org_keys)) > 0) {
+			if(signet_state == SS_CRYPTO) {
+				result = SS_CRYPTO;
+			} else if((res2 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_FULL_SIG, org_keys)) == 1) {
 
-				if(signet_state == SS_CORE) {
-					result = SS_CORE;
+				if(signet_state == SS_FULL) {
+					result = SS_FULL;
 				} else if ((res3 = sgnt_validate_sig_field_multikey(signet, SIGNET_USER_ID_SIG, org_keys)) < 0) {
 					result = SS_UNKNOWN;
-					errmsg = "encountered error during full signature field validation";
+					errmsg = "encountered error during id signature field validation";
 				} else if(!res3) {
-					result = SS_UNVERIFIED;
+					result = SS_INVALID;
 				}
 
 			} else if (res2 < 0) {
 				result = SS_UNKNOWN;
-				errmsg = "encountered error during core signature field validation";
-			} else if(!res2) {
-				result = SS_UNVERIFIED;
+				errmsg = "encountered error during full signature field validation";
+			} else {
+				result = SS_INVALID;
 			}
 
 		} else if (res < 0) {
 			result = SS_UNKNOWN;
-			errmsg = "encountered error during initial signature field validation";
-		} else if(!res) {
-			result = SS_UNVERIFIED;
+			errmsg = "encountered error during crypto signature field validation";
+		} else {
+			result = SS_INVALID;
 		}
 
-		ptr_chain_free(org_keys);
+		_free_ed25519_key_chain(org_keys);
 
-		if (result == SS_UNKNOWN) {
-			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, errmsg);
-		}
-
-		if((res = sgnt_fid_exists(signet, SIGNET_USER_COC_SIG))) {
+		if(result >= SS_CRYPTO && (res = sgnt_fid_exists(signet, SIGNET_USER_COC_SIG))) {
 
 			if(res < 0) {
 				RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error while checking existence of coc signature");
 			}
 
-			if(!previous) {
+			if(!previous || sgnt_type_get(previous) != SIGNET_TYPE_USER) {
 				return SS_BROKEN_COC;
 			} else {
 
 				if(!(prev_key = sgnt_fetch_signkey(previous))) {
-					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error while retrieving signet signing key");
+					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error while retrieving previous signet public signing key");
 				}
 
 				res = sgnt_validate_sig_field_key(signet, SIGNET_USER_COC_SIG, prev_key); 
 				free(prev_key);
 
 				if(res < 0) {
-					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error during signature field validation");
+					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "encountered error during chain of custody signature field validation");
 				} else if(!res) {
 					return SS_BROKEN_COC;
 				}
@@ -3384,6 +3397,10 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 
 	} else {
 		RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid signet type");
+	}
+
+	if(result == SS_UNKNOWN) {
+		RET_ERROR_CUST(result, ERR_UNSPEC, errmsg);
 	}
 
 	return result;
@@ -3519,7 +3536,7 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
 		}
 	}
 
-	free_ed25519_key_chain(keys);
+	_free_ed25519_key_chain(keys);
 
 	if (result < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error occurred while verifying signature");
