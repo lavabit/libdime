@@ -33,6 +33,16 @@ signet_t *              dime_sgnt_create_signet(signet_type_t type);
 signet_t *              dime_sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile);
 
 /**
+ * @brief	Adds a SOK (Secondary Organizational Signing Key) to an organizational signet.
+ * @param	signet		Pointer to the target org signet.
+ * @param	key		ED25519 key to be added as a SOK to the signet.
+ * @param	format		Format specifier byte dictating the format.
+ * @param	perm		Permissions for the usage of the SOK.
+ * @return	0 on success, -1 on failure.
+*/
+int                     dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm);
+
+/**
  * @brief	Adds an undefined field to signet with specified name and data.
  * @param	signet		Pointer to the target signet to which the field is added.
  * @param	name_size	Size of field name.
@@ -78,10 +88,11 @@ unsigned char *         dime_sgnt_fetch_fid_num(const signet_t *signet, unsigned
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a message.
  * @param	signet	Pointer to target organizational signet.
- * @return	A NULL pointer terminated arrays of ed25519 signing keys that have been flagged for use as message signing keys. Caller is responsible for freeing memory.
- * @free_using{ptr_chain_free}
+ * @return	A NULL pointer terminated array of ed25519 public signing key objects.
+ * @NOTE	Always returns at least POK.
+ * @free_using{free_ed25519_key_chain}
 */
-unsigned char **        dime_sgnt_fetch_msg_sign_keys(const signet_t *signet);
+ED25519_KEY **          dime_sgnt_fetch_msg_signkeys(const signet_t *signet);
 
 /**
  * @brief	Retrieves the public signing key from the signet, if the signet is an org signet only retrieves the POK.
@@ -94,10 +105,38 @@ ED25519_KEY *           dime_sgnt_fetch_signkey(const signet_t *signet);
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a signet.
  * @param	signet	Pointer to target organizational signet.
- * @return	A NULL pointer terminated array of ed25519 signing keys that have been flagged for use as signet signing keys. Caller is responsible for freeing memory.
- * @free_using{ptr_chain_free}
+ * @return	A NULL pointer terminated array of ed25519 public signing key objects.
+ * @NOTE	Always returns at least POK.
+ * @free_using{free_ed25519_key_chain}
 */
-unsigned char **        dime_sgnt_fetch_signet_sign_keys(const signet_t *signet);
+ED25519_KEY **          dime_sgnt_fetch_signet_signkeys(const signet_t *signet);
+
+/**
+ * @brief	Retrieves all the signing keys from an org signet that can be used to sign software.
+ * @param	signet	Pointer to target organizational signet.
+ * @return	A NULL pointer terminated array of ed25519 public signing key objects.
+ * @NOTE	Always returns at least POK.
+ * @free_using{free_ed25519_key_chain}
+*/
+ED25519_KEY **          dime_sgnt_fetch_software_signkeys(const signet_t *signet);
+
+/**
+ * @brief	Fetch the secondary organizational signing key from the signet by number (starting at 1)
+ * @param	signet	Pointer to the target organizational signet.
+ * @param	num	The sok number to be fetched.
+ * @return	Retrieved ED25519 key.
+ * @free_using{free_ed25519_key}
+*/
+ED25519_KEY *           dime_sgnt_fetch_sok_num(const signet_t *signet, unsigned int num);
+
+/**
+ * @brief	Retrieves all the signing keys from an org signet that can be used to sign a TLS certificate.
+ * @param	signet	Pointer to target organizational signet.
+ * @return	A NULL pointer terminated array of ed25519 public signing key objects.
+ * @NOTE	Always returns at least POK.
+ * @free_using{free_ed25519_key_chain}
+*/
+ED25519_KEY **          dime_sgnt_fetch_tls_signkeys(const signet_t *signet);
 
 /**
  * @brief	Fetches the first undefined field with the specified field name.
@@ -109,22 +148,6 @@ unsigned char **        dime_sgnt_fetch_signet_sign_keys(const signet_t *signet)
  * @free_using{free}
 */
 unsigned char *         dime_sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size);
-
-/**
- * @brief	Loads signet_t structure from a PEM formatted file specified by filename.
- * @param	filename	Null terminated string containing the filename of the file containing the signet.
- * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
- * @free_using{dime_sgnt_destroy_signet}
-*/
-signet_t *              dime_sgnt_file_to_signet(const char *filename);
-
-/**
- * @brief	Stores a signet from the signet_t structure in a PEM formatted file specified by the filename.
- * @param	signet		Pointer to the signet_t structure containing the signet.
- * @param	filename	Null terminated string containing the desired filename for the signet.
- * @return	0 on success, -1 on failure.
-*/
-int                     dime_sgnt_file_create(signet_t *signet, const char *filename);
 
 /**
  * @brief	Checks for presence of field with specified id in the signet
@@ -142,6 +165,22 @@ int                     dime_sgnt_fid_exists(const signet_t *signet, unsigned ch
  *              NOTE: int overflow should not occur because of field size lower and signet size upper bounds.
 */
 int                     dime_sgnt_fid_get_count(const signet_t *signet, unsigned char fid);
+
+/**
+ * @brief	Loads signet_t structure from a PEM formatted file specified by filename.
+ * @param	filename	Null terminated string containing the filename of the file containing the signet.
+ * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
+ * @free_using{dime_sgnt_destroy_signet}
+*/
+signet_t *              dime_sgnt_file_to_signet(const char *filename);
+
+/**
+ * @brief	Stores a signet from the signet_t structure in a PEM formatted file specified by the filename.
+ * @param	signet		Pointer to the signet_t structure containing the signet.
+ * @param	filename	Null terminated string containing the desired filename for the signet.
+ * @return	0 on success, -1 on failure.
+*/
+int                     dime_sgnt_file_create(signet_t *signet, const char *filename);
 
 /**
  * @brief	Takes a SHA512 fingerprint of the user or org signet with the ID and FULL signature fields stripped off.
@@ -204,6 +243,15 @@ int                     dime_sgnt_remove_undefined_field(signet_t *signet, size_
 signet_t *              dime_sgnt_serial_b64_to_signet(const char *b64_in);
 
 /**
+ * @brief	Serializes a signet structure into binary data.
+ * @param	signet		Pointer to the target signet.
+ * @param	serial_size	Pointer to the value that stores the length of the array returned.
+ * @return	Signet serialized into binary data. Null on error.
+ * @free_using{free}
+*/
+unsigned char *         dime_sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size);
+
+/**
  * @brief	Serializes a signet structure into b64 data.
  * @param	signet		Pointer to the target signet.
  * @return	Signet serialized into b64 data. Null on error.
@@ -219,15 +267,6 @@ char *                  dime_sgnt_serial_signet_to_b64(signet_t *signet);
  * @free_using{dime_sgnt_destroy_signet}
  */
 signet_t *              dime_sgnt_serial_to_signet(const unsigned char *in, size_t len);
-
-/**
- * @brief	Serializes a signet structure into binary data.
- * @param	signet		Pointer to the target signet.
- * @param	serial_size	Pointer to the value that stores the length of the array returned.
- * @return	Signet serialized into binary data. Null on error.
- * @free_using{free}
-*/
-unsigned char *         dime_sgnt_serial_get_binary(signet_t *signet, uint32_t *serial_size);
 
 /**
  * @brief	Replaces all fields in the target signet with the specified field id with a new field specified by the parameters.
