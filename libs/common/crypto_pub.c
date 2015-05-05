@@ -73,6 +73,10 @@ void free_ed25519_key(ED25519_KEY *key) {
 	PUBLIC_FUNC_IMPL_VOID(free_ed25519_key, key);
 }
 
+void free_ed25519_key_chain(ED25519_KEY **keys) {
+	PUBLIC_FUNC_IMPL_VOID(free_ed25519_key_chain, keys);
+}
+
 ED25519_KEY *load_ed25519_privkey(const char *filename) {
 	PUBLIC_FUNC_IMPL(load_ed25519_privkey, filename);
 }

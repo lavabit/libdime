@@ -603,6 +603,24 @@ void _free_ed25519_key(ED25519_KEY *key) {
 
 
 /**
+ * @brief	Free a list of ed25519 keypairs.
+ * @param	keys	a pointer to a NULL terminated list of ed25519 keypair to be freed.
+ */
+void _free_ed25519_key_chain(ED25519_KEY *keys) {
+
+	if (!keys) {
+		return;
+	}
+
+	for(size_t i = 0; keys[i]; ++i) {
+		_free_ed25519_key(keys[i]);
+	}
+
+	free(keys);
+}
+
+
+/**
  * @brief	Load an ed25519 private key from a file.
  * @param	filename	the path of the armored file from which the ed25519 private key will be loaded.
  * @return	a pointer to a newly allocated ed25519 keypair on success, or NULL on failure.

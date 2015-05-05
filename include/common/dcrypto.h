@@ -60,6 +60,7 @@ PUBLIC_FUNC_DECL(ED25519_KEY *,   generate_ed25519_keypair, void);
 PUBLIC_FUNC_DECL(int,             ed25519_sign_data,        const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf);
 PUBLIC_FUNC_DECL(int,             ed25519_verify_sig,       const unsigned char *data, size_t dlen, ED25519_KEY *key, ed25519_signature sigbuf);
 PUBLIC_FUNC_DECL(void,            free_ed25519_key,         ED25519_KEY *key);
+PUBLIC_FUNC_DECL(void,            free_ed25519_key_chain,         ED25519_KEY **keys);
 
 // Symmetric encryption routines.
 PUBLIC_FUNC_DECL(int,             encrypt_aes_256,          unsigned char *outbuf, const unsigned char *data, size_t dlen, const unsigned char *key, const unsigned char *iv);
