@@ -606,7 +606,7 @@ void _free_ed25519_key(ED25519_KEY *key) {
  * @brief	Free a list of ed25519 keypairs.
  * @param	keys	a pointer to a NULL terminated list of ed25519 keypair to be freed.
  */
-void _free_ed25519_key_chain(ED25519_KEY *keys) {
+void _free_ed25519_key_chain(ED25519_KEY **keys) {
 
 	if (!keys) {
 		return;

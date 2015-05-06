@@ -131,18 +131,18 @@ dmime_message_chunk_t *_dmsg_encode_origin(dmime_object_t *object) {
 		RET_ERROR_PTR(ERR_UNSPEC, "the dmime object does not contain necessary information to encode an origin message chunk");
 	}
 
-	if(!(crypto_signet = _signet_user_split(object->signet_author))) {
+	if(!(crypto_signet = dime_sgnt_split_crypto(object->signet_author))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not split author signet");
 	}
 
-	if(!(author_crypto_signet_b64 = _signet_serialize_b64(crypto_signet))) {
-		_signet_destroy(crypto_signet);
+	author_crypto_signet_b64 = dime_sgnt_serial_signet_to_b64(crypto_signet);
+	dime_sgnt_destroy_signet(crypto_signet);
+
+	if(!author_crypto_signet_b64) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize the split signet into b64 data");
 	}
 
-	_signet_destroy(crypto_signet);
-
-	if(!(destination_signet_fingerprint_b64 = _signet_core_fingerprint(object->signet_destination))) {
+	if(!(destination_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_destination))) {
 		free(author_crypto_signet_b64);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate fingerprint");
 	}
@@ -186,18 +186,18 @@ dmime_message_chunk_t *_dmsg_encode_destination(dmime_object_t *object) {
 		RET_ERROR_PTR(ERR_UNSPEC, "the dmime object does not contain necessary information to encode an origin message chunk");
 	}
 
-	if(!(crypto_signet = _signet_user_split(object->signet_recipient))) {
+	if(!(crypto_signet = dime_sgnt_split_crypto(object->signet_recipient))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not split author signet");
 	}
 
-	if(!(recipient_crypto_signet_b64 = _signet_serialize_b64(crypto_signet))) {
-		_signet_destroy(crypto_signet);
+	recipient_crypto_signet_b64 = dime_sgnt_serial_signet_to_b64(crypto_signet);
+	dime_sgnt_destroy_signet(crypto_signet);
+
+	if(!recipient_crypto_signet_b64) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize the split signet into b64 data");
 	}
 
-	_signet_destroy(crypto_signet);
-
-	if(!(origin_signet_fingerprint_b64 = _signet_core_fingerprint(object->signet_origin))) {
+	if(!(origin_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_origin))) {
 		free(recipient_crypto_signet_b64);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate fingerprint");
 	}
@@ -537,7 +537,7 @@ int _dmsg_set_kek(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(signetkey = _signet_get_enckey(signet))) {
+	if(!(signetkey = dime_sgnt_fetch_enckey(signet))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve author public encryption key");
 	}
 
@@ -2256,7 +2256,7 @@ int _dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet)
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk padded data");
 	}
 
-	result = _signet_verify_message_sig(signet, sig, data, data_size);
+	result = dime_sgnt_verify_message_sig(signet, sig, data, data_size);
 
 	if(result < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "an error occurred while verifying plaintext signature");
@@ -2296,18 +2296,19 @@ int _dmsg_msg_to_object_origin(dmime_object_t *object, const dmime_message_t *ms
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the signets have been loaded");
 	}
 
-	if(!(auth_split_signet = _signet_user_split(object->signet_author))) {
+	if(!(auth_split_signet = dime_sgnt_split_crypto(object->signet_author))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not split author signet");
 	}
 
-	if(!(auth_signet_b64 = _signet_serialize_b64(auth_split_signet))) {
-		_signet_destroy(auth_split_signet);
+	auth_signet_b64 = dime_sgnt_serial_signet_to_b64(auth_split_signet);
+	dime_sgnt_destroy_signet(auth_split_signet);
+
+	if(!auth_signet_b64) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize split author signet");
 	}
 
-	_signet_destroy(auth_split_signet);
 
-	if(!(dest_fp_b64 = _signet_core_fingerprint(object->signet_destination))) {
+	if(!(dest_fp_b64 = dime_sgnt_fingerprint_crypto(object->signet_destination))) {
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not take fingerprint of destination signet");
 	}
@@ -2411,18 +2412,18 @@ int _dmsg_msg_to_object_destination(dmime_object_t *object, const dmime_message_
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the signets have been loaded");
 	}
 
-	if(!(recp_split_signet = _signet_user_split(object->signet_recipient))) {
+	if(!(recp_split_signet = dime_sgnt_split_crypto(object->signet_recipient))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not split recipient signet");
 	}
 
-	if(!(recp_signet_b64 = _signet_serialize_b64(recp_split_signet))) {
-		_signet_destroy(recp_split_signet);
+	recp_signet_b64 = dime_sgnt_serial_signet_to_b64(recp_split_signet);
+	dime_sgnt_destroy_signet(recp_split_signet);
+
+	if(!recp_signet_b64) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize split recipient signet");
 	}
 
-	_signet_destroy(recp_split_signet);
-
-	if(!(orig_fp_b64 = _signet_core_fingerprint(object->signet_origin))) {
+	if(!(orig_fp_b64 = dime_sgnt_fingerprint_crypto(object->signet_origin))) {
 		free(recp_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not take fingerprint of origin signet");
 	}
@@ -2545,7 +2546,7 @@ int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t
 		RET_ERROR_INT(ERR_UNSPEC, "signature chunk has data of invalid size");
 	}
 
-	result = _signet_verify_message_sig(object->signet_author, signature, data, data_size);
+	result = dime_sgnt_verify_message_sig(object->signet_author, signature, data, data_size);
 	_dmsg_destroy_message_chunk(decrypted);
 	free(data);
 
@@ -2574,7 +2575,7 @@ int _dmsg_verify_author_sig_chunks(dmime_object_t *object, const dmime_message_t
 		RET_ERROR_INT(ERR_UNSPEC, "signature chunk has data of invalid size");
 	}
 
-	result = _signet_verify_message_sig(object->signet_author, signature, data, data_size);
+	result = dime_sgnt_verify_message_sig(object->signet_author, signature, data, data_size);
 	_dmsg_destroy_message_chunk(decrypted);
 	free(data);
 
@@ -3172,7 +3173,7 @@ int _dmsg_verify_origin_sig_chunks(dmime_object_t *object, const dmime_message_t
 
 	actor = object->actor;
 
-	if(!(signkey = _signet_get_signkey(object->signet_origin))) {
+	if(!(signkey = dime_sgnt_fetch_signkey(object->signet_origin))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve author signing key");
 	}
 

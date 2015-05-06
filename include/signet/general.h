@@ -61,7 +61,7 @@ typedef enum {
 
 typedef enum {
 	SIGNET_ORG_POK = 1,             /**< The ed25519 public signing key of the signet holder */
-	SIGNET_ORG_SOK_KEY,             /**< Secondary Organization Signing keys */
+	SIGNET_ORG_SOK,                 /**< Secondary Organization Signing keys */
 	SIGNET_ORG_ENC_KEY,             /**< The ECC public encryption key of the signet holder */
 	SIGNET_ORG_CRYPTO_SIG,          /**< Org signature of all previous fields */
 	SIGNET_ORG_NAME = 16,
@@ -150,6 +150,10 @@ typedef enum {
 	KEYS_USER_PRIVATE_SIGN = 1,
 	KEYS_USER_PRIVATE_ENC,
 } KEYS_USER_T;
+
+typedef enum {
+	SIGNKEY_DEFAULT_FORMAT =    0x40,    /**< Currently the only legal format specifier for ED25519 signing keys*/
+} signkey_format_t;
 
 typedef enum {
 	SIGNET_SOK_NONE =     0b00000000,   /**< Can not be used for signing anything */

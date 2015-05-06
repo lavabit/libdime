@@ -1,25 +1,18 @@
 #include "signet/keys.h"
 
 static int             keys_check_length(const unsigned char *in, size_t in_len);
-
 static EC_KEY *        keys_fetch_enc_key(const char *filename);
-
 static ED25519_KEY *   keys_fetch_sign_key(const char *filename);
-
 /* keys files no currently encrypted TODO */
 static int             keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename);
-
 static unsigned char * keys_file_serialize(const char *filename, size_t *len);
-
 static EC_KEY *        keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len);
-
 static ED25519_KEY *   keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len);
-
 static keys_type_t     keys_type_get(const unsigned char *bin_keys, size_t len);
-
 /* not implemented yet TODO*/
+/*
 static int             keys_file_add_sok(ED25519_KEY *sok, const char *filename);
-
+*/
 
 
 /* PRIVATE FUNCTIONS */
@@ -86,7 +79,7 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 
 	unsigned char sign_fid, enc_fid;
 	size_t at = 0, privkeylen;
-	EC_KEY *enc_key;
+	EC_KEY *enc_key = NULL;
 
 	if(!bin_keys) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -112,25 +105,23 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 
 	at = KEYS_HEADER_SIZE;
 
-	if(bin_keys[at] == sign_fid) {
-		at += ED25519_KEY_SIZE + 1;
+	while(bin_keys[at++] != enc_fid) {
+		at += bin_keys[at] + 1;
+
+		if(len <= at) {
+			RET_ERROR_PTR(ERR_UNSPEC, "no private encryption key in keys file");
+		}
 	}
 
-	if(len < at + 1) {
-		RET_ERROR_PTR(ERR_UNSPEC, "keys buffer too small for encryption key");
-	}
+	privkeylen = _int_no_get_2b(bin_keys+at);
+	at += 2;
 
-	if(bin_keys[at++] != enc_fid) {
-		RET_ERROR_PTR(ERR_UNSPEC, "no encryption key was found");
-	}
-
-	privkeylen = EC_PRIVKEY_MAXSIZE;
-	if (len < at + EC_PRIVKEY_MAXSIZE) {
-		privkeylen = len - at;
+	if(at + privkeylen > len) {
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid encryption key size");
 	}
 
 	if(!(enc_key = _deserialize_ec_privkey(bin_keys + at, privkeylen, 0))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize encryption key");
+		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize private EC encryption key");
 	}
 
 	return enc_key;
@@ -153,7 +144,7 @@ static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	} else if(keys_check_length(bin_keys, len) < 0) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(len < KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE) {
+	} else if(len < KEYS_HEADER_SIZE + 2 + ED25519_KEY_SIZE) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, "keys buffer too small for signing key");
 	}
 
@@ -177,7 +168,11 @@ static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size
 		RET_ERROR_PTR(ERR_UNSPEC, "no signing key was found");
 	}
 
-	if(!(sign_key = _deserialize_ed25519_privkey(bin_keys + KEYS_HEADER_SIZE + 1))) {
+	if(bin_keys[at++] != ED25519_KEY_SIZE) {
+		RET_ERROR_PTR(ERR_UNSPEC, "invalid size of signing key");
+	}
+
+	if(!(sign_key = _deserialize_ed25519_privkey(bin_keys + at))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize ed25119 signing key");
 	}
 
@@ -225,7 +220,8 @@ static unsigned char *keys_file_serialize(const char *filename, size_t *len) {
 static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 
 	char *b64_keys = NULL;
-	size_t serial_size = 0, enc_size = 0;
+	int res;
+	size_t serial_size = 0, enc_size = 0, at = 0;;
 	unsigned char *serial_keys = NULL, *serial_enc = NULL, serial_sign[ED25519_KEY_SIZE], sign_fid, enc_fid;
 	dime_number_t number;
 
@@ -258,7 +254,7 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize private key");
 	}
 
-	serial_size = KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1 + enc_size;
+	serial_size = KEYS_HEADER_SIZE + 1 + 1 + ED25519_KEY_SIZE + 1 + 2 + enc_size;
 
 	if(!(serial_keys = malloc(serial_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
@@ -271,12 +267,16 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
 	memset(serial_keys, 0, serial_size);
 	_int_no_put_2b(serial_keys, (uint16_t)number);
 	_int_no_put_3b(serial_keys + 2, (uint32_t)(serial_size - KEYS_HEADER_SIZE));
-
-	serial_keys[KEYS_HEADER_SIZE] = sign_fid;
-	memcpy(serial_keys + KEYS_HEADER_SIZE + 1, serial_sign, ED25519_KEY_SIZE);
+	at = KEYS_HEADER_SIZE;
+	serial_keys[at++] = sign_fid;
+	serial_keys[at++] = ED25519_KEY_SIZE;
+	memcpy(serial_keys + at, serial_sign, ED25519_KEY_SIZE);
+	at += ED25519_KEY_SIZE;
 	_secure_wipe(serial_sign, ED25519_KEY_SIZE);
-	serial_keys[KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE] = enc_fid;
-	memcpy(serial_keys + KEYS_HEADER_SIZE + 1 + ED25519_KEY_SIZE + 1, serial_enc, enc_size);
+	serial_keys[at++] = enc_fid;
+	_int_no_put_2b(serial_keys + at, (uint16_t)enc_size);
+	at += 2;
+	memcpy(serial_keys + 2, serial_enc, enc_size);
 	_secure_wipe(serial_enc, enc_size);
 	free(serial_enc);
 
@@ -288,14 +288,13 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
 		RET_ERROR_INT(ERR_UNSPEC, "could not base64 encode the keys");
 	}
 
-	if(_write_pem_data(b64_keys, SIGNET_PRIVATE_KEYCHAIN, filename) < 0) {
-		_secure_wipe(b64_keys, strlen(b64_keys));
-		free(b64_keys);
-		RET_ERROR_INT(ERR_UNSPEC, "could not store keys in PEM file.");
-	}
-
+	res = _write_pem_data(b64_keys, SIGNET_PRIVATE_KEYCHAIN, filename);
 	_secure_wipe(b64_keys, strlen(b64_keys));
 	free(b64_keys);
+
+	if(res < 0) {
+		RET_ERROR_INT(ERR_UNSPEC, "could not store keys in PEM file.");
+	}
 
 	return 0;
 }
@@ -375,14 +374,16 @@ int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_k
 }
 
 /* not implemented yet TODO*/
+/*
 int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_file_add_sok, sok, filename);
 }
+*/
 
 ED25519_KEY *dime_keys_fetch_sign_key(const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_fetch_sign_key, filename);
 }
 
 EC_KEY *dime_keys_fetch_enc_key(const char *filename) {
-	PUBLIC_FUNCTION_IMPLEMENT(dime_keys_fetch_enc_key, filename);
+	PUBLIC_FUNCTION_IMPLEMENT(keys_fetch_enc_key, filename);
 }

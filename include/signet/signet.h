@@ -183,13 +183,22 @@ signet_t *              dime_sgnt_file_to_signet(const char *filename);
 int                     dime_sgnt_file_create(signet_t *signet, const char *filename);
 
 /**
+ * @brief	Takes a SHA512 fingerprint of a signet with all fields after the cryptographic signature field stripped off.
+ * @note	To take an SSR fingerprint, use the signet_ssr_fingerprint() function.
+ * @param	signet	Pointer to the target signet.
+ * @return	Allocated NULL terminated string to a base64 encoded unpadded fingerprint. Null on error.
+ * @free_using{free}
+*/
+char *                  dime_sgnt_fingerprint_crypto(const signet_t *signet);
+
+/**
  * @brief	Takes a SHA512 fingerprint of the user or org signet with the ID and FULL signature fields stripped off.
  * @note	To take an SSR fingerprint, use the signet_ssr_fingerprint() function.
  * @param	signet	Pointer to the target signet.
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure.
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_core(const signet_t *signet);
+char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
 
 /**
  * @brief	Takes a SHA512 fingerprint of the entire user or org signet.
@@ -197,7 +206,7 @@ char *                  dime_sgnt_fingerprint_core(const signet_t *signet);
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure;
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
+char *                  dime_sgnt_fingerprint_id(const signet_t *signet);
 
 /**
  * @brief	Takes a SHA512 fingerprint of a user signet or an ssr with all fields after the SSR signature stripped off.
@@ -206,15 +215,6 @@ char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
  * @free_using{free}
 */
 char *                  dime_sgnt_fingerprint_ssr(const signet_t *signet);
-
-/**
- * @brief	Takes a SHA512 fingerprint of the user signet with all fields after the INITIAL signature field stripped off.
- * @note	To take an SSR fingerprint, use the signet_ssr_fingerprint() function.
- * @param	signet	Pointer to the target signet.
- * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on error.
- * @free_using{free}
-*/
-char *                  dime_sgnt_fingerprint_user(const signet_t *signet);
 
 /**
  * @brief	Removes the field specified by a field id and the number in which it appears in the target signet amongst fields with the same field id from the target signet.
