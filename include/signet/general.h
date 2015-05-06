@@ -216,10 +216,6 @@ typedef struct signet_field_t {
 	struct signet_field_t *next;
 } signet_field_t;
 
-ED25519_KEY *_deserialize_ed25519_pubkey(const unsigned char *serial_pubkey);             //TODO move crypto.c in libcommon
-ED25519_KEY *_deserialize_ed25519_privkey(const unsigned char *serial_privkey);
-
-const char *signet_state_to_str(signet_state_t state);
 const char *dime_number_to_str(dime_number_t number);
 
 extern signet_field_key_t signet_org_field_keys[256];

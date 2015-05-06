@@ -77,6 +77,7 @@ static int                     sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *k
 static int                     sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key);
 static signet_t *              sgnt_split_crypto(const signet_t *signet);
 static signet_t *              sgnt_split_full(const signet_t *signet);
+static const char *            sgnt_state_to_str(signet_state_t state);
 static signet_type_t           sgnt_type_get(const signet_t *signet);
 static int                     sgnt_type_set(signet_t *signet, signet_type_t type);
 static signet_state_t          sgnt_validate_all(const signet_t *signet, const signet_t *previous, const signet_t *orgsig, const unsigned char **dime_pok);
@@ -3771,6 +3772,40 @@ static int sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
 }
 
 
+/**
+ * @brief	Returns a string from a signet_state_t enum type.
+ * @param	state	Signet state.
+ * @return	Null terminated string corresponding to the state.
+*/
+const char *sgnt_state_to_str(signet_state_t state) {
+
+	switch(state) {
+
+	case SS_UNKNOWN:
+		return "unknown";
+	case SS_MALFORMED:
+		return "malformed";
+	case SS_OVERFLOW:
+		return "overflow";
+	case SS_INCOMPLETE:
+		return "incomplete";
+	case SS_BROKEN_COC:
+		return "broken chain of custody";
+	case SS_INVALID:
+		return "unverified";
+	case SS_SSR:
+		return "SSR";
+	case SS_CRYPTO:
+		return "user cryptographic portion";
+	case SS_FULL:
+		return "id-stripped signet";
+	case SS_ID:
+		return "full signet";
+
+	}
+
+	return NULL;
+}
 /* PUBLIC FUNCTIONS */
 
 
@@ -3936,6 +3971,10 @@ signet_t *dime_sgnt_split_crypto(const signet_t *signet) {
 
 signet_t *dime_sgnt_split_full(const signet_t *signet) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_full, signet);
+}
+
+const char *dime_sgnt_state_to_str(signet_state_t state) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_state_to_str, state);
 }
 
 signet_type_t dime_sgnt_type_get(const signet_t *signet) {

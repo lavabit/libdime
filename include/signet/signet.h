@@ -369,6 +369,13 @@ signet_t *              dime_sgnt_split_full(const signet_t *signet);
 signet_type_t           dime_sgnt_type_get(const signet_t *signet);
 
 /**
+ * @brief	Returns a string from a signet_state_t enum type.
+ * @param	state	Signet state.
+ * @return	Null terminated string corresponding to the state.
+*/
+const char *           dime_sgnt_state_to_str(signet_state_t state);
+
+/**
  * @brief	Sets the target signet to a specified type.
  * @param	signet	Pointer to the target signet.
  * @param	type	Specified signet type.

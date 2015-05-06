@@ -672,6 +672,57 @@ ED25519_KEY *_load_ed25519_privkey(const char *filename) {
 
 
 /**
+ * @brief	Deserializes an ed25519 public key into a public-only ED25519_KEY structure that can only be used for signature verification, not signing.
+ * @param	serial_pubkey Serialized ed25519 public key.
+ * @return	Pointer to ED25519_KEY structure.
+*/
+ED25519_KEY *_deserialize_ed25519_pubkey(const unsigned char *serial_pubkey) {
+
+	ED25519_KEY *key;
+
+	if(!serial_pubkey) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
+
+	if(!(key = malloc(sizeof(ED25519_KEY)))) {
+		PUSH_ERROR_SYSCALL("malloc");
+		RET_ERROR_PTR(ERR_NOMEM, NULL);
+	}
+
+	memset(key, 0, sizeof(ED25519_KEY));
+	memcpy(key->public_key, serial_pubkey, ED25519_KEY_SIZE);
+
+	return key;
+}
+
+
+/**
+ * @brief	Deserializes an ed25519 private key into a ED25519_KEY structure.
+ * @param	serial_privkey	Serialized ed25519 private key.
+ * @return	Pointer to the ED25119_KEY structure.
+*/
+ED25519_KEY *_deserialize_ed25519_privkey(const unsigned char *serial_privkey) {
+
+	ED25519_KEY *key;
+
+	if(!serial_privkey) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
+
+	if(!(key = malloc(sizeof(ED25519_KEY)))) {
+		PUSH_ERROR_SYSCALL("malloc");
+		RET_ERROR_PTR(ERR_NOMEM, NULL);
+	}
+
+	memset(key, 0, sizeof(ED25519_KEY));
+	memcpy(key->private_key, serial_privkey, ED25519_KEY_SIZE);
+	ed25519_publickey(key->private_key, key->public_key);
+
+	return key;
+}
+
+
+/**
  * @note	This function was taken from providers/cryptography/openssl.c
  */
 void *_ecies_env_derivation(const void *input, size_t ilen, void *output, size_t *olen) {
