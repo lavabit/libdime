@@ -138,4 +138,13 @@ unsigned int      _evict_if_stale(cached_object_t **objptr);
 void              _lock_cache_store(cached_store_t *store);
 void              _unlock_cache_store(cached_store_t *store);
 
+
+/* signet callbacks*/
+void *                  _deserialize_signet_cb(void *data, size_t len);
+void *                  _serialize_signet_cb(void *record, size_t *outlen);
+void                    _destroy_signet_cb(void *record);
+void                    _dump_signet_cb(FILE *fp, void *record, int brief);
+
+
+
 #endif
