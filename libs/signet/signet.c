@@ -3,11 +3,6 @@
 
 
 
-/* cache callback functions TODO: move this to resolver */
-void *                  _deserialize_signet_cb(void *data, size_t len);
-void *                  _serialize_signet_cb(void *record, size_t *outlen);
-void                    _destroy_signet_cb(void *record);
-void                    _dump_signet_cb(FILE *fp, void *record, int brief);
 
 
 /* PRIVATE FUNCTIONS */
@@ -1050,98 +1045,6 @@ static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_K
 	return res;
 }
 
-
-/* Cache callback functions */
-
-/**
- * @brief	Deserializes signet from a void pointer.
- * @param	data	Pointer to serial signet data.
- * @param	len	Length of serial signet data.
- * @return	Void pointer to a signet_t structure.
-*/
-void *_deserialize_signet_cb(void *data, size_t len) {
-
-	signet_t *result;
-
-	if(!data || !len) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	}
-
-	if(!(result = sgnt_serial_to_signet(data, len))) {
-		RET_ERROR_PTR(ERR_UNSPEC, NULL);
-	}
-
-	return result;
-}
-
-
-/**
- * @brief	Serializes a signet_t structure into a binary string.
- * @param	record	Void pointer to a signet_t structure to be serialized.
- * @param	outlen	Pointer to the length of the returned string.
- * @return	Pointer to a serialized signet.
-*/
-void *_serialize_signet_cb(void *record, size_t *outlen) {
-
-	unsigned char *serial;
-	void *result;
-	uint32_t ssize;
-
-	if(!record || !outlen) {
-		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	}
-
-	if(!(serial = sgnt_serial_from_signet(record, &ssize))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize signet");
-	}
-
-	if(!(result = malloc(ssize))) {
-		PUSH_ERROR_SYSCALL("malloc");
-		free(serial);
-		RET_ERROR_PTR(ERR_NOMEM, NULL);
-	}
-
-	*outlen = ssize;
-	memcpy(result, serial, ssize);
-	free(serial);
-
-	return result;
-}
-
-
-/**
- * @brief	Dumps a signet from a signet_t structure.
- * @param	fp	File descriptor that specifies the output destination.
- * @param	record	Void pointer to a signet_t structure.
- * @param	brief	TODO
-*/
-void _dump_signet_cb(FILE *fp, void *record, int brief) {
-
-	signet_t *sig = (signet_t *)record;
-
-	if (!fp || !sig) {
-		return;
-	}
-
-	if (brief) {
-		fprintf(fp, "*** hashed ***");
-		return;
-	}
-
-	sgnt_dump_signet(fp, sig);
-
-}
-
-
-/**
- * @brief	Destroys a signet_t structure.
- * @param	record	Void pointer to a signet_t structure to be destroyed.
-*/
-void _destroy_signet_cb(void *record) {
-
-	sgnt_destroy_signet(record);
-
-}
 
 /* Create new signet and load signet from file */
 
