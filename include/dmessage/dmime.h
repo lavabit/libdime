@@ -237,7 +237,7 @@ typedef struct {
 	dmime_message_chunk_t *origin_full_sig;
 	//state
 	dmime_message_state_t state;
-} dmime_message_t;
+} dmsg_serial_message_to_binary;
 
 
 // Content chunk contains only information necessary by the consumer. There are no signatures, keyslots or anything else.

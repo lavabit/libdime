@@ -19,7 +19,7 @@ START_TEST(test_message_encryption)
 	const char *other_headers = "SECRET METADATA\r\n";
 	const char *display = "This is a test\r\nCan you read this?\r\n";
 	dmime_kek_t orig_kek, dest_kek, recp_kek;
-	dmime_message_t *message;
+	dmsg_serial_message_to_binary *message;
 	dmime_object_t *draft, *at_orig, *at_dest, *at_recp;
 	signet_t *signet_auth, *signet_orig, *signet_dest, *signet_recp;
 	size_t from_auth_size, from_orig_size, from_dest_size;
