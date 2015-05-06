@@ -66,6 +66,7 @@ static char *                  sgnt_serial_signet_to_b64(signet_t *signet);
 static signet_t *              sgnt_serial_to_signet(const unsigned char *in, size_t len);
 static ED25519_KEY *           sgnt_serial_to_signkey(const unsigned char *serial_key, size_t key_size);
 static int                     sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
+static int                     sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format);
 static int                     sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id);
 static int                     sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
 static int                     sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key);
@@ -1152,12 +1153,12 @@ void _destroy_signet_cb(void *record) {
 */
 static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile) {
 
-	size_t enc_key_size, f_len;
-	unsigned char sign_fid, enc_fid, *ser_enc_pubkey;
 	EC_KEY *enc_key;
 	ED25519_KEY *sign_key;
+	int res;
 	keys_type_t keys_type;
 	signet_t *signet;
+	size_t f_len;
 
 	if(!keysfile) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -1170,18 +1171,12 @@ static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysf
 	switch(type) {
 
 	case SIGNET_TYPE_ORG:
-		sign_fid = SIGNET_ORG_POK;
-		enc_fid = SIGNET_ORG_ENC_KEY;
 		keys_type = KEYS_TYPE_ORG;
 		break;
 	case SIGNET_TYPE_USER:
-		sign_fid = SIGNET_USER_SIGN_KEY;
-		enc_fid = SIGNET_USER_ENC_KEY;
 		keys_type = KEYS_TYPE_USER;
 		break;
 	case SIGNET_TYPE_SSR:
-		sign_fid = SIGNET_SSR_SIGN_KEY;
-		enc_fid = SIGNET_SSR_ENC_KEY;
 		keys_type = KEYS_TYPE_USER;
 		break;
 	default:
@@ -1200,40 +1195,33 @@ static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysf
 	}
 
 	if(dime_keys_file_create(keys_type, sign_key, enc_key, keysfile) < 0) {
+		_free_ec_key(enc_key);
 		_free_ed25519_key(sign_key);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not write private keys to file");
 	}
 
-	if(!(ser_enc_pubkey = _serialize_ec_pubkey(enc_key, &enc_key_size))) {
-		_free_ed25519_key(sign_key);
-		_free_ec_key(enc_key);
-		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize elliptic curve public key");
-	}
-
-	_free_ec_key(enc_key);
-
 	if(!(signet = sgnt_create_signet(type))) {
+		_free_ec_key(enc_key);
 		_free_ed25519_key(sign_key);
-		free(ser_enc_pubkey);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create signet object");
 	}
 
-	if(sgnt_set_signkey(signet, sign_key, SIGNKEY_DEFAULT_FORMAT) < 0) {
+	res = sgnt_set_signkey(signet, sign_key, SIGNKEY_DEFAULT_FORMAT);
+	_free_ed25519_key(sign_key);
+
+	if(res < 0) {
 		sgnt_destroy_signet(signet);
-		_free_ed25519_key(sign_key);
-		free(ser_enc_pubkey);
+		_free_ec_key(enc_key);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not add signing key field to signet");
 	}
 
-	_free_ed25519_key(sign_key);
-//TODO replace with sgnt_set_enckey
-	if(sgnt_create_defined_field(signet, enc_fid, enc_key_size, ser_enc_pubkey) < 0) {
-		free(ser_enc_pubkey);
+	res = sgnt_set_enckey(signet, enc_key, 0);
+	_free_ec_key(enc_key);
+
+	if(res < 0) {
 		sgnt_destroy_signet(signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not add encryption key field to signet");
 	}
-
-	free(ser_enc_pubkey);
 
 	return signet;
 }
@@ -2872,6 +2860,62 @@ static int sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned ch
 
 
 /**
+ * @brief	Sets the public encryption key (non-alterante encryption key) for the signet.
+ * @param	signet	Target signet.
+ * @param	key	Public encryption key.
+ * @param	format	Format specifier. TODO currently unused! (spec requires 0x04 but openssl natively serializes it to 0x02).
+ * @return	0 on success, -1 on failure.
+*/
+static int sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) {
+
+	int res;
+	unsigned char *serial_key = NULL, fid;
+	size_t serial_size;
+
+	if(!signet || !key) {
+		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
+	}
+
+	switch(sgnt_type_get(signet)) {
+
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_ENC_KEY;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_ENC_KEY;
+		break;
+	case SIGNET_TYPE_SSR:
+		fid = SIGNET_SSR_ENC_KEY;
+		break;
+	default:
+		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
+
+	}
+
+	switch (format) { //TODO to avoid format being unused:
+
+	default:
+		serial_key = _serialize_ec_pubkey(key, &serial_size);
+		break;
+
+	}
+
+	if(!serial_key) {
+		RET_ERROR_INT(ERR_UNSPEC, "failed serialiation of public EC encryption key");
+	}
+
+	res = sgnt_set_defined_field(signet, fid, serial_size, serial_key);
+	free(serial_key);
+
+	if(res < 0) {
+		RET_ERROR_INT(ERR_UNSPEC, "could not set signet encryption key");
+	}
+
+	return 0;
+}
+
+
+/**
  * @brief	Sets the signing key (pok - primary signing key in case of an org signet).
  * @param	signet	Pointer to the target signet.
  * @param	key	Public signing key to be set as the signing key of the signet.
@@ -2911,7 +2955,7 @@ static int sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char fo
 	res = sgnt_set_defined_field(signet, fid, serial_size, serial_key);
 	free(serial_key);
 
-	if(res) {
+	if(res < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not set signet signing key");
 	}
 
@@ -3854,8 +3898,16 @@ int dime_sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_defined_field, signet, fid, data_size, data);
 }
 
+int dime_sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_enckey, signet, key, format);
+}
+
 int dime_sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_id_field, signet, id_size, id);
+}
+
+int dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_signkey, signet, key, format);
 }
 
 int dime_sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {

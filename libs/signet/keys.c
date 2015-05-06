@@ -3,7 +3,8 @@
 static int             keys_check_length(const unsigned char *in, size_t in_len);
 static EC_KEY *        keys_fetch_enc_key(const char *filename);
 static ED25519_KEY *   keys_fetch_sign_key(const char *filename);
-/* keys files no currently encrypted TODO */
+/* keys files not currently encrypted TODO */
+/* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
 static int             keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename);
 static unsigned char * keys_file_serialize(const char *filename, size_t *len);
 static EC_KEY *        keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len);
@@ -368,7 +369,6 @@ static EC_KEY *keys_fetch_enc_key(const char *filename) {
 
 /* PUBLIC FUNCTIONS */
 
-/* keys files no currently encrypted TODO */
 int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_file_create, type, sign_key, enc_key, filename);
 }

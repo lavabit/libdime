@@ -279,6 +279,15 @@ signet_t *              dime_sgnt_serial_to_signet(const unsigned char *in, size
 int                     dime_sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 
 /**
+ * @brief	Sets the public encryption key (non-alterante encryption key) for the signet.
+ * @param	signet	Target signet.
+ * @param	key	Public encryption key.
+ * @param	format	Format specifier. TODO currently unused! (spec requires 0x04 but openssl natively serializes it to 0x02).
+ * @return	0 on success, -1 on failure.
+*/
+int                     dime_sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format);
+
+/**
  * @brief	Sets the ID of the signet to the specified NULL terminated string.
  * @param	signet	Pointer to the target signet.
  * @param	id_size	Size of signet id.
