@@ -1,54 +1,70 @@
 #include <dmessage/dmsg.h>
 
-/*from chunk.c*/
-static dmime_chunk_key_t *       dmsg_chunk_get_type_key(dmime_chunk_type_t type);
+static dmime_message_chunk_t *   dmsg_chunk_deserialize(const unsigned char *in, size_t insize, size_t *read);
+static unsigned char *           dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *outsize);
+static unsigned char             dmsg_chunk_get_flags(dmime_message_chunk_t *chunk);
+static dmime_keyslot_t *         dmsg_chunk_get_keyslot_by_num(dmime_message_chunk_t *chunk, size_t num);
+static unsigned char *           dmsg_chunk_get_padded_data(dmime_message_chunk_t *chunk, size_t *outsize);
 static int                       dmsg_chunk_get_padlen(size_t dsize, unsigned char flags, unsigned int *padlen, unsigned char *padbyte);
 static void *                    dmsg_chunk_get_payload(dmime_message_chunk_t *chunk);
-static dmime_keyslot_t *         dmsg_chunk_get_keyslot_by_num(dmime_message_chunk_t *chunk, size_t num);
-static void                      dmsg_chunk_destroy_message_chunk(dmime_message_chunk_t *msg);
-static dmime_message_chunk_t *   dmsg_chunk_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags);
-static dmime_message_chunk_t *   dmsg_chunk_deserialize(const unsigned char *in, size_t insize, size_t *read);
-static dmime_message_chunk_t *   dmsg_chunk_wrap_payload(dmime_chunk_type_t type, unsigned char *payload, size_t insize);
-static unsigned char *           dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *outsize);
-static unsigned char *           dmsg_chunk_get_padded_data(dmime_message_chunk_t *chunk, size_t *outsize);
 static unsigned char *           dmsg_chunk_get_plaintext_sig(dmime_message_chunk_t *chunk);
-static unsigned char             dmsg_chunk_get_flags(dmime_message_chunk_t *chunk);
-/*dmsg.c*/
-static dmime_message_chunk_t *   dmsg_encode_origin(dmime_object_t *object);
-static dmime_message_chunk_t *   dmsg_encode_destination(dmime_object_t *object);
-static dmime_message_chunk_t *   dmsg_encode_common_headers(dmime_object_t *object);
-static dmime_message_chunk_t *   dmsg_encode_other_headers(dmime_object_t *object);
-static dmime_message_chunk_t **  dmsg_encode_display(dmime_object_t *object);
+static dmime_chunk_key_t *       dmsg_chunk_get_type_key(dmime_chunk_type_t type);
+static dmime_message_chunk_t *   dmsg_chunk_wrap_payload(dmime_chunk_type_t type, unsigned char *payload, size_t insize);
+static dmime_message_chunk_t *   dmsg_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags);
+static dmime_object_chunk_t *    dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+static dmime_message_chunk_t *   dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_actor_t actor, dmime_kek_t *kek);
+static int                       dmsg_decrypt_common_headers(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_content(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static dmime_object_t *          dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
+static int                       dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dmime_keyslot_t *decrypted);
+static int                       dmsg_decrypt_message_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_message_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_message_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_message_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static void                      dmsg_destroy_message(dmime_message_t *msg);
+static void                      dmsg_destroy_message_chunk(dmime_message_chunk_t *msg);
+static void                      dmsg_destroy_object(dmime_object_t *object);
+static void                      dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list);
+static int                       dmsg_dump_object(dmime_object_t *object);
 static dmime_message_chunk_t **  dmsg_encode_attach(dmime_object_t *object);
+static dmime_message_chunk_t *   dmsg_encode_common_headers(dmime_object_t *object);
+static dmime_message_chunk_t *   dmsg_encode_destination(dmime_object_t *object);
+static dmime_message_chunk_t **  dmsg_encode_display(dmime_object_t *object);
 static int                       dmsg_encode_msg_chunks(dmime_object_t *object, dmime_message_t *message);
-static int                       dmsg_sign_chunk(dmime_message_chunk_t *chunk, ED25519_KEY *signkey);
-static int                       dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey);
-static int                       dmsg_kek_derive_out(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf);
-static int                       dmsg_kek_derive_all_out(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset);
-static int                       dmsg_encrypt_keyslot(dmime_keyslot_t *keyslot, dmime_kek_t *kek);
+static dmime_message_chunk_t *   dmsg_encode_origin(dmime_object_t *object);
+static dmime_message_chunk_t *   dmsg_encode_other_headers(dmime_object_t *object);
 static int                       dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks);
-static int                       dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks);
+static int                       dmsg_encrypt_keyslot(dmime_keyslot_t *keyslot, dmime_kek_t *kek);
+static dmime_message_t *         dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey);
+static int                       dmsg_encrypt_message_chunks(dmime_message_t *message, dmime_kekset_t *keks);
+static int                       dmsg_kek_derive_in(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek);
+static int                       dmsg_kek_derive_out(EC_KEY *privkey, signet_t *signet, dmime_kek_t *kekbuf);
+static int                       dmsg_kek_derive_out_all(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset);
+static dmime_message_state_t     dmsg_message_state_get(const dmime_message_t *message);
+static dmime_object_state_t      dmsg_object_state_init(dmime_object_t *object);
 static unsigned char *           dmsg_serial_treesig_data(const dmime_message_t *msg, size_t *outsize);
 static size_t                    dmsg_serial_sections_get_size(const dmime_message_t *msg, unsigned char sections);
-static unsigned char *           dmsg_serial_sections_to_binary(const dmime_message_t *msg, unsigned char sections, size_t *outsize);
+static unsigned char *           dmsg_serial_from_sections(const dmime_message_t *msg, unsigned char sections, size_t *outsize);
 static size_t                    dmsg_serial_chunks_get_size(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last);
-static unsigned char *           dmsg_serial_chunks_to_binary(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize);
-static int                       dmsg_sign_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, dmime_kekset_t *keks);
+static unsigned char *           dmsg_serial_from_chunks(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize);
 static size_t                    dmsg_serial_load_tracing(dmime_message_t *msg, const unsigned char *in, size_t insize);
 static dmime_message_chunk_t **  dmsg_serial_to_section(const unsigned char *in, size_t insize, dmime_chunk_section_t section, size_t *read);
 static size_t                    dmsg_serial_deserialization_helper(dmime_message_t *msg, const unsigned char *in, size_t insize, dmime_chunk_type_t *last_type);
-static int                       dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dmime_keyslot_t *decrypted);
-static dmime_message_chunk_t *   dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_actor_t actor, dmime_kek_t *kek);
-static void                      dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list);
-static int                       dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet);
-static int                       dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
-static int                       dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static unsigned char *           dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
+static dmime_message_t *         dmsg_serial_to_message(const unsigned char *in, size_t insize);
+static int                       dmsg_sign_author_sig_chunks(dmime_message_t *message, ED25519_KEY *signkey, dmime_kekset_t *keks);
+static int                       dmsg_sign_chunk(dmime_message_chunk_t *chunk, ED25519_KEY *signkey);
+static int                       dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey);
+static int                       dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey);
 static int                       dmsg_validate_author_sig_chunks(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
-static int                       dmsg_decrypt_common_headers(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
-static int                       dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
-static dmime_object_chunk_t *    dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
-static int                       dmsg_decrypt_content(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+static int                       dmsg_validate_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet);
 static int                       dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
+
+
+/* PRIVATE FUNCTIONS */
 
 
 /**
@@ -105,57 +121,57 @@ static void  dmsg_destroy_message(dmime_message_t *msg) {
 	}
 
 	if(msg->ephemeral) {
-		dmsg_chunk_destroy_message_chunk(msg->ephemeral);
+		dmsg_destroy_message_chunk(msg->ephemeral);
 	}
 
 	if(msg->origin) {
-		dmsg_chunk_destroy_message_chunk(msg->origin);
+		dmsg_destroy_message_chunk(msg->origin);
 	}
 
 	if(msg->destination) {
-		dmsg_chunk_destroy_message_chunk(msg->destination);
+		dmsg_destroy_message_chunk(msg->destination);
 	}
 
 	if(msg->common_headers) {
-		dmsg_chunk_destroy_message_chunk(msg->common_headers);
+		dmsg_destroy_message_chunk(msg->common_headers);
 	}
 
 	if(msg->other_headers) {
-		dmsg_chunk_destroy_message_chunk(msg->other_headers);
+		dmsg_destroy_message_chunk(msg->other_headers);
 	}
 
 	if(msg->display) {
 		for (size_t i = 0; msg->display[i]; i++) {
-			dmsg_chunk_destroy_message_chunk(msg->display[i]);
+			dmsg_destroy_message_chunk(msg->display[i]);
 		}
 	}
 	free(msg->display);
 
 	if(msg->attach) {
 		for (size_t i = 0; msg->attach[i]; i++) {
-			dmsg_chunk_destroy_message_chunk(msg->attach[i]);
+			dmsg_destroy_message_chunk(msg->attach[i]);
 		}
 	}
 	free(msg->attach);
 
 	if(msg->author_tree_sig) {
-		dmsg_chunk_destroy_message_chunk(msg->author_tree_sig);
+		dmsg_destroy_message_chunk(msg->author_tree_sig);
 	}
 
 	if(msg->author_full_sig) {
-		dmsg_chunk_destroy_message_chunk(msg->author_full_sig);
+		dmsg_destroy_message_chunk(msg->author_full_sig);
 	}
 
 	if(msg->origin_meta_bounce_sig) {
-		dmsg_chunk_destroy_message_chunk(msg->origin_meta_bounce_sig);
+		dmsg_destroy_message_chunk(msg->origin_meta_bounce_sig);
 	}
 
 	if(msg->origin_display_bounce_sig) {
-		dmsg_chunk_destroy_message_chunk(msg->origin_display_bounce_sig);
+		dmsg_destroy_message_chunk(msg->origin_display_bounce_sig);
 	}
 
 	if(msg->origin_full_sig) {
-		dmsg_chunk_destroy_message_chunk(msg->origin_full_sig);
+		dmsg_destroy_message_chunk(msg->origin_full_sig);
 	}
 
 	free(msg);
@@ -207,7 +223,7 @@ static dmime_message_chunk_t *dmsg_encode_origin(dmime_object_t *object) {
 	free(author_crypto_signet_b64);
 	free(destination_signet_fingerprint_b64);
 
-	if(!(result = dmsg_chunk_create_message_chunk(CHUNK_TYPE_ORIGIN, (unsigned char *)st_data_get(data), st_length_get(data), DEFAULT_CHUNK_FLAGS))) {
+	if(!(result = dmsg_create_message_chunk(CHUNK_TYPE_ORIGIN, (unsigned char *)st_data_get(data), st_length_get(data), DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
@@ -262,7 +278,7 @@ static dmime_message_chunk_t *dmsg_encode_destination(dmime_object_t *object) {
 	free(recipient_crypto_signet_b64);
 	free(origin_signet_fingerprint_b64);
 
-	if(!(result = dmsg_chunk_create_message_chunk(CHUNK_TYPE_DESTINATION, (unsigned char *)st_data_get(data), st_length_get(data), DEFAULT_CHUNK_FLAGS))) {
+	if(!(result = dmsg_create_message_chunk(CHUNK_TYPE_DESTINATION, (unsigned char *)st_data_get(data), st_length_get(data), DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
@@ -291,7 +307,7 @@ static dmime_message_chunk_t *dmsg_encode_common_headers(dmime_object_t *object)
 		RET_ERROR_PTR(ERR_UNSPEC, "could not format common headers data");
 	}
 
-	if(!(result = dmsg_chunk_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS))) {
+	if(!(result = dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS))) {
 		free(data);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
@@ -315,7 +331,7 @@ static dmime_message_chunk_t *dmsg_encode_other_headers(dmime_object_t *object) 
 
 	//TODO right now we have all the non-common headers combined into one string
 
-	if(!(result = dmsg_chunk_create_message_chunk(CHUNK_TYPE_META_OTHER, (unsigned char *)st_data_get(object->other_headers), st_length_get(object->other_headers), DEFAULT_CHUNK_FLAGS))) {
+	if(!(result = dmsg_create_message_chunk(CHUNK_TYPE_META_OTHER, (unsigned char *)st_data_get(object->other_headers), st_length_get(object->other_headers), DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
@@ -358,10 +374,10 @@ static dmime_message_chunk_t **dmsg_encode_display(dmime_object_t *object) {
 
 	for(int i = 0; i < counter; ++i) {
 
-		if(!(result[i] = dmsg_chunk_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
+		if(!(result[i] = dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
 
 			for(int j = 0; j < i; ++j) {
-				dmsg_chunk_destroy_message_chunk(result[j]);
+				dmsg_destroy_message_chunk(result[j]);
 			}
 
 			free(result);
@@ -410,10 +426,10 @@ static dmime_message_chunk_t **dmsg_encode_attach(dmime_object_t *object) {
 
 	for(int i = 0; i < counter; ++i) {
 
-		if(!(result[i] = dmsg_chunk_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
+		if(!(result[i] = dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
 
 			for(int j = 0; j < i; ++j) {
-				dmsg_chunk_destroy_message_chunk(result[j]);
+				dmsg_destroy_message_chunk(result[j]);
 			}
 
 			free(result);
@@ -610,7 +626,7 @@ static int dmsg_kek_derive_out(EC_KEY *privkey, signet_t *signet, dmime_kek_t *k
  * @param	kekset		Pointer to the set of key encryption keys to be populated.
  * @result	0 on success, all other values indicate failure.
  */
-static int dmsg_kek_derive_all_out(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset) {
+static int dmsg_kek_derive_out_all(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset) {
 
 	if(!object || !ephemeral || !kekset) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -623,7 +639,7 @@ static int dmsg_kek_derive_all_out(dmime_object_t *object, EC_KEY *ephemeral, dm
 		RET_ERROR_INT(ERR_UNSPEC, "could not set author KEK");
 	}
 
-	if(dmsg_kek_derive(ephemeral, object->signet_origin, &((*kekset)[id_origin]))) {
+	if(dmsg_kek_derive_out(ephemeral, object->signet_origin, &((*kekset)[id_origin]))) {
 		_free_ec_key(ephemeral);
 		RET_ERROR_INT(ERR_UNSPEC, "could not set recipient KEK");
 	}
@@ -841,7 +857,7 @@ static int dmsg_encrypt_chunk(dmime_message_chunk_t *chunk, dmime_kekset_t *keks
  * @param	keks		Pointer to the set of key-encryption-keys to be used for encrypting keyslots.
  * @return	0 on success, all other values indicate failure.
 */
-static int dmsg_encrypt_message(dmime_message_t *message, dmime_kekset_t *keks) {
+static int dmsg_encrypt_message_chunks(dmime_message_t *message, dmime_kekset_t *keks) {
 
 	if(!message || !keks) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -1108,7 +1124,7 @@ static size_t dmsg_serial_sections_get_size(const dmime_message_t *msg, unsigned
  * @param	outsize		Stores the output size.
  * @return	Pointer to the binary array containing the binary message.
 */
-static unsigned char *dmsg_serial_sections_to_binary(const dmime_message_t *msg, unsigned char sections, size_t *outsize) {
+static unsigned char *dmsg_serial_from_sections(const dmime_message_t *msg, unsigned char sections, size_t *outsize) {
 
 	size_t total_size;
 	size_t at = 0;
@@ -1298,7 +1314,7 @@ static size_t dmsg_serial_chunks_get_size(const dmime_message_t *msg, dmime_chun
  * @param	outsize		Stores the size of the serialized message.
  * @return	Pointer to the serialized message.
 */
-static unsigned char *dmsg_serial_chunks_to_binary(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize) {
+static unsigned char *dmsg_serial_from_chunks(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize) {
 
 	size_t total_size;
 	size_t at = 0;
@@ -1432,7 +1448,7 @@ static int dmsg_sign_author_sig_chunks(dmime_message_t *message, ED25519_KEY *si
 
 	free(data);
 
-	if(!(message->author_tree_sig = dmsg_chunk_create_message_chunk(CHUNK_TYPE_SIG_AUTHOR_TREE, sigbuf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
+	if(!(message->author_tree_sig = dmsg_create_message_chunk(CHUNK_TYPE_SIG_AUTHOR_TREE, sigbuf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create author tree signature chunk");
 	}
 
@@ -1440,7 +1456,7 @@ static int dmsg_sign_author_sig_chunks(dmime_message_t *message, ED25519_KEY *si
 		RET_ERROR_INT(ERR_UNSPEC, "could not encrypt author tree signature chunk");
 	}
 
-	if(!(data = dmsg_serial_chunks_to_binary(message, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_AUTHOR_TREE, &data_size))) {
+	if(!(data = dmsg_serial_from_chunks(message, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_AUTHOR_TREE, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize dmime message");
 	}
 
@@ -1451,7 +1467,7 @@ static int dmsg_sign_author_sig_chunks(dmime_message_t *message, ED25519_KEY *si
 
 	free(data);
 
-	if(!(message->author_full_sig = dmsg_chunk_create_message_chunk(CHUNK_TYPE_SIG_AUTHOR_FULL, sigbuf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
+	if(!(message->author_full_sig = dmsg_create_message_chunk(CHUNK_TYPE_SIG_AUTHOR_FULL, sigbuf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not not create author full signature chunk");
 	}
 
@@ -1486,7 +1502,7 @@ static int dmsg_encode_origin_sig_chunks(dmime_message_t *message, dmime_kekset_
 	memset(blank_buf, 0, sizeof(blank_buf));
 	message->state = MESSAGE_STATE_INCOMPLETE;
 
-	if(!(message->origin_meta_bounce_sig = dmsg_chunk_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
+	if(!(message->origin_meta_bounce_sig = dmsg_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_META_BOUNCE, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create an origin meta bounce signature chunk");
 	}
 
@@ -1494,7 +1510,7 @@ static int dmsg_encode_origin_sig_chunks(dmime_message_t *message, dmime_kekset_
 		RET_ERROR_INT(ERR_UNSPEC, "could not encrypt the origin meta bounce signature chunk");
 	}
 
-	if(!(message->origin_display_bounce_sig = dmsg_chunk_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
+	if(!(message->origin_display_bounce_sig = dmsg_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create an origin display bounce signature chunk");
 	}
 
@@ -1502,7 +1518,7 @@ static int dmsg_encode_origin_sig_chunks(dmime_message_t *message, dmime_kekset_
 		RET_ERROR_INT(ERR_UNSPEC, "could not encrypt the origin display bounce signature chunk");
 	}
 
-	if(!(message->origin_full_sig = dmsg_chunk_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_FULL, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
+	if(!(message->origin_full_sig = dmsg_create_message_chunk(CHUNK_TYPE_SIG_ORIGIN_FULL, blank_buf, ED25519_SIG_SIZE, DEFAULT_CHUNK_FLAGS))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create an origin full signature chunk");
 	}
 
@@ -1562,13 +1578,13 @@ static dmime_message_t *dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY
 		RET_ERROR_PTR(ERR_UNSPEC, "could not generate ephemeral encryption key");
 	}
 
-	if(dmsg_kek_derive_all_out(object, ephemeral, &kekset)) {
+	if(dmsg_kek_derive_out_all(object, ephemeral, &kekset)) {
 		dmsg_destroy_message(result);
 		_free_ec_key(ephemeral);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not derive kekset from signets and ephemeral key");
 	}
 
-	if(dmsg_encrypt_message(result, &kekset)) {
+	if(dmsg_encrypt_message_chunks(result, &kekset)) {
 		_secure_wipe(kekset, sizeof(dmime_kekset_t));
 		dmsg_destroy_message(result);
 		_free_ec_key(ephemeral);
@@ -1589,7 +1605,7 @@ static dmime_message_t *dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY
 		RET_ERROR_PTR(ERR_UNSPEC, "serialized public key size did not match expected length");
 	}
 
-	if(!(result->ephemeral = dmsg_chunk_create_message_chunk(CHUNK_TYPE_EPHEMERAL, bin_pub, ecsize, DEFAULT_CHUNK_FLAGS))) {
+	if(!(result->ephemeral = dmsg_create_message_chunk(CHUNK_TYPE_EPHEMERAL, bin_pub, ecsize, DEFAULT_CHUNK_FLAGS))) {
 		_secure_wipe(kekset, sizeof(dmime_kekset_t));
 		free(bin_pub);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create an ephemeral chunk");
@@ -1623,7 +1639,7 @@ static dmime_message_t *dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY
  * @param	tracing		If set, include tracing, if clear don't include tracing.
  * @param	outsize		Stores the output size of the binary.
 */
-static unsigned char *dmsg_serial_message_to_binary(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
+static unsigned char *dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
 
 	size_t trc_size = 0, msg_size, total_size, at = 0;
 	unsigned char *result, *ser;
@@ -1640,7 +1656,7 @@ static unsigned char *dmsg_serial_message_to_binary(const dmime_message_t *msg, 
 		trc_size = _int_no_get_2b(&(msg->tracing->size[0]));
 	}
 
-	if(!(ser = dmsg_serial_sections_to_binary(msg, sections, &msg_size))) {
+	if(!(ser = dmsg_serial_from_sections(msg, sections, &msg_size))) {
 		RET_ERROR_PTR(ERR_NOMEM, "could not serialize message sections");
 	}
 
@@ -1757,7 +1773,7 @@ static dmime_message_chunk_t **dmsg_serial_to_section(const unsigned char *in, s
 		if(!(result[atchunk] = dmsg_chunk_deserialize(in + at, insize - at, &serial_size))) {
 
 			while(i < atchunk) {
-				dmsg_chunk_destroy_message_chunk(result[i++]);
+				dmsg_destroy_message_chunk(result[i++]);
 			}
 
 			free(result);
@@ -1845,7 +1861,7 @@ static size_t dmsg_serial_deserialization_helper(dmime_message_t *msg, const uns
 			msg->origin_full_sig = chunk;
 			break;
 		default:
-			dmsg_chunk_destroy_message_chunk(chunk);
+			dmsg_destroy_message_chunk(chunk);
 			RET_ERROR_UINT(ERR_UNSPEC, "invalid chunk type");
 			break;
 
@@ -1972,7 +1988,7 @@ static dmime_message_t *dmsg_serial_to_message(const unsigned char *in, size_t i
  * @param	kek		Pointer to a dmime_kek_t - a key encryption key object that can be used to decrypt the keyslots.
  * @return	Returns 0 on success, all other values indicate failure.
  */
-static int dmsg_kek_derive_w_key(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek) {
+static int dmsg_kek_derive_in(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek) {
 
 	dmime_ephemeral_payload_t *payload;
 	EC_KEY *ephemeral;
@@ -2231,18 +2247,18 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 		}
 
 		if(!(chunk_data = dmsg_chunk_get_data(decrypted, &size))) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve chunk data");
 		}
 
 		if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not parse origin chunk");
 		}
 
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		result->author = st_dupe(parsed->auth_recp);
 		result->destination = st_dupe(parsed->dest_orig);
 		_dmsg_destroy_envelope_object(parsed);
@@ -2256,18 +2272,18 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 		}
 
 		if(!(chunk_data = dmsg_chunk_get_data(decrypted, &size))) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve chunk data");
 		}
 
 		if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not parse destination chunk");
 		}
 
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		result->recipient = st_dupe(parsed->auth_recp);
 		result->origin = st_dupe(parsed->dest_orig);
 		_dmsg_destroy_envelope_object(parsed);
@@ -2285,7 +2301,7 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
  * @param	signet		Author's signet used to verify signature.
  * @return	1 if signature is valid, 0 if invalid, -1 if validation failed as a result of an error.
  */
-static int dmsg_verify_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet) {
+static int dmsg_validate_chunk_signature(dmime_message_chunk_t *chunk, signet_t *signet) {
 
 	int result;
 	size_t data_size;
@@ -2370,35 +2386,35 @@ static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *ms
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt origin chunk");
 	}
 
-	res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+	res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 	if(res < 0) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "error during validation of origin chunk signature");
 	} else if (!res) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "origin chunk plaintext signature is invalid");
 	}
 
 	if(!(chunk_data = dmsg_chunk_get_data(decrypted, &size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve origin chunk data");
 	}
 
 	if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not parse origin chunk");
 	}
 
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 
 	if(strlen(auth_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(auth_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(auth_signet_b64))) {
 		_dmsg_destroy_envelope_object(parsed);
@@ -2486,15 +2502,15 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 	}
 
 	if(actor != id_destination) {
-		res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+		res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 		if(res < 0) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			free(orig_fp_b64);
 			free(recp_signet_b64);
 			RET_ERROR_INT(ERR_UNSPEC, "error during validation of destination chunk signature");
 		} else if(!res) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			free(orig_fp_b64);
 			free(recp_signet_b64);
 			RET_ERROR_INT(ERR_UNSPEC, "destination chunk plaintext signature is invalid");
@@ -2503,20 +2519,20 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 	}
 
 	if(!(chunk_data = dmsg_chunk_get_data(decrypted, &size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(orig_fp_b64);
 		free(recp_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve destination chunk data");
 	}
 
 	if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(orig_fp_b64);
 		free(recp_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not parse destination chunk");
 	}
 
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 
 	if(strlen(recp_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(recp_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(recp_signet_b64))) {
 		_dmsg_destroy_envelope_object(parsed);
@@ -2588,17 +2604,17 @@ static int dmsg_validate_author_sig_chunks(dmime_object_t *object, const dmime_m
 	}
 
 	if(!(signature = dmsg_chunk_get_data(decrypted, &sig_size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve author tree signature chunk data");
 	} else if(sig_size != ED25519_SIG_SIZE) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "signature chunk has data of invalid size");
 	}
 
 	result = dime_sgnt_verify_message_sig(object->signet_author, signature, data, data_size);
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 	free(data);
 
 	if(result < 0) {
@@ -2607,7 +2623,7 @@ static int dmsg_validate_author_sig_chunks(dmime_object_t *object, const dmime_m
 		RET_ERROR_INT(ERR_UNSPEC, "author tree signature is invalid");
 	}
 
-	if(!(data = dmsg_serial_chunks_to_binary(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_AUTHOR_TREE, &data_size))) {
+	if(!(data = dmsg_serial_from_chunks(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_AUTHOR_TREE, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize dmime message");
 	}
 
@@ -2617,17 +2633,17 @@ static int dmsg_validate_author_sig_chunks(dmime_object_t *object, const dmime_m
 	}
 
 	if(!(signature = dmsg_chunk_get_data(decrypted, &sig_size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve author tree signature chunk data");
 	} else if(sig_size != ED25519_SIG_SIZE) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "signature chunk has data of invalid size");
 	}
 
 	result = dime_sgnt_verify_message_sig(object->signet_author, signature, data, data_size);
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 	free(data);
 
 	if(result < 0) {
@@ -2671,27 +2687,27 @@ static int dmsg_decrypt_common_headers(dmime_object_t *object, const dmime_messa
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
-	res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+	res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 	if(res < 0) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "error during validation of common headers chunk signature");
 	} else if(!res) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "common headers chunk plaintext signature is invalid");
 	}
 
 	if(!(data = dmsg_chunk_get_data(decrypted, &data_size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
 
 	if(!(object->common_headers = _dmsg_parse_common_headers(data, data_size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not parse common headers chunk data");
 	}
 
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 
 	return 0;
 }
@@ -2728,18 +2744,18 @@ static int dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_messag
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt common headers chunk");
 	}
 
-	res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+	res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 	if(res < 0) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "error during validation of other headers chunk signature");
 	} else if(!res) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "other headers chunk plaintext signature is invalid");
 	}
 
 	if(!(data = dmsg_chunk_get_data(decrypted, &data_size))) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
 /*//TODO content check
@@ -2753,7 +2769,7 @@ static int dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_messag
         }
 */
 	object->other_headers = st_import(data, data_size);
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 
 	return 0;
 }
@@ -2837,31 +2853,31 @@ static int dmsg_decrypt_content(dmime_object_t *object, const dmime_message_t *m
 				RET_ERROR_INT(ERR_UNSPEC, "could not decrypt display chunk");
 			}
 
-			res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+			res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 			if(res < 0) {
 				dmsg_destroy_object_chunk_list(object->display);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "error during validation of display chunk signature");
 			} else if(!res) {
 				dmsg_destroy_object_chunk_list(object->display);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "display chunk plaintext signature is invalid");
 			}
 
 			if(!(data = dmsg_chunk_get_data(decrypted, &data_size))) {
 				dmsg_destroy_object_chunk_list(object->display);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not retrieve decrypted display chunk data");
 			}
 
 			if(!(chunk = dmsg_create_object_chunk(decrypted->type, data, data_size, dmsg_chunk_get_flags(decrypted)))) {
 				dmsg_destroy_object_chunk_list(object->display);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not create an object chunk with the contents from the message chunk");
 			}
 
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 
 			if(!i) {
 				object->display = chunk;
@@ -2883,31 +2899,31 @@ static int dmsg_decrypt_content(dmime_object_t *object, const dmime_message_t *m
 				RET_ERROR_INT(ERR_UNSPEC, "could not decrypt display chunk");
 			}
 
-			res = dmsg_verify_chunk_signature(decrypted, object->signet_author);
+			res = dmsg_validate_chunk_signature(decrypted, object->signet_author);
 
 			if(res < 0) {
 				dmsg_destroy_object_chunk_list(object->attach);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "error during validation of attachment chunk signature");
 			} else if(!res) {
 				dmsg_destroy_object_chunk_list(object->attach);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "attachment chunk plaintext signature is invalid");
 			}
 
 			if(!(data = dmsg_chunk_get_data(decrypted, &data_size))) {
 				dmsg_destroy_object_chunk_list(object->attach);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not retrieve decrypted display chunk data");
 			}
 
 			if(!(chunk = dmsg_create_object_chunk(decrypted->type, data, data_size, dmsg_chunk_get_flags(decrypted)))) {
 				dmsg_destroy_object_chunk_list(object->attach);
-				dmsg_chunk_destroy_message_chunk(decrypted);
+				dmsg_destroy_message_chunk(decrypted);
 				RET_ERROR_INT(ERR_UNSPEC, "could not create an object chunk with the contents from the message chunk");
 			}
 
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 
 			if(!i) {
 				object->attach = chunk;
@@ -3058,7 +3074,7 @@ static int dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounc
 
 		if(bounce_flags & META_BOUNCE) {
 
-			if(!(data = dmsg_serial_sections_to_binary(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA), &data_size))) {
+			if(!(data = dmsg_serial_from_sections(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA), &data_size))) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not serialize message for bounce metadata signature");
 			}
 
@@ -3098,7 +3114,7 @@ static int dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounc
 			_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 			_secure_wipe(sig, sizeof(ed25519_signature));
 		} else {
-			dmsg_chunk_destroy_message_chunk(msg->origin_meta_bounce_sig);
+			dmsg_destroy_message_chunk(msg->origin_meta_bounce_sig);
 			msg->origin_meta_bounce_sig = NULL;
 		}
 
@@ -3108,7 +3124,7 @@ static int dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounc
 
 		if(bounce_flags & DISPLAY_BOUNCE) {
 
-			if(!(data = dmsg_serial_sections_to_binary(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA | CHUNK_SECTION_DISPLAY), &data_size))) {
+			if(!(data = dmsg_serial_from_sections(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA | CHUNK_SECTION_DISPLAY), &data_size))) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not serialize message for bounce display signature");
 			}
 
@@ -3148,13 +3164,13 @@ static int dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounc
 			_secure_wipe(&keyslot_dec, sizeof(dmime_keyslot_t));
 			_secure_wipe(sig, sizeof(ed25519_signature));
 		} else {
-			dmsg_chunk_destroy_message_chunk(msg->origin_display_bounce_sig);
+			dmsg_destroy_message_chunk(msg->origin_display_bounce_sig);
 			msg->origin_display_bounce_sig = NULL;
 		}
 
 	}
 
-	if(!(data = dmsg_serial_chunks_to_binary(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, &data_size))) {
+	if(!(data = dmsg_serial_from_chunks(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize dmime message");
 	}
 
@@ -3230,7 +3246,7 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 
 	if(msg->origin_meta_bounce_sig) {
 
-		if(!(data = dmsg_serial_sections_to_binary(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA), &data_size))) {
+		if(!(data = dmsg_serial_from_sections(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA), &data_size))) {
 			free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "could not serialize envelope and metadata message chunks");
 		}
@@ -3242,14 +3258,14 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 		}
 
 		if(!(signature = dmsg_chunk_get_data(decrypted, &sig_size)) || (sig_size != ED25519_SIG_SIZE)) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			free(data);
 			_free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "could not retrieve meta bounce chunk data");
 		}
 
 		result = _ed25519_verify_sig(data, data_size, signkey, signature);
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 
 		if(result < 0) {
@@ -3264,7 +3280,7 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 
 	if(msg->origin_display_bounce_sig) {
 
-		if(!(data = dmsg_serial_sections_to_binary(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA | CHUNK_SECTION_DISPLAY), &data_size))) {
+		if(!(data = dmsg_serial_from_sections(msg, (CHUNK_SECTION_ENVELOPE | CHUNK_SECTION_METADATA | CHUNK_SECTION_DISPLAY), &data_size))) {
 			free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "could not serialize envelope metadata and display message chunks");
 		}
@@ -3276,14 +3292,14 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 		}
 
 		if(!(signature = dmsg_chunk_get_data(decrypted, &sig_size)) || (sig_size != ED25519_SIG_SIZE)) {
-			dmsg_chunk_destroy_message_chunk(decrypted);
+			dmsg_destroy_message_chunk(decrypted);
 			free(data);
 			_free_ed25519_key(signkey);
 			RET_ERROR_INT(ERR_UNSPEC, "could not retrieve dispaly bounce chunk data");
 		}
 
 		result = _ed25519_verify_sig(data, data_size, signkey, signature);
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 
 		if(result < 0) {
@@ -3296,7 +3312,7 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 
 	}
 
-	if(!(data = dmsg_serial_chunks_to_binary(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, &data_size))) {
+	if(!(data = dmsg_serial_from_chunks(msg, CHUNK_TYPE_EPHEMERAL, CHUNK_TYPE_SIG_ORIGIN_DISPLAY_BOUNCE, &data_size))) {
 		_free_ed25519_key(signkey);
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize the dmime message");
 	}
@@ -3308,14 +3324,14 @@ static int dmsg_validate_origin_sig_chunks(dmime_object_t *object, const dmime_m
 	}
 
 	if(!(signature = dmsg_chunk_get_data(decrypted, &sig_size)) || (sig_size != ED25519_SIG_SIZE)) {
-		dmsg_chunk_destroy_message_chunk(decrypted);
+		dmsg_destroy_message_chunk(decrypted);
 		free(data);
 		_free_ed25519_key(signkey);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve origin full sig chunk data");
 	}
 
 	result = _ed25519_verify_sig(data, data_size, signkey, signature);
-	dmsg_chunk_destroy_message_chunk(decrypted);
+	dmsg_destroy_message_chunk(decrypted);
 	free(data);
 	_free_ed25519_key(signkey);
 
@@ -3606,7 +3622,7 @@ static dmime_keyslot_t *dmsg_chunk_get_keyslot_by_num(dmime_message_chunk_t *chu
  * @brief	Destroys dmime message chunk.
  * @param	chunk		Dmime message chunk to be destroyed.
 */
-static void    dmsg_chunk_destroy_message_chunk(dmime_message_chunk_t *chunk) {
+static void    dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 
 	if(!chunk) {
 		return;
@@ -3625,7 +3641,7 @@ static void    dmsg_chunk_destroy_message_chunk(dmime_message_chunk_t *chunk) {
  * @param	flags		flags to be set for chunk, only relevant for standard payload chunk types.
  * @return	Pointer to the newly allocated and encoded dmime_message_chunk_t structure.
 */
-static dmime_message_chunk_t *dmsg_chunk_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags) {
+static dmime_message_chunk_t *dmsg_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags) {
 
 	dmime_chunk_key_t *key;
 	void *payload;
@@ -3725,7 +3741,7 @@ static dmime_message_chunk_t *dmsg_chunk_create_message_chunk(dmime_chunk_type_t
 
 	// get chunk payload
 	if(!(payload = dmsg_chunk_get_payload(result))) {
-		dmsg_chunk_destroy_message_chunk(result);
+		dmsg_destroy_message_chunk(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve standard chunk");
 	}
 
@@ -3753,7 +3769,7 @@ static dmime_message_chunk_t *dmsg_chunk_create_message_chunk(dmime_chunk_type_t
 		memset(&(((dmime_standard_payload_t *)payload)->data[data_size]), padbyte, padlen);
 		break;
 	default:
-		dmsg_chunk_destroy_message_chunk(result);
+		dmsg_destroy_message_chunk(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "unsupported payload type");
 		break;
 
@@ -4069,6 +4085,70 @@ static unsigned char dmsg_chunk_get_flags(dmime_message_chunk_t *chunk) {
 
 	return payload->flags;
 }
+
+/* PUBLIC FUNCTIONS */
+
+
+dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_envelope, msg, actor, kek);
+}
+
+int                       dime_dmsg_decrypt_message_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_auth, obj, message, kek);
+}
+
+int                       dime_dmsg_decrypt_message_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_dest, obj, msg, kek);
+}
+
+int                       dime_dmsg_decrypt_message_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_orig, obj, msg, kek);
+}
+
+int                       dime_dmsg_decrypt_message_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_recp, obj, msg, kek);
+}
+
+void                      dime_dmsg_destroy_object(dmime_object_t *object) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_object, object);
+}
+
+void                      dime_dmsg_destroy_message(dmime_message_t *msg) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_message, msg);
+}
+
+int                       dime_dmsg_dump_object(dmime_object_t *object) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_dump_object, object);
+}
+
+dmime_message_t *         dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_encrypt_message, object, signkey);
+}
+
+int                       dime_dmsg_kek_derive_in(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_kek_derive_in, msg, enckey, kek);
+}
+
+dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_state_init, object);
+}
+
+dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_message_state_get, message);
+}
+
+unsigned char *           dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_serial_from_message, msg, sections, tracing, outsize);
+}
+
+dmime_message_t *         dime_dmsg_serial_to_message(const unsigned char *in, size_t insize) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_serial_to_message, in, insize);
+}
+
+int                       dime_dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_sign_origin_sig_chunks, msg, bounce_flags, kek, signkey);
+}
+
 
 
 //                  { .required .unique .encrypted .sequential .section, .payload, .auth_keyslot, .orig_keyslot, .dest_keyslot, .recp_keyslot, .name, .description }
