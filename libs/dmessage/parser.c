@@ -1,12 +1,21 @@
-#include <dmessage/dmime.h>
-#include <dmessage/dmsg.h>
+#include "dmessage/parser.h"
 
+static void                        prsr_envelope_destroy(dmime_envelope_object_t *obj);
+static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type);
+static dmime_common_headers_t *    prsr_headers_create(void);
+static void                        prsr_headers_destroy(dmime_common_headers_t *obj);
+static unsigned char *             prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize);
+static dmime_header_type_t         prsr_headers_get_type(unsigned char *in, size_t insize);
+static dmime_common_headers_t *    prsr_headers_parse(unsigned char *in, size_t insize);
+
+/* PRIVATE FUNCTIONS */
 
 /**
  * @brief	Allocates memory for an empty dmime_common_headers_t type.
- * @return	dmime_common_headers_t type.
- */
-dmime_common_headers_t *_dmsg_create_common_headers(void) {
+ * @return	dmime_common_headers_t structure.
+ * @free_using{prsr_headers_destroy}
+*/
+static dmime_common_headers_t *prsr_headers_create(void) {
 
 	dmime_common_headers_t *result;
 
@@ -25,7 +34,7 @@ dmime_common_headers_t *_dmsg_create_common_headers(void) {
  * @brief	Destroys a dmime_common_headers_t structure.
  * @param	obj		Headers to be destroyed.
  */
-void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
+static void prsr_headers_destroy(dmime_common_headers_t *obj) {
 
 	if(!obj) {
 		return;
@@ -49,8 +58,9 @@ void _dmsg_destroy_common_headers(dmime_common_headers_t *obj) {
  * @param	obj		The headers to be formatted.
  * @param	outsize	Stores the size of the output array.
  * @return	Returns the array of ASCII characters (not terminated by '\0') as pointer to unsigned char.
+ * @free_using{free}
  */
-unsigned char *_dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *outsize) {
+static unsigned char *prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize) {
 
 	size_t size = 0, at = 0;
 	unsigned char *result;
@@ -102,7 +112,7 @@ unsigned char *_dmsg_format_common_headers(dmime_common_headers_t *obj, size_t *
  * @param	insize	Size of input buffer.
  * @return	Common header type.
  */
-dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
+static dmime_header_type_t prsr_headers_get_type(unsigned char *in, size_t insize) {
 
 	if(!in || !insize) {
 		RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_BAD_PARAM, NULL);
@@ -156,8 +166,9 @@ dmime_header_type_t _dmsg_parse_next_header(unsigned char *in, size_t insize) {
  * @param	in		Input buffer.
  * @param	insize	Input buffer size.
  * @return	A dmime_common_headers_t array of stringers containing parsed header info.
+ * @free_using{prsr_headers_destroy}
  */
-dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t insize) {
+static dmime_common_headers_t *prsr_headers_parse(unsigned char *in, size_t insize) {
 
 	dmime_header_type_t type;
 	size_t at = 0, head_size;
@@ -167,19 +178,19 @@ dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t ins
 		RET_ERROR_CUST(0, ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(result = _dmsg_create_common_headers())) {
+	if(!(result = prsr_headers_create())) {
 		RET_ERROR_CUST(0, ERR_UNSPEC, "error creating a new dmime_common_headers_t object");
 	}
 
 	while(at < insize) {
 
-		if((type = _dmsg_parse_next_header(in + at, insize - at)) == HEADER_TYPE_NONE) {
-			_dmsg_destroy_common_headers(result);
+		if((type = prsr_headers_get_type(in + at, insize - at)) == HEADER_TYPE_NONE) {
+			prsr_headers_destroy(result);
 			RET_ERROR_CUST(0, ERR_UNSPEC, "headers	 buffer contained an invalid header type");
 		}
 
 		if(result->headers[type]) {
-			_dmsg_destroy_common_headers(result);
+			prsr_headers_destroy(result);
 			RET_ERROR_CUST(0, ERR_UNSPEC, "headers buffer contains duplicate fields");
 		}
 
@@ -191,7 +202,7 @@ dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t ins
 		}
 
 		if((at + head_size + 1) > insize || ((at + head_size + 1) == insize && in[at + head_size + 1] != '\n')) {
-			_dmsg_destroy_common_headers(result);
+			prsr_headers_destroy(result);
 			RET_ERROR_CUST(0, ERR_UNSPEC, "invalid header syntax");
 		}
 
@@ -207,7 +218,7 @@ dmime_common_headers_t *_dmsg_parse_common_headers(unsigned char *in, size_t ins
  * @brief	Destroys a dmime_envelop_object_t structure.
  * @param	obj		Pointer to the object to be destroyed.
  */
-void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
+static void prsr_envelope_destroy(dmime_envelope_object_t *obj) {
 
 	if(!obj) {
 		return;
@@ -245,8 +256,9 @@ void _dmsg_destroy_envelope_object(dmime_envelope_object_t *obj) {
  * @param	insize		Size of input array.
  * @param	type		Type of the chunk.
  * @return	Pointer to a parsed dmime object or NULL on error.
-*///TODO Could be shortened with a sub-routine
-dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
+ * @free_using{prsr_envelope_destroy}
+*/
+static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 
 	dmime_envelope_object_t *result;
 	const char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
@@ -285,7 +297,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	memset(result, 0, sizeof(dmime_envelope_object_t));
 
 	if(insize <= strlen(authrecp) || in != (unsigned char *)strstr((char *)in, authrecp)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
@@ -295,7 +307,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	while(at < insize && in[at] != '>') {
 
 		if(!isprint(in[at])) {
-			_dmsg_destroy_envelope_object(result);
+			prsr_envelope_destroy(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 		}
 
@@ -305,19 +317,19 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	string_size = in + at - start;
 
 	if(!(result->auth_recp = st_import(start, string_size))) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
 	if(in + at != (unsigned char *)strstr((char *)in + at, end1)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
 	at += strlen(end1);
 
 	if(insize - at <= strlen(authrecp_signet) || in + at != (unsigned char *)strstr((char *)in, authrecp_signet)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
@@ -327,7 +339,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	while(at < insize && in[at] != ']') {
 
 		if(!isprint(in[at])) {
-			_dmsg_destroy_envelope_object(result);
+			prsr_envelope_destroy(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "invalid envelope origin buffer passed to parser");
 		}
 
@@ -337,19 +349,19 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	string_size = in + at - start;
 
 	if(!(result->auth_recp_signet = st_import(start, string_size))) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
 	if(in + at != (unsigned char *)strstr((char *)in + at, end2)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
 	at += strlen(end2);
 
 	if(insize - at <= strlen(destorig) || in + at != (unsigned char *)strstr((char *)in, destorig)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
@@ -359,7 +371,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	while(at < insize && in[at] != '>') {
 
 		if(!isprint(in[at])) {
-			_dmsg_destroy_envelope_object(result);
+			prsr_envelope_destroy(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 		}
 
@@ -369,19 +381,19 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	string_size = in + at - start;
 
 	if(!(result->dest_orig = st_import(start, string_size))) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
 	if(in + at != (unsigned char *)strstr((char *)in + at, end1)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
 	at += strlen(end1);
 
 	if(insize - at <= strlen(destorig_fp) || in + at != (unsigned char *)strstr((char *)in, destorig_fp)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
@@ -391,7 +403,7 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	while(at < insize && in[at] != ']') {
 
 		if(!isprint(in[at])) {
-			_dmsg_destroy_envelope_object(result);
+			prsr_envelope_destroy(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 		}
 
@@ -401,72 +413,16 @@ dmime_envelope_object_t *_dmsg_parse_envelope(const unsigned char *in, size_t in
 	string_size = in + at - start;
 
 	if(!(result->dest_orig_fingerprint = st_import(start, string_size))) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
 
 	if(in + at != (unsigned char *)strstr((char *)in + at, end2)) {
-		_dmsg_destroy_envelope_object(result);
+		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
 	}
 
 	return result;
-}
-
-
-/**
- * @brief	Returns a string from dmime_actor_t.
- * @param	actor		Actor value.
- * @return	String containing human readable actor.
-*/
-const char *_dmsg_actor_to_string(dmime_actor_t actor) {
-
-	switch(actor) {
-
-	case id_author:
-		return "Author";
-	case id_origin:
-		return "Origin";
-	case id_destination:
-		return "Destination";
-	case id_recipient:
-		return "Recipient";
-	default:
-		return "Invalid dmime actor";
-
-	}
-
-}
-
-
-/**
- * @brief	Returns a string from dmime_object_state_t.
- * @param	state		Object state value.
- * @return	String containing human readable dmime object state.
-*/
-const char *_dmsg_object_state_to_string(dmime_object_state_t state) {
-
-	switch(state) {
-
-	case DMIME_OBJECT_STATE_NONE:
-		return "None";
-	case DMIME_OBJECT_STATE_CREATION:
-		return "Creation";
-	case DMIME_OBJECT_STATE_LOADED_ENVELOPE:
-		return "Loaded Envelope";
-	case DMIME_OBJECT_STATE_LOADED_SIGNETS:
-		return "Loaded Signets";
-	case DMIME_OBJECT_STATE_INCOMPLETE_ENVELOPE:
-		return "Incomplete Envelope";
-	case DMIME_OBJECT_STATE_INCOMPLETE_METADATA:
-		return "Incomplete Metadata";
-	case DMIME_OBJECT_STATE_COMPLETE:
-		return "Complete";
-	default:
-		return "Unknown";
-
-	}
-
 }
 
 
@@ -479,3 +435,26 @@ dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS] = {
 	{1, "Subject: ", 9},
 	{0, NULL, 0}
 };
+
+
+/* PUBLIC FUNCTIONS */
+
+void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *obj) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_envelope_destroy, obj);
+}
+
+dmime_envelope_object_t *   dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
+}
+
+void                        dime_prsr_headers_destroy(dmime_common_headers_t *obj) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_headers_destroy, obj);
+}
+
+unsigned char *             dime_prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_format, obj, outsize);
+}
+
+dmime_common_headers_t *    dime_prsr_headers_parse(unsigned char *in, size_t insize) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_parse, in, insize);
+}

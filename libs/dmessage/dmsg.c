@@ -1,5 +1,7 @@
-#include <dmessage/dmsg.h>
+#include "signet/signet.h"
+#include "dmessage/dmsg.h"
 
+static const char *              dmsg_actor_to_string(dmime_actor_t actor);
 static dmime_message_chunk_t *   dmsg_chunk_deserialize(const unsigned char *in, size_t insize, size_t *read);
 static unsigned char *           dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *outsize);
 static unsigned char             dmsg_chunk_get_flags(dmime_message_chunk_t *chunk);
@@ -45,6 +47,7 @@ static int                       dmsg_kek_derive_out(EC_KEY *privkey, signet_t *
 static int                       dmsg_kek_derive_out_all(dmime_object_t *object, EC_KEY *ephemeral, dmime_kekset_t *kekset);
 static dmime_message_state_t     dmsg_message_state_get(const dmime_message_t *message);
 static dmime_object_state_t      dmsg_object_state_init(dmime_object_t *object);
+static const char *              dmsg_object_state_to_string(dmime_object_state_t state);
 static unsigned char *           dmsg_serial_treesig_data(const dmime_message_t *msg, size_t *outsize);
 static size_t                    dmsg_serial_sections_get_size(const dmime_message_t *msg, unsigned char sections);
 static unsigned char *           dmsg_serial_from_sections(const dmime_message_t *msg, unsigned char sections, size_t *outsize);
@@ -303,7 +306,7 @@ static dmime_message_chunk_t *dmsg_encode_common_headers(dmime_object_t *object)
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(data = _dmsg_format_common_headers(object->common_headers, &data_size))) {
+	if(!(data = prsr_headers_format(object->common_headers, &data_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not format common headers data");
 	}
 
@@ -2197,7 +2200,7 @@ static void dmsg_destroy_object(dmime_object_t *object) {
 		st_cleanup(object->recipient);
 		st_cleanup(object->origin);
 		st_cleanup(object->destination);
-		_dmsg_destroy_common_headers(object->common_headers);
+		dime_prsr_headers_destroy(object->common_headers);
 		st_cleanup(object->other_headers);
 		dmsg_destroy_object_chunk_list(object->display);
 		dmsg_destroy_object_chunk_list(object->attach);
@@ -2252,7 +2255,7 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 			RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve chunk data");
 		}
 
-		if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
+		if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
 			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not parse origin chunk");
@@ -2261,7 +2264,7 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 		dmsg_destroy_message_chunk(decrypted);
 		result->author = st_dupe(parsed->auth_recp);
 		result->destination = st_dupe(parsed->dest_orig);
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 	}
 
 	if(actor != id_origin) {
@@ -2277,7 +2280,7 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 			RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve chunk data");
 		}
 
-		if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
+		if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
 			dmsg_destroy_message_chunk(decrypted);
 			dmsg_destroy_object(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not parse destination chunk");
@@ -2286,7 +2289,7 @@ static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_a
 		dmsg_destroy_message_chunk(decrypted);
 		result->recipient = st_dupe(parsed->auth_recp);
 		result->origin = st_dupe(parsed->dest_orig);
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 	}
 
 	result->state = DMIME_OBJECT_STATE_LOADED_ENVELOPE;
@@ -2407,7 +2410,7 @@ static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *ms
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve origin chunk data");
 	}
 
-	if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
+	if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
 		dmsg_destroy_message_chunk(decrypted);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
@@ -2417,7 +2420,7 @@ static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *ms
 	dmsg_destroy_message_chunk(decrypted);
 
 	if(strlen(auth_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(auth_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(auth_signet_b64))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		free(dest_fp_b64);
 		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "the object author signet does not match the message author signet");
@@ -2426,7 +2429,7 @@ static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *ms
 	free(auth_signet_b64);
 
 	if(strlen(dest_fp_b64) != st_length_get(parsed->dest_orig_fingerprint) || memcmp(dest_fp_b64, st_data_get(parsed->dest_orig_fingerprint), strlen(dest_fp_b64))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		free(dest_fp_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "the object destination signet fingerprint does not match the message destination signet fingerprint");
 	}
@@ -2434,16 +2437,16 @@ static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *ms
 	free(dest_fp_b64);
 
 	if(st_length_get(object->author) != st_length_get(parsed->auth_recp) || memcmp(st_data_get(object->author), st_data_get(parsed->auth_recp), st_length_get(object->author))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		RET_ERROR_INT(ERR_UNSPEC, "the object author id does not match the message author id");
 	}
 
 	if(st_length_get(object->destination) != st_length_get(parsed->dest_orig) || memcmp(st_data_get(object->destination), st_data_get(parsed->dest_orig), st_length_get(object->destination))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		RET_ERROR_INT(ERR_UNSPEC, "the object destination id does not match the message destination id");
 	}
 
-	_dmsg_destroy_envelope_object(parsed);
+	dime_prsr_envelope_destroy(parsed);
 
 	return 0;
 }
@@ -2525,7 +2528,7 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve destination chunk data");
 	}
 
-	if(!(parsed = _dmsg_parse_envelope(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
+	if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
 		dmsg_destroy_message_chunk(decrypted);
 		free(orig_fp_b64);
 		free(recp_signet_b64);
@@ -2535,7 +2538,7 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 	dmsg_destroy_message_chunk(decrypted);
 
 	if(strlen(recp_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(recp_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(recp_signet_b64))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		free(orig_fp_b64);
 		free(recp_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "the object recipient signet does not match the message recipient signet");
@@ -2544,7 +2547,7 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 	free(recp_signet_b64);
 
 	if(strlen(orig_fp_b64) != st_length_get(parsed->dest_orig_fingerprint) || memcmp(orig_fp_b64, st_data_get(parsed->dest_orig_fingerprint), strlen(orig_fp_b64))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		free(orig_fp_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "the object origin signet fingerprint does not match the message origin signet fingerprint");
 	}
@@ -2552,16 +2555,16 @@ static int dmsg_decrypt_destination(dmime_object_t *object, const dmime_message_
 	free(orig_fp_b64);
 
 	if(st_length_get(object->recipient) != st_length_get(parsed->auth_recp) || memcmp(st_data_get(object->recipient), st_data_get(parsed->auth_recp), st_length_get(object->recipient))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		RET_ERROR_INT(ERR_UNSPEC, "the object recipient id does not match the message recipient id");
 	}
 
 	if(st_length_get(object->origin) != st_length_get(parsed->dest_orig) || memcmp(st_data_get(object->origin), st_data_get(parsed->dest_orig), st_length_get(object->origin))) {
-		_dmsg_destroy_envelope_object(parsed);
+		dime_prsr_envelope_destroy(parsed);
 		RET_ERROR_INT(ERR_UNSPEC, "the object origin id does not match the message origin id");
 	}
 
-	_dmsg_destroy_envelope_object(parsed);
+	dime_prsr_envelope_destroy(parsed);
 
 	return 0;
 }
@@ -2702,7 +2705,7 @@ static int dmsg_decrypt_common_headers(dmime_object_t *object, const dmime_messa
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
 
-	if(!(object->common_headers = _dmsg_parse_common_headers(data, data_size))) {
+	if(!(object->common_headers = dime_prsr_headers_parse(data, data_size))) {
 		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not parse common headers chunk data");
 	}
@@ -2976,16 +2979,16 @@ static int dmsg_decrypt_message_as_auth(dmime_object_t *obj, const dmime_message
 
 	// TODO this needs to be changed for when not the entire message was downloaded. Author/Recipient needs to be able to request the combined hashes of all the chunks from their domain to verify the tree signature, but the full author signature can't always be verified.
 	// TODO Technically author/recipients should only have to verify the tree signature.
-	if(_dmsg_verify_author_sig_chunks(obj, msg, kek)) {
+	if(dmsg_validate_author_sig_chunks(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
 	}
 
 /*	// TODO This has similar issue as above. technically these signatures are only for the destination to verify UNLESS it's a bounce and then the appropriate bounce signature needs to be verified by the recipient. How do we know if it's a bounce?!
-        if(_dmsg_verify_origin_sig_chunks(obj, msg, kek)) {
+        if(dmsg_verify_origin_sig_chunks(obj, msg, kek)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
         }
 */
-	if(_dmsg_msg_to_object_common_headers(obj, msg, kek)) {
+	if(dmsg_decrypt_common_headers(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not load common headers chunk contents");
 	}
 
@@ -3036,7 +3039,7 @@ static int dmsg_decrypt_message_as_orig(dmime_object_t *obj, const dmime_message
 
 	// TODO this needs to be changed for when not the entire message was downloaded. Author/Recipient needs to be able to request the combined hashes of all the chunks from their domain to verify the tree signature, but the full author signature can't always be verified.
 	// TODO Technically author/recipients should only have to verify the tree signature.
-	if(_dmsg_verify_author_sig_chunks(obj, msg, kek)) {
+	if(dmsg_verify_author_sig_chunks(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
 	}
 
@@ -3458,8 +3461,8 @@ static int dmsg_dump_object(dmime_object_t *object) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	printf("Message Viewer: %s\n", _dmsg_actor_to_string(object->actor));
-	printf("Message State : %s\n", _dmsg_object_state_to_string(object->state));
+	printf("Message Viewer: %s\n", dmsg_actor_to_string(object->actor));
+	printf("Message State : %s\n", dmsg_object_state_to_string(object->state));
 
 	if((object->actor != id_destination) && object->author) {
 		printf("Message Auth  : %.*s\n", (int)st_length_get(object->author), (char *)st_data_get(object->author));
@@ -4086,8 +4089,68 @@ static unsigned char dmsg_chunk_get_flags(dmime_message_chunk_t *chunk) {
 	return payload->flags;
 }
 
+
+/**
+ * @brief	Returns a string from dmime_actor_t.
+ * @param	actor		Actor value.
+ * @return	String containing human readable actor.
+*/
+static const char *dmsg_actor_to_string(dmime_actor_t actor) {
+
+	switch(actor) {
+
+	case id_author:
+		return "Author";
+	case id_origin:
+		return "Origin";
+	case id_destination:
+		return "Destination";
+	case id_recipient:
+		return "Recipient";
+	default:
+		return "Invalid dmime actor";
+
+	}
+
+}
+
+
+/**
+ * @brief	Returns a string from dmime_object_state_t.
+ * @param	state		Object state value.
+ * @return	String containing human readable dmime object state.
+*/
+static const char *dmsg_object_state_to_string(dmime_object_state_t state) {
+
+	switch(state) {
+
+	case DMIME_OBJECT_STATE_NONE:
+		return "None";
+	case DMIME_OBJECT_STATE_CREATION:
+		return "Creation";
+	case DMIME_OBJECT_STATE_LOADED_ENVELOPE:
+		return "Loaded Envelope";
+	case DMIME_OBJECT_STATE_LOADED_SIGNETS:
+		return "Loaded Signets";
+	case DMIME_OBJECT_STATE_INCOMPLETE_ENVELOPE:
+		return "Incomplete Envelope";
+	case DMIME_OBJECT_STATE_INCOMPLETE_METADATA:
+		return "Incomplete Metadata";
+	case DMIME_OBJECT_STATE_COMPLETE:
+		return "Complete";
+	default:
+		return "Unknown";
+
+	}
+
+}
+
+
 /* PUBLIC FUNCTIONS */
 
+const char *              dime_dmsg_actor_to_string(dmime_actor_t actor) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_actor_to_string, actor);
+}
 
 dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_envelope, msg, actor, kek);
@@ -4131,6 +4194,10 @@ int                       dime_dmsg_kek_derive_in(const dmime_message_t *msg, EC
 
 dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_state_init, object);
+}
+
+const char *              dime_dmsg_object_state_to_string(dmime_object_state_t state) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_state_to_string, state);
 }
 
 dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message) {

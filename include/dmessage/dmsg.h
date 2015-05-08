@@ -1,7 +1,9 @@
 #ifndef DMSG_H
 #define DMSG_H
 
-#include <dmessage/dmime.h>
+#include "dmessage/dmime.h"
+
+const char *              dime_dmsg_actor_to_string(dmime_actor_t actor);
 
 dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
 
@@ -24,6 +26,8 @@ dmime_message_t *         dime_dmsg_encrypt_message(dmime_object_t *object, ED25
 int                       dime_dmsg_kek_derive_in(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek);
 
 dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object);
+
+const char *              dime_dmsg_object_state_to_string(dmime_object_state_t state);
 
 dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message);
 
