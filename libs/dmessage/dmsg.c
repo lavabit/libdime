@@ -2337,7 +2337,7 @@ static int dmsg_validate_chunk_signature(dmime_message_chunk_t *chunk, signet_t 
  * @param	msg		Pointer to the dmime message containing the origin chunk.
  * @param	kek		The actor's key encryption key.
  * @return	0 on success, anything else indicates failure.
- *///TODO pull out reusuable code for dmsg_decrypt_destination
+ *///TODO pull out reusuable code for dmsg_decrypt_destination ???
 static int dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek) {
 
 	char *auth_signet_b64, *dest_fp_b64;

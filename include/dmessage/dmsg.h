@@ -152,6 +152,7 @@ dmime_message_t *         dime_dmsg_file_to_message(const char *filename);
 */
 
 //TODO public interface for dmime_object_t !!
+//TODO Review of message and object states (I think at least one of them doesn't need to be a structure member.)
 
 
 #endif
