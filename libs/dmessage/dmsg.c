@@ -1,4 +1,5 @@
 #include "signet/signet.h"
+#include "dmessage/parser.h"
 #include "dmessage/dmsg.h"
 
 static const char *              dmsg_actor_to_string(dmime_actor_t actor);
@@ -27,7 +28,8 @@ static int                       dmsg_decrypt_message_as_recp(dmime_object_t *ob
 static int                       dmsg_decrypt_origin(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
 static int                       dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
 static void                      dmsg_destroy_message(dmime_message_t *msg);
-static void                      dmsg_destroy_message_chunk(dmime_message_chunk_t *msg);
+static void                      dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk);
+static void                      dmsg_destroy_message_chunk_chain(dmime_message_chunk_t **chunks);
 static void                      dmsg_destroy_object(dmime_object_t *object);
 static void                      dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list);
 static int                       dmsg_dump_object(dmime_object_t *object);
@@ -110,7 +112,7 @@ static dmime_message_state_t dmsg_message_state_get(const dmime_message_t *messa
 
 
 /**
- * @brief	Destroys dmime message object.
+ * @brief	Destroys dmime_message_t structure.
  * @param	msg		Pointer to the dmime message to be destroyed.
 */
 static void  dmsg_destroy_message(dmime_message_t *msg) {
@@ -144,18 +146,12 @@ static void  dmsg_destroy_message(dmime_message_t *msg) {
 	}
 
 	if(msg->display) {
-		for (size_t i = 0; msg->display[i]; i++) {
-			dmsg_destroy_message_chunk(msg->display[i]);
-		}
+		dmsg_destroy_message_chunk_chain(msg->display);
 	}
-	free(msg->display);
 
 	if(msg->attach) {
-		for (size_t i = 0; msg->attach[i]; i++) {
-			dmsg_destroy_message_chunk(msg->attach[i]);
-		}
+		dmsg_destroy_message_chunk_chain(msg->attach);
 	}
-	free(msg->attach);
 
 	if(msg->author_tree_sig) {
 		dmsg_destroy_message_chunk(msg->author_tree_sig);
@@ -185,6 +181,7 @@ static void  dmsg_destroy_message(dmime_message_t *msg) {
  * @brief	Takes a dmime object uses it to encode an origin dmime message chunk
  * @param	object		dmime object with information that will be encoded into the origin chunk
  * @return	Pointer to a dmime message origin chunk
+ * @free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_encode_origin(dmime_object_t *object) {
 
@@ -240,6 +237,7 @@ static dmime_message_chunk_t *dmsg_encode_origin(dmime_object_t *object) {
  * @brief	Takes a dmime object uses it to encode a destination dmime message chunk
  * @param	object		dmime object with information that will be encoded into the destination chunk
  * @return	Pointer to a dmime message destination chunk
+ * @free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_encode_destination(dmime_object_t *object) {
 
@@ -306,7 +304,7 @@ static dmime_message_chunk_t *dmsg_encode_common_headers(dmime_object_t *object)
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(data = prsr_headers_format(object->common_headers, &data_size))) {
+	if(!(data = dime_prsr_headers_format(object->common_headers, &data_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not format common headers data");
 	}
 
@@ -323,6 +321,7 @@ static dmime_message_chunk_t *dmsg_encode_common_headers(dmime_object_t *object)
  * @brief	Takes a dmime object and uses it to encode other_headers metadata dmime message chunk
  * @param	object	dmime object with the other_headers data that will be encoded into the chunk
  * @return	Pointer to a dmime message other headers chunk
+ * @free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_encode_other_headers(dmime_object_t *object) {
 
@@ -346,6 +345,7 @@ static dmime_message_chunk_t *dmsg_encode_other_headers(dmime_object_t *object) 
  * @brief	Takes a dmime object and encodes the display chunk into an array of dmime message chunks.
  * @param	object		Pointer to the dmime object containing the display chunk data.
  * @return	Returns a pointer to a null-pointer terminated array of dmime message chunks encoded with the display data.
+ * @free_using{dmsg_destroy_message_chunk_chain}
 */
 static dmime_message_chunk_t **dmsg_encode_display(dmime_object_t *object) {
 
@@ -378,12 +378,7 @@ static dmime_message_chunk_t **dmsg_encode_display(dmime_object_t *object) {
 	for(int i = 0; i < counter; ++i) {
 
 		if(!(result[i] = dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
-
-			for(int j = 0; j < i; ++j) {
-				dmsg_destroy_message_chunk(result[j]);
-			}
-
-			free(result);
+			dmsg_destroy_message_chunk_chain(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not encode a display message chunk");
 		}
 
@@ -398,6 +393,7 @@ static dmime_message_chunk_t **dmsg_encode_display(dmime_object_t *object) {
  * @brief	Takes a dmime object and encodes the attachment chunk into an array of dmime message chunks.
  * @param	object		Pointer to the dmime object containing the attachment chunk data.
  * @return	Returns a pointer to a null-pointer terminated array of dmime message chunks encoded with the attachment data.
+ * @free_using{dmsg_destroy_message_chunk_chain}
 */
 static dmime_message_chunk_t **dmsg_encode_attach(dmime_object_t *object) {
 
@@ -430,12 +426,7 @@ static dmime_message_chunk_t **dmsg_encode_attach(dmime_object_t *object) {
 	for(int i = 0; i < counter; ++i) {
 
 		if(!(result[i] = dmsg_create_message_chunk(temp->type, temp->data, temp->data_size, temp->flags))) {
-
-			for(int j = 0; j < i; ++j) {
-				dmsg_destroy_message_chunk(result[j]);
-			}
-
-			free(result);
+			dmsg_destroy_message_chunk_chain(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not encode an attachment message chunk");
 		}
 
@@ -913,6 +904,7 @@ static int dmsg_encrypt_message_chunks(dmime_message_t *message, dmime_kekset_t 
  * @param	msg		Pointer to the dmime message.
  * @param	outsize		Used to store the size of the result.
  * @return	Array of data that gets signed for the tree signature.
+ * @free_using{free}
 */// TODO this is probably too long and can be shortened but not sure how.
 static unsigned char *dmsg_serial_treesig_data(const dmime_message_t *msg, size_t *outsize) {
 
@@ -1126,6 +1118,7 @@ static size_t dmsg_serial_sections_get_size(const dmime_message_t *msg, unsigned
  * @param	sections	The bitmask of sections to serialize. See ::dmime_chunk_section_t.
  * @param	outsize		Stores the output size.
  * @return	Pointer to the binary array containing the binary message.
+ * @free_using{free}
 */
 static unsigned char *dmsg_serial_from_sections(const dmime_message_t *msg, unsigned char sections, size_t *outsize) {
 
@@ -1316,6 +1309,7 @@ static size_t dmsg_serial_chunks_get_size(const dmime_message_t *msg, dmime_chun
  * @param	last            Last chunk type to be serialized.
  * @param	outsize		Stores the size of the serialized message.
  * @return	Pointer to the serialized message.
+ * @free_using{free}
 */
 static unsigned char *dmsg_serial_from_chunks(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize) {
 
@@ -1541,6 +1535,7 @@ static int dmsg_encode_origin_sig_chunks(dmime_message_t *message, dmime_kekset_
  *                              As well as pointers to signets of author, origin, destination and recipient.
  * @param	signkey		The author's private ed25519 signing key which will be used.
  * @return	A pointer to a fully signed and encrypted dmime message.
+ * @free_using{dmsg_destroy_message}
 */
 static dmime_message_t *dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey) {
 
@@ -1641,6 +1636,7 @@ static dmime_message_t *dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY
  * @param	sections	Sections to be included.
  * @param	tracing		If set, include tracing, if clear don't include tracing.
  * @param	outsize		Stores the output size of the binary.
+ * @free_using{free}
 */
 static unsigned char *dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
 
@@ -1736,12 +1732,13 @@ static size_t dmsg_serial_load_tracing(dmime_message_t *msg, const unsigned char
  * @param	section		The specified section from which the chunks should be deserialized.
  * @param	read		Number of bytes read for all the chunks.
  * @return	A pointer to a NULL-pointer terminated array of display chunk pointers.
+ * @free_using{dmsg_destroy_message_chunk_chain}
 */
 static dmime_message_chunk_t **dmsg_serial_to_section(const unsigned char *in, size_t insize, dmime_chunk_section_t section, size_t *read) {
 
 	dmime_chunk_key_t *key;
 	dmime_message_chunk_t **result;
-	int i = 0, num_keyslots, atchunk = 0;
+	int num_keyslots, atchunk = 0;
 	size_t num_chunks = 0, at = 0, serial_size, payload_size;
 
 	if(!in || !insize || !read) {
@@ -1774,12 +1771,7 @@ static dmime_message_chunk_t **dmsg_serial_to_section(const unsigned char *in, s
 	while(at + CHUNK_HEADER_SIZE < insize && (key = dmsg_chunk_get_type_key(in[at]))->section == section) {
 
 		if(!(result[atchunk] = dmsg_chunk_deserialize(in + at, insize - at, &serial_size))) {
-
-			while(i < atchunk) {
-				dmsg_destroy_message_chunk(result[i++]);
-			}
-
-			free(result);
+			dmsg_destroy_message_chunk_chain(result);
 			RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize a message chunk");
 		}
 
@@ -1893,6 +1885,7 @@ static size_t dmsg_serial_deserialization_helper(dmime_message_t *msg, const uns
  * @param	in		Pointer to the binary message.
  * @param	insize		Pointer to the binary size.
  * @return	Pointer to a dmime message structure.
+ * @free_using{dmsg_destroy_message}
 */
 static dmime_message_t *dmsg_serial_to_message(const unsigned char *in, size_t insize) {
 
@@ -2055,6 +2048,7 @@ static int dmsg_decrypt_keyslot(dmime_keyslot_t *encrypted, dmime_kek_t *kek, dm
  * @param	actor		Actor doing the decryption.
  * @param	kek		Key encryption key of the actor.
  * @return	Pointer to a new chunk with a decrypted payload and empty keyslots. DON'T LEAK!
+ * @free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_decrypt_chunk(dmime_message_chunk_t *chunk, dmime_actor_t actor, dmime_kek_t *kek) {
 
@@ -2216,6 +2210,7 @@ static void dmsg_destroy_object(dmime_object_t *object) {
  * @param	actor		Who is trying to get the message author.
  * @param	kek		Key encryption key for the specified actor.
  * @return	A newly allocated dmime object containing the envelope ids available to the actor.
+ * @free_using{dmsg_destroy_object}
  */
 static dmime_object_t *dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 
@@ -2761,16 +2756,7 @@ static int dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_messag
 		dmsg_destroy_message_chunk(decrypted);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
 	}
-/*//TODO content check
-        for(size_t i = 0; i < data_size; ++i) {
 
-                if(!isprint(data[i]) && !isspace(data[i])) {
-                        dmsg_destroy_message_chunk(decrypted);
-                        RET_ERROR_INT(ERR_UNSPEC, "invalid characters in the metadata chunk");
-                }
-
-        }
-*/
 	object->other_headers = st_import(data, data_size);
 	dmsg_destroy_message_chunk(decrypted);
 
@@ -3039,7 +3025,7 @@ static int dmsg_decrypt_message_as_orig(dmime_object_t *obj, const dmime_message
 
 	// TODO this needs to be changed for when not the entire message was downloaded. Author/Recipient needs to be able to request the combined hashes of all the chunks from their domain to verify the tree signature, but the full author signature can't always be verified.
 	// TODO Technically author/recipients should only have to verify the tree signature.
-	if(dmsg_verify_author_sig_chunks(obj, msg, kek)) {
+	if(dmsg_validate_author_sig_chunks(obj, msg, kek)) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
 	}
 
@@ -3560,7 +3546,7 @@ static int dmsg_chunk_get_padlen(size_t dsize, unsigned char flags, unsigned int
 /**
  * @brief	Returns the payload of the specified dmime message chunk.
  * @param	chunk		Pointer to the dmime chunk. Its type, state and payload size must be initialized.
- * @return	Void pointer to be casted to the appropriate payload structure, NULL on failure.
+ * @return	Void pointer to be casted to the appropriate payload structure, NULL on failure. Do not free!
 */
 static void *dmsg_chunk_get_payload(dmime_message_chunk_t *chunk) {
 
@@ -3590,7 +3576,7 @@ static void *dmsg_chunk_get_payload(dmime_message_chunk_t *chunk) {
  * @brief	Returns pointer to the specified keyslot of the dmime message chunk.
  * @param	chunk		Pointer to the dmime message chunk.
  * @param	num		number of the desired keyslot.
- * @return	Pointer to the keyslot.
+ * @return	Pointer to the keyslot. Do not free!
 */
 static dmime_keyslot_t *dmsg_chunk_get_keyslot_by_num(dmime_message_chunk_t *chunk, size_t num){
 
@@ -3635,6 +3621,22 @@ static void    dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
 	free(chunk);
 }
 
+/**
+ * @brief	Destroys dmime message chunk ptr chain.
+ * @param	chunks		Dmime message chunk pointer chain.
+*/
+static void    dmsg_destroy_message_chunk_chain(dmime_message_chunk_t **chunks) {
+
+	if(!chunks) {
+		return;
+	}
+
+	for(size_t i = 0; chunks[i]; ++i) {
+		dmsg_destroy_message_chunk(chunks[i]);
+	}
+
+	free(chunks);
+}
 
 /**
  * @brief	Allocates memory for and encodes a dmime_message_chunk_t structure with data provided.
@@ -3643,6 +3645,7 @@ static void    dmsg_destroy_message_chunk(dmime_message_chunk_t *chunk) {
  * @param	insize		Size of data.
  * @param	flags		flags to be set for chunk, only relevant for standard payload chunk types.
  * @return	Pointer to the newly allocated and encoded dmime_message_chunk_t structure.
+ * @free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_create_message_chunk(dmime_chunk_type_t type, const unsigned char *data, size_t insize, unsigned char flags) {
 
@@ -3791,6 +3794,7 @@ static dmime_message_chunk_t *dmsg_create_message_chunk(dmime_chunk_type_t type,
  * @param	insize		Maximum size of provided data (not guaranteed to contain only the chunk specified by the provided pointer).
  * @param	read		Stores number of bytes read for this chunk.
  * @return	Pointer to a Dmime message chunk object in encrypted state, NULL on error.
+ * free_using{dmsg_destroy_message_chunk}
 */
 static dmime_message_chunk_t *dmsg_chunk_deserialize(const unsigned char *in, size_t insize, size_t *read) {
 
@@ -3847,6 +3851,7 @@ static dmime_message_chunk_t *dmsg_chunk_deserialize(const unsigned char *in, si
  * @param	payload		Array to binary payload to be wrapped in the message chunk.
  * @param	insize		Length of input payload.
  * @return	An allocated and encoded dmime message chunk.
+ * @free_using{dmsg_destroy_message_chunk}
  */
 static dmime_message_chunk_t *dmsg_chunk_wrap_payload(dmime_chunk_type_t type, unsigned char *payload, size_t insize) {
 
@@ -3904,7 +3909,7 @@ static dmime_message_chunk_t *dmsg_chunk_wrap_payload(dmime_chunk_type_t type, u
  * NOTE:	For ephemeral and signature payload chunks it is the entire payload, for standard payload chunks it is the data section.
  * @param	chunk		Pointer to a chunk from which the data is copied.
  * @param	outsize		Stores the length of chunk data.
- * @return	Pointer to the chunk data.
+ * @return	Pointer to the chunk data. Do not free!
  */
 static unsigned char *dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *outsize) {
 
@@ -3972,7 +3977,7 @@ static unsigned char *dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *
  * NOTE:	The size will include the padding.
  * @param	chunk		Pointer to the dmime message chunk the data of which will be retrieved.
  * @param	outsize		The size of the returned buffer.
- * @return	Pointer to the chunk data (does not allocate new memory).
+ * @return	Pointer to the chunk data (does not allocate new memory). Do not free!
  */
 static unsigned char *dmsg_chunk_get_padded_data(dmime_message_chunk_t *chunk, size_t *outsize) {
 
@@ -4026,7 +4031,7 @@ static unsigned char *dmsg_chunk_get_padded_data(dmime_message_chunk_t *chunk, s
  * @brief	Returns the pointer to the plaintext signature of a standard payload chunk.
  * NOTE:	Signatures are ED25519_SIG_SIZE
  * @param	chunk		Pointer to the dmime message chunk with standard payload type from which the signature will be retrieved.
- * @return	Pointer to the plaintext signature.
+ * @return	Pointer to the plaintext signature. Do not free!
  */
 static unsigned char *dmsg_chunk_get_plaintext_sig(dmime_message_chunk_t *chunk) {
 
@@ -4157,7 +4162,7 @@ dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg,
 }
 
 int                       dime_dmsg_decrypt_message_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {
-	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_auth, obj, message, kek);
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_auth, obj, msg, kek);
 }
 
 int                       dime_dmsg_decrypt_message_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek) {

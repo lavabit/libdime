@@ -72,7 +72,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 			RET_ERROR_PTR(ERR_UNSPEC, "org signet retrieval for user signet verification failed");
 		}
 
-		if (!(org_signet = _signet_deserialize_b64(line))) {
+		if (!(org_signet = dime_sgnt_serial_b64_to_signet(line))) {
 			free(line);
 			_destroy_dmtp_session(session);
 			RET_ERROR_PTR(ERR_UNSPEC, "org signet deserialization for user signet verification failed");
@@ -80,7 +80,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 
 		free(line);
 
-		if (_signet_full_verify(org_signet, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL) {
+		if (dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL) {
 			_destroy_dmtp_session(session);
 			RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
 		}
@@ -93,7 +93,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 		RET_ERROR_PTR(ERR_UNSPEC, "signet retrieval failed");
 	}
 
-	if (!(result = _signet_deserialize_b64(line))) {
+	if (!(result = dime_sgnt_serial_b64_to_signet(line))) {
 		free(line);
 		_destroy_dmtp_session(session);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to decode signet received from server");
@@ -102,16 +102,16 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 	free(line);
 
 //	if (is_org && (sig_pok_compare(result, (const unsigned char **)session->drec->pubkey) < 0)) {
-	if (is_org && (_signet_full_verify(result, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL)) {
+	if (is_org && (dime_sgnt_validate_all(result, NULL, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL)) {
 		_destroy_dmtp_session(session);
-		_signet_destroy(result);
+		dime_sgnt_destroy_signet(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
 	} else if (is_org) {
 		_dbgprint(1, "Org signet validation succeeded for: %s\n", name);
-	} else if (!is_org && (_signet_full_verify(result, org_signet, NULL) != SS_FULL)) {
+	} else if (!is_org && (dime_sgnt_validate_all(result, NULL, org_signet, NULL) != SS_FULL)) {
 		_destroy_dmtp_session(session);
-		_signet_destroy(result);
-		_signet_destroy(org_signet);
+		dime_sgnt_destroy_signet(result);
+		dime_sgnt_destroy_signet(org_signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "user signet could not be verified against org signet");
 	} else if (!is_org) {
 		_dbgprint(1, "User signet validation succeeded for: %s\n", name);
@@ -120,7 +120,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 	_destroy_dmtp_session(session);
 
 	if (org_signet) {
-		_signet_destroy(org_signet);
+		dime_sgnt_destroy_signet(org_signet);
 	}
 
 	if (use_cache) {
