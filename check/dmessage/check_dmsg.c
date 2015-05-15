@@ -130,8 +130,6 @@ START_TEST(test_message_encryption)
 	draft->display = dime_dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
 	ck_assert_dime_noerror();
 
-	fprintf(stderr, "---BEGIN DRAFT---\n");
-	fprintf(stderr, "---END DRAFT---\n");
 	ck_assert_dime_noerror();
 
 	// turn object into message by encrypting and serialize
@@ -157,8 +155,6 @@ START_TEST(test_message_encryption)
 	dime_dmsg_decrypt_message_as_orig(at_orig, message, &orig_kek);
 	ck_assert_dime_noerror();
 
-	fprintf(stderr, "---BEGIN AT-ORIG---\n");
-	fprintf(stderr, "---END AT-ORIG---\n");
 
 	//Add origin signatures and serialize the message again
 	dime_dmsg_sign_origin_sig_chunks(message, (META_BOUNCE | DISPLAY_BOUNCE), &orig_kek, orig_signkey);
@@ -180,8 +176,6 @@ START_TEST(test_message_encryption)
 	at_dest->signet_destination = signet_dest;
 	dime_dmsg_decrypt_message_as_dest(at_dest, message, &dest_kek);
 
-	fprintf(stderr, "---BEGIN AT-DEST---\n");
-	fprintf(stderr, "---END AT-DEST---\n");
 	ck_assert_dime_noerror();
 
 	//Serialize the message again
@@ -230,12 +224,14 @@ START_TEST(test_message_encryption)
 	free(from_orig_bin);
 	free(from_dest_bin);
 	ck_assert_dime_noerror();
+
+	fprintf(stderr, "Message encryption and decryption check complete.\n");
 }
 END_TEST
 
 Suite *suite_check_dmsg(void) {
 
 	Suite *s = suite_create("signet");
-	suite_add_test(s, "message creation and encryption", test_message_encryption);
+	suite_add_test(s, "Message encryption and decryption", test_message_encryption);
 	return s;
 }

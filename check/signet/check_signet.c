@@ -445,11 +445,9 @@ START_TEST(check_signet_validation)
 	ck_assert_msg(state  == SS_FULL, "Failure to correctly validate user full signet.\n");
 //set user signet id (address)
 	res = dime_sgnt_set_id_field(user_signet, strlen("user@test.org"), (const unsigned char *)"user@test.org");	
-	dump_error_stack();
 	ck_assert_msg(res == 0, "Failure to set user signet id.\n");
 //sign the user signature with the identifiable signet signature 
 	res = dime_sgnt_sign_id_sig(user_signet, orgkey);
-	dump_error_stack();
 	ck_assert_msg(res == 0, "Failure to sign user signet with the identifiable signet signature.\n");
 //verify that the user signet is a valid full signet
 	state = dime_sgnt_validate_all(user_signet, NULL, org_signet, NULL);

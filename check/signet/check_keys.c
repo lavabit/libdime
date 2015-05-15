@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include "signet/keys.h"
-#include "signet/signet.h"
 #include "checks.h"
 
 START_TEST(check_keys_file_handling)
@@ -83,6 +82,8 @@ START_TEST(check_keys_file_handling)
 
 	_free_ed25519_key(signkey);
 	_free_ec_key(enckey);
+
+	fprintf(stderr, "Keys file I/O check complete.\n");
 }
 END_TEST
 
