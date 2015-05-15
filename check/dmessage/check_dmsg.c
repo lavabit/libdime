@@ -105,10 +105,6 @@ START_TEST(test_message_encryption)
 	dime_sgnt_sign_id_sig(signet_recp, dest_signkey);
 	ck_assert_dime_noerror();
 
-//	_signet_dump(stderr, signet_auth);
-//	_signet_dump(stderr, signet_orig);
-//	_signet_dump(stderr, signet_dest);
-//	_signet_dump(stderr, signet_recp);
 
 	//create object as a draft
 	draft = malloc(sizeof(dmime_object_t));
@@ -135,7 +131,6 @@ START_TEST(test_message_encryption)
 	ck_assert_dime_noerror();
 
 	fprintf(stderr, "---BEGIN DRAFT---\n");
-	dime_dmsg_dump_object(draft);
 	fprintf(stderr, "---END DRAFT---\n");
 	ck_assert_dime_noerror();
 
@@ -163,7 +158,6 @@ START_TEST(test_message_encryption)
 	ck_assert_dime_noerror();
 
 	fprintf(stderr, "---BEGIN AT-ORIG---\n");
-	dime_dmsg_dump_object(at_orig);
 	fprintf(stderr, "---END AT-ORIG---\n");
 
 	//Add origin signatures and serialize the message again
@@ -187,7 +181,6 @@ START_TEST(test_message_encryption)
 	dime_dmsg_decrypt_message_as_dest(at_dest, message, &dest_kek);
 
 	fprintf(stderr, "---BEGIN AT-DEST---\n");
-	dime_dmsg_dump_object(at_dest);
 	fprintf(stderr, "---END AT-DEST---\n");
 	ck_assert_dime_noerror();
 
@@ -209,9 +202,6 @@ START_TEST(test_message_encryption)
 	at_recp->signet_destination = signet_dest;
 	at_recp->signet_recipient = signet_recp;
 	dime_dmsg_decrypt_message_as_recp(at_recp, message, &recp_kek);
-	fprintf(stderr, "---BEGIN AT-RECP---\n");
-	dime_dmsg_dump_object(at_recp);
-	fprintf(stderr, "---END AT-RECP---\n");
 
 	//destroy everything
 	dime_sgnt_destroy_signet(signet_auth);
