@@ -950,7 +950,7 @@ static int sgnt_create_field_at(signet_t *signet, unsigned int offset, size_t fi
 
 	uint32_t signet_size;
 
-	if(!signet || !offset || (offset + field_size) > UNSIGNED_MAX_3_BYTE || !field_size || !field_data) {
+	if(!signet || (signet->size + field_size) > UNSIGNED_MAX_3_BYTE || !field_size || !field_data) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
@@ -968,7 +968,7 @@ static int sgnt_create_field_at(signet_t *signet, unsigned int offset, size_t fi
 		memmove(signet->data + offset + field_size, signet->data + offset, signet->size - offset);
 	}
 
-	signet->size = signet_size + field_size;
+	signet->size = signet_size;
 	memcpy(signet->data + offset, field_data, field_size);
 
 	return 0;
@@ -1012,7 +1012,9 @@ static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_K
 
 	}
 
-	if((sgnt_validate_required_upto_fid(signet, keys, signet_fid)) <= 0) {
+	if((res = sgnt_validate_required_upto_fid(signet, keys, signet_fid)) < 0) {
+		RET_ERROR_INT(ERR_UNSPEC, "an error occurred while checking for required fields");
+	} else if(!res) {
 		RET_ERROR_INT(ERR_UNSPEC, "required fields for signet signing were missing");
 	}
 
@@ -1436,7 +1438,7 @@ static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
 
 	}
 
-	fprintf(fp, "--- version: %d, size = %d, signet type = %s\n", version, signet->size + 4, type);
+	fprintf(fp, "--- version: %d, size = %d, signet type = %s\n", version, signet->size + SIGNET_HEADER_SIZE, type);
 
 	for(int i = 0; i < SIGNET_FID_MAX + 1; ++i) {
 
@@ -1445,22 +1447,23 @@ static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
 			dump_error_stack();
 			_clear_error_stack();
 			return;
-		} else if(!res) {
-			continue;
+		} else if(res == 1) {
+
+			if(sgnt_dump_fid(fp, signet, i) < 0) {
+				_clear_error_stack();
+				return;
+			}
+
 		}
 
-		if(sgnt_dump_fid(fp, signet, i) < 0) {
-			_clear_error_stack();
-			return;
-		}
-
-		if(i == SIGNET_USER_CRYPTO_SIG && signet_type == SIGNET_TYPE_USER) {
-			fprintf(fp, "%-34s    %s\n", "------- End user crypto. portion", "------------------------------------------------------------------------------------------");
+		if((i == SIGNET_USER_CRYPTO_SIG && signet_type == SIGNET_TYPE_USER) || (i == SIGNET_ORG_CRYPTO_SIG && signet_type == SIGNET_TYPE_ORG)) {
+			fprintf(fp, "%-34s    %s\n", "------- End cryptographic signet", "------------------------------------------------------------------------------------------");
 		}
 
 		if((i == SIGNET_USER_FULL_SIG && signet_type == SIGNET_TYPE_USER) || (i == SIGNET_ORG_FULL_SIG && signet_type == SIGNET_TYPE_ORG)) {
-			fprintf(fp, "%-34s    %s\n", "------- End core signet portion", "------------------------------------------------------------------------------------------");
+			fprintf(fp, "%-34s    %s\n", "------- End full signet", "------------------------------------------------------------------------------------------");
 		}
+
 	}
 
 }
@@ -2002,7 +2005,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 
 	int res;
 	ED25519_KEY **keys;
-	signet_field_t *field, *list;
+	signet_field_t *field, *list = NULL;
 	size_t buflen, list_count = 1, key_count = 1;
 	unsigned int num_keys = 1;
 
@@ -2322,6 +2325,7 @@ static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t
 	}
 
 	at += keys[fid].bytes_data_size;
+
 	if (data != NULL) {
 		memcpy(field_data + at, data, data_size);
 	}

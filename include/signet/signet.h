@@ -13,7 +13,7 @@
  * @param	data		Field data.
  * @return	0 on success, -1 on failure.
 */
-int 			dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
+int 			        dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 
 /**
  * @brief	Returns	a new signet_t structure.
@@ -303,7 +303,7 @@ int                     dime_sgnt_set_id_field(signet_t *signet, size_t id_size,
  * @param	format	Format specifier byte, dictating the format.
  * @return	0 on success, -1 on failure.
 */
-int			dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
+int			            dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
 
 /**
  * @brief	Checks for the presence of all required fields that come before the chain of custody signature field and adds the SSR signature.
@@ -373,7 +373,7 @@ signet_type_t           dime_sgnt_type_get(const signet_t *signet);
  * @param	state	Signet state.
  * @return	Null terminated string corresponding to the state.
 */
-const char *           dime_sgnt_state_to_str(signet_state_t state);
+const char *            dime_sgnt_state_to_str(signet_state_t state);
 
 /**
  * @brief	Sets the target signet to a specified type.
@@ -404,9 +404,6 @@ signet_state_t          dime_sgnt_validate_all(const signet_t *signet, const sig
  * @return	1 on successful verification, 0 if the signature could not be verified, -1 if an error occurred.
 */
 int                     dime_sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len);
-
-
-
 
 
 

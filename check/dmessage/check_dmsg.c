@@ -1,5 +1,8 @@
-#include <dmessage/dmime.h>
-#include <dmessage/dmsg.h>
+#include "signet/keys.h"
+#include "signet/signet.h"
+#include "dmessage/dmime.h"
+#include "dmessage/parser.h"
+#include "dmessage/dmsg.h"
 #include "checks.h"
 
 /**
@@ -35,66 +38,71 @@ START_TEST(test_message_encryption)
 
 
 	//create domain signets
-	signet_orig = _signet_new_keysfile(SIGNET_TYPE_ORG, orig_keys);
-	signet_dest = _signet_new_keysfile(SIGNET_TYPE_ORG, dest_keys);
+	signet_orig = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_ORG, orig_keys);
+	signet_dest = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_ORG, dest_keys);
 	ck_assert_dime_noerror();
 
 	//create user signet signing requests
-	signet_auth = _signet_new_keysfile(SIGNET_TYPE_SSR, auth_keys);
-	signet_recp = _signet_new_keysfile(SIGNET_TYPE_SSR, recp_keys);
+	signet_auth = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_SSR, auth_keys);
+	signet_recp = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_SSR, recp_keys);
 	ck_assert_dime_noerror();
 
 	// retrieve all signing and encryption private keys ahead of time
-	orig_enckey = _keys_file_fetch_enc_key(orig_keys);
-	dest_enckey = _keys_file_fetch_enc_key(dest_keys);
-	auth_enckey = _keys_file_fetch_enc_key(auth_keys);
-	recp_enckey = _keys_file_fetch_enc_key(recp_keys);
+	orig_enckey = dime_keys_fetch_enc_key(orig_keys);
+	dest_enckey = dime_keys_fetch_enc_key(dest_keys);
+	auth_enckey = dime_keys_fetch_enc_key(auth_keys);
+	recp_enckey = dime_keys_fetch_enc_key(recp_keys);
 	ck_assert_dime_noerror();
 
-	orig_signkey = _keys_file_fetch_sign_key(orig_keys);
-	dest_signkey = _keys_file_fetch_sign_key(dest_keys);
-	auth_signkey = _keys_file_fetch_sign_key(auth_keys);
-	recp_signkey = _keys_file_fetch_sign_key(recp_keys);
+	orig_signkey = dime_keys_fetch_sign_key(orig_keys);
+	dest_signkey = dime_keys_fetch_sign_key(dest_keys);
+	auth_signkey = dime_keys_fetch_sign_key(auth_keys);
+	recp_signkey = dime_keys_fetch_sign_key(recp_keys);
 	ck_assert_dime_noerror();
 
-	// sign domain signets with first signature
-	_signet_sign_core_sig(signet_orig, orig_signkey);
-	_signet_sign_core_sig(signet_dest, dest_signkey);
+	// sign domain signets with cryptographic signet signature
+	dime_sgnt_sign_crypto_sig(signet_orig, orig_signkey);
+	dime_sgnt_sign_crypto_sig(signet_dest, dest_signkey);
+	ck_assert_dime_noerror();
+
+	// sign domain signets with full signet signature
+	dime_sgnt_sign_full_sig(signet_orig, orig_signkey);
+	dime_sgnt_sign_full_sig(signet_dest, dest_signkey);
 	ck_assert_dime_noerror();
 
 	//add domain ids to domain signets
-	_signet_set_id(signet_orig, orig);
-	_signet_set_id(signet_dest, dest);
+	dime_sgnt_set_id_field(signet_orig, strlen(orig), (const unsigned char *)orig);
+	dime_sgnt_set_id_field(signet_dest, strlen(dest), (const unsigned char *)dest);
 	ck_assert_dime_noerror();
 
 	//add final domain signet signature
-	_signet_sign_full_sig(signet_orig, orig_signkey);
-	_signet_sign_full_sig(signet_dest, dest_signkey);
+	dime_sgnt_sign_id_sig(signet_orig, orig_signkey);
+	dime_sgnt_sign_id_sig(signet_dest, dest_signkey);
 	ck_assert_dime_noerror();
 
 	//sign user ssr's with user user keys
-	_signet_sign_ssr_sig(signet_auth, auth_signkey);
-	_signet_sign_ssr_sig(signet_recp, recp_signkey);
+	dime_sgnt_sign_ssr_sig(signet_auth, auth_signkey);
+	dime_sgnt_sign_ssr_sig(signet_recp, recp_signkey);
 	ck_assert_dime_noerror();
 
 	//sign user ssr's with corresponding domain keys
-	_signet_sign_initial_sig(signet_auth, orig_signkey);
-	_signet_sign_initial_sig(signet_recp, dest_signkey);
+	dime_sgnt_sign_crypto_sig(signet_auth, orig_signkey);
+	dime_sgnt_sign_crypto_sig(signet_recp, dest_signkey);
 	ck_assert_dime_noerror();
 
 	//sign user signets with corresponding domain keys
-	_signet_sign_core_sig(signet_auth, orig_signkey);
-	_signet_sign_core_sig(signet_recp, dest_signkey);
+	dime_sgnt_sign_full_sig(signet_auth, orig_signkey);
+	dime_sgnt_sign_full_sig(signet_recp, dest_signkey);
 	ck_assert_dime_noerror();
 
 	//set user signet id's
-	_signet_set_id(signet_auth, auth);
-	_signet_set_id(signet_recp, recp);
+	dime_sgnt_set_id_field(signet_auth, strlen(auth), (const unsigned char *)auth);
+	dime_sgnt_set_id_field(signet_recp, strlen(recp), (const unsigned char *)recp);
 	ck_assert_dime_noerror();
 
 	//add final user signet signature with corresponding domain keys
-	_signet_sign_full_sig(signet_auth, orig_signkey);
-	_signet_sign_full_sig(signet_recp, dest_signkey);
+	dime_sgnt_sign_id_sig(signet_auth, orig_signkey);
+	dime_sgnt_sign_id_sig(signet_recp, dest_signkey);
 	ck_assert_dime_noerror();
 
 //	_signet_dump(stderr, signet_auth);
@@ -106,7 +114,7 @@ START_TEST(test_message_encryption)
 	draft = malloc(sizeof(dmime_object_t));
 	memset(draft, 0, sizeof(dmime_object_t));
 
-	draft->common_headers = _dmsg_create_common_headers();
+	draft->common_headers = dime_prsr_headers_create();
 
 	draft->actor = id_author;
 	draft->author = st_import(auth, strlen(auth));
@@ -123,100 +131,100 @@ START_TEST(test_message_encryption)
 	draft->common_headers->headers[HEADER_TYPE_SUBJECT] = st_import(common_subject, strlen(common_subject));
 	draft->common_headers->headers[HEADER_TYPE_TO] = st_import(common_to, strlen(common_to));
 	draft->other_headers = st_import(other_headers, strlen(other_headers));
-	draft->display = _dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
+	draft->display = dime_dmsg_create_object_chunk(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
 	ck_assert_dime_noerror();
 
 	fprintf(stderr, "---BEGIN DRAFT---\n");
-	_dmsg_dump_object(draft);
+	dime_dmsg_dump_object(draft);
 	fprintf(stderr, "---END DRAFT---\n");
 	ck_assert_dime_noerror();
 
 	// turn object into message by encrypting and serialize
-	message = _dmsg_object_to_msg(draft, auth_signkey);
-	from_auth_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_auth_size);
+	message = dime_dmsg_encrypt_message(draft, auth_signkey);
+	from_auth_bin = dime_dmsg_serial_from_message(message, 0xFF, 0, &from_auth_size);
 	ck_assert_dime_noerror();
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the origin
-	_dmsg_destroy_msg(message);
-	message = _dmsg_bin_to_msg(from_auth_bin, from_auth_size);
+	dime_dmsg_destroy_message(message);
+	message = dime_dmsg_serial_to_message(from_auth_bin, from_auth_size);
 	ck_assert_dime_noerror();
 
 	//decrypt message as origin
-	_dmsg_get_kek(message, orig_enckey, &orig_kek);
+	dime_dmsg_kek_derive_in(message, orig_enckey, &orig_kek);
 	ck_assert_dime_noerror();
 
-	at_orig = _dmsg_msg_to_object_envelope(message, id_origin, &orig_kek);
+	at_orig = dime_dmsg_decrypt_envelope(message, id_origin, &orig_kek);
 	ck_assert_dime_noerror();
 	at_orig->signet_author = signet_auth;
 	at_orig->signet_destination = signet_dest;
 	at_orig->origin = st_import(orig, strlen(orig));
 	at_orig->signet_origin = signet_orig;
-	_dmsg_msg_to_object_as_orig(at_orig, message, &orig_kek);
+	dime_dmsg_decrypt_message_as_orig(at_orig, message, &orig_kek);
 	ck_assert_dime_noerror();
 
 	fprintf(stderr, "---BEGIN AT-ORIG---\n");
-	_dmsg_dump_object(at_orig);
+	dime_dmsg_dump_object(at_orig);
 	fprintf(stderr, "---END AT-ORIG---\n");
 
 	//Add origin signatures and serialize the message again
-	_dmsg_sign_origin_sig_chunks(message, (META_BOUNCE | DISPLAY_BOUNCE), &orig_kek, orig_signkey);
-	from_orig_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_orig_size);
+	dime_dmsg_sign_origin_sig_chunks(message, (META_BOUNCE | DISPLAY_BOUNCE), &orig_kek, orig_signkey);
+	from_orig_bin = dime_dmsg_serial_from_message(message, 0xFF, 0, &from_orig_size);
 	ck_assert_dime_noerror();
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the destination
-	_dmsg_destroy_msg(message);
-	message = _dmsg_bin_to_msg(from_orig_bin, from_orig_size);
+	dime_dmsg_destroy_message(message);
+	message = dime_dmsg_serial_to_message(from_orig_bin, from_orig_size);
 	ck_assert_dime_noerror();
 
 	//decrypt message as destination
-	_dmsg_get_kek(message, dest_enckey, &dest_kek);
-	at_dest = _dmsg_msg_to_object_envelope(message, id_destination, &dest_kek);
+	dime_dmsg_kek_derive_in(message, dest_enckey, &dest_kek);
+	at_dest = dime_dmsg_decrypt_envelope(message, id_destination, &dest_kek);
 	ck_assert_dime_noerror();
 	at_dest->signet_origin = signet_orig;
 	at_dest->signet_recipient = signet_recp;
 	at_dest->destination = st_import(dest, strlen(dest));
 	at_dest->signet_destination = signet_dest;
-	_dmsg_msg_to_object_as_dest(at_dest, message, &dest_kek);
+	dime_dmsg_decrypt_message_as_dest(at_dest, message, &dest_kek);
 
 	fprintf(stderr, "---BEGIN AT-DEST---\n");
-	_dmsg_dump_object(at_dest);
+	dime_dmsg_dump_object(at_dest);
 	fprintf(stderr, "---END AT-DEST---\n");
 	ck_assert_dime_noerror();
 
 	//Serialize the message again
-	from_dest_bin = _dmsg_msg_to_bin(message, 0xFF, 0, &from_dest_size);
+	from_dest_bin = dime_dmsg_serial_from_message(message, 0xFF, 0, &from_dest_size);
 	ck_assert_dime_noerror();
 
 	//destroy message and deserialize it again from the serialized form as if it was received over wire by the recipient
-	_dmsg_destroy_msg(message);
-	message = _dmsg_bin_to_msg(from_dest_bin, from_dest_size);
+	dime_dmsg_destroy_message(message);
+	message = dime_dmsg_serial_to_message(from_dest_bin, from_dest_size);
 	ck_assert_dime_noerror();
 
 	//decrypt message as recipient
-	_dmsg_get_kek(message, recp_enckey, &recp_kek);
-	at_recp = _dmsg_msg_to_object_envelope(message, id_recipient, &recp_kek);
+	dime_dmsg_kek_derive_in(message, recp_enckey, &recp_kek);
+	at_recp = dime_dmsg_decrypt_envelope(message, id_recipient, &recp_kek);
 	ck_assert_dime_noerror();
 	at_recp->signet_author = signet_auth;
 	at_recp->signet_origin = signet_orig;
 	at_recp->signet_destination = signet_dest;
 	at_recp->signet_recipient = signet_recp;
-	_dmsg_msg_to_object_as_recp(at_recp, message, &recp_kek);
+	dime_dmsg_decrypt_message_as_recp(at_recp, message, &recp_kek);
 	fprintf(stderr, "---BEGIN AT-RECP---\n");
-	_dmsg_dump_object(at_recp);
+	dime_dmsg_dump_object(at_recp);
 	fprintf(stderr, "---END AT-RECP---\n");
 
 	//destroy everything
-	_signet_destroy(signet_auth);
-	_signet_destroy(signet_orig);
-	_signet_destroy(signet_dest);
-	_signet_destroy(signet_recp);
+	dime_sgnt_destroy_signet(signet_auth);
+	dime_sgnt_destroy_signet(signet_orig);
+	dime_sgnt_destroy_signet(signet_dest);
+	dime_sgnt_destroy_signet(signet_recp);
 
-	_dmsg_destroy_msg(message);
+	dime_dmsg_destroy_message(message);
 
-	_dmsg_destroy_object(draft);
-	_dmsg_destroy_object(at_orig);
-	_dmsg_destroy_object(at_dest);
-	_dmsg_destroy_object(at_recp);
+	dime_dmsg_destroy_object(draft);
+	dime_dmsg_destroy_object(at_orig);
+	dime_dmsg_destroy_object(at_dest);
+	dime_dmsg_destroy_object(at_recp);
 
 	_free_ec_key(auth_enckey);
 	_free_ec_key(orig_enckey);

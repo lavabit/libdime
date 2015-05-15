@@ -277,7 +277,7 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
 	serial_keys[at++] = enc_fid;
 	_int_no_put_2b(serial_keys + at, (uint16_t)enc_size);
 	at += 2;
-	memcpy(serial_keys + 2, serial_enc, enc_size);
+	memcpy(serial_keys + at, serial_enc, enc_size);
 	_secure_wipe(serial_enc, enc_size);
 	free(serial_enc);
 

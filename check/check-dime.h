@@ -20,7 +20,7 @@ static inline void suite_add_test(Suite *s, const char *name, TFun func) {
 static inline void ck_assert_dime_noerror_impl(const char *filename, int lineno) {
 	if (get_last_error() != NULL) {
 		dump_error_stack();
-		_ck_assert_msg(0, filename, lineno, "get_last_error() == NULL", "Unexpected error", (const char *)0);
+		ck_assert_msg(0, filename, lineno, "get_last_error() == NULL", "Unexpected error", (const char *)0);
 	}
 }
 

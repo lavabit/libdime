@@ -10,6 +10,15 @@
 */
 const char *              dime_dmsg_actor_to_string(dmime_actor_t actor);
 
+/* @brief	Creates a dmime object chunk with the specified type, data and flags.
+ * @param	type		Chunk type.
+ * @param	data		Pointer to an array that gets copied into newly allocated memory.
+ * @param	data_size	Length of data array.
+ * @param	flags		Specified flags for the object chunk.
+ * @free_using{dime_dmsg_destroy_object_chunk_list}
+*/
+dmime_object_chunk_t *    dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+
 /**
  * @brief	Retrieves author name for the following actors: author, origin, recipient.
  * @param	msg		Dmime message the author of which is retrieved.
@@ -57,16 +66,22 @@ int                       dime_dmsg_decrypt_message_as_orig(dmime_object_t *obj,
 int                       dime_dmsg_decrypt_message_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
 
 /**
+ * @brief	Destroys dmime_message_t structure.
+ * @param	msg		Pointer to the dmime message to be destroyed.
+*/
+void                      dime_dmsg_destroy_message(dmime_message_t *msg);
+
+/**
  * @brief	Destroy a dmime_object_t structure.
  * @param	object		Pointer to dmime object to be destroyed.
  */
 void                      dime_dmsg_destroy_object(dmime_object_t *object);
 
 /**
- * @brief	Destroys dmime_message_t structure.
- * @param	msg		Pointer to the dmime message to be destroyed.
-*/
-void                      dime_dmsg_destroy_message(dmime_message_t *msg);
+ * @brief	Destroy dmime object chunk list.
+ * @param	list		Poitner to a dmime object chunk list to be destroyed.
+ */
+void                      dime_dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list);
 
 /**
  * @brief	Dumps the contents of the dmime object.

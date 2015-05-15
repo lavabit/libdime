@@ -15,7 +15,6 @@
 #define KEYS_FID_MAX            3
 #define DIME_NUMBER_SIZE        2
 
-#include "core/magma.h"
 #include "common/error.h"
 #include "common/misc.h"
 #include "common/dcrypto.h"

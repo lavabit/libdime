@@ -20,6 +20,13 @@ void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *
 dmime_envelope_object_t *   dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type);
 
 /**
+ * @brief	Allocates memory for an empty dmime_common_headers_t type.
+ * @return	dmime_common_headers_t structure.
+ * @free_using{dime_prsr_headers_destroy}
+*/
+dmime_common_headers_t *    dime_prsr_headers_create(void);
+
+/**
  * @brief	Destroys a dmime_common_headers_t structure.
  * @param	obj		Headers to be destroyed.
 */

@@ -29,6 +29,12 @@
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.161466865" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.273948936" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.2122499969" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libdime/deps/sources/zlib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libdime/deps/sources/openssl/include/openssl}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libdime/deps/sources/openssl/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libdime/deps/sources/donna}&quot;"/>
+								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1726431685" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 						</toolChain>
@@ -88,15 +94,10 @@
 		<project id="libdime.null.474680916" name="libdime"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.cpp.compiler.base.170580350;cdt.managedbuild.tool.gnu.cpp.compiler.input.667867085">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.c.compiler.base.1117531775;cdt.managedbuild.tool.gnu.c.compiler.input.875702072">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/libdime"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
@@ -132,5 +133,17 @@
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.cpp.compiler.base.170580350;cdt.managedbuild.tool.gnu.cpp.compiler.input.667867085">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.c.compiler.base.1117531775;cdt.managedbuild.tool.gnu.c.compiler.input.875702072">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="0.1231902525">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

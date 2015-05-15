@@ -447,6 +447,10 @@ dmime_envelope_object_t *   dime_prsr_envelope_parse(const unsigned char *in, si
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
 }
 
+dmime_common_headers_t *    dime_prsr_headers_create(void) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_create);
+}
+
 void                        dime_prsr_headers_destroy(dmime_common_headers_t *obj) {
 	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_headers_destroy, obj);
 }

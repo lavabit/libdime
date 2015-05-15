@@ -92,11 +92,11 @@ static void show_coc(const char *cocstr) {
 
 		fprintf(stdout, "%zu. %s\n", i, token);
 
-		if (!(signet = signet_deserialize_b64(token))) {
+		if (!(signet = dime_sgnt_serial_b64_to_signet(token))) {
 			fprintf(stderr, "Error: could not deserialize signet.\n");
 			dump_error_stack();
 		} else {
-			signet_dump(stdout, signet);
+			dime_sgnt_dump_signet(stdout, signet);
 		}
 
 		token = strtok_r(NULL, "\n", &tokens);
@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
 
 		// If all we're doing is querying the signet, we can do that now and exit.
 		if (!(do_hist || do_vrfy)) {
-			signet_dump(stdout, obj->data);
+			dime_sgnt_dump_signet(stdout, obj->data);
 			exit(EXIT_SUCCESS);
 		}
 
@@ -398,7 +398,7 @@ exit(0); */
 				exit(EXIT_FAILURE);
 			}
 
-			if (!(org_signet = signet_deserialize_b64(line))) {
+			if (!(org_signet = dime_sgnt_serial_b64_to_signet(line))) {
 				free(line);
 				fprintf(stderr, "Error: could not retrieve org signet to verify requested user signet.\n");
 				dump_error_stack();
@@ -407,7 +407,7 @@ exit(0); */
 
 			free(line);
 
-			if (signet_full_verify(org_signet, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL) {
+			if (dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)session->drec->pubkey) < SS_CRYPTO) {
 				fprintf(stderr, "Error: org signet could not be verified against DIME management record POK.\n");
 				dump_error_stack();
 				exit(EXIT_FAILURE);
@@ -426,8 +426,8 @@ exit(0); */
 		_dbgprint(1, "Signet data: %s\n", line);
 	}
 
-	if ((signet = signet_deserialize_b64(line))) {
-		signet_dump(stdout, signet);
+	if ((signet = dime_sgnt_serial_b64_to_signet(line))) {
+		dime_sgnt_dump_signet(stdout, signet);
 	} else {
 		fprintf(stderr, "Error: unable to decode signet received from server.\n");
 		dump_error_stack();
@@ -437,14 +437,14 @@ exit(0); */
 	free(line);
 
 	// We have deserialized the signet. Now make sure its POK matches up against its corresponding DIME management record.
-	if (is_org && (signet_full_verify(signet, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL)) {
+	if (is_org && (dime_sgnt_validate_all(signet, NULL, NULL, (const unsigned char **)session->drec->pubkey) < SS_CRYPTO)) {
 
 		fprintf(stderr, "Error: org signet could not be verified against DIME management record POK.\n");
 		dump_error_stack();
 		exit(EXIT_FAILURE);
 	} else if (is_org) {
 		dbgprint(1, "Org signet passed POK comparison.\n");
-	} else if (!is_org && (signet_full_verify(signet, org_signet, NULL) != SS_FULL)) {
+	} else if (!is_org && (dime_sgnt_validate_all(signet, NULL, org_signet, NULL) < SS_CRYPTO)) {
 		fprintf(stderr, "Error: user signet could not be verified against org signet.\n");
 		dump_error_stack();
 		exit(EXIT_FAILURE);

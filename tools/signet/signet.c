@@ -1,7 +1,8 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include <signet/signet.h>
+#include "signet/keys.h"
+#include "signet/signet.h"
 
 /**
  * @brief	Display the app options to the user.
@@ -65,8 +66,6 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 
 	char *domain, wizard_string[256], *signet_f = NULL, *keys_f = NULL;
 	int keys_alloc = 0, signet_alloc = 0;
-	size_t keys_len;
-	unsigned char *keys_bin;
 	ED25519_KEY *key, *oldkey;
 	signet_t *signet;
 	signet_type_t type;
@@ -104,7 +103,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		keys_f = (char *)keys_file;
 	}
 
-	if(!(signet = signet_new_keysfile(type, keys_f))) {
+	if(!(signet = dime_sgnt_create_signet_w_keys(type, keys_f))) {
 		fprintf(stderr, "Could not create new signet signet.\n");
 
 		if(keys_alloc) {
@@ -114,7 +113,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(key = keys_file_fetch_sign_key(keys_f))) {
+	if(!(key = dime_keys_fetch_sign_key(keys_f))) {
 		fprintf(stderr, "Could not retrieve signing key from keys file %s.\n", keys_f);
 
 		if(keys_alloc) {
@@ -128,64 +127,46 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		free(keys_f);
 	}
 
+	dime_sgnt_sign_crypto_sig(signet, key);
+
 	switch(type) {
 	case SIGNET_TYPE_ORG:
 
 		wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string));
-		signet_add_field_string(signet, SIGNET_ORG_NAME, NULL, wizard_string, 0);
+		dime_sgnt_create_defined_field(signet, SIGNET_ORG_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string));
-		signet_add_field_string(signet, SIGNET_ORG_ADDRESS, NULL, wizard_string, 0);
+		dime_sgnt_create_defined_field(signet, SIGNET_ORG_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string));
-		signet_add_field_string(signet, SIGNET_ORG_COUNTRY, NULL, wizard_string, 0);
+		dime_sgnt_create_defined_field(signet, SIGNET_ORG_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string));
-		signet_add_field_string(signet, SIGNET_ORG_POSTAL, NULL, wizard_string, 0);
+		dime_sgnt_create_defined_field(signet, SIGNET_ORG_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string));
-		signet_add_field_string(signet, SIGNET_ORG_PHONE,  NULL, wizard_string, 0);
+		dime_sgnt_create_defined_field(signet, SIGNET_ORG_PHONE,  strlen(wizard_string), (const unsigned char *)wizard_string);
 
-		signet_sign_core_sig(signet, key);
-		signet_set_id(signet, signet_name);
-		signet_sign_full_sig(signet, key);
+		dime_sgnt_sign_full_sig(signet, key);
+		dime_sgnt_set_id_field(signet, strlen(signet_name), (const unsigned char *)signet_name);
+		dime_sgnt_sign_id_sig(signet, key);
 		break;
 	case SIGNET_TYPE_SSR:
 
 		if(old_keys) {
 
-			if(!(keys_bin = keys_get_binary(old_keys, &keys_len))) {
-				fprintf(stderr, "Could not open the specified keys file: %s\n", old_keys);
-				free_ed25519_key(key);
-				signet_destroy(signet);
-				exit(EXIT_FAILURE);
-			}
-
-			if(keys_get_type(keys_bin, keys_len) != KEYS_TYPE_USER) {
-				fprintf(stderr, "The specified keys file does not contain user keys.\n");
-				free_ed25519_key(key);
-				signet_destroy(signet);
-				memset(keys_bin, 0, keys_len);
-				free(keys_bin);
-				exit(EXIT_FAILURE);
-			}
-
-			if(!(oldkey = keys_fetch_sign_key(keys_bin, keys_len))) {
+			if(!(oldkey = dime_keys_fetch_sign_key(old_keys))) {
 				fprintf(stderr, "Could not retrieve the signing key from the keys file.\n");
 				free_ed25519_key(key);
-				signet_destroy(signet);
-				memset(keys_bin, 0, keys_len);
-				free(keys_bin);
+				dime_sgnt_destroy_signet(signet);
 				exit(EXIT_FAILURE);
 			}
 
-			memset(keys_bin, 0, keys_len);
-			free(keys_bin);
-			signet_sign_coc_sig(signet, oldkey);
+			dime_sgnt_sign_coc_sig(signet, oldkey);
 			free_ed25519_key(oldkey);
 		}
 
-		signet_sign_ssr_sig(signet, key);
+		dime_sgnt_sign_ssr_sig(signet, key);
 		break;
 	case SIGNET_TYPE_USER:
 		fprintf(stderr, "To create a user signet, an organization needs to sign an ssr.\n");
@@ -221,14 +202,14 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		signet_f = (char *)signet_file;
 	}
 
-	if(_signet_to_file(signet, signet_f) < 0) {
+	if(dime_sgnt_file_create(signet, signet_f) < 0) {
 		fprintf(stderr, "Could not store signet in file.\n");
 
 		if(signet_alloc) {
 			free(signet_f);
 		}
 
-		signet_destroy(signet);
+		dime_sgnt_destroy_signet(signet);
 		exit(EXIT_FAILURE);
 	}
 
@@ -236,8 +217,8 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		free(signet_f);
 	}
 
-	signet_dump(stdout, signet);
-	signet_destroy(signet);
+	dime_sgnt_dump_signet(stdout, signet);
+	dime_sgnt_destroy_signet(signet);
 }
 
 
@@ -252,8 +233,6 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 
 	int signet_alloc = 0;
 	char *signet_f = NULL, wizard_string[256], *domain = NULL;
-	size_t keys_len;
-	unsigned char *keys_bin;
 	ED25519_KEY *key;
 	signet_t *signet;
 
@@ -279,56 +258,37 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(signet = signet_from_file(ssr_f))) {
+	if(!(signet = dime_sgnt_file_to_signet(ssr_f))) {
 		fprintf(stderr, "Could not load signet from specified file: %s\n", ssr_f);
 		exit(EXIT_FAILURE);
 	}
 
-	if(signet_full_verify(signet, NULL, NULL) != SS_SSR) {
+	if(dime_sgnt_validate_all(signet, NULL, NULL, NULL) != SS_SSR) {
 		fprintf(stderr, "The signet is not a valid SSR.\n");
-		signet_destroy(signet);
+		dime_sgnt_destroy_signet(signet);
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(keys_bin = keys_get_binary((const char *)keys_f, &keys_len))) {
-		fprintf(stderr, "Could not retrieve keys from keys file: %s.\n", keys_f);
-		signet_destroy(signet);
-		exit(EXIT_FAILURE);
-	}
-
-	if(keys_get_type(keys_bin, keys_len) != KEYS_TYPE_ORG) {
-		fprintf(stderr, "The provided keys file %s, is not an organizational keys file and can not be used to sign a user signet.\n", keys_f);
-		signet_destroy(signet);
-		memset(keys_bin, 0, keys_len);
-		free(keys_bin);
-		exit(EXIT_FAILURE);
-	}
-
-	if(!(key = keys_fetch_sign_key(keys_bin, keys_len))) {
+	if(!(key = dime_keys_fetch_sign_key(keys_f))) {
 		fprintf(stderr, "Could not retrieve the signing key from the keys binary.\n");
-		signet_destroy(signet);
-		memset(keys_bin, 0, keys_len);
-		free(keys_bin);
+		dime_sgnt_destroy_signet(signet);
 		exit(EXIT_FAILURE);
 	}
 
-	memset(keys_bin, 0, keys_len);
-	free(keys_bin);
-
-	signet_sign_initial_sig(signet, key);
+	dime_sgnt_sign_crypto_sig(signet, key);
 	wizard_get_input("User name:", wizard_string, sizeof(wizard_string));
-	signet_add_field_string(signet, SIGNET_USER_NAME, NULL, wizard_string, 0);
+	dime_sgnt_create_defined_field(signet, SIGNET_USER_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User address:", wizard_string, sizeof(wizard_string));
-	signet_add_field_string(signet, SIGNET_USER_ADDRESS, NULL, wizard_string, 0);
+	dime_sgnt_create_defined_field(signet, SIGNET_USER_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User country:", wizard_string, sizeof(wizard_string));
-	signet_add_field_string(signet, SIGNET_USER_COUNTRY, NULL, wizard_string, 0);
+	dime_sgnt_create_defined_field(signet, SIGNET_USER_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User postal code:", wizard_string, sizeof(wizard_string));
-	signet_add_field_string(signet, SIGNET_USER_POSTAL, NULL, wizard_string, 0);
+	dime_sgnt_create_defined_field(signet, SIGNET_USER_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User phone number:", wizard_string, sizeof(wizard_string));
-	signet_add_field_string(signet, SIGNET_USER_PHONE, NULL, wizard_string, 0);
-	signet_sign_core_sig(signet, key);
-	signet_set_id(signet, signet_name);
-	signet_sign_full_sig(signet, key);
+	dime_sgnt_create_defined_field(signet, SIGNET_USER_PHONE, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_sign_full_sig(signet, key);
+	dime_sgnt_set_id_field(signet, strlen(signet_name), (const unsigned char *)signet_name);
+	dime_sgnt_sign_id_sig(signet, key);
 
 	_free_ed25519_key(key);
 
@@ -337,7 +297,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 
 		if(str_printf(&signet_f, "%s.signet", signet_name) < 0) {
 			fprintf(stderr, "Could not concatenate strings.\n");
-			signet_destroy(signet);
+			dime_sgnt_destroy_signet(signet);
 			exit(EXIT_FAILURE);
 		}
 
@@ -346,9 +306,9 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 		signet_f = (char *)signet_file;
 	}
 
-	if(signet_to_file(signet, signet_f) < 0) {
+	if(dime_sgnt_file_create(signet, signet_f) < 0) {
 		fprintf(stderr, "Could not store signet in file.\n");
-		signet_destroy(signet);
+		dime_sgnt_destroy_signet(signet);
 
 		if(signet_alloc) {
 			free(signet_f);
@@ -357,7 +317,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 		exit(EXIT_FAILURE);
 	}
 
-	signet_destroy(signet);
+	dime_sgnt_destroy_signet(signet);
 
 	if(signet_alloc) {
 		free(signet_f);
@@ -380,37 +340,37 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(signet = signet_from_file(signet_file))) {
+	if(!(signet = dime_sgnt_file_to_signet(signet_file))) {
 		fprintf(stderr, "Could not load signet from specified file: %s\n", signet_f);
 		exit(EXIT_FAILURE);
 	}
 
-	signet_dump(stdout, signet);
+	dime_sgnt_dump_signet(stdout, signet);
 	fprintf(stderr, "-------------------------------------------------------------------------------------------------------------------------------\n");
-	type = signet_get_type(signet);
+	type = dime_sgnt_type_get(signet);
 
 	if(type == SIGNET_TYPE_SSR || type == SIGNET_TYPE_USER) {
-		fingerprint = signet_ssr_fingerprint(signet);
+		fingerprint = dime_sgnt_fingerprint_ssr(signet);
 		fprintf(stderr, "*** SSR fingerprint:  \t\t     %s\n", fingerprint);
 		free(fingerprint);
 	}
 
-	if(type == SIGNET_TYPE_USER) {
-		fingerprint = signet_user_fingerprint(signet);
-		fprintf(stderr, "*** User cryptographic fingerprint:  %s\n", fingerprint);
+	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
+		fingerprint = dime_sgnt_fingerprint_crypto(signet);
+		fprintf(stderr, "*** Cryptographic fingerprint:  %s\n", fingerprint);
 		free(fingerprint);
 	}
 
 	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
-		fingerprint = signet_core_fingerprint(signet);
-		fprintf(stderr, "*** Core fingerprint (ID stripped):  %s\n", fingerprint);
-		free(fingerprint);
-		fingerprint = signet_full_fingerprint(signet);
+		fingerprint = dime_sgnt_fingerprint_full(signet);
 		fprintf(stderr, "*** Full fingerprint: \t\t     %s\n", fingerprint);
+		free(fingerprint);
+		fingerprint = dime_sgnt_fingerprint_id(signet);
+		fprintf(stderr, "*** ID fingerprint: \t\t     %s\n", fingerprint);
 		free(fingerprint);
 	}
 
-	signet_destroy(signet);
+	dime_sgnt_destroy_signet(signet);
 }
 
 

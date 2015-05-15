@@ -2769,6 +2769,7 @@ static int dmsg_decrypt_other_headers(dmime_object_t *object, const dmime_messag
  * @param	data		Pointer to an array that gets copied into newly allocated memory.
  * @param	data_size	Length of data array.
  * @param	flags		Specified flags for the object chunk.
+ * @free_using{dmsg_destroy_object_chunk_list}
 */
 static dmime_object_chunk_t *dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags) {
 
@@ -4157,6 +4158,10 @@ const char *              dime_dmsg_actor_to_string(dmime_actor_t actor) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_actor_to_string, actor);
 }
 
+dmime_object_chunk_t *    dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_create_object_chunk, type, data, data_size, flags);
+}
+
 dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_envelope, msg, actor, kek);
 }
@@ -4177,12 +4182,16 @@ int                       dime_dmsg_decrypt_message_as_recp(dmime_object_t *obj,
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_message_as_recp, obj, msg, kek);
 }
 
+void                      dime_dmsg_destroy_message(dmime_message_t *msg) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_message, msg);
+}
+
 void                      dime_dmsg_destroy_object(dmime_object_t *object) {
 	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_object, object);
 }
 
-void                      dime_dmsg_destroy_message(dmime_message_t *msg) {
-	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_message, msg);
+void                      dime_dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(dmsg_destroy_object_chunk_list, list);
 }
 
 int                       dime_dmsg_dump_object(dmime_object_t *object) {
