@@ -13,9 +13,10 @@
  * @param	output	a managed string where the results of the file read operation will be stored.
  * @return	-1 on failure or the number of bytes read from the file on success.
  */
-int_t file_read(char *name, stringer_t *output) {
+ssize_t file_read(char *name, stringer_t *output) {
 
-	int_t fd, result;
+	int_t fd;
+	ssize_t result;
 
 	if (!output) {
 		log_pedantic("File read operation performed with NULL output buffer.");
@@ -92,7 +93,7 @@ stringer_t *file_load(char *name) {
  * @brief	Get a file handle to a temporary file created in a specified directory.
  * @param	pdir		the parent directory in which to create the temporary file, or NULL for the default spool dir.
  * @param	tmpname		an optional pointer to a managed string to receive the name of the created temp file.
- * @result	-1 on failure or the new temporary file's file descriptor on success.
+ * @return	-1 on failure or the new temporary file's file descriptor on success.
  */
 int_t get_temp_file_handle(chr_t *pdir, stringer_t **tmpname) {
 

@@ -10,7 +10,7 @@
  * @param	a	a pointer to the first buffer in memory to be compared.
  * @param	b	a pointer to the second buffer in memory to be compared.
  * @param	len	the length, in bytes, of the comparison that is to take place.
- * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
+ * @return	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
 int_t mm_cmp_cs_eq(const void *a, const void *b, size_t len) {
 	bool_t ae, be;
@@ -45,7 +45,7 @@ int_t mm_cmp_cs_eq(const void *a, const void *b, size_t len) {
  * @param	a	a pointer to the first buffer in memory to be compared.
  * @param	b	a pointer to the second buffer in memory to be compared.
  * @param	len	the length, in bytes, of the comparison that is to take place.
- * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
+ * @return	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
 int_t mm_cmp_ci_eq(const void *a, const void *b, size_t len) {
 	bool_t ae, be;
@@ -78,7 +78,7 @@ int_t mm_cmp_ci_eq(const void *a, const void *b, size_t len) {
  * @brief	Perform a case-sensitive comparison of two managed strings.
  * @param	a	the first managed string to be compared.
  * @param	b	the second managed string to be compared.
- * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
+ * @return	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
 int_t st_cmp_cs_eq(stringer_t *a, stringer_t *b) {
 
@@ -117,7 +117,7 @@ int_t st_cmp_cs_eq(stringer_t *a, stringer_t *b) {
  * @brief	Perform a case-insensitive comparison of two managed strings.
  * @param	a	the first managed string to be compared.
  * @param	b	the second managed string to be compared.
- * @result	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
+ * @return	-1 if a < b, 1 if b < a, or 0 if the two memory blocks are equal.
  */
 int_t st_cmp_ci_eq(stringer_t *a, stringer_t *b) {
 

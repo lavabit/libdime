@@ -1,5 +1,5 @@
-#include "signet/signet.h"
-#include "signet/keys.h"
+#include <signet/signet.h>
+#include <signet/keys.h>
 
 
 
@@ -358,6 +358,11 @@ static int sgnt_validate_pok(const signet_t *signet, const unsigned char **dime_
 	}
 
 	while(dime_pok[i]) {
+
+		if(i == 0x7FFFFFFF) {
+			_free_ed25519_key(signet_pok);
+			RET_ERROR_INT(ERR_UNSPEC, "input overflow");
+		}
 
 		if(!(memcmp(dime_pok[i], (unsigned char *)signet_pok->public_key, ED25519_KEY_SIZE))) {
 			_free_ed25519_key(signet_pok);
@@ -3245,7 +3250,10 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "invalid state for organizational signet");
 		}
 
-		if((pok_num = sgnt_validate_pok(signet, dime_pok)) < 0) {
+		pok_num = sgnt_validate_pok(signet, dime_pok);
+
+
+		if(pok_num < 0) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error matching signet POK with DIME management record");
 		}
 

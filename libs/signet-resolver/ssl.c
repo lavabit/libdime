@@ -15,8 +15,8 @@
 
 static SSL_CTX *_dmtp_ssl_client_ctx = NULL;
 static int _ssl_initialized = 0;
-char *_ca_file = NULL;
-char *_crl_file = NULL;
+static char *_ca_file = NULL;
+static char *_crl_file = NULL;
 
 
 /**

@@ -1,4 +1,4 @@
-#include "signet/keys.h"
+#include <signet/keys.h>
 
 static int             keys_check_length(const unsigned char *in, size_t in_len);
 static EC_KEY *        keys_fetch_enc_key(const char *filename);

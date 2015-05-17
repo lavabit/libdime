@@ -9,12 +9,13 @@
  * @brief	Return an Adler-32 hash of the specified data.
  * @param	buffer	a pointer to the data to be hashed.
  * @param	length	the length, in bytes, of the data to be hashed.
- * @result	a 32 bit number containing the Adler-32 hash of the data.
+ * @return	a 32 bit number containing the Adler-32 hash of the data.
  */
 uint32_t hash_adler32(const void *buffer, size_t length) {
 
 	size_t input;
 	uint64_t a = 1, b = 0;
+	const uchr_t *buf = buffer;
 
 	while (length > 0) {
 
@@ -23,7 +24,7 @@ uint32_t hash_adler32(const void *buffer, size_t length) {
 		length -= input;
 
 		do {
-			a += *(uchr_t *)buffer++;
+			a += *buf++;
 			b += a;
 		} while (--input);
 
@@ -41,5 +42,5 @@ uint32_t hash_adler32(const void *buffer, size_t length) {
 		b -= 65521;
 	}
 
-	return (b << 16) | a;
+	return (uint32_t)((b << 16) | a);
 }

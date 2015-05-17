@@ -5,7 +5,7 @@
 
 #include <core/magma.h>
 
-media_type_t media_types[] = {
+static const media_type_t media_types[] = {
 	{ "",       true,  "application/octet-stream"},
 	{ ".aif",   true,  "audio/aiff" },
 	{ ".aiff",  true,  "audio/aiff" },
@@ -96,7 +96,7 @@ media_type_t media_types[] = {
  * @param	extension	a pointer to a null-terminated string containing the file extension to be looked up, starting with a period.
  * @return	a pointer to a media type object corresponding to the media type of the specified file extension.
  */
-media_type_t *mail_mime_get_media_type(chr_t *extension) {
+const media_type_t *mail_mime_get_media_type(const chr_t *extension) {
 
 	size_t cmplen = ns_length_get(extension) + 1;
 
@@ -602,27 +602,28 @@ stringer_t *mail_mime_boundary(placer_t header) {
 	chr_t *stream;
 	int_t quote = 0;
 	size_t length, bounder;
-	stringer_t *holder, *haystack, *boundary, *content;
+	stringer_t *holder, *boundary, *content;
+	placer_t haystack;
 
 	// Get the content type line from the header.
 	if ((content = mail_header_fetch_all((stringer_t *)&header, PLACER("Content-Type", 12)))) {
-		haystack = PLACER(st_char_get(content), st_length_get(content));
+		haystack = pl_init(st_char_get(content), st_length_get(content));
 	}
 	// If there is no content line, search the entire header.
 	else {
-		haystack = (stringer_t *)&header;
+		haystack = pl_init(pl_char_get(header), pl_length_get(header));
 	}
 
 	// Find the boundary.
-	if (!st_search_ci(haystack, PLACER("boundary", 8), &bounder)) {
+	if (!st_search_ci((stringer_t *)&haystack, PLACER("boundary", 8), &bounder)) {
 		log_pedantic("We couldn't find the MIME boundary.");
 		st_cleanup(content);
 		return NULL;
 	}
 
 	// Get setup.
-	length = st_length_get(haystack) - bounder;
-	stream = st_char_get(haystack) + bounder + 8;
+	length = pl_length_get(haystack) - bounder;
+	stream = pl_char_get(haystack) + bounder + 8;
 
 	// Skip the garbage.
 	while (length != 0 && quote == 0 && (*stream == '"' || *stream == ' ' || *stream == '\r' || *stream == '\n' || *stream == '\t' || *stream == '=')) {
@@ -1053,8 +1054,9 @@ stringer_t *mail_mime_generate_boundary(array_t *parts) {
 stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary) {
 
 	stringer_t *result, *encoded;
-	media_type_t *mtype;
-	chr_t *fstart, *extptr = NULL;
+	const media_type_t *mtype;
+	chr_t *fstart;
+	const chr_t *extptr = "";
 	const chr_t *ctype;
 	size_t flen;
 
@@ -1064,21 +1066,10 @@ stringer_t *mail_mime_encode_part(stringer_t *data, stringer_t *filename, string
 
 	// First get the extension of the filename so we can look up the media type.
 	if (!st_empty_out(filename, (uchr_t **)&fstart, &flen)) {
-		extptr = fstart + flen + 1;
-
-		while (extptr >= fstart) {
-
-			if (*extptr == '.') {
-				break;
-			}
-
-			extptr--;
+		extptr = memrchr(fstart, '.', flen);
+		if (extptr == NULL) {
+			extptr = "";
 		}
-
-		if (extptr < fstart) {
-			extptr = NULL;
-		}
-
 	}
 
 	mtype = mail_mime_get_media_type(extptr);

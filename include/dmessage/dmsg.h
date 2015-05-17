@@ -1,7 +1,7 @@
 #ifndef DMSG_H
 #define DMSG_H
 
-#include "dmessage/dmime.h"
+#include <dmessage/dmime.h>
 
 /**
  * @brief	Returns a string from dmime_actor_t.

@@ -10,7 +10,7 @@
 #include <common/misc.h>
 #include <common/network.h>
 
-static void usage(const char *progname) {
+static void __attribute__((noreturn)) usage(const char *progname)  {
 
 	fprintf(stderr, "\nUsage: %s [-d dxserver] [-p port] [-i dimefile [-0] [-f fingerprint] [-h or -c] [-e endfp] [-n] [-4 or -6] [-v] <signet>    where\n", progname);
 	fprintf(stderr, " signet is the name of the user or organizational signet to be looked up.\n");

@@ -1,7 +1,7 @@
 #ifndef SIGNET_H
 #define SIGNET_H
 
-#include "signet/general.h"
+#include <signet/general.h>
 
 
 

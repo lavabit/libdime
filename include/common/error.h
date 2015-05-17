@@ -4,18 +4,18 @@
 #include <stdio.h>
 #include <errno.h>
 
-#define RET_ERROR_INT(errorcode, auxmsg)      do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return -1; } while (0)
-#define RET_ERROR_UINT(errorcode, auxmsg)     do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return 0; } while (0)
-#define RET_ERROR_PTR(errorcode, auxmsg)      do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return NULL; } while (0)
+#define RET_ERROR_INT(errorcode, auxmsg)          do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return -1; } while (0)
+#define RET_ERROR_UINT(errorcode, auxmsg)         do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return 0; } while (0)
+#define RET_ERROR_PTR(errorcode, auxmsg)          do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return NULL; } while (0)
 #define RET_ERROR_CUST(retval, errorcode, auxmsg) do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); return retval; } while (0)
 
-#define RET_ERROR_INT_FMT(errorcode, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return -1; } while (0)
-#define RET_ERROR_UINT_FMT(errorcode, fmt, ...)   do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return 0; } while (0)
-#define RET_ERROR_PTR_FMT(errorcode, fmt, ...)    do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return NULL; } while (0)
+#define RET_ERROR_INT_FMT(errorcode, fmt, ...)          do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return -1; } while (0)
+#define RET_ERROR_UINT_FMT(errorcode, fmt, ...)         do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return 0; } while (0)
+#define RET_ERROR_PTR_FMT(errorcode, fmt, ...)          do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return NULL; } while (0)
 #define RET_ERROR_CUST_FMT(retval, errorcode, fmt, ...) do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); return retval; } while (0)
 
-#define PUSH_ERROR(errorcode, auxmsg)           do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); } while (0)
-#define PUSH_ERROR_FMT(errorcode, fmt, ...)     do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); } while (0)
+#define PUSH_ERROR(errorcode, auxmsg)       do { _push_error_stack(__FILE__, __func__, __LINE__, errorcode, errno, auxmsg); } while (0)
+#define PUSH_ERROR_FMT(errorcode, fmt, ...) do { _push_error_stack_fmt(__FILE__, __func__, __LINE__, errorcode, errno, fmt, __VA_ARGS__); } while (0)
 
 #define PUSH_ERROR_SYSCALL(func)  do { _push_error_stack_syscall(__FILE__, __func__, __LINE__, errno, func); } while (0)
 #define PUSH_ERROR_OPENSSL()      do { _push_error_stack_openssl(__FILE__, __func__, __LINE__, ERR_OPENSSL, errno); } while (0)

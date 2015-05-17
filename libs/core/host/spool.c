@@ -18,7 +18,7 @@ static pthread_mutex_t spool_error_lock = PTHREAD_MUTEX_INITIALIZER,
 
 /**
  * @brief	Get the number of spool errors encountered.
- * @result	the total number of spool errors.
+ * @return	the total number of spool errors.
  */
 // LOW: Add files created, and include files cleaned.
 uint64_t spool_error_stats(void) {

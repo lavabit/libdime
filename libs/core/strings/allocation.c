@@ -194,7 +194,7 @@ stringer_t *st_merge_opts(uint32_t opts, const chr_t *format, ...) {
  * @brief	Create a new (contiguous managed) managed string on the heap to hold a copy of the specified data buffer.
  * @param	s	the address of the buffer to be duplicated.
  * @param	len	the length, in bytes, of the copied buffer.
- * @result	NULL on failure, or a pointer to the newly allocated managed string on success.
+ * @return	NULL on failure, or a pointer to the newly allocated managed string on success.
  */
 stringer_t *st_import(const void *s, size_t len) {
 
@@ -215,7 +215,7 @@ stringer_t *st_import(const void *s, size_t len) {
  * @param	s	the managed string to store the copied contents of the data.
  * @param	buf	a pointer to the buffer containing the data to be copied.
  * @param	len	the length of the data to be copied.
- * @result	NULL on failure, or a pointer to the managed string on success.
+ * @return	NULL on failure, or a pointer to the managed string on success.
  */
 stringer_t *st_copy_in(stringer_t *s, void *buf, size_t len) {
 
@@ -341,7 +341,7 @@ stringer_t *st_dupe(stringer_t *s) {
  * @param	align	an alignment value to be used for managed string (re)allocation.
  * @param	s		the managed string to be extended, which will be allocated for the caller if passed as NULL.
  * @param	append	the managed string to be appended to s.
- * @result	NULL on failure, or a pointer to the appended result on success.
+ * @return	NULL on failure, or a pointer to the appended result on success.
  */
 stringer_t *st_append_opts(size_t align, stringer_t *s, stringer_t *append) {
 
@@ -663,7 +663,7 @@ stringer_t *st_realloc(stringer_t *s, size_t len) {
  * @note	If a NULL output string is specified, one will be allocated for the caller.
  * @param	output	the input managed string (can be NULL).
  * @param	len		the size, in bytes, of the requested data buffer.
- * @result	NULL on failure or if input was not large enough  or a pointer to a validated output managed string.
+ * @return	NULL on failure or if input was not large enough  or a pointer to a validated output managed string.
  */
 stringer_t *st_output(stringer_t *output, size_t len) {
 

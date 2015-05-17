@@ -23,7 +23,7 @@ void mm_cleanup(void *block) {
  * @brief	Determine whether the memory buffer and/or its length encompass an empty block.
  * @param	block	a pointer to the block of memory to be assessed.
  * @param	len		the length, in bytes, of the memory block.
- * @result	false if block is NULL or len is 0; true otherwise.
+ * @return	false if block is NULL or len is 0; true otherwise.
  */
 bool_t mm_empty(const void *block, size_t len) {
 
@@ -113,7 +113,6 @@ void *mm_wipe(void *block, size_t len) {
  * @brief	Free a block of memory.
  * @note	block can point to either a secure or insecure memory block.
  * @param	block	a pointer to the block to be freed.
- * @result	This function does not return any value.
  */
 // QUESTION: the note of this function really makes no sense when compared to the pedantic block below.
 void mm_free(void *block) {
@@ -136,7 +135,7 @@ void mm_free(void *block) {
  * @brief	Duplicate a block of memory.
  * @param	block	a pointer to the block of memory to be duplicated.
  * @param	len		the length, in bytes, of the buffer to be duplicated.
- * @result	a freshly allocated buffer containing a copy of the input data.
+ * @return	a freshly allocated buffer containing a copy of the input data.
  */
 void *mm_dupe(void *block, size_t len) {
 

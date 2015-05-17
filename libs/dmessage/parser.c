@@ -1,4 +1,4 @@
-#include "dmessage/parser.h"
+#include <dmessage/parser.h>
 
 static void                        prsr_envelope_destroy(dmime_envelope_object_t *obj);
 static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type);

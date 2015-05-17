@@ -78,7 +78,7 @@ stringer_t *   mail_mime_type_parameters_key(stringer_t *parameter);
 stringer_t *   mail_mime_type_parameters_value(stringer_t *parameter);
 stringer_t *   mail_mime_type_sub(placer_t header);
 int_t          mail_mime_update(mail_message_t *message);
-media_type_t * mail_mime_get_media_type(chr_t *extension);
+const media_type_t * mail_mime_get_media_type(const chr_t *extension);
 stringer_t *   mail_mime_generate_boundary(array_t *parts);
 stringer_t *   mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary);
 //stringer_t *   mail_mime_get_smtp_envelope(stringer_t *from, inx_t *tos, inx_t *ccs, inx_t *bccs, stringer_t *subject, stringer_t *boundary, bool_t attached);

@@ -31,7 +31,7 @@ include $(topdir)/common.mk
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
 
-check_PROGRAMS	= checks
+check_PROGRAM	?= checks
 LIBS 		= $(checks_LDADD) $(CHECK_LIBS) -lz -lresolv
 CFLAGS		= $(checks_CFLAGS) $(CHECK_CFLAGS) $(CWARNS) $(CDEBUG) -I../../include -std=gnu99
 SRCFILES	= $(checks_SOURCES)
@@ -41,15 +41,20 @@ df = $(DEPDIRNAME)/$(*F)
 DEPFILES	= $(patsubst %.c,$(DEPDIRNAME)/%.d,$(SRCFILES))
 OBJFILES	= $(patsubst %.c,$(OBJDIRNAME)/%.o,$(SRCFILES))
 
+VALGRIND_CMD	=
+ifeq ($(USE_VALGRIND),yes)
+VALGRIND_CMD	= valgrind --leak-check=yes
+endif
+
 .PHONY: all clean run-checks
-all: $(check_PROGRAMS) run-checks
+all: $(check_PROGRAM) run-checks
 
 clean:
 	@rm -rf $(OBJDIRNAME) $(DEPDIRNAME)
-	@rm -f $(check_PROGRAMS)
+	@rm -f $(check_PROGRAM)
 	@rm -f $(CLEANFILES)
 
-$(check_PROGRAMS): $(OBJFILES) $(filter %.a,$(LIBS))
+$(check_PROGRAM): $(OBJFILES) $(filter %.a,$(LIBS))
 	@echo "Linking $(GREEN)$@$(NORMAL)"
 	$(RUN)$(CC) -o $@ $(OBJFILES) $(LIBS) $(CDEBUG)
 
@@ -65,10 +70,11 @@ $(OBJDIRNAME)/%.o : %.c | $(OBJDIRNAME) $(DEPDIRNAME)
 		rm -f $(df).d.tmp
 	$(RUN)$(CC) $(CFLAGS) $(ALL_INC_CCOPT) -fPIC -c "$(abspath $<)" -o "$@"
 
-run-checks: $(check_PROGRAMS)
-	./$(check_PROGRAMS)
+run-checks: $(check_PROGRAM)
+	@echo 'Running' $(GREEN)./$(check_PROGRAM)$(NORMAL)
+	$(RUN)$(VALGRIND_CMD) ./$(check_PROGRAM)
 
-run-checks-endlessly: $(check_PROGRAMS)
+run-checks-endlessly: $(check_PROGRAM)
 	$(RUN)ulimit -c unlimited; \
 	rm -f core.*; \
 	while ./checks; do :; done; \

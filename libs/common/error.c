@@ -18,11 +18,11 @@ struct thread_err_stack {
 } __attribute__((__packed__));
 
 
-__thread struct thread_err_stack _t_err_stack;
+static __thread struct thread_err_stack _t_err_stack;
 
 
 // The global error message string table.
-err_desc_t err_desc_table[] = {
+static const err_desc_t err_desc_table[] = {
 	{ ERR_SYSCALL,          "error [errno] was returned by syscall" },
 	{ ERR_OPENSSL,          "an error occurred in -lopenssl" },
 	{ ERR_RESOLVER,         "an error occurred in the resolver library" },

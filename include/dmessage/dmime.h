@@ -1,10 +1,10 @@
 #ifndef DMIME_H
 #define DMIME_H
 
-#include "core/magma.h"
-#include "common/dcrypto.h"
-#include "common/error.h"
-#include "signet/general.h"
+#include <core/magma.h>
+#include <common/dcrypto.h>
+#include <common/error.h>
+#include <signet/general.h>
 
 #define TRACING_LENGTH_SIZE 2
 #define TRACING_HEADER_SIZE 4
