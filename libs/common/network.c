@@ -36,6 +36,7 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
 	if ((result = getaddrinfo(hostname, pstr, &hints, &address))) {
 		RET_ERROR_INT_FMT(ERR_UNSPEC, "failed to resolve host address: %s", gai_strerror(result));
 	}
+
 	for (struct addrinfo *aptr = address; aptr; aptr = aptr->ai_next) {
 
 		// Shouldn't happen, but paranoia never hurt anybody.
@@ -56,8 +57,7 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
 
 	freeaddrinfo(address);
 
-/*	if (fd < 0) {  breaks due to some unwarranted warning */
-	if (fd & 0x80) {
+	if (fd < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, NULL);
 	}
 
