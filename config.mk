@@ -1,5 +1,5 @@
 CC	= gcc
-CWARNS	?= -Werror -Wall -Wextra -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wstrict-overflow=5 -Wwrite-strings
+CWARNS	?= -Werror -Wall -Wextra -Wformat=2 -Wstrict-prototypes -Wmissing-prototypes -Wwrite-strings #-Wstrict-overflow=5
 
 ifeq ($(CC),clang)
 CWARNS	+= -ferror-limit=5
