@@ -2437,7 +2437,6 @@ static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const
 
 	int res;
 	size_t at = 0, field_size = 1;
-	signet_field_key_t *keys;
 	unsigned char *field_data, fid;
 	unsigned int offset;
 
@@ -2449,11 +2448,8 @@ static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const
 
 	case SIGNET_TYPE_ORG:
 		fid = SIGNET_ORG_UNDEFINED;
-		keys = signet_org_field_keys;
-		break;
 	case SIGNET_TYPE_USER:
 		fid = SIGNET_USER_UNDEFINED;
-		keys = signet_user_field_keys;
 		break;
 	case SIGNET_TYPE_SSR:
 		RET_ERROR_INT(ERR_UNSPEC, "signet signing request has no allowed undefined fields");
@@ -3251,7 +3247,6 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 		}
 
 		pok_num = sgnt_validate_pok(signet, dime_pok);
-
 
 		if(pok_num < 0) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error matching signet POK with DIME management record");
