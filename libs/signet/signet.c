@@ -3119,6 +3119,7 @@ static char *sgnt_fingerprint_crypto(const signet_t *signet) {
 		break;
 	case SIGNET_TYPE_USER:
 		fid = SIGNET_USER_CRYPTO_SIG;
+		break;
 	default:
 		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type for cryptographic fingerprint");
 
