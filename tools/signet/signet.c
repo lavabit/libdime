@@ -10,7 +10,7 @@
 */
 static void usage(const char *progname) {
 
-	fprintf(stderr, "\nUsage: %s <-g signet_id> <-s signet_id> <-d signet_filename> [-o output_filename] [-k keys_filename] [-r ssr_filename] [-c custody_filename] <-x signet_type\n", progname);
+	fprintf(stderr, "\nUsage: %s <-g signet_id> <-s signet_id> <-d signet_filename> [-o output_filename] [-k keys_filename] [-r ssr_filename] [-c custody_filename] <-x signet_type>\n", progname);
 	fprintf(stderr, "  --generate|-g   Uses provided signet id to generate a signet or SSR (signet signing request) and a keys files, may be used with a -c option to create an SSR for rotation of user signets.\n");
 	fprintf(stderr, "  --sign    |-s   Signs an SSR file specifed by the -r option with an org signing key specified by -k option and creates a user signet file.\n");
 	fprintf(stderr, "  --dump    |-d   Specifies filename of a signet file, the contents of which are dumped to the terminal.\n");
