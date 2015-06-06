@@ -26,7 +26,7 @@ If no code follows the comment then it shall not be indented.
 
 ### Multiline Comments
 
-A multiline comment is introduced with the characters `/**` and terminated with the
+A multiline comment is introduced with the characters `/*` and terminated with the
 characters `*/`. Each line between the beginning and ending lines shall
 begin with the characters `* ` aligned with the matching characters in
 the comment delimeters. A multiline comment shall follow the same indentation rules 
@@ -89,11 +89,12 @@ Every function shall be commented with Javadoc style comments for use by Doxygen
 Function prototypes shall not be commented.
 
 A function comment will be of the form of the example following.
-It shall contain a brief description, an optional reference to related functions,
-an option set of notes on the function's behavior, a brief description of each parameter
-on its own line, and a short description of its return value. If special
-values are returned, each value with its meaning
-meaning shall be listed on its own lines. Descriptive text shall be aligned.
+The @brief, @param, and @return tags are required.
+The @note on the function's behavior is optional, but highly encouraged if the functions's 
+behavior is not immediately apparent from the code.
+Each @param consists of a brief description of a single parameter on its own line. 
+The @return tag consists of a short description of the function's return value. If special
+values are returned, each special return value with its meaning
 
 Standard library functions shall use descriptions found in the standard.
 
@@ -127,34 +128,33 @@ void st_free(stringer_t *s) {
 
 ### File Comments
 
-Each file must begin with a Javadoc style header comment for use by Doxygen.
+Each file must begin with a Javadoc style header comment for use by Doxygen. 
+The @file and @author tags are required.
 
 #### Example
 
 ```c
 /**
  * @file /magma/core/hash/adler.c
+ * @author Ivan Tolkachev
  *
  * @brief	An x86 implementation of the Adler hash algorithm.
- *
- * $Author$
- * $Date$
- * $Revision$
  *
  */
 ```
 
 ### Javadoc tags
 
-Tag and Parameter | Usage | Description
+Tag and Parameter | Description | Notes
 —— | —— | ——
-@author | John Smith | Describes an author.
-@version | version | Version number.
-@since | since-text | Describes when this functionality first existed.
-@see | reference | Provides a link to other element of documentation.
-@param | name description | Describes a parameter.
-@return | description | Describes the return value.
-@Deprecated | description | Describes an outdated method.
+@file | file name | Name of the current file
+@author | author name | One per author, in chronological order
+@version | version | Version number
+@since | text | Describes release when this functionality was created
+@see | reference | Link to other element of documentation
+@param | name | Describes a parameter
+@return | description | Describes the return value
+@deprecated | description | Describes release when this functinoality was outdated
 
 
 
