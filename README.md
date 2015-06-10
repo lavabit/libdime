@@ -1,10 +1,26 @@
-Dark Internet Mail Environment
-=========
+#Dark Internet Mail Environment (DIME)
 
-This project holds the DIME libraries and related command line utilities.
+##Introduction
 
-Dependencies
----------
+Internet electronic mail (email) was designed in the early days of the Internet, and so
+lacks any mechanism to protect the privacy of the sender and addressee. Several techniques
+have been used in an attempt to increase the privacy of email. These techniques have provided
+either modest increases in privacy, or have proven to be very difficult to use for most people.
+
+In addition to protection of content, truly private email must limit information disclosed to 
+handling agents, only exposing information necessary for delivery (the metadata), and provide robust
+identity guarantees which prevent the impersonation of senders. 
+
+The Dark Internet Mail Environment (DIME) achieves this level of privacy with core protocols
+using multiple layers of key management and multiple layers of message encryption.
+The [DIME Protocol Specifications](https://darkmail.info/downloads/dark-internet-mail-environment-december-2014.pdf)
+contain the full technical details of the DIME.
+
+The **libdime** project holds the DIME libraries and related command line utilities.
+
+##Dependencies, Supported Platforms, and Build Instructions
+
+Please see the [Quick Start Guide](docs/quickstart.md).
 
 System:
 c dl rt pthread resolv
@@ -15,14 +31,12 @@ zlib openssl donna
 Unit Tests:
 python check
 
-Supported Platforms
-----
+##Supported Platforms
 
 * CentOS 6 x86_64
 * CentOS 7 x86_64
 
-Directories
----------
+##Directories
 
 Directory | Description
 :--- | :---
@@ -38,8 +52,7 @@ res/ | Resource files used by the different components and utilities.
 checks/ | Unit tests (eventually).
 include/ | The header files provided by the library components.
 
-Compiling
----------
+##Compiling
 
 First, build the third-party libraries
 
@@ -64,8 +77,7 @@ The specific make targets:
     make signet
     make dime
 
-Video
----------
+##Video
 
 An old/outdated video showing the components and command-line tools:
 
