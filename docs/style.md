@@ -20,13 +20,12 @@ multiple lines.
 
 #### Example
 
-```c
-
-    void usage(void)
+```C
+    void
+    usage (void)
     {
         printf("Usage: program [--verbose] [--format] -i <input files> -o <output files>\n");
     }
-
 ```
 
 ### Tabs and Spaces
@@ -45,8 +44,7 @@ of items like parameter lists or local variables.
 
 ### Example
 
-```c
-
+```C
     int      gCount = 0;
     char     *gBuf  = NULL;
     long int gSize  = 0;
@@ -65,7 +63,6 @@ of items like parameter lists or local variables.
 
         ...
     }
-
 ```
 
 ### Operator Spacing
@@ -106,15 +103,13 @@ inclusion.
 
 #### Example
 
-```c
-
+```C
     #ifndef MY_HEADER_H
     #define MY_HEADER_H
 
     ...
 
     #endif // MY_HEADER_H
-
 ```
 
 Include statements shall have one space between the `#include` and the
@@ -124,14 +119,12 @@ possible, they should be sorted alphabetically.
 
 #### Example
 
-```c
-
+```C
     #include <stdio.h>
     #include <sys/stat.h>
 
     #include "common.h"
     #include "sorting.h"
-
 ```
 
 ### Define statements
@@ -146,8 +139,7 @@ replacement-list.
 
 #### Example
 
-```c
-
+```C
     #define MAX_SIZE       (256)
     #define MODULE_NAME    "stdio"
     #define PRINT_ARRAY(x) do                                               \
@@ -158,7 +150,6 @@ replacement-list.
                                    printf("%s\n", x[i]);                    \
                                }                                            \
                            } while (0)
-
 ```
 
 ### Enumeration, Structure, and Union Definitions
@@ -175,8 +166,7 @@ column aligned and include a comma after the last enumeration constant.
 
 #### Example
 
-```c
-
+```C
     typedef struct myStruct
     {
         unsigned int    member1;
@@ -195,8 +185,21 @@ column aligned and include a comma after the last enumeration constant.
         GREEN   = 2,
         RED     = 3,
     } Color;
-
 ```
+
+### C99 Integer types
+
+Prefer the **C99** types, defined in `<stdint.h>`
+
+    int8_t | signed 8-bit
+    uint8_t | unsigned 8-bit
+    int16_t |  signed 16-bit
+    uint16_t | unsigned 16-bit
+    int32_t | signed 32-bit
+    uint32_t | unsigned 32-bit
+    int64_t | signed 64-bit
+    uint64_t | unsigned 64-bit
+
 
 ### Variable Declarations
 
@@ -219,7 +222,7 @@ The optional qualification is one of:
 -   `const volatile`
 -   `volatile`
 
-The type specifier shall use C99-style integer types (uint64_t etc.).
+The type specifier shall prefer C99-style integer types (uint64_t etc.).
 
 `char` and an implied `int` shall not be used.
 
@@ -228,8 +231,7 @@ be referred to as a variable’s type.
 
 #### Example
 
-```c
-
+```C
     extern long size;
 
     typedef struct memoryBlock
@@ -261,7 +263,6 @@ be referred to as a variable’s type.
 
         ...
     }
-
 ```
 
 ### Function Definitions and Prototypes
@@ -289,8 +290,7 @@ statement in the function, at the same indentation level as the function declara
 
 #### Example
 
-```c
-
+```C
 /**
  * @brief	Set the domain name and reverse lookup status of a connection.
  * @note	Possible values for status include REVERSE_ERROR, REVERSE_EMPTY, REVERSE_PENDING, and REVERSE_COMPLETE.
@@ -346,15 +346,15 @@ following line of elements aligned with the elements above it.
 
 #### Example
 
-```c
-
+```C
 /**
  * @brief	Get a cached copy of a static web page.
  * @param	location	a pointer to a managed string containing the location of the requested resource.
  * @return	NULL on failure, or a pointer to an http content object with the contents of the requested resource on success.
  */
-http_content_t * http_get_static(stringer_t *location) {
-
+http_content_t *
+http_get_static (stringer_t *location)
+{
 	multi_t key = { .type = M_TYPE_STRINGER, .val.st = location };
 
 	if (!content.pages) {
@@ -373,8 +373,7 @@ variable name, even during declaration/definition.
 
 #### Example
 
-```c
-
+```C
     int
     function(void)
     {
@@ -389,7 +388,6 @@ variable name, even during declaration/definition.
 
         ...
     }
-
 ```
 
 ### Function Calls
@@ -405,8 +403,7 @@ multiple lines, no space shall follow the separating comma.
 
 #### Example
 
-```c
-
+```C
     int
     function(void)
     {
@@ -425,7 +422,6 @@ multiple lines, no space shall follow the separating comma.
 
         ...
     }
-
 ```
 
 ### If, Else If, and Else Statements
@@ -455,10 +451,10 @@ same indentation level as the `if` statement which they follow.
 
 #### Example
 
-```c
-
-bool_t chr_punctuation(uchr_t c) {
-
+```C
+bool_t 
+chr_punctuation (uchr_t c) 
+{
 	if ((c >= '!' && c <= '/') || 
       (c >= ':' && c <= '@') || 
       (c >= '[' && c <= '`') || 
@@ -489,9 +485,10 @@ in alphanumeric order when possible.
 
 ### Example
 
-```c
-
-    int function(void) {
+```C
+    int 
+    function (void) 
+    {
         ...
 
         switch (input) {
@@ -511,7 +508,6 @@ in alphanumeric order when possible.
 
         ...
     }
-
 ```
 
 ### Loop Statements
@@ -551,10 +547,10 @@ should be formatted the same way as `if` statements.
 
 #### Example
 
-```c
-
-    int function(void) {
-
+```C
+    int 
+    function (void) 
+    {
         for (i = 0; i < 5; i++) {
             ...
         }
@@ -569,7 +565,6 @@ should be formatted the same way as `if` statements.
 
         ...
     }
-
 ```
 
 ### Return Statements
@@ -581,15 +576,14 @@ the return value is not a constant expression or variable.
 #### Example
 
 ```c
-
-uint32_t pool_get_timeout(pool_t *pool) {
-
+uint32_t 
+pool_get_timeout (pool_t *pool) 
+{
 	if (!pool)
 		return 0;
 
 	return pool->timeout;
 }
-
 ```
 
 ### Goto and Label Statements
@@ -606,16 +600,16 @@ is matched with.
 
 #### Example
 
-```c
-
+```C
     #ifdef WINDOWS
         #define DPRINTF(x)  OutputDebugString(x)
     #else
         #define DPRINTF(x)  perror(x)
     #endif // WINDOWS
 
-    int function(char *buf, int len) {
-
+    int 
+    function (char *buf, int len) 
+    {
         if (0 == count) {
     #ifdef WINDOWS
             OutputDebugString(L"Count was 0\n");
@@ -624,6 +618,6 @@ is matched with.
     #endif // WINDOWS
         }
 
+        return 0
     }
-
 ```
