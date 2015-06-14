@@ -185,101 +185,6 @@ with an inline function would restore normal function argument semantics.
 	int a = 81 / CUBE(++i);
 ```
 
-### Enumeration, Structure, and Union Definitions
-
-All enumerations, structures, and unions shall be defined with file or
-global scope and shall use the `typedef` storage specifier. The
-`typedef`, `enum` or `struct` or `union`, and tag shall be placed on the
-same line, with the opening brace on the following line. Members and
-enumeration constants shall be listed on their own lines, one
-indentation level in from the enum/structure/union braces. Member types
-and names shall be column aligned in structures and unions, while
-enumeration constant names, equals signs, and their values shall be
-column aligned and include a comma after the last enumeration constant.
-
-#### Example
-
-```C
-typedef struct myStruct
-{
-	uint32_t member1;
-	int64_t  member2;
-} MyStruct;
-
-typedef union myUnion
-{
-	uint64_t   member1;
-	unsigned char   member2;
-} myUnion;
-
-typedef enum color
-{
-	BLUE    = 1,
-	GREEN   = 2,
-	RED     = 3,
-} Color;
-```
-
-### C99 Flexible Array Members
-
-As a special case, the last element of a structure with more than one named member may have
-an incomplete array type; this is called a flexible array member. In most situations, the flexible 
-array member is ignored. In particular, the size of the structure is as if the flexible array
-member were omitted except that it may have more trailing padding than the omission would imply.
-However, when a . (or ->) operator has a left operand that is (a pointer to) a structure with 
-a flexible array member and the right operand names that member, it behaves as if that member 
-were replaced with the longest array (with the same element type) that would not make the structure
-larger than the object being accessed; the offset of the array shall remain that of the flexible 
-array member, even if this would differ from that of the replacement array. If this array would 
-have no elements, it behaves as if it had one element but the behavior is undefined if any attempt
-is made to access that element or to generate a pointer one past it.
-
-Structures with a flexible array member can be used to produce code with defined behavior.
-However, some restrictions apply:
-
-* The incomplete array type must be the last element within the structure.
-* There cannot be an array of structures that contain a flexible array member.
-* Structures that contain a flexible array member cannot be used as a member of another structure except as the last element of that structure.
-* The structure must contain at least one named member in addition to the flexible array member.
-
-### Example
-
-```C
-#include <stdlib.h>
- 
-struct flex_array_struct
-{
-  int32_t num;
-  int32_t data[];
-};
- 
-void 
-func (size_t array_size) 
-{
-	// Space is allocated for the struct
-
-	struct flex_array_struct *structp = (struct flex_array_struct *) malloc(sizeof(struct flex_array_struct) 
-         + sizeof(int) * array_size);
-
-	if (structP == NULL) {
-		// Handle malloc failure
-	}
- 
-	structp->num = array_size;
- 
-	/*
-	 * Access data[] as if it had been allocated
-	 * as data[array_size].
-	 */
-
-	for (size_t i = 0; i < array_size; ++i) {
-		structp->data[i] = 1;
-	}
-
-	return;
-}
-```
-
 ### C99 Integer types
 
 Prefer the **C99** types, defined in `<stdint.h>`
@@ -401,7 +306,9 @@ function(void)
 
 ### Scope
 
-Declarations of objects should be placed so as to minimize 
+Objects should be declared in the minimum scope for which all references are possible. Objects and functions that
+are not required to be visible outside file-scope, for example, should be declared as `static`. This
+increases the modularity of the code and reduces the number of names in in the global namespace.
 
 ### Global Variables
 
@@ -488,6 +395,102 @@ function(void)
 	return result;
 }
 ```
+
+### Enumeration, Structure, and Union Definitions
+
+All enumerations, structures, and unions shall be defined with file or
+global scope and shall use the `typedef` storage specifier. The
+`typedef`, `enum` or `struct` or `union`, and tag shall be placed on the
+same line, with the opening brace on the following line. Members and
+enumeration constants shall be listed on their own lines, one
+indentation level in from the enum/structure/union braces. Member types
+and names shall be column aligned in structures and unions, while
+enumeration constant names, equals signs, and their values shall be
+column aligned and include a comma after the last enumeration constant.
+
+#### Example
+
+```C
+typedef struct myStruct
+{
+	uint32_t member1;
+	int64_t  member2;
+} MyStruct;
+
+typedef union myUnion
+{
+	uint64_t   member1;
+	unsigned char   member2;
+} myUnion;
+
+typedef enum color
+{
+	BLUE    = 1,
+	GREEN   = 2,
+	RED     = 3,
+} Color;
+```
+
+### C99 Flexible Array Members
+
+As a special case, the last element of a structure with more than one named member may have
+an incomplete array type; this is called a flexible array member. In most situations, the flexible 
+array member is ignored. In particular, the size of the structure is as if the flexible array
+member were omitted except that it may have more trailing padding than the omission would imply.
+However, when a . (or ->) operator has a left operand that is (a pointer to) a structure with 
+a flexible array member and the right operand names that member, it behaves as if that member 
+were replaced with the longest array (with the same element type) that would not make the structure
+larger than the object being accessed; the offset of the array shall remain that of the flexible 
+array member, even if this would differ from that of the replacement array. If this array would 
+have no elements, it behaves as if it had one element but the behavior is undefined if any attempt
+is made to access that element or to generate a pointer one past it.
+
+Structures with a flexible array member can be used to produce code with defined behavior.
+However, some restrictions apply:
+
+* The incomplete array type must be the last element within the structure.
+* There cannot be an array of structures that contain a flexible array member.
+* Structures that contain a flexible array member cannot be used as a member of another structure except as the last element of that structure.
+* The structure must contain at least one named member in addition to the flexible array member.
+
+### Example
+
+```C
+#include <stdlib.h>
+ 
+struct flex_array_struct
+{
+  int32_t num;
+  int32_t data[];
+};
+ 
+void 
+func (size_t array_size) 
+{
+	// Space is allocated for the struct
+
+	struct flex_array_struct *structp = (struct flex_array_struct *) malloc(sizeof(struct flex_array_struct) 
+         + sizeof(int) * array_size);
+
+	if (structP == NULL) {
+		// Handle malloc failure
+	}
+ 
+	structp->num = array_size;
+ 
+	/*
+	 * Access data[] as if it had been allocated
+	 * as data[array_size].
+	 */
+
+	for (size_t i = 0; i < array_size; ++i) {
+		structp->data[i] = 1;
+	}
+
+	return;
+}
+```
+
 
 ### Function Definitions and Prototypes
 
