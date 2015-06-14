@@ -80,7 +80,9 @@ operator is the last character in a line.
 Parenthesis shall be used to explicitly define order of operations
 unless all operators share the same order of precedence.
 
-## Statement Level Organization
+### Constants
+
+Always use 'L' in place of 'l' when defining *long* constants. Do not begin decimal integer constants with '0'.
 
 ### Symbolic Constants
 
@@ -282,22 +284,23 @@ func (size_t array_size)
 
 Prefer the **C99** types, defined in `<stdint.h>`
 
-int8_t | signed 8-bit
-uint8_t | unsigned 8-bit
-int16_t |  signed 16-bit
-uint16_t | unsigned 16-bit
-int32_t | signed 32-bit
-uint32_t | unsigned 32-bit
-int64_t | signed 64-bit
-uint64_t | unsigned 64-bit
+C99 type | replaces | stored as
+---- | ---- | ----
+int8_t | signed char | signed 8-bit
+uint8_t | unsigned char | unsigned 8-bit
+int16_t | short | signed 16-bit
+uint16_t | unsigned short | unsigned 16-bit
+int32_t | int | signed 32-bit
+uint32_t | unsigned int | unsigned 32-bit
+int64_t | long | signed 64-bit
+uint64_t | unsigned long | unsigned 64-bit
 
 
 ### Variable Declarations
 
-A variable declaration shall consist of the following, in order and
-separated by a single space:
+A variable declaration shall consist of a storage-class specifier, an optional qualification, and a type specifier.
 
-The storage-class specifier shall be stated, one of:
+The storage-class specifiers are:
 
 -   `auto`
 -   `extern`
@@ -305,7 +308,7 @@ The storage-class specifier shall be stated, one of:
 -   `static`
 -   `typedef`
 
-If auto storage-class specifier is optional.
+The auto storage-class specifier is optional.
 
 The optional qualification is one of:
 
@@ -328,7 +331,39 @@ exceed these limits.
 *CAUTION:* Avoid creating typedefs of pointer types. It makes writing *const-correct* code difficult
 as the `const` qualifier will be applied to the pointer type and not the underlying declared type.
 
-#### Example
+*CAUTION:* As late as 2008, in (Volatiles Are Miscompiled, and What to Do about It)[http://dl.acm.org/citation.cfm?id=1450058.1450093], 
+all tested compilers generated some percentage of incorrect compiled code with regard to volatile accesses. Therefore, it 
+is necessary to know how your compiler behaves when the standard volatile behavior is required.
+
+Eide and Regehr tested a workaround by wrapping volatile accesses with function calls. They describe it with the 
+intuition that "we can replace an action that compilers empirically get wrong by a different action—a function
+call—that compilers can get right". An example of this workaround is:
+
+```C
+int32_t
+vol_read_int (volatile int32_t *vp) {
+  return *vp;
+}
+
+volatile int32_t 
+*vol_id_int (volatile int32_t *vp) {
+  return vp;
+}
+
+const volatile int32_t x;
+volatile int32_t y;
+
+void 
+foo (void) {
+  for (*vol_id_int(&y) = 0; vol_read_int(&y) < 10; *vol_id_int(&y) = vol_read_int(&y) + 1) {
+    int32_t z = vol_read_int(&x);
+  }
+
+  return;
+}
+```
+
+#### Example Declarations
 
 ```C
 extern int64_t size;
@@ -363,6 +398,10 @@ function(void)
 	...
 }
 ```
+
+### Scope
+
+Declarations of objects should be placed so as to minimize 
 
 ### Global Variables
 
