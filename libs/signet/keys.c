@@ -78,7 +78,9 @@ static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
 */
 static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len) {
 
-	unsigned char sign_fid, enc_fid;
+        /* unsigned char sign_fid, enc_fid; sign_fid is unused causing errors on 
+           compilation */
+        unsigned char enc_fid;
 	size_t at = 0, privkeylen;
 	EC_KEY *enc_key = NULL;
 
@@ -91,11 +93,11 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 	switch(keys_type_get(bin_keys, len)) {
 
 	case KEYS_TYPE_ORG:
-		sign_fid = KEYS_ORG_PRIVATE_POK;
+		/* sign_fid = KEYS_ORG_PRIVATE_POK; */
 		enc_fid = KEYS_ORG_PRIVATE_ENC;
 		break;
 	case KEYS_TYPE_USER:
-		sign_fid = KEYS_USER_PRIVATE_SIGN;
+		/* sign_fid = KEYS_USER_PRIVATE_SIGN; */
 		enc_fid = KEYS_USER_PRIVATE_ENC;
 		break;
 	default:
