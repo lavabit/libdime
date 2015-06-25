@@ -45,7 +45,7 @@ Column alignment refers to aligning rows of text on column boundaries.
 It is used when describing the formatting of groups
 of items like parameter lists or local variables.
 
-### Example
+#### Example
 
 ```C
 int32_t       gCount = 0;
@@ -67,6 +67,31 @@ function (
 	...
 }
 ```
+
+### Compiler Warnings
+
+A compiler warning is the compiler's message that a construct is risky, produces an undefined or implementation defined result,
+or indicates the possible presence of an error. Treat warnings as if they are recommendations from the compiler writers, because
+that is what they are. Do not suppress warnings without an excellent and documented reason.
+Code should compile cleanly with warnings enabled. Any warnings that remain should be carefully documented in the code with a
+reason why the warning could not be easily removed.
+
+For GCC, some options, such as `-Wall` and `-Wextra`, turn on other options, such as `-Wunused`, which may turn on further options,
+such as `-Wunused-value`. When combining multiple options, more specific options have priority 
+over less specific ones, independent of their position in the command-line. For options of the same specificity, the last
+one takes effect. Options enabled or disabled via `#pragma` take effect as if they appeared at the end of the command-line. 
+
+
+Suggested GCC compiler flags:
+
+```
+-Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith -Wbad-function-cast \
+-Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Winline -Wundef \
+-Wnested-externs -Wcast-qual -Wshadow -Wwrite-strings -Wno-unused-parameter \
+-Wfloat-equal -pedantic -ansi
+```
+
+Consult the compiler documentation for the definition and explanation of each compiler flag.
 
 ## Defining and Declaring Objects
 
@@ -1412,3 +1437,11 @@ structure does not guarantee initialization of the padding bytes. The standard s
 
 When passing a structure pointer to a different trusted domain, one must ensure that the padding bytes of the structure does 
 not contain sensitive information.
+
+### Beware code optimization
+
+A C99 conforming compiler "need not evaluate part of an expression if it can deduce that its value is not used and
+that no needed side effects are produced (including any caused by calling a function or accessing a volatile object)."
+
+The process of compiler optimization may result in the compiler removing code determined 
+to be not needed but has been added for a specific (often security-related) purpose.
