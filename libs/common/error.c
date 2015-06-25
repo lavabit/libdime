@@ -242,7 +242,9 @@ errinfo_t *_push_error_stack_syscall(const char *filename, const char *funcname,
 	memset(auxmsg, 0, sizeof(auxmsg));
 	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: ", errfunc);
 	ptr = auxmsg + strlen(auxmsg);
-	strerror_r(xerrno, ptr, (unsigned long)(auxmsg + sizeof(auxmsg)) - (unsigned long)ptr);
+	if (strerror_r(xerrno, ptr, (unsigned long)(auxmsg + sizeof(auxmsg)) - (unsigned long)ptr) != ptr) {
+                ; /* unsure what to put here */
+        }
 
 	return (_push_error_stack(filename, funcname, lineno, ERR_SYSCALL, xerrno, auxmsg));
 }
