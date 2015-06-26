@@ -71,8 +71,8 @@ function (
 ### Compiler Warnings
 
 A compiler warning is the compiler's message that a construct is risky, produces an undefined or implementation defined result,
-or indicates the possible presence of an error. Treat warnings as if they are recommendations from the compiler writers, because
-that is what they are. Do not suppress warnings without an excellent and documented reason.
+or indicates the possible presence of an error. Treat warnings as if they are recommendations from the compiler.
+Do not suppress warnings without an excellent and documented reason.
 Code should compile cleanly with warnings enabled. Any warnings that remain should be carefully documented in the code with a
 reason why the warning could not be easily removed.
 
@@ -127,7 +127,7 @@ The storage-class specifiers are:
 -   `static`
 -   `typedef`
 
-The auto storage-class specifier is optional.
+The `auto` storage-class specifier is optional.
 
 The optional qualification is one of:
 
@@ -135,12 +135,26 @@ The optional qualification is one of:
 -   `const volatile`
 -   `volatile`
 
+The storage-class, qualification, and type specifier will collectively
+be referred to as a variable’s type. The types `char` and an implied `int` shall not be used. Use `unsigned char` for `char`.
 Prefer the C99-style integer types (uint64_t, etc.).
 
-`char` and an implied `int` shall not be used. Use `unsigned char` for `char`.
+### Use of `const`
 
-The storage-class, qualification, and type specifier will collectively
-be referred to as a variable’s type.
+The `const` qualifier exists to signal the compiler that you promise not to modify the value of a `const` object.
+In C, a `const` object is not a compile-time constant, but a run-time read-only object, therefore `const` values are not suitable
+for use as case labels and some array dimensions. Use a `#define` or `enum` for a compile-time constant.
+
+The `const` qualifier applies to the type it follows. For example, `int32_t const x` declares the object named x to be a
+*const-qualified* object of type `int32_t`.
+The declaration `const int32_t x` is a special case (there is no type preceding the `const` qualifier)
+and is equivalent to `int32_t const x`. Note that pointer types and `const` qualifiers work the same way.
+
+```C
+int32_t const * px;		// pointer to a constant int32_t
+int32_t * const py;		// constant pointer to an int32_t
+```
+Prefer using `<type> const` over the special case `const <type>` where the `const` is the first part of the declaration.
 
 *CAUTION:* The C Standard limits identifier length to 63 significant initial characters
 in an internal identifier or a macro name, and 31 significant initial characters in an external 
@@ -270,7 +284,7 @@ http_get_static (stringer_t *location)
 {
 	multi_t key = { .type = M_TYPE_STRINGER, .val.st = location };
 
-	if (!content.pages) {
+	if (content.pages == 0) {
 		return NULL;
 	}
 
@@ -290,10 +304,10 @@ Declarations of functions returning pointers shall have a space between the `*` 
 #### Example
 
 ```C
-void * my_alloc(uint_16 size);
+void * my_alloc (uint_16 size);
 
 int32_t *
-function(void)
+function (void)
 {
 	unsigned char *buf    = NULL;
 	unsigned char c       = 0;
@@ -333,8 +347,8 @@ typedef struct myStruct
 
 typedef union myUnion
 {
-	uint64_t   member1;
-	unsigned char   member2;
+	uint64_t      member1;
+	unsigned char member2;
 } myUnion;
 
 typedef enum color
@@ -484,7 +498,7 @@ are named objects (unlike macro definitions), some debugging tools can show the 
 The object also consumes memory.
 
 ```C
-const int32_t max_len = 25;    // const-qualified object
+int32_t const max_len = 25;    // const-qualified object
 ```
 
 Unfortunately, const-qualified objects cannot be used where compile-time integer constants are 
@@ -495,7 +509,7 @@ required, namely to define the
 * Value of an enumeration constant.
 * Value of a case constant.
 
-If any compile-time values are required, an integer constant (an rvalue) must be used.
+If any compile-time values are required, a `#define` or `enum` must be used.
 
 *Enumeration constants* can be used to represent an integer constant expression that has an integer value.
 Unlike const-qualified objects, enumeration constants do not consume memory. No storage is allocated for 
