@@ -1451,11 +1451,3 @@ structure does not guarantee initialization of the padding bytes. The standard s
 
 When passing a structure pointer to a different trusted domain, one must ensure that the padding bytes of the structure does 
 not contain sensitive information.
-
-### Beware code optimization
-
-A C99 conforming compiler "need not evaluate part of an expression if it can deduce that its value is not used and
-that no needed side effects are produced (including any caused by calling a function or accessing a volatile object)."
-
-The process of compiler optimization may result in the compiler removing code determined 
-to be not needed but has been added for a specific (often security-related) purpose.
