@@ -265,6 +265,7 @@ static int sgnt_serial_index(signet_t *signet) {
 }
 
 
+#if 0 /* currently unused */
 /**
  * @brief	Retrieves the length of all fields in the signet with the specified field id in serial form.
  * @param	signet	Pointer to the target signet.
@@ -272,7 +273,6 @@ static int sgnt_serial_index(signet_t *signet) {
  * @return	The length of the serialized fields, returns -1 on errors and on non-existing fields.
  *              NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
 */
-#if 0 /* currently unused */
 static int sgnt_fid_get_size(const signet_t *signet, unsigned char fid) {
 
 	int res;
@@ -818,6 +818,7 @@ static int sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid) {
 }
 
 
+#if 0 /* currently unused */
 /**
  * @brief	Retrieves the serialized representation of all fields with the specified field id in the signet.
  * @param	signet	Pointer to the target signet.
@@ -825,7 +826,6 @@ static int sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid) {
  * @param	out_len	Pointer to the length of returned array.
  * @return	Array containing serialized fields with the specified field id, NULL if an error occurs. Caller is responsible for freeing memory after use.
 */
-#if 0 /* currently unused */
 static unsigned char *sgnt_serial_from_fid(const signet_t *signet, unsigned char fid, size_t *fid_size) {
 
 	int res;
@@ -905,7 +905,7 @@ static unsigned char *sgnt_serial_from_upto_fid(const signet_t *signet, unsigned
  * @brief	Helper function which removes a substring of length field_size from the target signet at offset.
  * @param	signet		Pointer to target signet.
  * @param	offset		Offset at which the field intended for removal begins in the target signet.
- * @param	field_size	Size of field to be removed.
+ * @param	data_size	Size of field to be removed.
  * @return	0 on success, -1 on failure.
 */
 static int sgnt_remove_field_at(signet_t *signet, unsigned int offset, size_t data_size) {
@@ -2004,7 +2004,7 @@ static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
  * @param	signet	Pointer to target organizational signet.
  * @param	perm	Permissions by which the keys are filtered.
  * @return	A NULL pointer terminated array of ed25519 public signing key objects.
- * @NOTE	Always returns at least POK.
+ * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
 static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_permissions_t perm) {
@@ -2097,7 +2097,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a message.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 public signing key objects.
- * @NOTE	Always returns at least POK.
+ * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
 static ED25519_KEY **sgnt_fetch_msg_signkeys(const signet_t *signet) {
@@ -2120,7 +2120,7 @@ static ED25519_KEY **sgnt_fetch_msg_signkeys(const signet_t *signet) {
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a signet.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 public signing key objects.
- * @NOTE	Always returns at least POK.
+ * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
 static ED25519_KEY **sgnt_fetch_signet_signkeys(const signet_t *signet) {
@@ -2143,7 +2143,7 @@ static ED25519_KEY **sgnt_fetch_signet_signkeys(const signet_t *signet) {
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a TLS certificate.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 public signing key objects.
- * @NOTE	Always returns at least POK.
+ * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
 static ED25519_KEY **sgnt_fetch_tls_signkeys(const signet_t *signet) {
@@ -2166,7 +2166,7 @@ static ED25519_KEY **sgnt_fetch_tls_signkeys(const signet_t *signet) {
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign software.
  * @param	signet	Pointer to target organizational signet.
  * @return	A NULL pointer terminated array of ed25519 public signing key objects.
- * @NOTE	Always returns at least POK.
+ * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
 static ED25519_KEY **sgnt_fetch_software_signkeys(const signet_t *signet) {

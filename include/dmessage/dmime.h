@@ -193,8 +193,6 @@ typedef struct __attribute__((packed)) {
 
 /**
  * One chunk of a DIME message.
- *
- * @see ::_dmsg_destroy_message_chunk
  */
 typedef struct __attribute__((packed)) {
 	dmime_message_chunk_state_t state;
