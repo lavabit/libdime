@@ -2,11 +2,11 @@
 
 ## DarkMail documentation
 Specification Documents:
-- The [Dark Internet Mail Environment](https://darkmail.info/downloads/dark-internet-mail-environment-march-2015.pdf)
+- The [Dark Internet Mail Environment](https://darkmail.info/spec)
 - The STACIE Authentication Module (To Be Added)
 
 ## Source Code
-Magma/DIME uses **git** for source code control.
+Magma/DIME uses Git for source code control.
 - Intro: Scott Chacon’s excellent [Introduction to Git](https://www.youtube.com/watch?v=ZDR433b0HJY)
 
 ###Github Repository
@@ -15,7 +15,7 @@ Public git repositories for the Magma project
 - [Libraries for the Dark Internet Mail Environment](https://github.com/lavabit/libdime)
 
 ###Gitflow
-The branching model used by Magma. 
+The branching model used by Magma.
 
 ###HubFlow - Our Development branching model
 - Homepage for [Hubflow](https://datasift.github.io/gitflow/index.html)
@@ -30,19 +30,18 @@ Generate documentation from comments with [Doxygen](http://www.stack.nl/~dimitri
 - [Javadoc tags and comments](http://www.oracle.com/technetwork/java/javase/documentation/index-137868.html)
 
 ### Useful coding references
-- [Signed and unsigned integers](embeddedgurus.com/stack-overflow/tag/unsigned/)
-- [CERT Secure Coding Standards](https://slack-files.com/files-pri-safe/T0353J4TM-F05108QGZ/more-secure-coding-rules.pdf?c=1432749763-580b2ddad7a071dba0147d5153db968e6a0658ec)
-- [Geary Code Style Guide](https://slack-files.com/files-pri-safe/T0353J4TM-F05108PF3/geary_code_style_guide.pdf?c=1432749821-6081383842ae47a896d11c1372951d164601a873)
+- [Signed and unsigned integers](http://embeddedgurus.com/stack-overflow/tag/unsigned/)
+- [CERT Secure Coding Standards](https://www.securecoding.cert.org/confluence/download/attachments/3524/more-secure-coding-rules.pdf)
 
 ## Testing
 ###Check 0.9.14 - a C-testing framework 
-- [Check homepage](check.sourceforge.net/)
-- [Check User manual](check.sourceforge.net/doc/check_html/index.html#Top)
+- [Check homepage](https://check.sourceforge.net/)
+- [Check User manual](https://check.sourceforge.net/doc/check_html/index.html#Top)
 
 ## Eclipse and Virtual Machines
-The original Magma.classic development environment was [Eclipse](eclipse.org) running
-under [CentOS 6](www.centos.org) in a [VMware](vmware.com) virtual machine.
+The original Magma.classic development environment was [Eclipse](https://eclipse.org/) running
+under [CentOS 6](https://www.centos.org/) in a [VMware](https://vmware.com/) virtual machine.
 
 ### Eclipse IDE
-You'll need the Eclipse IDE for C/C++. The recommended hypervisor is **VMware**, but [VirtualBox](www.virtualbox.org)
+You'll need the Eclipse IDE for C/C++. The recommended hypervisor is **VMware**, but [VirtualBox](https://www.virtualbox.org)
 is reported to work as well.

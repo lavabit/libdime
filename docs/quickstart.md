@@ -3,16 +3,13 @@
 ##Technologies used
 
 ###System
-* C
-* dl [TLDP tutorial](http://www.tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html)
-* rt 
+* libdl [TLDP tutorial](http://www.tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html)
 * pthread [LLNL pthread tutorial](https://computing.llnl.gov/tutorials/pthreads/)
-* resolv
 
 ###Bundled
 * zlib [zlib site](http://www.zlib.org)
 * openssl [openssl site](http://www.openssl.org) and [linux tutorial](http://tldp.org/LDP/LG/issue87/vinayak.html)
-* donna 
+* donna
 
 ###Unit Testing
 * python [python site](https://www.python.org/)
@@ -23,7 +20,7 @@
 * CentOS 6 x86_64
 * CentOS 7 x86_64
 
-See the [CentOS Official Site](http://www.centos.org/) for informatino and downloads.
+See the [CentOS Official Site](http://www.centos.org/) for information and downloads.
 
 ##Source Code Directories
 
@@ -53,6 +50,7 @@ Then:
 
 ```sh
     make all
+    make check
 ```
 
 or
@@ -73,4 +71,3 @@ The specific make targets:
     make signet
     make dime
 ```
-
