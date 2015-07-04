@@ -78,9 +78,7 @@ static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
 */
 static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len) {
 
-        /* unsigned char sign_fid, enc_fid; sign_fid is unused causing errors on 
-           compilation */
-        unsigned char enc_fid;
+	unsigned char enc_fid;
 	size_t at = 0, privkeylen;
 	EC_KEY *enc_key = NULL;
 
@@ -93,11 +91,9 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 	switch(keys_type_get(bin_keys, len)) {
 
 	case KEYS_TYPE_ORG:
-		/* sign_fid = KEYS_ORG_PRIVATE_POK; */
 		enc_fid = KEYS_ORG_PRIVATE_ENC;
 		break;
 	case KEYS_TYPE_USER:
-		/* sign_fid = KEYS_USER_PRIVATE_SIGN; */
 		enc_fid = KEYS_USER_PRIVATE_ENC;
 		break;
 	default:
@@ -116,7 +112,7 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 		}
 	}
 
-	privkeylen = _int_no_get_2b(bin_keys+at);
+	privkeylen = _int_no_get_2b(bin_keys + at);
 	at += 2;
 
 	if(at + privkeylen > len) {
@@ -378,7 +374,7 @@ int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_k
 /* not implemented yet TODO*/
 /*
 int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
-	PUBLIC_FUNCTION_IMPLEMENT(keys_file_add_sok, sok, filename);
+        PUBLIC_FUNCTION_IMPLEMENT(keys_file_add_sok, sok, filename);
 }
 */
 
