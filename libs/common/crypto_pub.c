@@ -81,11 +81,11 @@ ED25519_KEY *load_ed25519_privkey(const char *filename) {
 	PUBLIC_FUNC_IMPL(load_ed25519_privkey, filename);
 }
 
-ED25519_KEY* deserialize_ed25519_pubkey(const unsigned char *serial_pubkey) {
+ED25519_KEY *deserialize_ed25519_pubkey(const unsigned char *serial_pubkey) {
 	PUBLIC_FUNC_IMPL(deserialize_ed25519_pubkey, serial_pubkey);
 }
 
-ED25519_KEY* deserialize_ed25519_privkey(const unsigned char *serial_privkey) {
+ED25519_KEY *deserialize_ed25519_privkey(const unsigned char *serial_privkey) {
 	PUBLIC_FUNC_IMPL(deserialize_ed25519_privkey, serial_privkey);
 }
 

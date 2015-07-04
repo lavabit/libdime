@@ -54,8 +54,8 @@ int_t print_backtrace() {
 
 	/* possible error, need to check return value (in gcc 4.6)*/
 	if (write(STDOUT_FILENO, "   ", 3) < 0) {
-                return -1;
-        }
+		return -1;
+	}
 
 	while (nfound < nbt) {
 		nread = read(pipefds[0], strbuf, sizeof(strbuf));
@@ -69,18 +69,18 @@ int_t print_backtrace() {
 
 		for (ssize_t i = 0; i < nread; i++) {
 			/* possible error, need to check return value */
-                    if (write(STDOUT_FILENO, &strbuf[i], 1) < 0) {
-                            return -1;
-                    }
+			if (write(STDOUT_FILENO, &strbuf[i], 1) < 0) {
+				return -1;
+			}
 
 			if (strbuf[i] == '\n') {
 				nfound++;
 
 				if (nfound != nbt) {
 					/* possible error, need to check return value */
-                                    if (write(STDOUT_FILENO, "   ", 3) < 0) {
-                                            return -1;
-                                    }
+					if (write(STDOUT_FILENO, "   ", 3) < 0) {
+						return -1;
+					}
 				}
 
 			}
@@ -161,9 +161,9 @@ void log_internal(const char *file, const char *function, const int line, M_LOG_
 			errmsg = "Error printing stack backtrace to stdout!\n";
 			/* possible error, need to check return value */
 			if (write(STDERR_FILENO, errmsg, ns_length_get(errmsg)) < 0) {
-                                mutex_unlock(&log_mutex);
-                                return;
-                        }
+				mutex_unlock(&log_mutex);
+				return;
+			}
 		}
 
 		/*size = backtrace(array, 1024);
