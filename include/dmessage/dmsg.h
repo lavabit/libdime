@@ -8,7 +8,7 @@
  * @param	actor		Actor value.
  * @return	String containing human readable actor.
 */
-const char *              dime_dmsg_actor_to_string(dmime_actor_t actor);
+const char *dime_dmsg_actor_to_string(dmime_actor_t actor);
 
 /* @brief	Creates a dmime object chunk with the specified type, data and flags.
  * @param	type		Chunk type.
@@ -17,7 +17,7 @@ const char *              dime_dmsg_actor_to_string(dmime_actor_t actor);
  * @param	flags		Specified flags for the object chunk.
  * @free_using{dime_dmsg_destroy_object_chunk_list}
 */
-dmime_object_chunk_t *    dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+dmime_object_chunk_t *dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
 
 /**
  * @brief	Retrieves author name for the following actors: author, origin, recipient.
@@ -27,7 +27,7 @@ dmime_object_chunk_t *    dime_dmsg_create_object_chunk(dmime_chunk_type_t type,
  * @return	A newly allocated dmime object containing the envelope ids available to the actor.
  * @free_using{dime_dmsg_destroy_object}
  */
-dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
+dmime_object_t *dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
 
 /**
  * @brief	Decrypts, verifies and extracts all the information available to the author from the message.
@@ -98,7 +98,7 @@ int                       dime_dmsg_dump_object(dmime_object_t *object);
  * @return	A pointer to a fully signed and encrypted dmime message.
  * @free_using{dime_dmsg_destroy_message}
 */
-dmime_message_t *         dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey);
+dmime_message_t *dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey);
 
 /**
  * @brief	Calculates the key encryption key for a given private encryption key and dmime message, using the ephemeral key chunk in the message
@@ -121,7 +121,7 @@ dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object);
  * @param	state		Object state value.
  * @return	String containing human readable dmime object state.
 */
-const char *              dime_dmsg_object_state_to_string(dmime_object_state_t state);
+const char *dime_dmsg_object_state_to_string(dmime_object_state_t state);
 
 /**
  * @brief	Retrieves dmime message state.
@@ -138,7 +138,7 @@ dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *mes
  * @param	outsize		Stores the output size of the binary.
  * @free_using{free}
 */
-unsigned char *           dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
+unsigned char *dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
 
 /**
  * @brief	Converts a binary message into a dmime message. The message is assumed to be encrypted.
@@ -147,7 +147,7 @@ unsigned char *           dime_dmsg_serial_from_message(const dmime_message_t *m
  * @return	Pointer to a dmime message structure.
  * @free_using{dime_dmsg_destroy_message}
 */
-dmime_message_t *         dime_dmsg_serial_to_message(const unsigned char *in, size_t insize);
+dmime_message_t *dime_dmsg_serial_to_message(const unsigned char *in, size_t insize);
 
 /**
  * @brief	Signs the encrypted, author signed dmime message with the origin signatures. The origin signature chunks must already exist in order for the signing to occur.

@@ -61,26 +61,26 @@ void          mail_mod_subject(stringer_t **message, chr_t *label);
 placer_t      mail_store_header(chr_t *stream, size_t length);
 
 /// mime.c
-stringer_t *   mail_mime_boundary(placer_t header);
-placer_t       mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child);
-stringer_t *   mail_mime_content_encoding(placer_t header);
-stringer_t *   mail_mime_content_id(placer_t header);
-uint32_t       mail_mime_count(placer_t body, stringer_t *boundary);
-int_t          mail_mime_encoding(placer_t header);
-void           mail_mime_free(mail_mime_t *mime);
-placer_t       mail_mime_header(stringer_t *part);
-mail_mime_t *  mail_mime_part(stringer_t *part, uint32_t recursion);
-array_t *      mail_mime_split(placer_t body, stringer_t *boundary);
-int_t          mail_mime_type(placer_t header);
-stringer_t *   mail_mime_type_group(placer_t header);
-array_t *      mail_mime_type_parameters(placer_t header);
-stringer_t *   mail_mime_type_parameters_key(stringer_t *parameter);
-stringer_t *   mail_mime_type_parameters_value(stringer_t *parameter);
-stringer_t *   mail_mime_type_sub(placer_t header);
-int_t          mail_mime_update(mail_message_t *message);
-const media_type_t * mail_mime_get_media_type(const chr_t *extension);
-stringer_t *   mail_mime_generate_boundary(array_t *parts);
-stringer_t *   mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary);
+stringer_t *        mail_mime_boundary(placer_t header);
+placer_t            mail_mime_child(placer_t body, stringer_t *boundary, uint32_t child);
+stringer_t *        mail_mime_content_encoding(placer_t header);
+stringer_t *        mail_mime_content_id(placer_t header);
+uint32_t            mail_mime_count(placer_t body, stringer_t *boundary);
+int_t               mail_mime_encoding(placer_t header);
+void                mail_mime_free(mail_mime_t *mime);
+placer_t            mail_mime_header(stringer_t *part);
+mail_mime_t *       mail_mime_part(stringer_t *part, uint32_t recursion);
+array_t *           mail_mime_split(placer_t body, stringer_t *boundary);
+int_t               mail_mime_type(placer_t header);
+stringer_t *        mail_mime_type_group(placer_t header);
+array_t *           mail_mime_type_parameters(placer_t header);
+stringer_t *        mail_mime_type_parameters_key(stringer_t *parameter);
+stringer_t *        mail_mime_type_parameters_value(stringer_t *parameter);
+stringer_t *        mail_mime_type_sub(placer_t header);
+int_t               mail_mime_update(mail_message_t *message);
+const media_type_t *mail_mime_get_media_type(const chr_t *extension);
+stringer_t *        mail_mime_generate_boundary(array_t *parts);
+stringer_t *        mail_mime_encode_part(stringer_t *data, stringer_t *filename, stringer_t *boundary);
 //stringer_t *   mail_mime_get_smtp_envelope(stringer_t *from, inx_t *tos, inx_t *ccs, inx_t *bccs, stringer_t *subject, stringer_t *boundary, bool_t attached);
 
 /// objects.c

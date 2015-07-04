@@ -45,8 +45,8 @@ END_TEST
 START_TEST(check_signet_keys_pairing)
 {
 	const char *filename_u = "keys_user.keys", *filename_o = "keys_org.keys",
-			*filename_s = "keys_ssr.keys", *filename_w = "keys_wrong.keys",
-			*to_sign = "AbcDEFghijKLMNOpqrstuVWXYZ";
+	           *filename_s = "keys_ssr.keys", *filename_w = "keys_wrong.keys",
+	           *to_sign = "AbcDEFghijKLMNOpqrstuVWXYZ";
 	EC_KEY *priv_enckey, *pub_enckey;
 	ED25519_KEY *priv_signkey, *pub_signkey;
 	ed25519_signature sigbuf;
@@ -194,9 +194,15 @@ END_TEST
 START_TEST(check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529",
+<<<<<<< HEAD
 			*name1 = "check undef", *data1 = "undef data",
 			*name2 = "check name", *data2 = "check check";
 	int res, count;
+=======
+	           *name1 = "check undef", *data1 = "undef data",
+	           *name2 = "check name", *data2 = "check check";
+	int res;
+>>>>>>> make uncrustify
 	signet_t *signet;
 	size_t data_size;
 	unsigned char *data;
@@ -223,10 +229,14 @@ START_TEST(check_signet_modification)
 	res = dime_sgnt_create_undefined_field(signet, strlen(name2), (const unsigned char *)name2, strlen(data2), (const unsigned char *)data2);
 	ck_assert_msg(res == 0, "Failure to create undefined field.\n");
 
+<<<<<<< HEAD
 	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_UNDEFINED);
 	ck_assert_msg(count == 2, "Failure to count number of undefined fields.\n");
 
 	data = dime_sgnt_fetch_undefined_field(signet, strlen(name2), (const unsigned char*)name2, &data_size);
+=======
+	data = dime_sgnt_fetch_undefined_field(signet, strlen(name2), (const unsigned char *)name2, &data_size);
+>>>>>>> make uncrustify
 	ck_assert_msg(data != NULL, "Failure to fetch undefined field.\n");
 	ck_assert_msg(data_size == strlen(data2), "Corrupted undefined field size.\n");
 	ck_assert_msg(memcmp(data, (unsigned char *)data2, data_size) == 0, "Corrupted undefined field data.\n");
@@ -311,11 +321,11 @@ static void signet_dump(const signet_t *signet) {
 START_TEST(check_signet_parsing)
 {
 	char *b64_sigone, *b64_sigtwo;
-	const char *filename = "check.signet", *name = "some name", 
-		*phone1 = "phonenum1", *phone2 = "someotherphone", 
-		*name1 = "field name", *name2 = "other field name", 
-		*name3 = "last name of field", *data1 = "some field", 
-		*data2 = "check fields", *data3 = "check check check";
+	const char *filename = "check.signet", *name = "some name",
+	           *phone1 = "phonenum1", *phone2 = "someotherphone",
+	           *name1 = "field name", *name2 = "other field name",
+	           *name3 = "last name of field", *data1 = "some field",
+	           *data2 = "check fields", *data3 = "check check check";
 	int res;
 	signet_t *sigone, *sigtwo;
 	uint32_t len;
@@ -418,22 +428,22 @@ START_TEST(check_signet_validation)
 	}
 //verify that the org crypto signet is valid
 	state = dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)org_signet_sign_keys);
-	ck_assert_msg(state  == SS_CRYPTO, "Failure to correctly validate organizational signet as a cryptographic signet.\n");
+	ck_assert_msg(state == SS_CRYPTO, "Failure to correctly validate organizational signet as a cryptographic signet.\n");
 //sign org full signet signature
 	res = dime_sgnt_sign_full_sig(org_signet, orgkey);
 	ck_assert_msg(res == 0, "Failure to create organizational full signet signature.\n");
 //verify that the org full signet is valid
 	state = dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)org_signet_sign_keys);
-	ck_assert_msg(state  == SS_FULL, "Failure to correctly validate organizational signet as a full signet.\n");
+	ck_assert_msg(state == SS_FULL, "Failure to correctly validate organizational signet as a full signet.\n");
 //set organizational signet id
-	res = dime_sgnt_set_id_field(org_signet, strlen("test_org_signet"), (const unsigned char *)"test_org_signet");	
+	res = dime_sgnt_set_id_field(org_signet, strlen("test_org_signet"), (const unsigned char *)"test_org_signet");
 	ck_assert_msg(res == 0, "Failure to set organizational signet id.\n");
 //sign identified signet signature
 	res = dime_sgnt_sign_id_sig(org_signet, orgkey);
 	ck_assert_msg(res == 0, "Failure to create organizational identifiable signet signature field.\n");
 //verify that the org signet is a valid identifiable signet
 	state = dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)org_signet_sign_keys);
-	ck_assert_msg(state  == SS_ID, "Failure to correctly validate organizational signet as an identifiable signet.\n");
+	ck_assert_msg(state == SS_ID, "Failure to correctly validate organizational signet as an identifiable signet.\n");
 //create ssr signet and user keys file
 	user_signet = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_SSR, user_keys);
 	ck_assert_msg(user_signet != NULL, "Failure to create ssr with keys file.\n");
@@ -445,28 +455,28 @@ START_TEST(check_signet_validation)
 	ck_assert_msg(res == 0, "Failure to sign ssr with the user's private signing key.\n");
 //verify that the signet is a valid ssr
 	state = dime_sgnt_validate_all(user_signet, NULL, NULL, NULL);
-	ck_assert_msg(state  == SS_SSR, "Failure to correctly validate ssr.\n");
+	ck_assert_msg(state == SS_SSR, "Failure to correctly validate ssr.\n");
 //sign ssr with org signing key
 	res = dime_sgnt_sign_crypto_sig(user_signet, orgkey);
 	ck_assert_msg(res == 0, "Failure to sign ssr into a user cryptographic signet using organizational private signing key.\n");
 //verify that the signet is now a valid user core signet
 	state = dime_sgnt_validate_all(user_signet, NULL, org_signet, NULL);
-	ck_assert_msg(state  == SS_CRYPTO, "Failure to correctly validate user cryptographic signet.\n");
+	ck_assert_msg(state == SS_CRYPTO, "Failure to correctly validate user cryptographic signet.\n");
 //sign the full signature with org key
 	res = dime_sgnt_sign_full_sig(user_signet, orgkey);
 	ck_assert_msg(res == 0, "Failure to sign user signet with the full signet signature.\n");
 //verify that the user signet is now a valid core signet
 	state = dime_sgnt_validate_all(user_signet, NULL, org_signet, NULL);
-	ck_assert_msg(state  == SS_FULL, "Failure to correctly validate user full signet.\n");
+	ck_assert_msg(state == SS_FULL, "Failure to correctly validate user full signet.\n");
 //set user signet id (address)
-	res = dime_sgnt_set_id_field(user_signet, strlen("user@test.org"), (const unsigned char *)"user@test.org");	
+	res = dime_sgnt_set_id_field(user_signet, strlen("user@test.org"), (const unsigned char *)"user@test.org");
 	ck_assert_msg(res == 0, "Failure to set user signet id.\n");
-//sign the user signature with the identifiable signet signature 
+//sign the user signature with the identifiable signet signature
 	res = dime_sgnt_sign_id_sig(user_signet, orgkey);
 	ck_assert_msg(res == 0, "Failure to sign user signet with the identifiable signet signature.\n");
 //verify that the user signet is a valid full signet
 	state = dime_sgnt_validate_all(user_signet, NULL, org_signet, NULL);
-	ck_assert_msg(state  == SS_ID, "Failure to correctly validate user identifiable signet.\n");
+	ck_assert_msg(state == SS_ID, "Failure to correctly validate user identifiable signet.\n");
 //create new ssr and keys file
 	newuser_signet = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_SSR, newuser_keys);
 	ck_assert_msg(newuser_signet != NULL, "Failure to create ssr with keys file.\n");
@@ -488,7 +498,7 @@ START_TEST(check_signet_validation)
 //Confirm that without using the previous signet to verify the chain of custody, the signet validation returns broken chain of custody
 	state = dime_sgnt_validate_all(newuser_signet, NULL, org_signet, NULL);
 	ck_assert_msg(state == SS_BROKEN_COC, "Failure to invalidate signet due to no parent signet being provided to validate chain of custody signature.\n");
-//Config that by using the previous signet to verify chain of custody, the new user signet is validate as identifiable signet. 
+//Config that by using the previous signet to verify chain of custody, the new user signet is validate as identifiable signet.
 //TODO it may be necessary to test intermediate states with presence of chain of custody also
 	state = dime_sgnt_validate_all(newuser_signet, user_signet, org_signet, NULL);
 	ck_assert_msg(state == SS_ID, "Failure to validate an identifiable signet with a chain of custody signature.\n");

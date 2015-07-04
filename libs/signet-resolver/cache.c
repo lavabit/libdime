@@ -2401,4 +2401,3 @@ void _destroy_signet_cb(void *record) {
 	dime_sgnt_destroy_signet(record);
 
 }
-

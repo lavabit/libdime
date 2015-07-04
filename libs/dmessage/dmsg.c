@@ -4217,15 +4217,15 @@ static const char *dmsg_object_state_to_string(dmime_object_state_t state) {
 
 /* PUBLIC FUNCTIONS */
 
-const char *              dime_dmsg_actor_to_string(dmime_actor_t actor) {
+const char *dime_dmsg_actor_to_string(dmime_actor_t actor) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_actor_to_string, actor);
 }
 
-dmime_object_chunk_t *    dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags) {
+dmime_object_chunk_t *dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_create_object_chunk, type, data, data_size, flags);
 }
 
-dmime_object_t *          dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
+dmime_object_t *dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_decrypt_envelope, msg, actor, kek);
 }
 
@@ -4261,7 +4261,7 @@ int                       dime_dmsg_dump_object(dmime_object_t *object) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_dump_object, object);
 }
 
-dmime_message_t *         dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey) {
+dmime_message_t *dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_encrypt_message, object, signkey);
 }
 
@@ -4273,7 +4273,7 @@ dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_state_init, object);
 }
 
-const char *              dime_dmsg_object_state_to_string(dmime_object_state_t state) {
+const char *dime_dmsg_object_state_to_string(dmime_object_state_t state) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_state_to_string, state);
 }
 
@@ -4281,11 +4281,11 @@ dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *mes
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_message_state_get, message);
 }
 
-unsigned char *           dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
+unsigned char *dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_serial_from_message, msg, sections, tracing, outsize);
 }
 
-dmime_message_t *         dime_dmsg_serial_to_message(const unsigned char *in, size_t insize) {
+dmime_message_t *dime_dmsg_serial_to_message(const unsigned char *in, size_t insize) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_serial_to_message, in, insize);
 }
 
