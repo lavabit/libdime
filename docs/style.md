@@ -250,7 +250,7 @@ aligned.
 
 Local function variable definitions shall be placed at the current indentation level.
 Variable definitions and declarations at the same indentation level shall have names,
-equal signs, and initilization values column aligned. If only one local
+equal signs, and initialization values column aligned. If only one local
 variable exists then a single space may be used to separate the variable
 type, variable name, and equals sign.
 
@@ -423,7 +423,7 @@ func (size_t array_size)
 ### Function Definitions and Prototypes
 
 A function prototype or definition shall not be indented, except for the
-parameter list as decribed below. It shall be formatted such that the
+parameter list as described below. It shall be formatted such that the
 return type is placed first, then the function name on a new line, and
 then the parameters. One space shall separate the function name from the opening parenthesis 
 of the parameter list. Parameters shall go on the same line
@@ -645,7 +645,7 @@ if (!(point = EC_KEY_get0_public_key_d(key))) {
 ```
 
 All assignments in conditional statements should not be *bare*. That is, the assignment
-should be enclosed in parenthesis and an explicit comparison made to denote the intnetionality
+should be enclosed in parenthesis and an explicit comparison made to denote the intentionality
 of the assignment.
 
 #### Example
@@ -716,7 +716,7 @@ Iterated statements shall be placed at one indentation level in from
 the enclosing loop statement.
 Braces enclosing the iterated statements are required. Loop control expressions
 should be formatted the same way as conditional expressions for `if` statements.
-The control expressions should express all condtions under which the loop will exit;
+The control expressions should express all conditions under which the loop will exit;
 `break` statements should not be used.
 
 For-loops shall have a space separating the `for` and the opening
@@ -792,7 +792,9 @@ pool_get_timeout (pool_t *pool)
 
 ### Goto and Label Statements
 
-`goto`s and `label`s shall not be used, except in the resource Allocation Pattern discussed below.
+`goto`s and `label`s shall not be used, except as shown in the resource
+Allocation Pattern discussed below.  No `goto` statements will be used to
+jump to a label located earlier in the code.
 
 ### Preprocessor Directives
 
@@ -830,9 +832,9 @@ function (char *buf, int len)
 
 A function call shall be placed at the current indentation level 
 on one line with all arguments separated by a comma and a single
-space. If the argumnts extend past the line's text width, the first
+space. If the arguments extend past the line's text width, the first
 shall go on the function invocation line and all following arguments shall be placed on
-their own lines and indented one tab from the function invacation. The terminating
+their own lines and indented one tab from the function invocation. The terminating
 parenthesis and semi-colon shall be placed on the same line and
 immediately after the final argument. When parameters are spread across
 multiple lines, no space shall follow the separating comma.
@@ -891,7 +893,7 @@ If no code follows the comment then it shall not be indented.
 A multiline comment is introduced with the characters `/*` and terminated with the
 characters `*/`. Each line between the beginning and ending lines shall
 begin with the characters `* ` aligned with the matching characters in
-the comment delimeters. A multiline comment shall follow the same indentation rules 
+the comment delimiters. A multiline comment shall follow the same indentation rules 
 for a single line comment.
 
 #### Example
@@ -1017,22 +1019,27 @@ Tag and Parameter | Description | Notes
 @see | reference | Link to other element of documentation
 @param | name | Describes a parameter
 @return | description | Describes the return value
-@deprecated | description | Describes release when this functinoality was outdated
+@deprecated | description | Describes release when this functionality was outdated
 
 ## Function Organization
 
-Typically a function carries out several tasks; collecting input, allocating resources, perform work, deallocating
-resources, returning output, and handling failures.
-Well structured functios carry out their tasks in that order. First, input parameters are validated, then resources needed for the work are fetched or allocated,
-the work is carried out, temporary resources are deallocated, and the computed output is returned to the caller.
-The C language doesn't have many high level constructs for handling failure, so we must use certain idiomatic patterns for
-handling the inevitable failures that happen.
+Typically a function carries out several tasks; collecting input, allocating
+resources, perform work, deallocating resources, returning output, and
+handling failures. Well structured functions carry out their tasks in that
+order. First, input parameters are validated, then resources needed for the
+work are fetched or allocated, the work is carried out, temporary resources
+are deallocated, and the computed output is returned to the caller. The C
+language doesn't have many high level constructs for handling failure, so we
+must use certain idiomatic patterns for handling the inevitable failures that
+happen.
 
-One such pattern is to validate the value of a passed parameter. If the value is out-of-range, the function can return an error immediately.
-Several 'if' statements may be necessary to validate all input parameters, and each can terminate the function if
-the value is unsuitable.
+One such pattern is to validate the value of a passed parameter. If the value
+is out-of-range, the function can return an error immediately. Several 'if'
+statements may be necessary to validate all input parameters, and each can
+terminate the function if the value is unsuitable.
 
-It is often useful to log when parameter errors occur, especially during testing.
+It is often useful to log when parameter errors occur, especially during
+testing.
 
 #### Example Parameter Checking Pattern
 
@@ -1046,28 +1053,36 @@ if (my_second_param > MAX_VALUE) {
 }
 ```
 
-Next, resources are allocated, and the temporary resources should be deallocated in reverse order after the work has been performed.
-Should an allocation fail, it is permissible to jump forward in the code to the deallocation section and begin deallocating 
-resources that had previously been created. This is the only pattern where a `goto` statement may be used. This pattern is clear, and
-slightly cleaner than successively nesting code inside an `if` for a successful allocation. 
+Next, resources are allocated and work is performed with those resources. If any
+errors are detected after having allocating a resource, those resources should be
+deallocated in reverse order. In this case it is permissible to jump forward in
+the code to a deallocation section with labels that control the entry point of
+deallocation. This is the only pattern where a `goto` statement may be used. The
+following is an example of the pattern we've adopted using goto statements. An
+additional benefit to this pattern is that it handsomely implements a single exit
+strategy.
+
+This pattern is easy to understand and cleaner than successively nesting code
+inside an `if` for a successful deallocation. 
 
 #### Example Allocation Pattern
 
 ```C
-	/*
-	 * Allocate temporary resources
-	 */
+{
+	...
+
+	// Allocate temporary resources
 
 	if ((res1 = alloc(param)) == ERROR) {
-		goto error_res1;
+		goto error;
 	}
 
 	if ((res2 = alloc(param2)) == ERROR) {
-		goto error_res2;
+		goto cleanup_res1;
 	}
 
 	if ((res3 = alloc(param3)) == ERROR) {
-		goto error_res3;
+		goto cleanup_res2;
 	}
 
 	// perform work
@@ -1076,19 +1091,19 @@ slightly cleaner than successively nesting code inside an `if` for a successful 
 	 * Deallocate all temporary resources
 	 */
 
+	// Deallocation for successful exit
 	dealloc(res3);
-
-error_res3:
 	dealloc(res2);
-
-error_res2:
 	dealloc(res1);
+	return success_value;
 
-error_res1:
-	if (error_occurred)
-		return error_value;
-
-	return calculated_value;
+	// Deallocation for error exit
+cleanup_res2:
+	dealloc(res2);
+cleanup_res1:
+	dealloc(res1);
+error:
+	return error_value;
 }
 ```
 
@@ -1219,7 +1234,7 @@ typedef enum color
 ### Function Definitions and Prototypes
 
 A function prototype or definition shall not be indented, excluding the
-parameter list as decribed below. It shall be formatted such that the
+parameter list as described below. It shall be formatted such that the
 return type is placed first, then the function name on a new line, and
 then the parameters. One space shall separate the function name from the opening parenthesis 
 of the parameter list. Parameters shall go on the same line
@@ -1275,7 +1290,7 @@ aligned.
 
 Local function variables shall be placed one indentation level in
 from the function declaration. The variable types, names, equals signs, and
-initilization values shall be column aligned. If only one local
+initialization values shall be column aligned. If only one local
 variable exists then a single space may be used to separate the variable
 type, variable name, and equals sign.
 
@@ -1346,9 +1361,9 @@ function(void)
 
 A function call shall be placed at the current indentation level 
 one line with all arguments separated by a comma and a single
-on space. If the argumnts extend past the line's text width, the first
+on space. If the arguments extend past the line's text width, the first
 shall go on the function invocation line and all following arguments shall be placed on
-their own lines and indented one tab from the function invacation. The terminating
+their own lines and indented one tab from the function invocation. The terminating
 parenthesis and semi-colon shall be placed on the same line and
 immediately after the final argument. When parameters are spread across
 multiple lines, no space shall follow the separating comma.
@@ -1389,7 +1404,7 @@ Top 10 Secure Coding Practices
 the vast majority of software vulnerabilities. Be suspicious of most external data sources, including command
 line arguments, network interfaces, environmental variables, and user controlled files.
 
-1. **Heed compiler warningx**. Compile code using the highest warning level available for your compiler and
+1. **Heed compiler warnings**. Compile code using the highest warning level available for your compiler and
 eliminate warnings by modifying the cod. Use static and dynamic analysis tools to detect 
 and eliminate additional security flaws.
 
