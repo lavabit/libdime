@@ -3916,7 +3916,7 @@ static unsigned char *dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *
 
 	dmime_chunk_key_t *key;
 	size_t size;
-	unsigned char *result;
+	unsigned char *result, pad_byte, pad_len;
 	void *payload;
 
 	if(!chunk || !outsize) {
@@ -3964,6 +3964,34 @@ static unsigned char *dmsg_chunk_get_data(dmime_message_chunk_t *chunk, size_t *
 	default:
 		RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk type");
 		break;
+
+	}
+
+	if(key->payload == PAYLOAD_TYPE_STANDARD && chunk->state != MESSAGE_CHUNK_STATE_ENCRYPTED) {
+		pad_byte = ((dmime_standard_payload_t *)payload)->pad_len;
+		pad_len = _int_no_get_3b(&(chunk->payload_size)) - (size + 69);
+
+		if( ((dmime_standard_payload_t *)payload)->flags & ALTERNATE_PADDING_ALGORITHM_ENABLED ) {
+
+			if(pad_byte != (pad_len - (pad_len % 16))) {
+				RET_ERROR_PTR(ERR_UNSPEC, "invalid padding length using alternative padding algorithm");
+			}
+
+		} else {
+
+			if(pad_byte != pad_len) {
+				RET_ERROR_PTR(ERR_UNSPEC, "invalid padding length using primary padding algorithm");
+			}
+
+		}
+
+		for(unsigned int i = 0; i < pad_len; ++i) {
+
+			if( ( ((dmime_standard_payload_t *)payload)->data[size + i] != pad_byte) ) {
+				RET_ERROR_PTR(ERR_UNSPEC, "payload padded with invalid byte values");
+			}
+
+		}
 
 	}
 
