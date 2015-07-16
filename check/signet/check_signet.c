@@ -490,6 +490,48 @@ START_TEST(check_signet_validation)
 }
 END_TEST
 
+START_TEST(check_signet_sok)
+{
+
+	ED25519_KEY *sok, *sok_from_signet, **soks = NULL;
+	int res;
+	signet_t *signet;
+
+	_crypto_init();
+
+	signet = dime_sgnt_create_signet(SIGNET_TYPE_USER);
+	ck_assert_msg(signet != NULL, "Failure to create user signet.\n");
+
+	sok = generate_ed25519_keypair();
+	ck_assert_msg(sok != NULL, "Failure to generate ed25519 key pair.\n");
+
+	res = dime_sgnt_create_sok(signet, sok, (unsigned char) SIGNKEY_DEFAULT_FORMAT, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG | SIGNET_SOK_TLS | SIGNET_SOK_SOFTWARE) );
+	ck_assert_msg(res == -1, "Error cause by inserting a SOK inside a user signet.\n");
+
+	dime_sgnt_destroy_signet(signet);
+
+	signet = dime_sgnt_create_signet(SIGNET_TYPE_ORG);
+	ck_assert_msg(signet != NULL, "Failure to create organizational signet.\n");
+
+	res = dime_sgnt_create_sok(signet, sok, 214, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG) );
+	ck_assert_msg(res == -1, "Error caused by inserting a SOK with an invalid format.\n");
+
+	res = dime_sgnt_create_sok(signet, sok (unsigned char) SIGNKEY_DEFAULT_FORMAT, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG | SIGNET_SOK_TLS | SIGNET_SOK_SOFTWARE) );
+	ck_assert_msg(res == 0, "Failure to add a SOK field to signet.\n");
+
+	sok_from_signet = dime_sgnt_fetch_sok_num(signet, 1);
+	ck_assert_msg(sok_from_signet != NULL, "Failure to fetch SOK from signet.\n");
+
+	res = memcmp(sok->public_key, sok_from_signet->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "SOK was corrupted during inserting and fetching into and from the signet.\n");
+
+	free_ed25519_key(sok_from_signet);
+	dime_sgnt_destroy_signet(signet);
+
+	fprintf(stderr, "Signet SOK check complete.\n");
+}
+END_TEST
+
 Suite *suite_check_signet(void) {
 
 	Suite *s = suite_create("signet");
@@ -498,5 +540,6 @@ Suite *suite_check_signet(void) {
 	suite_add_test(s, "check signet creation and field modification", check_signet_modification);
 	suite_add_test(s, "check signet parsing, serialization, deserialization", check_signet_parsing);
 	suite_add_test(s, "check signet signing and validation", check_signet_validation);
+	suite_add_test(s, "check signet sok creation", check_signet_sok);
 	return s;
 }
