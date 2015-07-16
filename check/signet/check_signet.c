@@ -748,6 +748,39 @@ START_TEST(check_signet_fingerprint)
 }
 END_TEST
 
+START_TEST(check_signet_signature_verification)
+{
+	char *fp;
+	const char *org_keys = "check_org.keys";
+	unsigned char signature[ED25519_SIG_SIZE];
+	ED25519_KEY *orgkey;
+	int res;
+	signet_t *org_signet;
+
+	_crypto_init();
+
+	org_signet = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_ORG, org_keys);
+	ck_assert_msg(org_signet != NULL, "Failure to create signet with keys file.\n");
+
+	orgkey = dime_keys_fetch_sign_key(org_keys);
+	ck_assert_msg(orgkey != NULL, "Failure to fetch private signing key from keys file.\n");
+
+	res = dime_sgnt_sign_crypto_sig(org_signet, orgkey);
+	ck_assert_msg(res == 0, "Failure to create organizational cryptographic signet signature.\n");
+
+	fp = dime_sgnt_fingerprint_crypto(org_signet);
+	ck_assert_msg(fp != NULL, "Failed to fingerprint organiational signet.\n");
+
+	res = ed25519_sign_data((const unsigned char *)fp, strlen(fp), orgkey, signature);
+	ck_assert_msg(res == 0, "Failed to provided data with ed25519 key.\n");
+
+	res = dime_sgnt_verify_message_sig(org_signet, signature, (const unsigned char *)fp, strlen(fp));
+	ck_assert_msg(res == 1, "Failed to verify signature using signet.\n");
+
+	fprintf(stderr, "Signet signature verification check complete.\n");
+}
+END_TEST
+
 Suite *suite_check_signet(void) {
 
 	Suite *s = suite_create("signet");
@@ -759,5 +792,6 @@ Suite *suite_check_signet(void) {
 	suite_add_test(s, "check signet sok creation", check_signet_sok);
 	suite_add_test(s, "check signet selective signing key fetching", check_signet_multi_signkey);
 	suite_add_test(s, "check signet fingerprinting", check_signet_fingerprint);
+	suite_add_test(s, "check signet signature verification", check_signet_signature_verification);
 	return s;
 }
