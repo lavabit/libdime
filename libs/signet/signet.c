@@ -70,6 +70,7 @@ static int                     sgnt_sign_field(signet_t *signet, unsigned char s
 static int                     sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key);
 static int                     sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key);
 static int                     sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key);
+static signet_t *              sgnt_split(const signet_t *signet, unsigned char fid);
 static signet_t *              sgnt_split_crypto(const signet_t *signet);
 static signet_t *              sgnt_split_full(const signet_t *signet);
 static const char *            sgnt_state_to_str(signet_state_t state);
@@ -2899,17 +2900,16 @@ static int sgnt_type_set(signet_t *signet, signet_type_t type) {
 
 /* signet splits */
 
-// TODO: some code reuse possibilities with _signet_core_split() and _signet_user_split()
-
 /**
- * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
- * @param	signet	Pointer to the target signet.
- * @return	Pointer to a stripped signet on success, NULL on failure.
+ * @brief	Strips off all fields from the signet past the specified one and updates the header.
+ * @param	signet	Pointer to target signet.
+ * @param	fid	The last field id to not be stripped.
+ * @return	Pointer to a fresh allocated signet.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split_full(const signet_t *signet) {
+static signet_t *sgnt_split(const signet_t *signet, unsigned char fid) {
 
-	unsigned char fid, *data = NULL, *split;
+	unsigned char *data = NULL, *split;
 	size_t data_size, split_size;
 	dime_number_t number;
 	signet_t *split_signet;
@@ -2921,11 +2921,9 @@ static signet_t *sgnt_split_full(const signet_t *signet) {
 	switch(sgnt_type_get(signet)) {
 
 	case SIGNET_TYPE_ORG:
-		fid = SIGNET_ORG_FULL_SIG;
 		number = DIME_ORG_SIGNET;
 		break;
 	case SIGNET_TYPE_USER:
-		fid = SIGNET_USER_FULL_SIG;
 		number = DIME_USER_SIGNET;
 		break;
 	default:
@@ -2963,12 +2961,49 @@ static signet_t *sgnt_split_full(const signet_t *signet) {
 		free(data);
 	}
 
-	if(!(split_signet = sgnt_serial_to_signet(split, split_size))) {
-		free(split);
+	split_signet = sgnt_serial_to_signet(split, split_size);
+	free(split);
+
+	if(!split_signet) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize split signet");
 	}
 
-	free(split);
+	return split_signet;
+}
+
+
+/**
+ * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
+ * @param	signet	Pointer to the target signet.
+ * @return	Pointer to a stripped signet on success, NULL on failure.
+ * @free_using{sgnt_destroy_signet}
+*/
+static signet_t *sgnt_split_full(const signet_t *signet) {
+
+	unsigned char fid;
+	signet_t *split_signet;
+
+	if(!signet) {
+		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
+	}
+
+	switch(sgnt_type_get(signet)) {
+
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_FULL_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_FULL_SIG;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
+		break;
+
+	}
+
+	if(!(split_signet = sgnt_split(signet, fid))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize split signet");
+	}
 
 	return split_signet;
 }
@@ -2982,54 +3017,30 @@ static signet_t *sgnt_split_full(const signet_t *signet) {
 */
 static signet_t *sgnt_split_crypto(const signet_t *signet) {
 
-	unsigned char *data = NULL, *split;
-	size_t data_size, split_size;
-	dime_number_t number = DIME_USER_SIGNET;
+	unsigned char fid;
 	signet_t *split_signet;
 
 	if(!signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(sgnt_type_get(signet) != SIGNET_TYPE_USER) {
-		RET_ERROR_PTR(ERR_UNSPEC, "invalid signet type");
+	switch(sgnt_type_get(signet)) {
+
+	case SIGNET_TYPE_ORG:
+		fid = SIGNET_ORG_CRYPTO_SIG;
+		break;
+	case SIGNET_TYPE_USER:
+		fid = SIGNET_USER_CRYPTO_SIG;
+		break;
+	default:
+		RET_ERROR_PTR(ERR_UNSPEC, "unsupported signet type");
+		break;
+
 	}
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, SIGNET_USER_CRYPTO_SIG, &data_size))) {
-
-		if(get_last_error()) {
-			RET_ERROR_PTR(ERR_UNSPEC, "could not serialize specified signet fields");
-		}
-
-	}
-
-	split_size = data_size + SIGNET_HEADER_SIZE;
-
-	if(!(split = malloc(split_size))) {
-		PUSH_ERROR_SYSCALL("malloc");
-
-		if (data) {
-			free(data);
-		}
-
-		RET_ERROR_PTR(ERR_NOMEM, NULL);
-	}
-
-	memset(split, 0, split_size);
-	_int_no_put_2b(split, (uint16_t)number);
-	_int_no_put_3b(split + 2, (uint32_t)data_size);
-
-	if(data) {
-		memcpy(split + SIGNET_HEADER_SIZE, data, data_size);
-		free(data);
-	}
-
-	if(!(split_signet = sgnt_serial_to_signet(split, split_size))) {
-		free(split);
+	if(!(split_signet = sgnt_split(signet, fid))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize split signet");
 	}
-
-	free(split);
 
 	return split_signet;
 }

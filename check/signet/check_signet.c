@@ -249,7 +249,7 @@ START_TEST(check_signet_modification)
 
 	free(data);
 
-	res = dime_sgnt_create_defined_field(signet, SIGNET_ORG_PHONE, strlen(phone1), (const unsigned char *)phone1);
+	res = dime_sgnt_set_defined_field(signet, SIGNET_ORG_PHONE, strlen(phone1), (const unsigned char *)phone1);
 	ck_assert_msg(res == 0, "Failure to create phone number field.\n");
 
 	res = dime_sgnt_fid_exists(signet, SIGNET_ORG_PHONE);
@@ -384,7 +384,7 @@ START_TEST(check_signet_validation)
 	ED25519_KEY *orgkey, *userkey, **keys_obj;
 	int res;
 	signet_state_t state;
-	signet_t *org_signet, *user_signet, *newuser_signet;
+	signet_t *org_signet, *user_signet, *newuser_signet, *split, *split2;
 	unsigned char **org_signet_sign_keys;
 	size_t keysnum = 1;
 
@@ -493,11 +493,29 @@ START_TEST(check_signet_validation)
 	state = dime_sgnt_validate_all(newuser_signet, user_signet, org_signet, NULL);
 	ck_assert_msg(state == SS_ID, "Failure to validate an identifiable signet with a chain of custody signature.\n");
 
+//Now, lets test splitting.
+	split = dime_sgnt_split_full(newuser_signet);
+	ck_assert_msg(split != NULL, "Failed to split identifiable user signet into a full user signet.\n");
+
+	dime_sgnt_destroy_signet(newuser_signet);
+
+	state = dime_sgnt_validate_all(split, user_signet, org_signet, NULL);
+	ck_assert_msg(state == SS_FULL, "Failure to validate full user signet with chain of custody.\n");
+
+	split2 = dime_sgnt_split_crypto(split);
+	ck_assert_msg(split2 != NULL, "Failed to split full user signet into a cryptographic user signet.\n");
+
+	dime_sgnt_destroy_signet(split);
+
+	state = dime_sgnt_validate_all(split2, user_signet, org_signet, NULL);
+	ck_assert_msg(state = SS_CRYPTO, "Failure to validate cryptographic user signet with chain of custody.\n");
+
+	dime_sgnt_destroy_signet(split2);
+
 	_ptr_chain_free(org_signet_sign_keys);
 	_free_ed25519_key_chain(keys_obj);
 	_free_ed25519_key(orgkey);
 	_free_ed25519_key(userkey);
-	dime_sgnt_destroy_signet(newuser_signet);
 	dime_sgnt_destroy_signet(user_signet);
 	dime_sgnt_destroy_signet(org_signet);
 
@@ -657,6 +675,79 @@ START_TEST(check_signet_multi_signkey)
 }
 END_TEST
 
+START_TEST(check_signet_fingerprint)
+{
+	char *fp1, *fp2;
+	int res;
+	signet_t *signet;
+
+	_crypto_init();
+
+	signet = dime_sgnt_create_signet_w_keys(SIGNET_TYPE_USER, "fp_test.keys");
+	ck_assert_msg(signet != NULL, "Failed to create signet with keys.\n");
+
+	fp1 = dime_sgnt_fingerprint_ssr(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	fp2 = dime_sgnt_fingerprint_ssr(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	ck_assert_msg(strlen(fp1) == strlen(fp2), "Inconsistent fingerprinting.\n");
+
+	res = memcmp(fp1, fp2, strlen(fp1));
+	ck_assert_msg(res == 0, "Inconsistent fingerprinting.\n");
+
+	free(fp2);
+
+	fp2 = dime_sgnt_fingerprint_crypto(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	ck_assert_msg(strlen(fp1) == strlen(fp2), "Inconsistent fingerprinting.\n");
+
+	res = memcmp(fp1, fp2, strlen(fp1));
+	ck_assert_msg(res == 0, "Inconsistent fingerprinting.\n");
+	
+	free(fp2);
+
+	fp2 = dime_sgnt_fingerprint_full(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	ck_assert_msg(strlen(fp1) == strlen(fp2), "Inconsistent fingerprinting.\n");
+
+	res = memcmp(fp1, fp2, strlen(fp1));
+	ck_assert_msg(res == 0, "Inconsistent fingerprinting.\n");
+	
+	free(fp2);
+
+	fp2 = dime_sgnt_fingerprint_id(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	ck_assert_msg(strlen(fp1) == strlen(fp2), "Inconsistent fingerprinting.\n");
+
+	res = memcmp(fp1, fp2, strlen(fp1));
+	ck_assert_msg(res == 0, "Inconsistent fingerprinting.\n");
+	
+	free(fp2);
+
+	res = dime_sgnt_set_id_field(signet, 7, (const unsigned char *)"some id");
+	ck_assert_msg(res == 0, "Failed to set signet id.\n");
+
+	fp2 = dime_sgnt_fingerprint_id(signet);
+	ck_assert_msg(signet != NULL, "Failed to fingerprint signet.\n");
+
+	ck_assert_msg(strlen(fp1) == strlen(fp2), "Inconsistent fingerprinting.\n");
+
+	res = memcmp(fp1, fp2, strlen(fp1));
+	ck_assert_msg(res != 0, "Either a sha512 hash collision occurred or fingerprinting is broken.\n");
+	
+	free(fp2);
+	free(fp1);
+	dime_sgnt_destroy_signet(signet);
+	
+	fprintf(stderr, "Signet fingerprinting check complete.\n");
+}
+END_TEST
+
 Suite *suite_check_signet(void) {
 
 	Suite *s = suite_create("signet");
@@ -667,5 +758,6 @@ Suite *suite_check_signet(void) {
 	suite_add_test(s, "check signet signing and validation", check_signet_validation);
 	suite_add_test(s, "check signet sok creation", check_signet_sok);
 	suite_add_test(s, "check signet selective signing key fetching", check_signet_multi_signkey);
+	suite_add_test(s, "check signet fingerprinting", check_signet_fingerprint);
 	return s;
 }
