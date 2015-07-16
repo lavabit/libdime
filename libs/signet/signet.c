@@ -1855,7 +1855,7 @@ static ED25519_KEY *sgnt_serial_to_signkey(const unsigned char *serial_key, size
 		break;
 	default:
 		key = NULL;
-		PUSH_ERROR(ERR_UNSPEC, "unsupported format specifier for signing key");
+		PUSH_ERROR_FMT(ERR_UNSPEC, "unsupported format specifier for signing key: %u", serial_key[0]);
 		break;
 
 	}
@@ -2390,7 +2390,7 @@ static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t
 static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm) {
 
 	int res;
-	unsigned char *serial_key;
+	unsigned char *serial_key, *serial_field;
 	size_t serial_size;
 
 	if(!signet || !key) {
@@ -2405,16 +2405,18 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize ed25519 public key to specified signet format");
 	}
 
-	if(!(serial_key = realloc(serial_key, serial_size + 1))) {
-		PUSH_ERROR_SYSCALL("realloc");
+	if(!(serial_field = malloc(serial_size + 1))) {
+		free(serial_key);
+		PUSH_ERROR_SYSCALL("malloc");
 		RET_ERROR_INT(ERR_NOMEM, "could not reallocate memory for signet serial SOK representation");
 	}
 
-	memmove(serial_key, serial_key+1, serial_size);
-	serial_key[0] = perm;
-	++serial_size;
-	res = sgnt_create_defined_field(signet, SIGNET_ORG_SOK, serial_size, serial_key);
+	memcpy(serial_field + 1, serial_key, serial_size);
 	free(serial_key);
+	serial_field[0] = perm;
+	++serial_size;
+	res = sgnt_create_defined_field(signet, SIGNET_ORG_SOK, serial_size, serial_field);
+	free(serial_field);
 
 	if(res) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not add SOK to signet");

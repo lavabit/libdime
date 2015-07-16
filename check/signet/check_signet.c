@@ -493,7 +493,7 @@ END_TEST
 START_TEST(check_signet_sok)
 {
 
-	ED25519_KEY *sok, *sok_from_signet, **soks = NULL;
+	ED25519_KEY *sok, *sok_from_signet;
 	int res;
 	signet_t *signet;
 
@@ -516,7 +516,7 @@ START_TEST(check_signet_sok)
 	res = dime_sgnt_create_sok(signet, sok, 214, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG) );
 	ck_assert_msg(res == -1, "Error caused by inserting a SOK with an invalid format.\n");
 
-	res = dime_sgnt_create_sok(signet, sok (unsigned char) SIGNKEY_DEFAULT_FORMAT, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG | SIGNET_SOK_TLS | SIGNET_SOK_SOFTWARE) );
+	res = dime_sgnt_create_sok(signet, sok, (unsigned char) SIGNKEY_DEFAULT_FORMAT, (SIGNET_SOK_SIGNET | SIGNET_SOK_MSG | SIGNET_SOK_TLS | SIGNET_SOK_SOFTWARE) );
 	ck_assert_msg(res == 0, "Failure to add a SOK field to signet.\n");
 
 	sok_from_signet = dime_sgnt_fetch_sok_num(signet, 1);
@@ -531,7 +531,16 @@ START_TEST(check_signet_sok)
 	fprintf(stderr, "Signet SOK check complete.\n");
 }
 END_TEST
+/*
+START_TEST(check_signet_multi_signkey)
+{
 
+	signet_t *signet;
+	ED25519_
+
+}
+END_TEST
+*/
 Suite *suite_check_signet(void) {
 
 	Suite *s = suite_create("signet");
