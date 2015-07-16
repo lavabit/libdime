@@ -196,7 +196,7 @@ START_TEST(check_signet_modification)
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529",
 			*name1 = "check undef", *data1 = "undef data",
 			*name2 = "check name", *data2 = "check check";
-	int res;
+	int res, count;
 	signet_t *signet;
 	size_t data_size;
 	unsigned char *data;
@@ -210,6 +210,9 @@ START_TEST(check_signet_modification)
 	res = dime_sgnt_fid_exists(signet, SIGNET_ORG_UNDEFINED);
 	ck_assert_msg(res == 1, "Failure to confirm existence of undefined field.\n");
 
+	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_UNDEFINED);
+	ck_assert_msg(count == 1, "Failure to count number of undefined fields.\n");
+
 	data = dime_sgnt_fetch_undefined_field(signet, strlen(name1), (const unsigned char *)name1, &data_size);
 	ck_assert_msg(data != NULL, "Failure to fetch undefined field.\n");
 	ck_assert_msg(data_size == strlen(data1), "Corrupted undefined field size.\n");
@@ -220,6 +223,9 @@ START_TEST(check_signet_modification)
 	res = dime_sgnt_create_undefined_field(signet, strlen(name2), (const unsigned char *)name2, strlen(data2), (const unsigned char *)data2);
 	ck_assert_msg(res == 0, "Failure to create undefined field.\n");
 
+	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_UNDEFINED);
+	ck_assert_msg(count == 2, "Failure to count number of undefined fields.\n");
+
 	data = dime_sgnt_fetch_undefined_field(signet, strlen(name2), (const unsigned char*)name2, &data_size);
 	ck_assert_msg(data != NULL, "Failure to fetch undefined field.\n");
 	ck_assert_msg(data_size == strlen(data2), "Corrupted undefined field size.\n");
@@ -229,6 +235,9 @@ START_TEST(check_signet_modification)
 
 	res = dime_sgnt_remove_undefined_field(signet, strlen(name1), (const unsigned char *)name1);
 	ck_assert_msg(res == 0, "Failure to remove undefined field.\n");
+
+	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_UNDEFINED);
+	ck_assert_msg(count == 1, "Failure to count number of undefined fields.\n");
 
 	data = dime_sgnt_fetch_undefined_field(signet, strlen(name1), (const unsigned char *)name1, &data_size);
 	ck_assert_msg(data == NULL, "Unintended existence of undefined field after removal.\n");
@@ -246,6 +255,9 @@ START_TEST(check_signet_modification)
 	res = dime_sgnt_fid_exists(signet, SIGNET_ORG_PHONE);
 	ck_assert_msg(res == 1, "Failure to confirm existence of phone number field.\n");
 
+	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_PHONE);
+	ck_assert_msg(count == 1, "Failure to count number of org phone fields.\n");
+
 	data = dime_sgnt_fetch_fid_num(signet, SIGNET_ORG_PHONE, 1, &data_size);
 	ck_assert_msg(data != NULL, "Failure to fetch phone number field");
 	ck_assert_msg(data_size == strlen(phone1), "Corrupted phone number field size.\n");
@@ -255,6 +267,9 @@ START_TEST(check_signet_modification)
 
 	res = dime_sgnt_create_defined_field(signet, SIGNET_ORG_PHONE, strlen(phone2), (const unsigned char *)phone2);
 	ck_assert_msg(res == 0, "Failure to create phone number field.\n");
+
+	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_PHONE);
+	ck_assert_msg(count == 2, "Failure to count number of org phone fields.\n");
 
 	data = dime_sgnt_fetch_fid_num(signet, SIGNET_ORG_PHONE, 2, &data_size);
 	ck_assert_msg(data != NULL, "Failure to fetch phone number field.\n");
