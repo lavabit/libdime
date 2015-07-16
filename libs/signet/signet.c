@@ -13,7 +13,7 @@ static signet_field_t *        sgnt_create_field_list(const signet_t *signet, un
 static signet_field_t *        sgnt_create_field_node(const signet_t *signet, uint32_t offset, signet_field_key_t *key);
 static signet_t *              sgnt_create_signet(signet_type_t type);
 static signet_t *              sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile);
-static int                     sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm);
+static int                     sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
 static int                     sgnt_create_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data);
 static void                    sgnt_destroy_field_list(signet_field_t *field);
 static signet_field_t *        sgnt_destroy_field_node(signet_field_t *field);
@@ -25,7 +25,7 @@ static EC_KEY *                sgnt_fetch_enckey(const signet_t *signet);
 static unsigned char *         sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size);
 static ED25519_KEY **          sgnt_fetch_msg_signkeys(const signet_t *signet);
 static ED25519_KEY *           sgnt_fetch_signkey(const signet_t *signet);
-static ED25519_KEY **          sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned char perm);
+static ED25519_KEY **          sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_permissions_t perm);
 static ED25519_KEY **          sgnt_fetch_signet_signkeys(const signet_t *signet);
 static ED25519_KEY **          sgnt_fetch_software_signkeys(const signet_t *signet);
 static ED25519_KEY *           sgnt_fetch_sok_num(const signet_t *signet, unsigned int num);
@@ -2006,12 +2006,13 @@ static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
  * @NOTE	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned char perm) {
+static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_permissions_t perm) {
 
 	int res;
 	ED25519_KEY **keys;
 	signet_field_t *field, *list = NULL;
 	size_t buflen, list_count = 1, key_count = 1;
+	unsigned char bin_perm;
 	unsigned int num_keys = 1;
 
 	if(!signet) {
@@ -2019,12 +2020,14 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 	}
 
 	if(sgnt_type_get(signet) != SIGNET_TYPE_ORG) {
-		RET_ERROR_PTR(ERR_UNSPEC, "target must an organizational signet");
+		RET_ERROR_PTR(ERR_UNSPEC, "target must be an organizational signet");
 	}
 
 	if(sgnt_validate_structure(signet) < SS_CRYPTO) {
 		RET_ERROR_PTR(ERR_UNSPEC, "signet structure is not valid for signing key retrieval");
 	}
+
+	bin_perm = (unsigned char) perm;
 
 	if((res = sgnt_fid_exists(signet, SIGNET_ORG_SOK))) {
 
@@ -2037,8 +2040,8 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 		}
 
 		while(field) {
-
-			if(!(signet->data[field->data_offset] ^ perm)) {
+			// select the keys that have AT LEAST all the specified permissions
+			if(!((signet->data[field->data_offset] ^ bin_perm) & bin_perm)) {
 				++num_keys;
 			}
 
@@ -2065,8 +2068,8 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, unsigned
 	}
 
 	while(field) {
-
-		if(!(signet->data[field->data_offset] ^ perm)) {
+		// select the keys that have AT LEAST all the specified permissions
+		if(!((signet->data[field->data_offset] ^ bin_perm) & bin_perm)) {
 
 			if(!(keys[key_count] = sgnt_fetch_sok_num(signet, list_count))) {
 				_free_ed25519_key_chain(keys);
@@ -2206,7 +2209,7 @@ static ED25519_KEY *sgnt_fetch_sok_num(const signet_t *signet, unsigned int num)
 		RET_ERROR_PTR(ERR_UNSPEC, "there are less SOKs than the specified number");
 	}
 
-	if(!(serial_key = sgnt_fetch_fid_num(signet, SIGNET_ORG_SOK, 1, &key_size))) {
+	if(!(serial_key = sgnt_fetch_fid_num(signet, SIGNET_ORG_SOK, num, &key_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve signing key");
 	}
 
@@ -2387,7 +2390,7 @@ static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t
  * @param	perm		Permissions for the usage of the SOK.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm) {
+static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
 
 	int res;
 	unsigned char *serial_key, *serial_field;
@@ -2413,7 +2416,7 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
 
 	memcpy(serial_field + 1, serial_key, serial_size);
 	free(serial_key);
-	serial_field[0] = perm;
+	serial_field[0] = (unsigned char) perm;
 	++serial_size;
 	res = sgnt_create_defined_field(signet, SIGNET_ORG_SOK, serial_size, serial_field);
 	free(serial_field);
@@ -3734,7 +3737,7 @@ signet_t *dime_sgnt_create_signet_w_keys(signet_type_t type, const char *keysfil
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_signet_w_keys, type, keysfile);
 }
 
-int dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm) {
+int dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_sok, signet, key, format, perm);
 }
 

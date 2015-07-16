@@ -13,7 +13,7 @@
  * @param	data		Field data.
  * @return	0 on success, -1 on failure.
 */
-int 			        dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
+int                     dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 
 /**
  * @brief	Returns	a new signet_t structure.
@@ -40,7 +40,7 @@ signet_t *              dime_sgnt_create_signet_w_keys(signet_type_t type, const
  * @param	perm		Permissions for the usage of the SOK.
  * @return	0 on success, -1 on failure.
 */
-int                     dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, unsigned char perm);
+int                     dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
 
 /**
  * @brief	Adds an undefined field to signet with specified name and data.
@@ -303,7 +303,7 @@ int                     dime_sgnt_set_id_field(signet_t *signet, size_t id_size,
  * @param	format	Format specifier byte, dictating the format.
  * @return	0 on success, -1 on failure.
 */
-int			            dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
+int                     dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
 
 /**
  * @brief	Checks for the presence of all required fields that come before the chain of custody signature field and adds the SSR signature.

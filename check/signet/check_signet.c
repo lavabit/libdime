@@ -531,16 +531,117 @@ START_TEST(check_signet_sok)
 	fprintf(stderr, "Signet SOK check complete.\n");
 }
 END_TEST
-/*
+
 START_TEST(check_signet_multi_signkey)
 {
 
+	EC_KEY *eckey;
+	ED25519_KEY *keys[5], **fetched;
+	int res;
 	signet_t *signet;
-	ED25519_
 
+	_crypto_init();
+
+	for(int i = 0; i < 5; ++i) {
+		keys[i] = generate_ed25519_keypair();
+	}
+
+	eckey = generate_ec_keypair(0);
+
+	signet = dime_sgnt_create_signet(SIGNET_TYPE_ORG);
+	ck_assert_msg(signet != NULL, "Failed to create organizational signet.\n");
+
+	res = dime_sgnt_set_signkey(signet, keys[0], SIGNKEY_DEFAULT_FORMAT);
+	ck_assert_msg(res == 0, "Failed to set signet POK.\n");
+
+	res += dime_sgnt_create_sok(signet, keys[1], SIGNKEY_DEFAULT_FORMAT, SIGNET_SOK_SIGNET);
+	ck_assert_msg(res == 0, "Failed to create SOK 1.\n");
+
+	res += dime_sgnt_create_sok(signet, keys[2], SIGNKEY_DEFAULT_FORMAT, SIGNET_SOK_MSG);
+	ck_assert_msg(res == 0, "Failed to create SOK 2.\n");
+
+	res += dime_sgnt_create_sok(signet, keys[3], SIGNKEY_DEFAULT_FORMAT, SIGNET_SOK_TLS);
+	ck_assert_msg(res == 0, "Failed to create SOK 3.\n");
+
+	res += dime_sgnt_create_sok(signet, keys[4], SIGNKEY_DEFAULT_FORMAT, SIGNET_SOK_SOFTWARE);
+	ck_assert_msg(res == 0, "Failed to create SOK 4.\n");
+
+	res = dime_sgnt_set_enckey(signet, eckey, 0);
+	ck_assert_msg(res == 0, "Failed to set signet encryption key.\n");
+
+	free_ec_key(eckey);
+
+	res = dime_sgnt_sign_crypto_sig(signet, keys[0]);
+	ck_assert_msg(res == 0, "Failed to sign organizational signet with its private POK.\n");
+
+	fetched = dime_sgnt_fetch_signet_signkeys(signet);
+	ck_assert_msg( (fetched != NULL), "Failed to fetch signing keys.\n");
+	ck_assert_msg( (fetched[0] != NULL), "Failed to fetch signing keys.\n");
+	ck_assert_msg( (fetched[1] != NULL), "Failed to fetch signing keys.\n");
+	ck_assert_msg( (fetched[2] == NULL), "Failed to fetch signing keys.\n");
+
+	res = memcmp(fetched[0]->public_key, keys[0]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "POK was corrupted.\n");
+	
+	res = memcmp(fetched[1]->public_key, keys[1]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "SOK 1 was corrupted.\n");
+
+	free_ed25519_key_chain(fetched);
+	fetched = NULL;
+	fetched = dime_sgnt_fetch_msg_signkeys(signet);
+	ck_assert_msg( (fetched != NULL) && 
+                       (fetched[0] != NULL) && 
+                       (fetched[1] != NULL) && 
+                       (fetched[2] == NULL), "Failed to fetch signing keys.\n");
+	res = memcmp(fetched[0]->public_key, keys[0]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "POK was corrupted.\n");
+
+	res = memcmp(fetched[1]->public_key, keys[2]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "SOK 2 was corrupted.\n");
+
+	free_ed25519_key_chain(fetched);
+	fetched = NULL;
+
+	fetched = dime_sgnt_fetch_tls_signkeys(signet);
+	ck_assert_msg( (fetched != NULL) && 
+                       (fetched[0] != NULL) && 
+                       (fetched[1] != NULL) && 
+                       (fetched[2] == NULL), "Failed to fetch signing keys.\n");
+
+	res = memcmp(fetched[0]->public_key, keys[0]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "POK was corrupted.\n");
+	
+	res = memcmp(fetched[1]->public_key, keys[3]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "SOK 3 was corrupted.\n");
+	
+	free_ed25519_key_chain(fetched);
+	fetched = NULL;
+
+	fetched = dime_sgnt_fetch_software_signkeys(signet);
+	ck_assert_msg( (fetched != NULL) && 
+                       (fetched[0] != NULL) && 
+                       (fetched[1] != NULL) && 
+                       (fetched[2] == NULL), "Failed to fetch signing keys.\n");
+
+	res = memcmp(fetched[0]->public_key, keys[0]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "POK was corrupted.\n");
+	
+	res = memcmp(fetched[1]->public_key, keys[4]->public_key, ED25519_KEY_SIZE);
+	ck_assert_msg(res == 0, "SOK 4 was corrupted.\n");
+	
+	free_ed25519_key_chain(fetched);
+	fetched = NULL;
+
+	for(int i = 0; i < 5; ++i) {
+		free_ed25519_key(keys[i]);
+	}
+
+	dime_sgnt_destroy_signet(signet);
+
+	fprintf(stderr, "Signet selective signing key multi-fetching check complete.\n");
 }
 END_TEST
-*/
+
 Suite *suite_check_signet(void) {
 
 	Suite *s = suite_create("signet");
@@ -550,5 +651,6 @@ Suite *suite_check_signet(void) {
 	suite_add_test(s, "check signet parsing, serialization, deserialization", check_signet_parsing);
 	suite_add_test(s, "check signet signing and validation", check_signet_validation);
 	suite_add_test(s, "check signet sok creation", check_signet_sok);
+	suite_add_test(s, "check signet selective signing key fetching", check_signet_multi_signkey);
 	return s;
 }
