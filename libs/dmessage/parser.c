@@ -1,6 +1,8 @@
 #include <dmessage/parser.h>
 
 static void                        prsr_envelope_destroy(dmime_envelope_object_t *obj);
+static stringer_t *                prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type);
+static int                         prsr_envelope_labels_get(dmime_chunk_type_t type, const char **label1, const char **label2, const char **label3, const char **label4);
 static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type);
 static dmime_common_headers_t *    prsr_headers_create(void);
 static void                        prsr_headers_destroy(dmime_common_headers_t *obj);
@@ -29,6 +31,123 @@ static dmime_common_headers_t *prsr_headers_create(void) {
 	return result;
 }
 
+
+/**
+ * @brief	Formats the passed in envelope data into a string to be passed to an envelope chunk.
+ * @param	user_id		Stringer containing the user email address.
+ * @param	org_id		Stringer containing the organizational TLD.
+ * @param	user_signet	Cstring containing cryptographic user signet.
+ * @param	org_fp		Cstring containing organizational signet fingerprint.
+ * @param	type		The type of envelope chunk.
+ * @return	Buffer with formated envelope data.
+ * @free_using{st_free}
+ */
+static
+stringer_t *
+prsr_envelope_format(
+	stringer_t *user_id,
+	stringer_t *org_id,
+	const char *user_signet,
+	const char *org_fp,
+	dmime_chunk_type_t type)
+{
+
+	char *label1, *label2, *label3, *label4;
+	char const *end1 = ">\r\n", *end2 = "]\r\n";
+	stringer_t *result;
+
+	if(st_empty(user_id)) {
+		PUSH_ERROR(ERR_BAD_PARAM, NULL);
+		goto error;
+	}
+
+	if(st_empty(org_id)) {
+		PUSH_ERROR(ERR_BAD_PARAM, NULL);
+		goto error;
+	}
+
+	if(!user_signet) {
+		PUSH_ERROR(ERR_BAD_PARAM, NULL);
+		goto error;
+	}
+
+	if(!org_fp) {
+		PUSH_ERROR(ERR_BAD_PARAM, NULL);
+		goto error;
+	}
+
+	if(prsr_envelope_labels_get(type,
+		(const char **)&label1,
+		(const char **)&label2,
+		(const char **)&label3,
+		(const char **)&label4) < 0)
+	{
+		PUSH_ERROR(ERR_UNSPEC, "failed to get envelope chunk labels");
+		goto error;
+	}
+
+	result = st_merge(
+		"nsnnnnnsnnnn", 
+		label1, user_id, end1,
+		label2, user_signet, end2,
+		label3, org_id, end1,
+		label4, org_fp, end2);
+
+	if(!result) {
+		PUSH_ERROR(ERR_UNSPEC, "failed to merge strings to form the envelope data");
+		goto error;
+	}
+
+	return result;
+
+error:
+	return NULL;
+}
+
+/**
+ * @brief	Assigns the correct envelope labels based on envelope chunk types.
+ * @param	type		Envelope chunk's chunk type.
+ * @param	label1		First label (user id).
+ * @param	label2		Second label (user cryptographic b64 encoded signet).
+ * @param	label3		Third label (organizational id).
+ * @param	label4		Fourth label (organizational cryptographic signet fingerprint).
+ * @return	0 on success, -1 on failure.
+*/
+static
+int
+prsr_envelope_labels_get(
+	dmime_chunk_type_t type,
+	const char **label1,
+	const char **label2,
+	const char **label3,
+	const char **label4)
+{
+
+	switch(type) {
+
+	case CHUNK_TYPE_ORIGIN:
+		*label1 = "Author: <";
+		*label2 = "Author-Signet: [";
+		*label3 = "Destination: <";
+		*label4 = "Destination-Signet_Fingerprint: [";
+		break;
+	case CHUNK_TYPE_DESTINATION:
+		*label1 = "Recipient: <";
+		*label2 = "Recipient-Signet: [";
+		*label3 = "Origin: <";
+		*label4 = "Origin-Signet_Fingerprint: [";
+		break;
+	default:
+		PUSH_ERROR(ERR_UNSPEC, "Specified chunk type does not have envelope labels associated with it.");
+		goto error;
+
+	}
+
+	return 0;
+
+error:
+	return -1;
+}
 
 /**
  * @brief	Destroys a dmime_common_headers_t structure.
@@ -261,7 +380,8 @@ static void prsr_envelope_destroy(dmime_envelope_object_t *obj) {
 static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 
 	dmime_envelope_object_t *result;
-	const char *authrecp, *authrecp_signet, *destorig, *destorig_fp, *end1 = ">\r\n", *end2 = "]\r\n";
+	char *authrecp, *authrecp_signet, *destorig, *destorig_fp; 
+	char const *end1 = ">\r\n", *end2 = "]\r\n";
 	unsigned char *start;
 	size_t string_size = 0, at = 0;
 
@@ -269,24 +389,8 @@ static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, siz
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	switch(type) {
-
-	case CHUNK_TYPE_ORIGIN:
-		authrecp = "Author: <";
-		authrecp_signet = "Author-Signet: [";
-		destorig = "Destination: <";
-		destorig_fp = "Destination-Signet-Fingerprint: [";
-		break;
-	case CHUNK_TYPE_DESTINATION:
-		authrecp = "Recipient: <";
-		authrecp_signet = "Recipient-Signet: [";
-		destorig = "Origin: <";
-		destorig_fp = "Origin-Signet-Fingerprint: [";
-		break;
-	default:
-		RET_ERROR_PTR(ERR_UNSPEC, "invalid envelope chunk type specified");
-		break;
-
+	if(prsr_envelope_labels_get(type, (const char **)&authrecp, (const char **)&authrecp_signet, (const char **)&destorig, (const char **)&destorig_fp) < 0) {
+		RET_ERROR_PTR(ERR_UNSPEC, "failed to get envelope chunk labels");
 	}
 
 	if(!(result = malloc(sizeof(dmime_envelope_object_t)))) {
@@ -445,6 +549,10 @@ void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *
 
 dmime_envelope_object_t *   dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
+}
+
+stringer_t *                dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_signet, org_fp, type);
 }
 
 dmime_common_headers_t *    dime_prsr_headers_create(void) {

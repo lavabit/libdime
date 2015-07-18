@@ -10,6 +10,17 @@
 void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *obj);
 
 /**
+ * @brief	Formats the provided data into the format required by the origin and destination chunks.
+ * @param	user_id		Stringer containing author or recipient email address.
+ * @param	org_id		Stringer containing destination or origin domain.
+ * @param	user_signet	Cstring containing author or recipient b64 encoded cryptographic signet.
+ * @param	org_fp		Cstring containing b64 encoded fingerprint of destination or origin cryptographic signet.
+ * @param	type		Type of envelope chunk (CHUNK_TYPE_ORIGIN or CHUNK_TYPE_DESTINATION).
+ * @return	Stringer containing the envelope formatted data.
+*/
+stringer_t *                dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type);
+
+/**
  * @brief	Parses a binary buffer from a dmime message into a dmime origin object.
  * @param	in		Binary origin array.
  * @param	insize		Size of input array.

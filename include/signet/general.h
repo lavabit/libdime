@@ -35,7 +35,7 @@ typedef struct {
 	unsigned char *data;
 } signet_t;
 
-typedef enum dime_number_t {
+typedef enum dime_number_t {		/**< Dime numbers are the magic numbers */
 	DIME_ORG_SIGNET = 1776,         /**< File contains an organizational signet */
 	DIME_USER_SIGNET = 1789,        /**< File contains a user signet */
 	DIME_SSR = 1216,                /**< File contains an ssr*/
@@ -147,7 +147,7 @@ typedef enum {
 	SIGNKEY_DEFAULT_FORMAT =    0x40,    /**< Currently the only legal format specifier for ED25519 signing keys*/
 } signkey_format_t;
 
-typedef enum {
+typedef enum {				    /**< SOK = Secondary Organizational Key */
 	SIGNET_SOK_NONE =              0,   /**< Can not be used for signing anything */
 	SIGNET_SOK_SIGNET =            1,   /**< Can be used for signing signets */
 	SIGNET_SOK_MSG =               2,   /**< Can be used for signing messages */

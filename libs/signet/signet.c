@@ -3,8 +3,6 @@
 
 
 
-
-
 /* PRIVATE FUNCTIONS */
 
 static int                     sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
@@ -98,6 +96,8 @@ static signet_t *sgnt_create_signet(signet_type_t type) {
 
 	if(type != SIGNET_TYPE_ORG && type != SIGNET_TYPE_USER && type != SIGNET_TYPE_SSR) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, "invalid signet type");
+		//PUSH_ERROR(ERR_BAD_PARAM, "invalid signet type");
+		//goto error;
 	}
 
 	if(!(signet = malloc(sizeof(signet_t)))) {

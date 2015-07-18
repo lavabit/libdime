@@ -217,7 +217,6 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		free(signet_f);
 	}
 
-	dime_sgnt_dump_signet(stdout, signet);
 	dime_sgnt_destroy_signet(signet);
 }
 
