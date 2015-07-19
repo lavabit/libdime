@@ -326,7 +326,7 @@ END_TEST
 
 Suite *suite_check_crypto(void) {
 
-	Suite *s = suite_create("crypto");
+	Suite *s = suite_create("\nCrypto");
 	suite_add_test(s, "EC Serialization/Deserialization", check_ec_serialization);
 	suite_add_test(s, "EC Key Load From File", load_ec_key_file);
 	suite_add_test(s, "EC Signing/Verification", check_ec_signatures);

@@ -51,7 +51,7 @@ END_TEST
 
 Suite *suite_check_misc(void) {
 
-	Suite *s = suite_create("misc");
+	Suite *s = suite_create("\nMisc");
 	suite_add_testfunc(s, check_debug_level);
 	suite_add_testfunc(s, check_base64_macros);
 	return s;

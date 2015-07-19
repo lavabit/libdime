@@ -77,7 +77,7 @@ END_TEST
 
 Suite *suite_check_errorapi(void) {
 
-	Suite *s = suite_create("error-api");
+	Suite *s = suite_create("\nError-Api");
 #ifdef ERROR_API_FINISHED
 	suite_add_testfunc(s, errinfo_test);
 #endif /* ERROR_API_FINISHED */

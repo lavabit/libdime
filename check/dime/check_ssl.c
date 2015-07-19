@@ -11,7 +11,7 @@ START_TEST(test_domain_wildcard_check) {
 END_TEST
 
 Suite *suite_check_ssl(void) {
-	Suite *s = suite_create("dime/ssl");
+	Suite *s = suite_create("\nDIME/SSL");
 	suite_add_testfunc(s, test_domain_wildcard_check);
 	return s;
 }

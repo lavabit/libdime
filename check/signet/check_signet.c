@@ -783,7 +783,7 @@ END_TEST
 
 Suite *suite_check_signet(void) {
 
-	Suite *s = suite_create("signet");
+	Suite *s = suite_create("\nSignet");
 	suite_add_test(s, "check signet creation", check_signet_creation);
 	suite_add_test(s, "check signet and keys file pair cryptography", check_signet_keys_pairing);
 	suite_add_test(s, "check signet creation and field modification", check_signet_modification);

@@ -231,7 +231,7 @@ END_TEST
 
 Suite *suite_check_dmsg(void) {
 
-	Suite *s = suite_create("DMIME message");
+	Suite *s = suite_create("\nDMIME message");
 	suite_add_test(s, "Message encryption and decryption", test_message_encryption);
 	return s;
 }

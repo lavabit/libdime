@@ -90,7 +90,7 @@ END_TEST
 
 Suite *suite_check_keys(void) {
 
-	Suite *s = suite_create("keys");
+	Suite *s = suite_create("\nKeys");
 	suite_add_test(s, "check keys file I/O", check_keys_file_handling);
 	return s;
 }

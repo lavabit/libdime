@@ -84,7 +84,7 @@ END_TEST
 
 Suite *suite_check_error(void) {
 
-	Suite *s = suite_create("error");
+	Suite *s = suite_create("\nError");
 	TCase *tcase = tcase_create("core");
 	tcase_add_test(tcase, test_openssl_error_1);
 	tcase_add_test(tcase, test_openssl_error_5);
