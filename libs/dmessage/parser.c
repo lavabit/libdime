@@ -52,7 +52,10 @@ prsr_envelope_format(
 	dmime_chunk_type_t type)
 {
 
-	char *label1, *label2, *label3, *label4;
+	char *label1 = NULL;
+	char *label2 = NULL;
+	char *label3 = NULL;
+	char *label4 = NULL;
 	char const *end1 = ">\r\n", *end2 = "]\r\n";
 	stringer_t *result;
 
@@ -380,7 +383,10 @@ static void prsr_envelope_destroy(dmime_envelope_object_t *obj) {
 static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 
 	dmime_envelope_object_t *result;
-	char *authrecp, *authrecp_signet, *destorig, *destorig_fp; 
+	char *authrecp = NULL;
+	char *authrecp_signet = NULL;
+	char *destorig = NULL;
+	char *destorig_fp = NULL;
 	char const *end1 = ">\r\n", *end2 = "]\r\n";
 	unsigned char *start;
 	size_t string_size = 0, at = 0;
