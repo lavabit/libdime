@@ -4,3 +4,9 @@
 /check/**/checks
 /doxygen-doc
 core.[1-9]*
+/build*
+/Makefile.in
+/aclocal.m4
+/autom4te.cache
+/configure
+/m4/pkg.m4
