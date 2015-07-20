@@ -7,6 +7,8 @@ AM_CFLAGS = $(WARNINGS)
 # Note that we specify the include directories for the bundled dependencies
 # here.
 COMMON_CPPFLAGS = \
+	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
+	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
 	-I$(top_srcdir)/include
 
 BUNDLED_CPPFLAGS = \
@@ -14,11 +16,10 @@ BUNDLED_CPPFLAGS = \
 	-I$(top_srcdir)/deps/sources/openssl/include
 
 noinst_LIBRARIES = \
-	libcore.a
+	libcore.a \
+	libcommon.a
 
 libcore_a_CPPFLAGS = \
-	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
-	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
 	$(COMMON_CPPFLAGS) \
 	$(BUNDLED_CPPFLAGS)
 libcore_a_SOURCES = \
