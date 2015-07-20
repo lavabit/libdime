@@ -162,7 +162,7 @@ START_TEST(check_dmsg_all)
 	ck_assert_dime_noerror();
 
 	// turn object into message by encrypting and serialize
-	message = dime_dmsg_message_message(draft, auth_signkey);
+	message = dime_dmsg_message_encrypt(draft, auth_signkey);
 	ck_assert_msg(message != NULL, "Failed encrypt the message.\n");
 
 	from_auth_bin = dime_dmsg_message_binary_serialize(message, 0xFF, 0, &from_auth_size);
@@ -180,7 +180,7 @@ START_TEST(check_dmsg_all)
 	ck_assert_msg(res == 0, "Failed to derive the origin key encryption key.\n");
 	ck_assert_dime_noerror();
 
-	at_orig = dime_dmsg_chunks_envelope_encrypt(message, id_origin, &orig_kek);
+	at_orig = dime_dmsg_chunks_envelope_decrypt(message, id_origin, &orig_kek);
 	ck_assert_msg(at_orig != NULL, "Failed to decrypt the message envelope as origin.\n");
 
 	res = st_cmp_cs_eq(draft->author, at_orig->author);
@@ -217,7 +217,7 @@ START_TEST(check_dmsg_all)
 	res = dime_dmsg_kek_in_derive(message, dest_enckey, &dest_kek);
 	ck_assert_msg(res == 0, "Failed to derive the destination key encryption key.\n");
 	
-	at_dest = dime_dmsg_chunks_envelope_encrypt(message, id_destination, &dest_kek);
+	at_dest = dime_dmsg_chunks_envelope_decrypt(message, id_destination, &dest_kek);
 	ck_assert_msg(at_dest != NULL, "Failed to decrypt the message envelope as destination.\n");
 
 	res = st_cmp_cs_eq(draft->origin, at_dest->origin);
@@ -252,7 +252,7 @@ START_TEST(check_dmsg_all)
 	res = dime_dmsg_kek_in_derive(message, recp_enckey, &recp_kek);
 	ck_assert_msg(res == 0, "Failed to derive recipient key encryption key.\n");
 
-	at_recp = dime_dmsg_chunks_envelope_encrypt(message, id_recipient, &recp_kek);
+	at_recp = dime_dmsg_chunks_envelope_decrypt(message, id_recipient, &recp_kek);
 	ck_assert_msg(at_recp != NULL, "Failed to decrypt the envelope as the recipient.\n");
 
 	res = st_cmp_cs_eq(draft->author, at_recp->author);

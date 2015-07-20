@@ -7,8 +7,8 @@ static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, 
 static dmime_common_headers_t *    prsr_headers_create(void);
 static void                        prsr_headers_destroy(dmime_common_headers_t *obj);
 static unsigned char *             prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize);
-static dmime_header_type_t         prsr_headers_type_get(unsigned char *in, size_t insize);
 static dmime_common_headers_t *    prsr_headers_parse(unsigned char *in, size_t insize);
+static dmime_header_type_t         prsr_headers_type_get(unsigned char *in, size_t insize);
 
 /* PRIVATE FUNCTIONS */
 
@@ -547,12 +547,12 @@ void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *
 	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_envelope_destroy, obj);
 }
 
-dmime_envelope_object_t *dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
-	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
-}
-
 stringer_t *                dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_signet, org_fp, type);
+}
+
+dmime_envelope_object_t *dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
 }
 
 dmime_common_headers_t *    dime_prsr_headers_create(void) {

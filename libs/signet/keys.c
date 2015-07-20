@@ -1,15 +1,15 @@
 #include <signet/keys.h>
 
-static int             keys_length_check(const unsigned char *in, size_t in_len);
 static EC_KEY *        keys_enckey_fetch(const char *filename);
-static ED25519_KEY *   keys_signkey_fetch(const char *filename);
-/* keys files not currently encrypted TODO */
-/* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
+static EC_KEY *        keys_enckey_from_binary(const unsigned char *bin_keys, size_t len);
 static int             keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename);
 static unsigned char * keys_file_serialize(const char *filename, size_t *len);
-static EC_KEY *        keys_enckey_from_binary(const unsigned char *bin_keys, size_t len);
+static int             keys_length_check(const unsigned char *in, size_t in_len);
+static ED25519_KEY *   keys_signkey_fetch(const char *filename);
 static ED25519_KEY *   keys_signkey_from_binary(const unsigned char *bin_keys, size_t len);
 static keys_type_t     keys_type_get(const unsigned char *bin_keys, size_t len);
+/* keys files not currently encrypted TODO */
+/* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
 /* not implemented yet TODO*/
 /*
 static int             keys_file_add_sok(ED25519_KEY *sok, const char *filename);
