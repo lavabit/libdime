@@ -326,8 +326,10 @@ static dmime_message_chunk_t *dmsg_encode_common_headers(dmime_object_t *object)
 		RET_ERROR_PTR(ERR_UNSPEC, "could not format common headers data");
 	}
 
-	if(!(result = dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS))) {
-		free(data);
+	result = dmsg_create_message_chunk(CHUNK_TYPE_META_COMMON, data, data_size, DEFAULT_CHUNK_FLAGS);
+	free(data);
+
+	if(!result) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
 	}
 
@@ -2950,9 +2952,9 @@ static int dmsg_decrypt_content(dmime_object_t *object, const dmime_message_t *m
 
 			if(!i) {
 				object->attach = chunk;
-				last = object->display;
+				last = object->attach;
 			} else if (chunk) {
-				chunk->next = chunk;
+				last->next = chunk;
 				last = chunk;
 			}
 		}

@@ -2454,6 +2454,7 @@ static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const
 
 	case SIGNET_TYPE_ORG:
 		fid = SIGNET_ORG_UNDEFINED;
+		break;
 	case SIGNET_TYPE_USER:
 		fid = SIGNET_USER_UNDEFINED;
 		break;
