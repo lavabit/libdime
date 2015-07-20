@@ -17,7 +17,10 @@ BUNDLED_CPPFLAGS = \
 
 noinst_LIBRARIES = \
 	libcore.a \
-	libcommon.a
+	libcommon.a \
+	libdmessage.a \
+	libsignet.a \
+	libsignet_resolver.a
 
 libcore_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
@@ -86,6 +89,48 @@ libcore_a_SOURCES = \
 	libs/core/thread/rwlock.c \
 	libs/core/thread/thread.c \
 	libs/core/type.c
+
+libcommon_a_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS)
+libcommon_a_SOURCES = \
+	libs/common/crypto.c \
+	libs/common/crypto_pub.c \
+	libs/common/error.c \
+	libs/common/misc.c \
+	libs/common/misc_pub.c \
+	libs/common/network.c \
+	libs/common/network_pub.c
+
+libdmessage_a_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS)
+libdmessage_a_SOURCES = \
+	libs/dmessage/dmsg.c \
+	libs/dmessage/parser.c
+
+libsignet_a_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS)
+libsignet_a_SOURCES = \
+	libs/signet/general.c \
+	libs/signet/keys.c \
+	libs/signet/signet.c
+
+libsignet_resolver_a_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS)
+libsignet_resolver_a_SOURCES = \
+	libs/signet-resolver/cache.c \
+	libs/signet-resolver/cache_pub.c \
+	libs/signet-resolver/dmtp.c \
+	libs/signet-resolver/dmtp_pub.c \
+	libs/signet-resolver/dns.c \
+	libs/signet-resolver/dns_pub.c \
+	libs/signet-resolver/mrec.c \
+	libs/signet-resolver/mrec_pub.c \
+	libs/signet-resolver/ssl.c \
+	libs/signet-resolver/ssl_pub.c
 
 #TESTS = $(top_srcdir)/check/runner.sh
 #check_PROGRAMS = tests
