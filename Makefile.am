@@ -144,11 +144,11 @@ bin_PROGRAMS = \
 #	signet_tests
 
 CHECK_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS) \
 	-I$(top_srcdir)/check
 
 common_tests_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS) \
 	$(CHECK_CPPFLAGS) \
 	-I$(top_srcdir)/check/common
 common_tests_SOURCES = \
