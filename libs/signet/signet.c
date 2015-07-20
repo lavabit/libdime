@@ -56,7 +56,7 @@ static int                     sgnt_field_size_serial_get(const signet_field_t *
 static int                     sgnt_signet_size_serial_get(const signet_t *signet);
 static int                     sgnt_signet_index(signet_t *signet);
 static char *                  sgnt_signet_b64_serialize(signet_t *signet);
-static signet_t *              sgnt_binary_binary_deserialize(const unsigned char *in, size_t len);
+static signet_t *              sgnt_signet_binary_deserialize(const unsigned char *in, size_t len);
 static ED25519_KEY *           sgnt_signkey_parse(const unsigned char *serial_key, size_t key_size);
 static int                     sgnt_field_defined_set(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
 static int                     sgnt_enckey_set(signet_t *signet, EC_KEY *key, unsigned char format);
@@ -1210,7 +1210,7 @@ static int sgnt_file_create(signet_t *signet, const char *filename) {
  * @return	A pointer to a newly allocated signet_t structure type, NULL on failure.
  * @free_using{sgnt_destroy_signet}
  */
-static signet_t *sgnt_binary_binary_deserialize(const unsigned char *in, size_t in_len) {
+static signet_t *sgnt_signet_binary_deserialize(const unsigned char *in, size_t in_len) {
 
 	size_t data_size = 0;
 	dime_number_t magic_num;
@@ -1289,7 +1289,7 @@ static signet_t *sgnt_signet_b64_deserialize(const char *b64_in) {
 		RET_ERROR_PTR(ERR_UNSPEC, "base64 decoding of armored signet failed");
 	}
 
-	if (!(signet = sgnt_binary_binary_deserialize(in, size))) {
+	if (!(signet = sgnt_signet_binary_deserialize(in, size))) {
 		free(in);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to initialize signet from data");
 	}
@@ -2963,7 +2963,7 @@ static signet_t *sgnt_signet_split(const signet_t *signet, unsigned char fid) {
 		free(data);
 	}
 
-	split_signet = sgnt_binary_binary_deserialize(split, split_size);
+	split_signet = sgnt_signet_binary_deserialize(split, split_size);
 	free(split);
 
 	if(!split_signet) {
@@ -3892,7 +3892,7 @@ char *dime_sgnt_signet_b64_serialize(signet_t *signet) {
 }
 
 signet_t *dime_sgnt_signet_binary_deserialize(const unsigned char *in, size_t len) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_binary_binary_deserialize, in, len);
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_binary_deserialize, in, len);
 }
 
 unsigned char *dime_sgnt_signet_binary_serialize(signet_t *signet, uint32_t *serial_size) {
