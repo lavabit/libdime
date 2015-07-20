@@ -4,6 +4,8 @@ EXTRA_DIST = m4/NOTES
 
 AM_CFLAGS = $(WARNINGS) -std=gnu99
 
+DONNA_LIBS = $(top_srcdir)/deps/sources/donna/ed25519.o
+
 # Note that we specify the include directories for the bundled dependencies
 # here.
 COMMON_CPPFLAGS = \
@@ -12,8 +14,8 @@ COMMON_CPPFLAGS = \
 	-I$(top_srcdir)/include
 
 BUNDLED_CPPFLAGS = \
-	-I$(top_srcdir)/deps/sources/donna \
-	-I$(top_srcdir)/deps/sources/openssl/include
+	-I$(top_srcdir)/deps/sources/donna
+#	-I$(top_srcdir)/deps/sources/openssl/include
 
 noinst_LIBRARIES = \
 	libcore.a \
@@ -133,44 +135,31 @@ libsignet_resolver_a_SOURCES = \
 	libs/signet-resolver/ssl_pub.c
 
 #TESTS = $(top_srcdir)/check/runner.sh
-#check_PROGRAMS = tests
-#tests_CPPFLAGS = -I$(top_srcdir)/check $(COMMON_CPPFLAGS)
-#tests_SOURCES = \
-#		check/magma_check.c \
-#		check/core/base64_check.c \
-#		check/core/bitwise_check.c \
-#		check/core/core_check.c \
-#		check/core/hashed_check.c \
-#		check/core/hex_check.c \
-#		check/core/inx_check.c \
-#		check/core/linked_check.c \
-#		check/core/nbo_check.c \
-#		check/core/qp_check.c \
-#		check/core/qsort_check.c \
-#		check/core/string_check.c \
-#		check/core/system_check.c \
-#		check/core/tree_check.c \
-#		check/core/url_check.c \
-#		check/core/zbase32_check.c \
-#		check/network/address_check.c \
-#		check/network/network_check.c \
-#		check/objects/objects_check.c \
-#		check/providers/compress_check.c \
-#		check/providers/dspam_check.c \
-#		check/providers/ecies_check.c \
-#		check/providers/hash_check.c \
-#		check/providers/hmac_check.c \
-#		check/providers/provide_check.c \
-#		check/providers/rand_check.c \
-#		check/providers/scramble_check.c \
-#		check/providers/stacie_check.c \
-#		check/providers/symmetric_check.c \
-#		check/providers/tank_check.c \
-#		check/providers/virus_check.c \
-#		check/users/users_check.c
-#tests_CFLAGS = @CHECK_CFLAGS@
-#tests_LDADD = libmagma.a -ldl -lrt @CHECK_LIBS@
-#
+# NOTE - Temporary!  Tests will be wired up to Automake test harness
+bin_PROGRAMS = \
+	common_tests
+#	core_tests \
+#	dime_tests \
+#	dmessage_tests \
+#	signet_tests
+
+CHECK_CPPFLAGS = \
+	-I$(top_srcdir)/check
+
+common_tests_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(BUNDLED_CPPFLAGS) \
+	$(CHECK_CPPFLAGS) \
+	-I$(top_srcdir)/check/common
+common_tests_SOURCES = \
+	check/common/check_common.c \
+	check/common/check_crypto.c \
+	check/common/check_error.c \
+	check/common/check_misc.c \
+	check/common/checks.c
+common_tests_CFLAGS = @CHECK_CFLAGS@ @OPENSSL_CFLAGS@
+common_tests_LDADD = libcommon.a $(DONNA_LIBS) @CHECK_LIBS@ @OPENSSL_LIBS@
+
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp
 

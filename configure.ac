@@ -7,8 +7,10 @@ AC_INIT([libdime], [0.1])
 # Look for macros in the m4 directory
 AC_CONFIG_MACRO_DIR([m4])
 
-# Try to find libcheck using pkg-config
+# Try to find dependencies using pkg-config
 PKG_CHECK_MODULES([CHECK], [check >= 0.9])
+# TODO - pin down min supported openssl version
+PKG_CHECK_MODULES([OPENSSL], [openssl >= 0.9.8])
 
 # Sanity check to make sure the specified srcdir actually contains the source
 AC_CONFIG_SRCDIR([include/signet/signet.h])
