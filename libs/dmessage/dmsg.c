@@ -227,7 +227,8 @@ static dmime_message_chunk_t *dmsg_encode_origin(dmime_object_t *object) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not format origin chunk data");
 	}
 
-	result = dmsg_create_message_chunk(CHUNK_TYPE_ORIGIN,
+	result = dmsg_create_message_chunk(
+		CHUNK_TYPE_ORIGIN,
 		(unsigned char *)st_data_get(data),
 		st_length_get(data),
 		DEFAULT_CHUNK_FLAGS);
@@ -279,8 +280,8 @@ static dmime_message_chunk_t *dmsg_encode_destination(dmime_object_t *object) {
 	}
 
 	data = dime_prsr_envelope_format(
-		object->author,
-		object->destination,
+		object->recipient,
+		object->origin,
 		(const char *)recipient_crypto_signet_b64,
 		(const char *)origin_signet_fingerprint_b64,
 		CHUNK_TYPE_DESTINATION);
@@ -579,19 +580,27 @@ static int dmsg_sign_msg_chunks(dmime_message_t *message, ED25519_KEY *signkey) 
 	}
 
 	if(message->display) {
+
 		for (size_t i = 0; message->display[i]; i++) {
+
 			if(dmsg_sign_chunk(message->display[i], signkey)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not sign display chunk");
 			}
+
 		}
+
 	}
 
 	if(message->attach) {
+
 		for (size_t i = 0; message->attach[i]; i++) {
+
 			if(dmsg_sign_chunk(message->attach[i], signkey)) {
 				RET_ERROR_INT(ERR_UNSPEC, "could not sign attachment chunk");
 			}
+
 		}
+
 	}
 
 	message->state = MESSAGE_STATE_CHUNKS_SIGNED;
