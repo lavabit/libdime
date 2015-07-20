@@ -141,7 +141,7 @@ git_stamp:
 	fi
 
 date_stamp:
-	@NEW_DATE_STAMP=`date +'%Y%m%d.%H%M'`; \
+	@NEW_DATE_STAMP=`date +'%Y%m%d'`; \
 	if test ! -f $(top_builddir)/.magma_stamp; then \
 		echo "$$NEW_DATE_STAMP" > $(top_builddir)/.dime_stamp; \
 	else \
