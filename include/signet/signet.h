@@ -72,13 +72,13 @@ void                    dime_sgnt_dump_signet(FILE *fp, signet_t *signet);
  * @return	Pointer to the target encryption public key.
  * @free_using{free_ec_key}
 */
-EC_KEY *dime_sgnt_fetch_enckey(const signet_t *signet);
+EC_KEY *                dime_sgnt_fetch_enckey(const signet_t *signet);
 
 /**
  * @brief	Fetches the binary data value of the field specified by field id and the number at which it appears in the signet amongst fields with the same field id (1, 2, ...).
- * @param	signet	Pointer to the target signet.
- * @param	fid	Specified field id.
- * @param	num	Specified field number based on the order in which it appears in the signet.
+ * @param	signet		Pointer to the target signet.
+ * @param	fid		Specified field id.
+ * @param	num		Specified field number based on the order in which it appears in the signet.
  * @param	data_size	Pointer to the length of returned array.
  * @return	Array containing the binary data of the specified field, NULL if an error occurs.
  * @free_using{free}
