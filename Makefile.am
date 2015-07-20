@@ -2,7 +2,7 @@
 ACLOCAL_AMFLAGS = -I m4 --install
 EXTRA_DIST = m4/NOTES
 
-AM_CFLAGS = $(WARNINGS)
+AM_CFLAGS = $(WARNINGS) -std=gnu99
 
 # Note that we specify the include directories for the bundled dependencies
 # here.
