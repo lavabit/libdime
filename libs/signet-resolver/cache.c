@@ -2326,7 +2326,7 @@ void *_deserialize_signet_cb(void *data, size_t len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(result = dime_sgnt_serial_to_signet(data, len))) {
+	if(!(result = dime_sgnt_signet_binary_deserialize(data, len))) {
 		RET_ERROR_PTR(ERR_UNSPEC, NULL);
 	}
 
@@ -2350,7 +2350,7 @@ void *_serialize_signet_cb(void *record, size_t *outlen) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(serial = dime_sgnt_serial_from_signet(record, &ssize))) {
+	if(!(serial = dime_sgnt_signet_binary_serialize(record, &ssize))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize signet");
 	}
 
@@ -2387,7 +2387,7 @@ void _dump_signet_cb(FILE *fp, void *record, int brief) {
 		return;
 	}
 
-	dime_sgnt_dump_signet(fp, sig);
+	dime_sgnt_signet_dump(fp, sig);
 
 }
 
@@ -2398,6 +2398,6 @@ void _dump_signet_cb(FILE *fp, void *record, int brief) {
 */
 void _destroy_signet_cb(void *record) {
 
-	dime_sgnt_destroy_signet(record);
+	dime_sgnt_signet_destroy(record);
 
 }

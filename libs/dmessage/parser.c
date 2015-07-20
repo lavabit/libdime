@@ -7,7 +7,7 @@ static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, 
 static dmime_common_headers_t *    prsr_headers_create(void);
 static void                        prsr_headers_destroy(dmime_common_headers_t *obj);
 static unsigned char *             prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize);
-static dmime_header_type_t         prsr_headers_get_type(unsigned char *in, size_t insize);
+static dmime_header_type_t         prsr_headers_type_get(unsigned char *in, size_t insize);
 static dmime_common_headers_t *    prsr_headers_parse(unsigned char *in, size_t insize);
 
 /* PRIVATE FUNCTIONS */
@@ -231,7 +231,7 @@ static unsigned char *prsr_headers_format(dmime_common_headers_t *obj, size_t *o
  * @param	insize	Size of input buffer.
  * @return	Common header type.
  */
-static dmime_header_type_t prsr_headers_get_type(unsigned char *in, size_t insize) {
+static dmime_header_type_t prsr_headers_type_get(unsigned char *in, size_t insize) {
 
 	if(!in || !insize) {
 		RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_BAD_PARAM, NULL);
@@ -303,7 +303,7 @@ static dmime_common_headers_t *prsr_headers_parse(unsigned char *in, size_t insi
 
 	while(at < insize) {
 
-		if((type = prsr_headers_get_type(in + at, insize - at)) == HEADER_TYPE_NONE) {
+		if((type = prsr_headers_type_get(in + at, insize - at)) == HEADER_TYPE_NONE) {
 			prsr_headers_destroy(result);
 			RET_ERROR_CUST(0, ERR_UNSPEC, "headers	 buffer contained an invalid header type");
 		}

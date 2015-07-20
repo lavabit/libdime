@@ -24,7 +24,7 @@ int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename);
  * @return	Pointer to the ed25519 signing key.
  * @free_using{free_ed25519_key}
 */
-ED25519_KEY *dime_keys_fetch_sign_key(const char *filename);
+ED25519_KEY *dime_keys_signkey_fetch(const char *filename);
 
 /**
  * @brief	Retrieves the encryption key from the keys file.
@@ -32,6 +32,6 @@ ED25519_KEY *dime_keys_fetch_sign_key(const char *filename);
  * @return	Pointer to the elliptic curve encryption key.
  * @free_using{free_ec_key}
 */
-EC_KEY *dime_keys_fetch_enc_key(const char *filename);
+EC_KEY *dime_keys_enckey_fetch(const char *filename);
 
 #endif

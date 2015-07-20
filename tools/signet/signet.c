@@ -103,7 +103,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		keys_f = (char *)keys_file;
 	}
 
-	if(!(signet = dime_sgnt_create_signet_w_keys(type, keys_f))) {
+	if(!(signet = dime_sgnt_signet_create_w_keys(type, keys_f))) {
 		fprintf(stderr, "Could not create new signet signet.\n");
 
 		if(keys_alloc) {
@@ -113,7 +113,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(key = dime_keys_fetch_sign_key(keys_f))) {
+	if(!(key = dime_keys_signkey_fetch(keys_f))) {
 		fprintf(stderr, "Could not retrieve signing key from keys file %s.\n", keys_f);
 
 		if(keys_alloc) {
@@ -127,46 +127,46 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		free(keys_f);
 	}
 
-	dime_sgnt_sign_crypto_sig(signet, key);
+	dime_sgnt_sig_crypto_sign(signet, key);
 
 	switch(type) {
 	case SIGNET_TYPE_ORG:
 
 		wizard_get_input("Organization name:", wizard_string, sizeof(wizard_string));
-		dime_sgnt_create_defined_field(signet, SIGNET_ORG_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
+		dime_sgnt_field_defined_create(signet, SIGNET_ORG_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization address:", wizard_string, sizeof(wizard_string));
-		dime_sgnt_create_defined_field(signet, SIGNET_ORG_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
+		dime_sgnt_field_defined_create(signet, SIGNET_ORG_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization country:", wizard_string, sizeof(wizard_string));
-		dime_sgnt_create_defined_field(signet, SIGNET_ORG_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
+		dime_sgnt_field_defined_create(signet, SIGNET_ORG_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization postal code:", wizard_string, sizeof(wizard_string));
-		dime_sgnt_create_defined_field(signet, SIGNET_ORG_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
+		dime_sgnt_field_defined_create(signet, SIGNET_ORG_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
 
 		wizard_get_input("Organization phone number:", wizard_string, sizeof(wizard_string));
-		dime_sgnt_create_defined_field(signet, SIGNET_ORG_PHONE,  strlen(wizard_string), (const unsigned char *)wizard_string);
+		dime_sgnt_field_defined_create(signet, SIGNET_ORG_PHONE,  strlen(wizard_string), (const unsigned char *)wizard_string);
 
-		dime_sgnt_sign_full_sig(signet, key);
-		dime_sgnt_set_id_field(signet, strlen(signet_name), (const unsigned char *)signet_name);
-		dime_sgnt_sign_id_sig(signet, key);
+		dime_sgnt_sig_full_sign(signet, key);
+		dime_sgnt_id_set(signet, strlen(signet_name), (const unsigned char *)signet_name);
+		dime_sgnt_sig_id_sign(signet, key);
 		break;
 	case SIGNET_TYPE_SSR:
 
 		if(old_keys) {
 
-			if(!(oldkey = dime_keys_fetch_sign_key(old_keys))) {
+			if(!(oldkey = dime_keys_signkey_fetch(old_keys))) {
 				fprintf(stderr, "Could not retrieve the signing key from the keys file.\n");
 				free_ed25519_key(key);
-				dime_sgnt_destroy_signet(signet);
+				dime_sgnt_signet_destroy(signet);
 				exit(EXIT_FAILURE);
 			}
 
-			dime_sgnt_sign_coc_sig(signet, oldkey);
+			dime_sgnt_sig_coc_sign(signet, oldkey);
 			free_ed25519_key(oldkey);
 		}
 
-		dime_sgnt_sign_ssr_sig(signet, key);
+		dime_sgnt_sig_ssr_sign(signet, key);
 		break;
 	case SIGNET_TYPE_USER:
 		fprintf(stderr, "To create a user signet, an organization needs to sign an ssr.\n");
@@ -209,7 +209,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 			free(signet_f);
 		}
 
-		dime_sgnt_destroy_signet(signet);
+		dime_sgnt_signet_destroy(signet);
 		exit(EXIT_FAILURE);
 	}
 
@@ -217,7 +217,7 @@ static void generate_signet(const char *signet_name, const char *signet_file, co
 		free(signet_f);
 	}
 
-	dime_sgnt_destroy_signet(signet);
+	dime_sgnt_signet_destroy(signet);
 }
 
 
@@ -257,37 +257,37 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(signet = dime_sgnt_file_to_signet(ssr_f))) {
+	if(!(signet = dime_sgnt_signet_load(ssr_f))) {
 		fprintf(stderr, "Could not load signet from specified file: %s\n", ssr_f);
 		exit(EXIT_FAILURE);
 	}
 
 	if(dime_sgnt_validate_all(signet, NULL, NULL, NULL) != SS_SSR) {
 		fprintf(stderr, "The signet is not a valid SSR.\n");
-		dime_sgnt_destroy_signet(signet);
+		dime_sgnt_signet_destroy(signet);
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(key = dime_keys_fetch_sign_key(keys_f))) {
+	if(!(key = dime_keys_signkey_fetch(keys_f))) {
 		fprintf(stderr, "Could not retrieve the signing key from the keys binary.\n");
-		dime_sgnt_destroy_signet(signet);
+		dime_sgnt_signet_destroy(signet);
 		exit(EXIT_FAILURE);
 	}
 
-	dime_sgnt_sign_crypto_sig(signet, key);
+	dime_sgnt_sig_crypto_sign(signet, key);
 	wizard_get_input("User name:", wizard_string, sizeof(wizard_string));
-	dime_sgnt_create_defined_field(signet, SIGNET_USER_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_field_defined_create(signet, SIGNET_USER_NAME, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User address:", wizard_string, sizeof(wizard_string));
-	dime_sgnt_create_defined_field(signet, SIGNET_USER_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_field_defined_create(signet, SIGNET_USER_ADDRESS, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User country:", wizard_string, sizeof(wizard_string));
-	dime_sgnt_create_defined_field(signet, SIGNET_USER_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_field_defined_create(signet, SIGNET_USER_COUNTRY, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User postal code:", wizard_string, sizeof(wizard_string));
-	dime_sgnt_create_defined_field(signet, SIGNET_USER_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_field_defined_create(signet, SIGNET_USER_POSTAL, strlen(wizard_string), (const unsigned char *)wizard_string);
 	wizard_get_input("User phone number:", wizard_string, sizeof(wizard_string));
-	dime_sgnt_create_defined_field(signet, SIGNET_USER_PHONE, strlen(wizard_string), (const unsigned char *)wizard_string);
-	dime_sgnt_sign_full_sig(signet, key);
-	dime_sgnt_set_id_field(signet, strlen(signet_name), (const unsigned char *)signet_name);
-	dime_sgnt_sign_id_sig(signet, key);
+	dime_sgnt_field_defined_create(signet, SIGNET_USER_PHONE, strlen(wizard_string), (const unsigned char *)wizard_string);
+	dime_sgnt_sig_full_sign(signet, key);
+	dime_sgnt_id_set(signet, strlen(signet_name), (const unsigned char *)signet_name);
+	dime_sgnt_sig_id_sign(signet, key);
 
 	_free_ed25519_key(key);
 
@@ -296,7 +296,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 
 		if(str_printf(&signet_f, "%s.signet", signet_name) < 0) {
 			fprintf(stderr, "Could not concatenate strings.\n");
-			dime_sgnt_destroy_signet(signet);
+			dime_sgnt_signet_destroy(signet);
 			exit(EXIT_FAILURE);
 		}
 
@@ -307,7 +307,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 
 	if(dime_sgnt_file_create(signet, signet_f) < 0) {
 		fprintf(stderr, "Could not store signet in file.\n");
-		dime_sgnt_destroy_signet(signet);
+		dime_sgnt_signet_destroy(signet);
 
 		if(signet_alloc) {
 			free(signet_f);
@@ -316,7 +316,7 @@ static void sign_signet(const char *signet_name, const char *ssr_f, const char *
 		exit(EXIT_FAILURE);
 	}
 
-	dime_sgnt_destroy_signet(signet);
+	dime_sgnt_signet_destroy(signet);
 
 	if(signet_alloc) {
 		free(signet_f);
@@ -339,12 +339,12 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 		exit(EXIT_FAILURE);
 	}
 
-	if(!(signet = dime_sgnt_file_to_signet(signet_file))) {
+	if(!(signet = dime_sgnt_signet_load(signet_file))) {
 		fprintf(stderr, "Could not load signet from specified file: %s\n", signet_f);
 		exit(EXIT_FAILURE);
 	}
 
-	dime_sgnt_dump_signet(stdout, signet);
+	dime_sgnt_signet_dump(stdout, signet);
 	fprintf(stderr, "-------------------------------------------------------------------------------------------------------------------------------\n");
 	type = dime_sgnt_type_get(signet);
 
@@ -369,7 +369,7 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 		free(fingerprint);
 	}
 
-	dime_sgnt_destroy_signet(signet);
+	dime_sgnt_signet_destroy(signet);
 }
 
 

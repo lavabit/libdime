@@ -5,72 +5,73 @@
 
 /* PRIVATE FUNCTIONS */
 
-static int                     sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
-static int                     sgnt_create_field_at(signet_t *signet, unsigned int offset, size_t field_size, const unsigned char *field_data);
-static signet_field_t *        sgnt_create_field_list(const signet_t *signet, unsigned char fid);
-static signet_field_t *        sgnt_create_field_node(const signet_t *signet, uint32_t offset, signet_field_key_t *key);
-static signet_t *              sgnt_create_signet(signet_type_t type);
-static signet_t *              sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile);
-static int                     sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
-static int                     sgnt_create_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data);
-static void                    sgnt_destroy_field_list(signet_field_t *field);
-static signet_field_t *        sgnt_destroy_field_node(signet_field_t *field);
-static void                    sgnt_destroy_signet(signet_t *signet);
-static int                     sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid);
-static int                     sgnt_dump_field(FILE *fp, const signet_field_t *field);
-static void                    sgnt_dump_signet(FILE *fp, signet_t *signet);
-static EC_KEY *                sgnt_fetch_enckey(const signet_t *signet);
-static unsigned char *         sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size);
-static ED25519_KEY **          sgnt_fetch_msg_signkeys(const signet_t *signet);
-static ED25519_KEY *           sgnt_fetch_signkey(const signet_t *signet);
-static ED25519_KEY **          sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_permissions_t perm);
-static ED25519_KEY **          sgnt_fetch_signet_signkeys(const signet_t *signet);
-static ED25519_KEY **          sgnt_fetch_software_signkeys(const signet_t *signet);
-static ED25519_KEY *           sgnt_fetch_sok_num(const signet_t *signet, unsigned int num);
-static ED25519_KEY **          sgnt_fetch_tls_signkeys(const signet_t *signet);
-static unsigned char *         sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size);
+static int                     sgnt_field_defined_create(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
+static int                     sgnt_field_create_at(signet_t *signet, unsigned int offset, size_t field_size, const unsigned char *field_data);
+static signet_field_t *        sgnt_fieldlist_create(const signet_t *signet, unsigned char fid);
+static signet_field_t *        sgnt_fieldnode_create(const signet_t *signet, uint32_t offset, signet_field_key_t *key);
+static signet_t *              sgnt_signet_create(signet_type_t type);
+static signet_t *              sgnt_signet_create_w_keys(signet_type_t type, const char *keysfile);
+static int                     sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
+static int                     sgnt_field_undefined_create(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data);
+static void                    sgnt_fieldlist_destroy(signet_field_t *field);
+static signet_field_t *        sgnt_fieldnode_destroy(signet_field_t *field);
+static void                    sgnt_signet_destroy(signet_t *signet);
+static int                     sgnt_fid_dump(FILE *fp, const signet_t *signet, unsigned int fid);
+static int                     sgnt_field_dump(FILE *fp, const signet_field_t *field);
+static void                    sgnt_signet_dump(FILE *fp, signet_t *signet);
+static EC_KEY *                sgnt_enckey_fetch(const signet_t *signet);
+static unsigned char *         sgnt_fid_num_fetch(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size);
+static ED25519_KEY **          sgnt_signkeys_msg_fetch(const signet_t *signet);
+static ED25519_KEY *           sgnt_signkey_fetch(const signet_t *signet);
+static ED25519_KEY **          sgnt_signkey_fetch_by_perm(const signet_t *signet, sok_permissions_t perm);
+static ED25519_KEY **          sgnt_signkeys_signet_fetch(const signet_t *signet);
+static ED25519_KEY **          sgnt_signkeys_software_fetch(const signet_t *signet);
+static ED25519_KEY *           sgnt_sok_num_fetch(const signet_t *signet, unsigned int num);
+static ED25519_KEY **          sgnt_signkeys_tls_fetch(const signet_t *signet);
+static unsigned char *         sgnt_field_undefined_fetch(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size);
 static int                     sgnt_fid_exists(const signet_t *signet, unsigned char fid);
-static int                     sgnt_fid_get_count(const signet_t *signet, unsigned char fid);
+static int                     sgnt_fid_count_get(const signet_t *signet, unsigned char fid);
 #if 0 /* currently unused */
 static int                     sgnt_fid_get_size(const signet_t *signet, unsigned char fid);
 #endif
-static signet_t *              sgnt_file_to_signet(const char *filename);
+static signet_t *              sgnt_signet_load(const char *filename);
 static int                     sgnt_file_create(signet_t *signet, const char *filename);
 static char *                  sgnt_fingerprint_crypto(const signet_t *signet);
 static char *                  sgnt_fingerprint_full(const signet_t *signet);
 static char *                  sgnt_fingerprint_id(const signet_t *signet);
 static char *                  sgnt_fingerprint_ssr(const signet_t *signet);
 static char *                  sgnt_fingerprint_upto_fid(const signet_t *signet, unsigned char fid);
-static int                     sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num);
-static int                     sgnt_remove_field_at(signet_t *signet, unsigned int offset, size_t field_size);
-static int                     sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name);
-static signet_t *              sgnt_serial_b64_to_signet(const char *b64_in);
-static int                     sgnt_serial_check_length(const unsigned char *in, uint32_t slen);
+static int                     sgnt_fid_num_remove(signet_t *signet, unsigned char fid, int num);
+static int                     sgnt_field_remove_at(signet_t *signet, unsigned int offset, size_t field_size);
+static int                     sgnt_field_undefined_remove(signet_t *signet, size_t name_size, const unsigned char *name);
+static signet_t *              sgnt_signet_b64_deserialize(const char *b64_in);
+static int                     sgnt_length_serial_check(const unsigned char *in, uint32_t slen);
 #if 0 /* currently unused */
 static unsigned char *sgnt_serial_from_fid(const signet_t *signet, unsigned char fid, size_t *fid_size);
 #endif
-static unsigned char *         sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size);
-static unsigned char *         sgnt_serial_from_signkey(ED25519_KEY *key, unsigned char format, size_t *key_size);
-static unsigned char *         sgnt_serial_from_upto_fid(const signet_t *signet, unsigned char fid, size_t *data_size);
-static int                     sgnt_serial_get_field_size(const signet_field_t *field);
-static int                     sgnt_serial_get_size(const signet_t *signet);
-static int                     sgnt_serial_index(signet_t *signet);
-static char *                  sgnt_serial_signet_to_b64(signet_t *signet);
-static signet_t *              sgnt_serial_to_signet(const unsigned char *in, size_t len);
-static ED25519_KEY *           sgnt_serial_to_signkey(const unsigned char *serial_key, size_t key_size);
-static int                     sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
-static int                     sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format);
-static int                     sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id);
-static int                     sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format);
-static int                     sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_KEY *key);
-static int                     sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key);
-static int                     sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key);
-static signet_t *              sgnt_split(const signet_t *signet, unsigned char fid);
-static signet_t *              sgnt_split_crypto(const signet_t *signet);
-static signet_t *              sgnt_split_full(const signet_t *signet);
+static unsigned char *         sgnt_signet_binary_serialize(signet_t *signet, uint32_t *serial_size);
+static unsigned char *         sgnt_signkey_format(ED25519_KEY *key, unsigned char format, size_t *key_size);
+static unsigned char *         sgnt_signet_serialize_upto_fid(const signet_t *signet, unsigned char fid, size_t *data_size);
+static int                     sgnt_field_size_serial_get(const signet_field_t *field);
+static int                     sgnt_signet_size_serial_get(const signet_t *signet);
+static int                     sgnt_signet_index(signet_t *signet);
+static char *                  sgnt_signet_b64_serialize(signet_t *signet);
+static signet_t *              sgnt_binary_binary_deserialize(const unsigned char *in, size_t len);
+static ED25519_KEY *           sgnt_signkey_parse(const unsigned char *serial_key, size_t key_size);
+static int                     sgnt_field_defined_set(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data);
+static int                     sgnt_enckey_set(signet_t *signet, EC_KEY *key, unsigned char format);
+static int                     sgnt_id_set(signet_t *signet, size_t id_size, const unsigned char *id);
+static int                     sgnt_signkey_set(signet_t *signet, ED25519_KEY *key, unsigned char format);
+static int                     sgnt_sig_coc_sign(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_sig_crypto_sign(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_field_sign(signet_t *signet, unsigned char signet_fid, ED25519_KEY *key);
+static int                     sgnt_sig_full_sign(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_sig_id_sign(signet_t *signet, ED25519_KEY *key);
+static int                     sgnt_sig_ssr_sign(signet_t *signet, ED25519_KEY *key);
+static signet_t *              sgnt_signet_dupe(signet_t *signet);
+static signet_t *              sgnt_signet_split(const signet_t *signet, unsigned char fid);
+static signet_t *              sgnt_signet_crypto_split(const signet_t *signet);
+static signet_t *              sgnt_signet_full_split(const signet_t *signet);
 static const char *            sgnt_state_to_str(signet_state_t state);
 static signet_type_t           sgnt_type_get(const signet_t *signet);
 static int                     sgnt_type_set(signet_t *signet, signet_type_t type);
@@ -81,7 +82,7 @@ static int                     sgnt_validate_sig_field(const signet_t *signet, u
 static int                     sgnt_validate_sig_field_key(const signet_t *signet, unsigned char sigfid, ED25519_KEY *key);
 static int                     sgnt_validate_sig_field_multikey(const signet_t *signet, unsigned char sig_fid, ED25519_KEY **keys);
 static signet_state_t          sgnt_validate_structure(const signet_t *signet);
-static int                     sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len);  /* TODO verify function for each type of signatures (message, signet, TLS certificate, software)*/
+static int                     sgnt_msg_sig_verify(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len);  /* TODO verify function for each type of signatures (message, signet, TLS certificate, software)*/
 
 
 /**
@@ -90,7 +91,7 @@ static int                     sgnt_verify_message_sig(const signet_t *signet, e
  * @return	A pointer to a newly allocated signet_t structure type, NULL if failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_create_signet(signet_type_t type) {
+static signet_t *sgnt_signet_create(signet_type_t type) {
 
 	signet_t *signet;
 
@@ -118,7 +119,7 @@ static signet_t *sgnt_create_signet(signet_type_t type) {
  * @param	slen	length of in
  * @return	0 if the checks passed, -1 if at least one failed.
 */
-static int sgnt_serial_check_length(const unsigned char *in, uint32_t slen) {
+static int sgnt_length_serial_check(const unsigned char *in, uint32_t slen) {
 
 	uint32_t signet_length;
 
@@ -141,7 +142,7 @@ static int sgnt_serial_check_length(const unsigned char *in, uint32_t slen) {
  * @param	signet	A pointer to a signet_t object to be parsed.
  * @return	0 if parsing finished successfully, -1 if it failed.
 */
-static int sgnt_serial_index(signet_t *signet) {
+static int sgnt_signet_index(signet_t *signet) {
 
 	uint32_t field_size, name_size;
 	unsigned int at = 0;
@@ -318,7 +319,7 @@ static int sgnt_fid_get_size(const signet_t *signet, unsigned char fid) {
  * @return	The size of signet when serialized, if no signet was passed returns -1.
  *              NOTE: int overflow should not occur signet size s bounded well below 2^31 bits.
 */
-static int sgnt_serial_get_size(const signet_t *signet) {
+static int sgnt_signet_size_serial_get(const signet_t *signet) {
 
 	if(!signet) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -354,7 +355,7 @@ static int sgnt_validate_pok(const signet_t *signet, const unsigned char **dime_
 		RET_ERROR_INT(ERR_UNSPEC, "signet was missing Primary-Org-Key field");
 	}
 
-	if(!(signet_pok = sgnt_fetch_signkey(signet))) {
+	if(!(signet_pok = sgnt_signkey_fetch(signet))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve signet signing key");
 	}
 
@@ -458,7 +459,7 @@ static char *sgnt_fingerprint_upto_fid(const signet_t *signet, unsigned char fid
 
 	memset(hash, 0, SHA_512_SIZE);
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, fid, &data_size))) {
+	if(!(data = sgnt_signet_serialize_upto_fid(signet, fid, &data_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "no signet data to fingerprint");
 	}
 
@@ -485,7 +486,7 @@ static char *sgnt_fingerprint_upto_fid(const signet_t *signet, unsigned char fid
  * @param	fid	Field id that specifies the target fields.
  * @return	Pointer to the first signet_field_t structure in the created linked list. Null if error occurred.
 */
-static signet_field_t *sgnt_create_field_list(const signet_t *signet, unsigned char fid) {
+static signet_field_t *sgnt_fieldlist_create(const signet_t *signet, unsigned char fid) {
 
 	int res;
 	uint32_t offset;
@@ -525,7 +526,7 @@ static signet_field_t *sgnt_create_field_list(const signet_t *signet, unsigned c
 		RET_ERROR_PTR(ERR_UNSPEC, "signet field id does not support creation");
 	}
 
-	if(!(field = sgnt_create_field_node(signet, offset, key))) {
+	if(!(field = sgnt_fieldnode_create(signet, offset, key))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "error creating signet field");
 	}
 
@@ -534,8 +535,8 @@ static signet_field_t *sgnt_create_field_list(const signet_t *signet, unsigned c
 
 	while(offset < signet->size && signet->data[offset] == fid) {
 
-		if(!(temp->next = sgnt_create_field_node(signet, offset, key))) {
-			sgnt_destroy_field_list(field);
+		if(!(temp->next = sgnt_fieldnode_create(signet, offset, key))) {
+			sgnt_fieldlist_destroy(field);
 			RET_ERROR_PTR(ERR_UNSPEC, "error creating signet field");
 		}
 
@@ -554,7 +555,7 @@ static signet_field_t *sgnt_create_field_list(const signet_t *signet, unsigned c
  * @param	key	Pointer to the field id specific key that contains information on the format of the field data.
  * @return	Pointer to the created field structure, NULL on failure.
 */
-static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t offset, signet_field_key_t *key) {
+static signet_field_t *sgnt_fieldnode_create(const signet_t *signet, uint32_t offset, signet_field_key_t *key) {
 
 	uint32_t at = offset;
 	signet_field_t *field;
@@ -583,7 +584,7 @@ static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t o
 		at = field->name_offset + field->name_size;
 
 		if(at >= signet->size) {
-			sgnt_destroy_field_node(field);
+			sgnt_fieldnode_destroy(field);
 			RET_ERROR_PTR(ERR_UNSPEC, "offset exceeded signet size");
 		}
 	}
@@ -598,7 +599,7 @@ static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t o
 		break;
 	case 2:
 		if(at + 1 >= signet->size) {
-			sgnt_destroy_field_node(field);
+			sgnt_fieldnode_destroy(field);
 			RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
 		}
 
@@ -606,7 +607,7 @@ static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t o
 		break;
 	case 3:
 		if(at + 2 >= signet->size) {
-			sgnt_destroy_field_node(field);
+			sgnt_fieldnode_destroy(field);
 			RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet");
 		}
 
@@ -619,7 +620,7 @@ static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t o
 	field->data_offset = at;
 
 	if(at + field->data_size - 1 >= signet->size) {
-		sgnt_destroy_field_node(field);
+		sgnt_fieldnode_destroy(field);
 		RET_ERROR_PTR(ERR_UNSPEC, "buffer overflow in signet operation");
 	}
 
@@ -633,7 +634,7 @@ static signet_field_t *sgnt_create_field_node(const signet_t *signet, uint32_t o
  * @brief	Destroys a chain of signet_field_t structures starting with provided structure, does not effect the linked signet_t structure.
  * @param	field	Pointer to the first signet_field_t in the linked list to be deleted.
 */
-static void sgnt_destroy_field_list(signet_field_t *field) {
+static void sgnt_fieldlist_destroy(signet_field_t *field) {
 
 	signet_field_t *temp = field;
 
@@ -642,7 +643,7 @@ static void sgnt_destroy_field_list(signet_field_t *field) {
 	}
 
 	while(temp) {
-		temp = sgnt_destroy_field_node(temp);
+		temp = sgnt_fieldnode_destroy(temp);
 	}
 
 }
@@ -653,7 +654,7 @@ static void sgnt_destroy_field_list(signet_field_t *field) {
  * @param	field	Pointer to the signet_field_t to be destroyed.
  * @return	Pointer to the signet_field_t that was the destroyed structure was linked to, NULL if the destroyed structure was the last/only structure in the linked list, or error.
 */
-static signet_field_t *sgnt_destroy_field_node(signet_field_t *field) {
+static signet_field_t *sgnt_fieldnode_destroy(signet_field_t *field) {
 
 	signet_field_t *next;
 
@@ -674,7 +675,7 @@ static signet_field_t *sgnt_destroy_field_node(signet_field_t *field) {
  * @return	0 on success -1 on failure.
 */
 
-static int sgnt_dump_field(FILE *fp, const signet_field_t *field) {
+static int sgnt_field_dump(FILE *fp, const signet_field_t *field) {
 
 	char *name, *data = NULL;
 	const char *png_name = "PNG file", *nbuf;
@@ -760,7 +761,7 @@ static int sgnt_dump_field(FILE *fp, const signet_field_t *field) {
  *              NOTE: int overflow should not occur because field size and signet size are bounded well below 2^31 bits.
 */
 
-static int sgnt_serial_get_field_size(const signet_field_t *field) {
+static int sgnt_field_size_serial_get(const signet_field_t *field) {
 
 	int field_size = 1;
 
@@ -788,7 +789,7 @@ static int sgnt_serial_get_field_size(const signet_field_t *field) {
  * @param	fid	Field id that specifies which fields are dumped.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid) {
+static int sgnt_fid_dump(FILE *fp, const signet_t *signet, unsigned int fid) {
 
 	signet_field_t *field, *temp;
 
@@ -796,7 +797,7 @@ static int sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(field = sgnt_create_field_list(signet, fid))) {
+	if(!(field = sgnt_fieldlist_create(signet, fid))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create signet field for data dump");
 	}
 
@@ -804,15 +805,15 @@ static int sgnt_dump_fid(FILE *fp, const signet_t *signet, unsigned int fid) {
 
 	while(temp) {
 
-		if(sgnt_dump_field(fp, temp) < 0) {
-			sgnt_destroy_field_list(field);
+		if(sgnt_field_dump(fp, temp) < 0) {
+			sgnt_fieldlist_destroy(field);
 			RET_ERROR_INT(ERR_UNSPEC, "could not dump field");
 		}
 
 		temp = temp->next;
 	}
 
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	return 0;
 }
@@ -865,7 +866,7 @@ static unsigned char *sgnt_serial_from_fid(const signet_t *signet, unsigned char
  * @param	data_size	Pointer to the length of the returned array.
  * @return	Allocated array of serialized fields, NULL on failure or if the signet was empty.
 */
-static unsigned char *sgnt_serial_from_upto_fid(const signet_t *signet, unsigned char fid, size_t *data_size) {
+static unsigned char *sgnt_signet_serialize_upto_fid(const signet_t *signet, unsigned char fid, size_t *data_size) {
 
 	unsigned char *data;
 
@@ -908,7 +909,7 @@ static unsigned char *sgnt_serial_from_upto_fid(const signet_t *signet, unsigned
  * @param	data_size	Size of field to be removed.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_remove_field_at(signet_t *signet, unsigned int offset, size_t data_size) {
+static int sgnt_field_remove_at(signet_t *signet, unsigned int offset, size_t data_size) {
 
 	size_t signet_size;
 
@@ -952,7 +953,7 @@ static int sgnt_remove_field_at(signet_t *signet, unsigned int offset, size_t da
  * @return	0 on success, -1 on failure.
 */
 
-static int sgnt_create_field_at(signet_t *signet, unsigned int offset, size_t field_size, const unsigned char *field_data) {
+static int sgnt_field_create_at(signet_t *signet, unsigned int offset, size_t field_size, const unsigned char *field_data) {
 
 	uint32_t signet_size;
 
@@ -989,7 +990,7 @@ static int sgnt_create_field_at(signet_t *signet, unsigned int offset, size_t fi
  * @param	key	ed25519 key object containing the private key, which is used for signing.
  * @return	0 if signing was successful, otherwise -1.
 */
-static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_KEY *key) {
+static int sgnt_field_sign(signet_t *signet, unsigned char signet_fid, ED25519_KEY *key) {
 
 	int res;
 	size_t data_size;
@@ -1024,7 +1025,7 @@ static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_K
 		RET_ERROR_INT(ERR_UNSPEC, "required fields for signet signing were missing");
 	}
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, signet_fid - 1, &data_size))) {
+	if(!(data = sgnt_signet_serialize_upto_fid(signet, signet_fid - 1, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not get signet data for signature");
 	}
 
@@ -1041,12 +1042,12 @@ static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_K
 			RET_ERROR_INT(ERR_UNSPEC, "error searching for field in signet");
 		}
 
-		if(sgnt_remove_fid_num(signet, signet_fid, 1) < 0) {
+		if(sgnt_fid_num_remove(signet, signet_fid, 1) < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "could not remove signature field from signet");
 		}
 	}
 
-	if ((res = sgnt_set_defined_field(signet, signet_fid, ED25519_SIG_SIZE, (const unsigned char *)sig)) < 0) {
+	if ((res = sgnt_field_defined_set(signet, signet_fid, ED25519_SIG_SIZE, (const unsigned char *)sig)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not add signature field to signet");
 	}
 
@@ -1063,7 +1064,7 @@ static int sgnt_sign_field(signet_t *signet, unsigned char signet_fid, ED25519_K
  * @return	Pointer to the newly created and allocated signet_t structure or NULL on error.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile) {
+static signet_t *sgnt_signet_create_w_keys(signet_type_t type, const char *keysfile) {
 
 	EC_KEY *enc_key;
 	ED25519_KEY *sign_key;
@@ -1112,26 +1113,26 @@ static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysf
 		RET_ERROR_PTR(ERR_UNSPEC, "could not write private keys to file");
 	}
 
-	if(!(signet = sgnt_create_signet(type))) {
+	if(!(signet = sgnt_signet_create(type))) {
 		_free_ec_key(enc_key);
 		_free_ed25519_key(sign_key);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create signet object");
 	}
 
-	res = sgnt_set_signkey(signet, sign_key, SIGNKEY_DEFAULT_FORMAT);
+	res = sgnt_signkey_set(signet, sign_key, SIGNKEY_DEFAULT_FORMAT);
 	_free_ed25519_key(sign_key);
 
 	if(res < 0) {
-		sgnt_destroy_signet(signet);
+		sgnt_signet_destroy(signet);
 		_free_ec_key(enc_key);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not add signing key field to signet");
 	}
 
-	res = sgnt_set_enckey(signet, enc_key, 0);
+	res = sgnt_enckey_set(signet, enc_key, 0);
 	_free_ec_key(enc_key);
 
 	if(res < 0) {
-		sgnt_destroy_signet(signet);
+		sgnt_signet_destroy(signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not add encryption key field to signet");
 	}
 
@@ -1147,7 +1148,7 @@ static signet_t *sgnt_create_signet_w_keys(signet_type_t type, const char *keysf
  * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_file_to_signet(const char *filename) {
+static signet_t *sgnt_signet_load(const char *filename) {
 
 	char *b64_signet = NULL;
 	signet_t *signet;
@@ -1160,7 +1161,7 @@ static signet_t *sgnt_file_to_signet(const char *filename) {
 		RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not load signet from file: %s", filename);
 	}
 
-	if(!(signet = sgnt_serial_b64_to_signet(b64_signet))) {
+	if(!(signet = sgnt_signet_b64_deserialize(b64_signet))) {
 		free(b64_signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize signet from base64 encoded data");
 	}
@@ -1185,7 +1186,7 @@ static int sgnt_file_create(signet_t *signet, const char *filename) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(armored = sgnt_serial_signet_to_b64(signet))) {
+	if(!(armored = sgnt_signet_b64_serialize(signet))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize armored signet");
 	}
 
@@ -1209,7 +1210,7 @@ static int sgnt_file_create(signet_t *signet, const char *filename) {
  * @return	A pointer to a newly allocated signet_t structure type, NULL on failure.
  * @free_using{sgnt_destroy_signet}
  */
-static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
+static signet_t *sgnt_binary_binary_deserialize(const unsigned char *in, size_t in_len) {
 
 	size_t data_size = 0;
 	dime_number_t magic_num;
@@ -1220,7 +1221,7 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(sgnt_serial_check_length(in, in_len) < 0) {
+	if(sgnt_length_serial_check(in, in_len) < 0) {
 		RET_ERROR_PTR(ERR_UNSPEC, "supplied buffer length was too small for signet input");
 	}
 
@@ -1243,7 +1244,7 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
 
 	}
 
-	if(!(signet = sgnt_create_signet(type))) {
+	if(!(signet = sgnt_signet_create(type))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create new signet");
 	}
 
@@ -1251,7 +1252,7 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
 
 	if(!(signet->data = malloc(data_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
-		sgnt_destroy_signet(signet);
+		sgnt_signet_destroy(signet);
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for signet data");
 	}
 
@@ -1259,8 +1260,8 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
 	memcpy(signet->data, in + SIGNET_HEADER_SIZE, data_size);
 	signet->size = (uint32_t)data_size;
 
-	if(sgnt_serial_index(signet) < 0) {
-		sgnt_destroy_signet(signet);
+	if(sgnt_signet_index(signet) < 0) {
+		sgnt_signet_destroy(signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not parse input buffer into signet");
 	}
 
@@ -1274,7 +1275,7 @@ static signet_t *sgnt_serial_to_signet(const unsigned char *in, size_t in_len) {
  * @return	Pointer to newly allocated signet structure, NULL if failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_serial_b64_to_signet(const char *b64_in) {
+static signet_t *sgnt_signet_b64_deserialize(const char *b64_in) {
 
 	unsigned char *in;
 	size_t size = 0;
@@ -1288,7 +1289,7 @@ static signet_t *sgnt_serial_b64_to_signet(const char *b64_in) {
 		RET_ERROR_PTR(ERR_UNSPEC, "base64 decoding of armored signet failed");
 	}
 
-	if (!(signet = sgnt_serial_to_signet(in, size))) {
+	if (!(signet = sgnt_binary_binary_deserialize(in, size))) {
 		free(in);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to initialize signet from data");
 	}
@@ -1303,7 +1304,7 @@ static signet_t *sgnt_serial_b64_to_signet(const char *b64_in) {
  * @brief	Destroys a signet and frees the memory.
  * @param	signet	Pointer to signet to be destroyed.
 */
-static void sgnt_destroy_signet(signet_t *signet) {
+static void sgnt_signet_destroy(signet_t *signet) {
 
 	if(!signet) {
 		return;
@@ -1327,7 +1328,7 @@ static void sgnt_destroy_signet(signet_t *signet) {
  * @return	Signet serialized into binary data. Null on error.
  * @free_using{free}
 */
-static unsigned char *sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size) {
+static unsigned char *sgnt_signet_binary_serialize(signet_t *signet, uint32_t *serial_size) {
 
 	unsigned char *serial;
 	dime_number_t number;
@@ -1375,7 +1376,7 @@ static unsigned char *sgnt_serial_from_signet(signet_t *signet, uint32_t *serial
  * @return	Signet serialized into b64 data. Null on error.
  * @free_using{free}
 */
-static char *sgnt_serial_signet_to_b64(signet_t *signet) {
+static char *sgnt_signet_b64_serialize(signet_t *signet) {
 
 	unsigned char *serial;
 	uint32_t serial_size = 0;
@@ -1385,7 +1386,7 @@ static char *sgnt_serial_signet_to_b64(signet_t *signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(serial = sgnt_serial_from_signet(signet, &serial_size))) {
+	if(!(serial = sgnt_signet_binary_serialize(signet, &serial_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize signet");
 	}
 
@@ -1407,7 +1408,7 @@ static char *sgnt_serial_signet_to_b64(signet_t *signet) {
  * @param	fp	File descriptor the signet is dumped to.
  * @param	signet	Pointer to the signet_t structure to be dumped.
 */
-static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
+static void sgnt_signet_dump(FILE *fp, signet_t *signet) {
 
 	const char *type;
 	int res;
@@ -1455,7 +1456,7 @@ static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
 			return;
 		} else if(res == 1) {
 
-			if(sgnt_dump_fid(fp, signet, i) < 0) {
+			if(sgnt_fid_dump(fp, signet, i) < 0) {
 				_clear_error_stack();
 				return;
 			}
@@ -1484,7 +1485,7 @@ static void sgnt_dump_signet(FILE *fp, signet_t *signet) {
  * @return	The number of fields with specified field id. On various errors returns -1.
  *              NOTE: int overflow should not occur because of field size lower and signet size upper bounds.
 */
-static int sgnt_fid_get_count(const signet_t *signet, unsigned char fid) {
+static int sgnt_fid_count_get(const signet_t *signet, unsigned char fid) {
 
 	int count = 0, res;
 	signet_field_t *field, *temp;
@@ -1499,7 +1500,7 @@ static int sgnt_fid_get_count(const signet_t *signet, unsigned char fid) {
 		return count;
 	}
 
-	if(!(field = sgnt_create_field_list(signet, fid))) {
+	if(!(field = sgnt_fieldlist_create(signet, fid))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not create signet field object");
 	}
 
@@ -1510,7 +1511,7 @@ static int sgnt_fid_get_count(const signet_t *signet, unsigned char fid) {
 		++count;
 	}
 
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	return count;
 }
@@ -1593,21 +1594,21 @@ static signet_state_t sgnt_validate_structure(const signet_t *signet) {
 				return SS_MALFORMED;
 			}
 
-			if(!(field = sgnt_create_field_list(signet, i))) {
+			if(!(field = sgnt_fieldlist_create(signet, i))) {
 				return SS_MALFORMED;
 			}
 
 			if(keys[i].unique && field->next) {
-				sgnt_destroy_field_list(field);
+				sgnt_fieldlist_destroy(field);
 				return SS_MALFORMED;
 			}
 
-			sgnt_destroy_field_list(field);
+			sgnt_fieldlist_destroy(field);
 		}
 	}
 
 	/* check to avoid signet exceeding maximum size */
-	if(sgnt_serial_get_size(signet) > SIGNET_MAX_SIZE) {
+	if(sgnt_signet_size_serial_get(signet) > SIGNET_MAX_SIZE) {
 		RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "signet size exceeds maximum size");
 	}
 
@@ -1707,7 +1708,7 @@ static signet_type_t sgnt_type_get(const signet_t *signet) {
  * @param	out_len	Pointer to the length of returned array.
  * @return	Array containing the binary data of the specified field, NULL if an error occurs. Caller is responsible for freeing memory.
 */
-static unsigned char *sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, uint32_t num, size_t *out_len) {
+static unsigned char *sgnt_fid_num_fetch(const signet_t *signet, unsigned char fid, uint32_t num, size_t *out_len) {
 
 	int res;
 	unsigned char *data;
@@ -1723,7 +1724,7 @@ static unsigned char *sgnt_fetch_fid_num(const signet_t *signet, unsigned char f
 		RET_ERROR_PTR(ERR_UNSPEC, "specified field does not exist");
 	}
 
-	if(!(field = sgnt_create_field_list(signet, fid))) {
+	if(!(field = sgnt_fieldlist_create(signet, fid))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not create signet field");
 	}
 
@@ -1733,21 +1734,21 @@ static unsigned char *sgnt_fetch_fid_num(const signet_t *signet, unsigned char f
 		temp = temp->next;
 
 		if(!temp) {
-			sgnt_destroy_field_list(field);
+			sgnt_fieldlist_destroy(field);
 			RET_ERROR_PTR(ERR_UNSPEC, "signet field index exceeded number of present field elements");
 		}
 	}
 
 	if(!(data = malloc(temp->data_size))) {
 		PUSH_ERROR_SYSCALL("malloc");
-		sgnt_destroy_field_list(field);
+		sgnt_fieldlist_destroy(field);
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for signet data");
 	}
 
 	*out_len = temp->data_size;
 	memset(data, 0, *out_len);
 	memcpy(data, &(signet->data[temp->data_offset]), *out_len);
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	return data;
 }
@@ -1761,7 +1762,7 @@ static unsigned char *sgnt_fetch_fid_num(const signet_t *signet, unsigned char f
  * @param	data_size       Pointer to the size of the array that gets returned by the function.
  * @return	The array containing the data from the specified field or NULL in case of failure such as if the field was not found.
 */
-static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size) {
+static unsigned char *sgnt_field_undefined_fetch(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size) {
 
 	int res;
 	unsigned char undef_id, *data;
@@ -1791,7 +1792,7 @@ static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t 
 		RET_ERROR_PTR(ERR_UNSPEC, "no undefined fields exist in signet");
 	}
 
-	if(!(field = sgnt_create_field_list(signet, undef_id))) {
+	if(!(field = sgnt_fieldlist_create(signet, undef_id))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "failed to create signet field object");
 	}
 
@@ -1805,14 +1806,14 @@ static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t 
 
 				if(!(data = malloc(temp->data_size))) {
 					PUSH_ERROR_SYSCALL("malloc");
-					sgnt_destroy_field_list(field);
+					sgnt_fieldlist_destroy(field);
 					RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for signet field data");
 				}
 
 				memset(data, 0, temp->data_size);
 				memcpy(data, &(signet->data[temp->data_offset]), temp->data_size);
 				*data_size = temp->data_size;
-				sgnt_destroy_field_list(field);
+				sgnt_fieldlist_destroy(field);
 
 				return data;
 			}
@@ -1821,7 +1822,7 @@ static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t 
 		temp = (signet_field_t *)temp->next;
 	}
 
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	RET_ERROR_PTR(ERR_UNSPEC, "could not find undefined field with requested name");
 }
@@ -1834,7 +1835,7 @@ static unsigned char *sgnt_fetch_undefined_field(const signet_t *signet, size_t 
  * @return	ED25519_KEY object.
  * @free_using{free_ed25519_key}
 */
-static ED25519_KEY *sgnt_serial_to_signkey(const unsigned char *serial_key, size_t key_size) {
+static ED25519_KEY *sgnt_signkey_parse(const unsigned char *serial_key, size_t key_size) {
 
 	ED25519_KEY *key;
 
@@ -1875,7 +1876,7 @@ static ED25519_KEY *sgnt_serial_to_signkey(const unsigned char *serial_key, size
  * @return	Serial data of the provided signing key in specified format.
  * @free_using{free}
 */
-static unsigned char *sgnt_serial_from_signkey(ED25519_KEY *key, unsigned char format, size_t *key_size) {
+static unsigned char *sgnt_signkey_format(ED25519_KEY *key, unsigned char format, size_t *key_size) {
 
 	unsigned char *serial_key;
 	size_t serial_size;
@@ -1910,7 +1911,7 @@ static unsigned char *sgnt_serial_from_signkey(ED25519_KEY *key, unsigned char f
  * @return	Pointer to the target ed25519 public key.
  * @free_using{free_ed25519_key}
 */
-static ED25519_KEY *sgnt_fetch_signkey(const signet_t *signet) {
+static ED25519_KEY *sgnt_signkey_fetch(const signet_t *signet) {
 
 	size_t key_size;
 	unsigned char fid, *serial_key;
@@ -1937,11 +1938,11 @@ static ED25519_KEY *sgnt_fetch_signkey(const signet_t *signet) {
 
 	}
 
-	if(!(serial_key = sgnt_fetch_fid_num(signet, fid, 1, &key_size))) {
+	if(!(serial_key = sgnt_fid_num_fetch(signet, fid, 1, &key_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve signing key");
 	}
 
-	key = sgnt_serial_to_signkey(serial_key, key_size);
+	key = sgnt_signkey_parse(serial_key, key_size);
 	free(serial_key);
 
 	if(!key) {
@@ -1958,7 +1959,7 @@ static ED25519_KEY *sgnt_fetch_signkey(const signet_t *signet) {
  * @return	Pointer to the target encryption public key.
  * @free_using{free_ec_key}
 */
-static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
+static EC_KEY *sgnt_enckey_fetch(const signet_t *signet) {
 
 	size_t key_size;
 	unsigned char fid, *serial_key;
@@ -1985,7 +1986,7 @@ static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
 
 	}
 
-	if(!(serial_key = sgnt_fetch_fid_num(signet, fid, 1, &key_size))) {
+	if(!(serial_key = sgnt_fid_num_fetch(signet, fid, 1, &key_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve signing key");
 	}
 
@@ -2007,7 +2008,7 @@ static EC_KEY *sgnt_fetch_enckey(const signet_t *signet) {
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_permissions_t perm) {
+static ED25519_KEY **sgnt_signkey_fetch_by_perm(const signet_t *signet, sok_permissions_t perm) {
 
 	int res;
 	ED25519_KEY **keys;
@@ -2036,7 +2037,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
 			RET_ERROR_PTR(ERR_UNSPEC, "error checking for existence of SOKs in signet");
 		}
 
-		if(!(field = list = sgnt_create_field_list(signet, SIGNET_ORG_SOK))) {
+		if(!(field = list = sgnt_fieldlist_create(signet, SIGNET_ORG_SOK))) {
 			RET_ERROR_PTR(ERR_UNSPEC, "error creating field list of signet SOKs");
 		}
 
@@ -2055,16 +2056,16 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
 
 	if(!(keys = malloc(buflen))) {
 		PUSH_ERROR_SYSCALL("malloc");
-		sgnt_destroy_field_list(list);
+		sgnt_fieldlist_destroy(list);
 		RET_ERROR_PTR(ERR_NOMEM, "could not allocate memory for array of keys");
 	}
 
 	memset(keys, 0, buflen);
 	field = list;
 
-	if(!(keys[0] = sgnt_fetch_signkey(signet))) {
+	if(!(keys[0] = sgnt_signkey_fetch(signet))) {
 		_free_ed25519_key_chain(keys);
-		sgnt_destroy_field_list(list);
+		sgnt_fieldlist_destroy(list);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch signet signing key");
 	}
 
@@ -2072,9 +2073,9 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
 		// select the keys that have AT LEAST all the specified permissions
 		if(!((signet->data[field->data_offset] ^ bin_perm) & bin_perm)) {
 
-			if(!(keys[key_count] = sgnt_fetch_sok_num(signet, list_count))) {
+			if(!(keys[key_count] = sgnt_sok_num_fetch(signet, list_count))) {
 				_free_ed25519_key_chain(keys);
-				sgnt_destroy_field_list(list);
+				sgnt_fieldlist_destroy(list);
 				RET_ERROR_PTR(ERR_UNSPEC, "could not fetch signet sok");
 			}
 
@@ -2086,7 +2087,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
 	}
 
 	if(list) {
-		sgnt_destroy_field_list(list);
+		sgnt_fieldlist_destroy(list);
 	}
 
 	return keys;
@@ -2100,7 +2101,7 @@ static ED25519_KEY **sgnt_fetch_signkey_by_perm(const signet_t *signet, sok_perm
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_msg_signkeys(const signet_t *signet) {
+static ED25519_KEY **sgnt_signkeys_msg_fetch(const signet_t *signet) {
 
 	ED25519_KEY **res;
 
@@ -2108,7 +2109,7 @@ static ED25519_KEY **sgnt_fetch_msg_signkeys(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(res = sgnt_fetch_signkey_by_perm(signet, SIGNET_SOK_MSG))) {
+	if(!(res = sgnt_signkey_fetch_by_perm(signet, SIGNET_SOK_MSG))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch list of message signing keys");
 	}
 
@@ -2123,7 +2124,7 @@ static ED25519_KEY **sgnt_fetch_msg_signkeys(const signet_t *signet) {
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_signet_signkeys(const signet_t *signet) {
+static ED25519_KEY **sgnt_signkeys_signet_fetch(const signet_t *signet) {
 
 	ED25519_KEY **res;
 
@@ -2131,7 +2132,7 @@ static ED25519_KEY **sgnt_fetch_signet_signkeys(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(res = sgnt_fetch_signkey_by_perm(signet, SIGNET_SOK_SIGNET))) {
+	if(!(res = sgnt_signkey_fetch_by_perm(signet, SIGNET_SOK_SIGNET))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch list of message signing keys");
 	}
 
@@ -2146,7 +2147,7 @@ static ED25519_KEY **sgnt_fetch_signet_signkeys(const signet_t *signet) {
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_tls_signkeys(const signet_t *signet) {
+static ED25519_KEY **sgnt_signkeys_tls_fetch(const signet_t *signet) {
 
 	ED25519_KEY **res;
 
@@ -2154,7 +2155,7 @@ static ED25519_KEY **sgnt_fetch_tls_signkeys(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(res = sgnt_fetch_signkey_by_perm(signet, SIGNET_SOK_TLS))) {
+	if(!(res = sgnt_signkey_fetch_by_perm(signet, SIGNET_SOK_TLS))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch list of message signing keys");
 	}
 
@@ -2169,7 +2170,7 @@ static ED25519_KEY **sgnt_fetch_tls_signkeys(const signet_t *signet) {
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-static ED25519_KEY **sgnt_fetch_software_signkeys(const signet_t *signet) {
+static ED25519_KEY **sgnt_signkeys_software_fetch(const signet_t *signet) {
 
 	ED25519_KEY **res;
 
@@ -2177,7 +2178,7 @@ static ED25519_KEY **sgnt_fetch_software_signkeys(const signet_t *signet) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(res = sgnt_fetch_signkey_by_perm(signet, SIGNET_SOK_SOFTWARE))) {
+	if(!(res = sgnt_signkey_fetch_by_perm(signet, SIGNET_SOK_SOFTWARE))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not fetch list of message signing keys");
 	}
 
@@ -2192,7 +2193,7 @@ static ED25519_KEY **sgnt_fetch_software_signkeys(const signet_t *signet) {
  * @return	Retrieved ED25519 key.
  * @free_using{free_ed25519_key}
 */
-static ED25519_KEY *sgnt_fetch_sok_num(const signet_t *signet, unsigned int num) {
+static ED25519_KEY *sgnt_sok_num_fetch(const signet_t *signet, unsigned int num) {
 
 	ED25519_KEY *key;
 	size_t key_size;
@@ -2206,15 +2207,15 @@ static ED25519_KEY *sgnt_fetch_sok_num(const signet_t *signet, unsigned int num)
 		RET_ERROR_PTR(ERR_UNSPEC, "only organizational signets can have SOKs");
 	}
 
-	if((unsigned int)sgnt_fid_get_count(signet, SIGNET_ORG_SOK) < num) {
+	if((unsigned int)sgnt_fid_count_get(signet, SIGNET_ORG_SOK) < num) {
 		RET_ERROR_PTR(ERR_UNSPEC, "there are less SOKs than the specified number");
 	}
 
-	if(!(serial_key = sgnt_fetch_fid_num(signet, SIGNET_ORG_SOK, num, &key_size))) {
+	if(!(serial_key = sgnt_fid_num_fetch(signet, SIGNET_ORG_SOK, num, &key_size))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve signing key");
 	}
 
-	key = sgnt_serial_to_signkey(serial_key + 1, key_size - 1);
+	key = sgnt_signkey_parse(serial_key + 1, key_size - 1);
 	free(serial_key);
 
 	if(!key) {
@@ -2235,7 +2236,7 @@ static ED25519_KEY *sgnt_fetch_sok_num(const signet_t *signet, unsigned int num)
  * @param	data		Field data.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
+static int sgnt_field_defined_create(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
 
 	int res;
 	size_t at = 0, field_size = 1;
@@ -2354,7 +2355,7 @@ static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t
 		}
 	}
 
-	res = sgnt_create_field_at(signet, offset, field_size, (const unsigned char *)field_data);
+	res = sgnt_field_create_at(signet, offset, field_size, (const unsigned char *)field_data);
 	free(field_data);
 
 	if(res) {
@@ -2391,7 +2392,7 @@ static int sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t
  * @param	perm		Permissions for the usage of the SOK.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
+static int sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
 
 	int res;
 	unsigned char *serial_key, *serial_field;
@@ -2405,7 +2406,7 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
 		RET_ERROR_INT(ERR_UNSPEC, "only organizational signets have a secondary organizational key field type");
 	}
 
-	if(!(serial_key = sgnt_serial_from_signkey(key, format, &serial_size))) {
+	if(!(serial_key = sgnt_signkey_format(key, format, &serial_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize ed25519 public key to specified signet format");
 	}
 
@@ -2419,7 +2420,7 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
 	free(serial_key);
 	serial_field[0] = (unsigned char) perm;
 	++serial_size;
-	res = sgnt_create_defined_field(signet, SIGNET_ORG_SOK, serial_size, serial_field);
+	res = sgnt_field_defined_create(signet, SIGNET_ORG_SOK, serial_size, serial_field);
 	free(serial_field);
 
 	if(res) {
@@ -2439,7 +2440,7 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
  * @param	data		Pointer to field data.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data) {
+static int sgnt_field_undefined_create(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data) {
 
 	int res;
 	size_t at = 0, field_size = 1;
@@ -2502,7 +2503,7 @@ static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const
 		}
 	}
 
-	res = sgnt_create_field_at(signet, offset, field_size, (const unsigned char *)field_data);
+	res = sgnt_field_create_at(signet, offset, field_size, (const unsigned char *)field_data);
 	free(field_data);
 
 	if(res) {
@@ -2538,7 +2539,7 @@ static int sgnt_create_undefined_field(signet_t *signet, size_t name_size, const
  * @param	num	The number in which the field to be removed appears amongst other fields with the same field id in the target signet, (1, 2, ...).
  * @return	Number of fields with specified id on success, -1 on failure.
 */
-static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
+static int sgnt_fid_num_remove(signet_t *signet, unsigned char fid, int num) {
 
 	int num_fields, res;
 	int field_size;
@@ -2555,7 +2556,7 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 		RET_ERROR_INT(ERR_UNSPEC, "field not found in signet");
 	}
 
-	if((num_fields = sgnt_fid_get_count(signet, fid)) < 0) {
+	if((num_fields = sgnt_fid_count_get(signet, fid)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not calculate signet field count with specified field id");
 	}
 
@@ -2563,7 +2564,7 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 		RET_ERROR_INT(ERR_UNSPEC, "signet field index exceeds field count");
 	}
 
-	if(!(field = sgnt_create_field_list(signet, fid))) {
+	if(!(field = sgnt_fieldlist_create(signet, fid))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve fields from signet");
 	}
 
@@ -2572,7 +2573,7 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 	for(int i = 1; i < num; ++i) {
 
 		if(!temp) {
-			sgnt_destroy_field_list(field);
+			sgnt_fieldlist_destroy(field);
 			RET_ERROR_INT(ERR_UNSPEC, "signet field index does not exist");
 		}
 
@@ -2581,12 +2582,12 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 
 	offset = temp->id_offset;
 
-	if((field_size = sgnt_serial_get_field_size((const signet_field_t *)temp)) < 0) {
-		sgnt_destroy_field_list(field);
+	if((field_size = sgnt_field_size_serial_get((const signet_field_t *)temp)) < 0) {
+		sgnt_fieldlist_destroy(field);
 		RET_ERROR_INT(ERR_UNSPEC, "could not calculate signet field size");
 	}
 
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	if(num_fields == 1) {
 		signet->fields[fid] = 0;
@@ -2604,7 +2605,7 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
 		}
 	}
 
-	if(sgnt_remove_field_at(signet, offset, field_size) < 0) {
+	if(sgnt_field_remove_at(signet, offset, field_size) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not remove specified field from signet");
 	}
 
@@ -2619,7 +2620,7 @@ static int sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
  * @param	name		Name of the field to be removed.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name) {
+static int sgnt_field_undefined_remove(signet_t *signet, size_t name_size, const unsigned char *name) {
 
 	int num_fields, res;
 	size_t field_size;
@@ -2651,11 +2652,11 @@ static int sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const
 		RET_ERROR_INT(ERR_UNSPEC, "field id not found in signet");
 	}
 
-	if((num_fields = sgnt_fid_get_count(signet, fid)) < 0) {
+	if((num_fields = sgnt_fid_count_get(signet, fid)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not calculate field count for signet");
 	}
 
-	if(!(field = sgnt_create_field_list(signet, fid))) {
+	if(!(field = sgnt_fieldlist_create(signet, fid))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve signet fields with specified field id");
 	}
 
@@ -2667,13 +2668,13 @@ static int sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const
 
 			if(memcmp(temp->signet->data + temp->name_offset, name, name_size) == 0) {
 				offset = temp->id_offset;
-				field_size = sgnt_serial_get_field_size((const signet_field_t *)temp);
+				field_size = sgnt_field_size_serial_get((const signet_field_t *)temp);
 				break;
 			}
 		}
 	}
 
-	sgnt_destroy_field_list(field);
+	sgnt_fieldlist_destroy(field);
 
 	if(num_fields == 1) {
 		signet->fields[fid] = 0;
@@ -2691,7 +2692,7 @@ static int sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const
 		}
 	}
 
-	if(sgnt_remove_field_at(signet, offset, field_size) < 0) {
+	if(sgnt_field_remove_at(signet, offset, field_size) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not remove specified field from signet");
 	}
 
@@ -2707,7 +2708,7 @@ static int sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const
  * @param	data		Array contaning field data.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
+static int sgnt_field_defined_set(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
 
 	int result;
 
@@ -2721,12 +2722,12 @@ static int sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t da
 			RET_ERROR_INT(ERR_UNSPEC, "error searching for field in signet");
 		}
 
-		if(sgnt_remove_fid_num(signet, fid, 1) < 0) {
+		if(sgnt_fid_num_remove(signet, fid, 1) < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "could not remove old signet field value");
 		}
 	}
 
-	if(sgnt_create_defined_field(signet, fid, data_size, data) < 0) {
+	if(sgnt_field_defined_create(signet, fid, data_size, data) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not add field to signet");
 	}
 
@@ -2741,7 +2742,7 @@ static int sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t da
  * @param	id		Signet id.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id) {
+static int sgnt_id_set(signet_t *signet, size_t id_size, const unsigned char *id) {
 
 	int result;
 	unsigned char fid;
@@ -2767,7 +2768,7 @@ static int sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned ch
 
 	}
 
-	if((result = sgnt_set_defined_field(signet, fid, id_size, id)) < 0) {
+	if((result = sgnt_field_defined_set(signet, fid, id_size, id)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not set signet id field");
 	}
 
@@ -2782,7 +2783,7 @@ static int sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned ch
  * @param	format	Format specifier. TODO currently unused! (spec requires 0x04 but openssl natively serializes it to 0x02).
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) {
+static int sgnt_enckey_set(signet_t *signet, EC_KEY *key, unsigned char format) {
 
 	int res;
 	unsigned char *serial_key = NULL, fid;
@@ -2820,7 +2821,7 @@ static int sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) 
 		RET_ERROR_INT(ERR_UNSPEC, "failed serialiation of public EC encryption key");
 	}
 
-	res = sgnt_set_defined_field(signet, fid, serial_size, serial_key);
+	res = sgnt_field_defined_set(signet, fid, serial_size, serial_key);
 	free(serial_key);
 
 	if(res < 0) {
@@ -2838,7 +2839,7 @@ static int sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) 
  * @param	format	Format specifier byte, dictating the format.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format) {
+static int sgnt_signkey_set(signet_t *signet, ED25519_KEY *key, unsigned char format) {
 
 	int res;
 	unsigned char *serial_key, fid;
@@ -2864,11 +2865,11 @@ static int sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char fo
 
 	}
 
-	if(!(serial_key = sgnt_serial_from_signkey(key, format, &serial_size))) {
+	if(!(serial_key = sgnt_signkey_format(key, format, &serial_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize provided public ed25519 key to signet format");
 	}
 
-	res = sgnt_set_defined_field(signet, fid, serial_size, serial_key);
+	res = sgnt_field_defined_set(signet, fid, serial_size, serial_key);
 	free(serial_key);
 
 	if(res < 0) {
@@ -2908,7 +2909,7 @@ static int sgnt_type_set(signet_t *signet, signet_type_t type) {
  * @return	Pointer to a fresh allocated signet.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split(const signet_t *signet, unsigned char fid) {
+static signet_t *sgnt_signet_split(const signet_t *signet, unsigned char fid) {
 
 	unsigned char *data = NULL, *split;
 	size_t data_size, split_size;
@@ -2933,7 +2934,7 @@ static signet_t *sgnt_split(const signet_t *signet, unsigned char fid) {
 
 	}
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, fid, &data_size))) {
+	if(!(data = sgnt_signet_serialize_upto_fid(signet, fid, &data_size))) {
 
 		if(get_last_error()) {
 			RET_ERROR_PTR(ERR_UNSPEC, "could not serialize specified signet fields");
@@ -2962,7 +2963,7 @@ static signet_t *sgnt_split(const signet_t *signet, unsigned char fid) {
 		free(data);
 	}
 
-	split_signet = sgnt_serial_to_signet(split, split_size);
+	split_signet = sgnt_binary_binary_deserialize(split, split_size);
 	free(split);
 
 	if(!split_signet) {
@@ -2979,7 +2980,7 @@ static signet_t *sgnt_split(const signet_t *signet, unsigned char fid) {
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split_full(const signet_t *signet) {
+static signet_t *sgnt_signet_full_split(const signet_t *signet) {
 
 	unsigned char fid;
 	signet_t *split_signet;
@@ -3002,7 +3003,7 @@ static signet_t *sgnt_split_full(const signet_t *signet) {
 
 	}
 
-	if(!(split_signet = sgnt_split(signet, fid))) {
+	if(!(split_signet = sgnt_signet_split(signet, fid))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize split signet");
 	}
 
@@ -3016,7 +3017,7 @@ static signet_t *sgnt_split_full(const signet_t *signet) {
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{sgnt_destroy_signet}
 */
-static signet_t *sgnt_split_crypto(const signet_t *signet) {
+static signet_t *sgnt_signet_crypto_split(const signet_t *signet) {
 
 	unsigned char fid;
 	signet_t *split_signet;
@@ -3039,7 +3040,7 @@ static signet_t *sgnt_split_crypto(const signet_t *signet) {
 
 	}
 
-	if(!(split_signet = sgnt_split(signet, fid))) {
+	if(!(split_signet = sgnt_signet_split(signet, fid))) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize split signet");
 	}
 
@@ -3213,7 +3214,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 
 	if(type == SIGNET_TYPE_SSR) {
 
-		if(!(user_key = sgnt_fetch_signkey(signet))) {
+		if(!(user_key = sgnt_signkey_fetch(signet))) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not retrieve signing key");
 		}
 
@@ -3236,7 +3237,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 				return SS_BROKEN_COC;
 			} else {
 
-				if(!(prev_key = sgnt_fetch_signkey(previous))) {
+				if(!(prev_key = sgnt_signkey_fetch(previous))) {
 					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error while retrieving signet signing key");
 				}
 
@@ -3319,7 +3320,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "the signet passed to verify the user signet was not an org signet");
 		}
 
-		if(!(org_keys = sgnt_fetch_signet_signkeys(orgsig))) {
+		if(!(org_keys = sgnt_signkeys_signet_fetch(orgsig))) {
 			RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "could not retrieve signing keys from organizational signet");
 		}
 
@@ -3364,7 +3365,7 @@ static signet_state_t  sgnt_validate_all(const signet_t *signet, const signet_t 
 				return SS_BROKEN_COC;
 			} else {
 
-				if(!(prev_key = sgnt_fetch_signkey(previous))) {
+				if(!(prev_key = sgnt_signkey_fetch(previous))) {
 					RET_ERROR_CUST(SS_UNKNOWN, ERR_UNSPEC, "error while retrieving previous signet public signing key");
 				}
 
@@ -3442,11 +3443,11 @@ static int sgnt_validate_sig_field_key(const signet_t *signet, unsigned char sig
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
 	}
 
-	if(!(data = sgnt_serial_from_upto_fid(signet, sig_fid - 1, &data_size))) {
+	if(!(data = sgnt_signet_serialize_upto_fid(signet, sig_fid - 1, &data_size))) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not get signet fields for signature operation");
 	}
 
-	if(!(sig = sgnt_fetch_fid_num(signet, sig_fid, 1, &signet_size))) {
+	if(!(sig = sgnt_fid_num_fetch(signet, sig_fid, 1, &signet_size))) {
 		free(data);
 		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve user signet signature field");
 	}
@@ -3473,7 +3474,7 @@ static int sgnt_validate_sig_field_key(const signet_t *signet, unsigned char sig
  * @param	buf_len	Length of data buffer.
  * @return	1 on successful verification, 0 if the signature was invalid, -1 if an error occurred.
 */
-static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len) {
+static int sgnt_msg_sig_verify(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len) {
 
 	int res, result = 0;
 	ED25519_KEY **keys = NULL;
@@ -3488,7 +3489,7 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
 		RET_ERROR_INT(ERR_UNSPEC, "SSR cannot be used for user message signature verification");
 	} else if (sigtype == SIGNET_TYPE_USER) {
 
-		if(!(key = sgnt_fetch_signkey(signet))) {
+		if(!(key = sgnt_signkey_fetch(signet))) {
 			RET_ERROR_INT(ERR_UNSPEC, "error retrieving signing key from signet");
 		}
 
@@ -3504,7 +3505,7 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
 		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
 	}
 
-	if(!(keys = sgnt_fetch_msg_signkeys(signet))) {
+	if(!(keys = sgnt_signkeys_msg_fetch(signet))) {
 		RET_ERROR_INT(ERR_UNSPEC, "error retrieving msg signing keys from signet");
 	}
 
@@ -3540,7 +3541,7 @@ static int sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sig_id_sign(signet_t *signet, ED25519_KEY *key) {
 
 	unsigned char fid;
 
@@ -3562,7 +3563,7 @@ static int sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
 
 	}
 
-	if((sgnt_sign_field(signet, fid, key)) < 0) {
+	if((sgnt_field_sign(signet, fid, key)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not take full signet signature");
 	}
 
@@ -3576,7 +3577,7 @@ static int sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sig_full_sign(signet_t *signet, ED25519_KEY *key) {
 
 	unsigned char fid;
 
@@ -3598,7 +3599,7 @@ static int sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
 
 	}
 
-	if((sgnt_sign_field(signet, fid, key)) < 0) {
+	if((sgnt_field_sign(signet, fid, key)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "could not sign signet");
 	}
 
@@ -3612,7 +3613,7 @@ static int sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sig_crypto_sign(signet_t *signet, ED25519_KEY *key) {
 
 	signet_type_t type;
 	unsigned char fid;
@@ -3639,7 +3640,7 @@ static int sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
 
 	}
 
-	if((sgnt_sign_field(signet, fid, key)) < 0) {
+	if((sgnt_field_sign(signet, fid, key)) < 0) {
 
 		if(sgnt_type_set(signet, SIGNET_TYPE_SSR) < 0) {
 			RET_ERROR_INT(ERR_UNSPEC, "could not change signet type from user back to ssr after signing failed");
@@ -3658,7 +3659,7 @@ static int sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sig_ssr_sign(signet_t *signet, ED25519_KEY *key) {
 
 	if(!signet || !key) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -3668,7 +3669,7 @@ static int sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
 		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
 	}
 
-	if((sgnt_sign_field(signet, SIGNET_SSR_SSR_SIG, key)) < 0) {
+	if((sgnt_field_sign(signet, SIGNET_SSR_SSR_SIG, key)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error encountered in signet signing operation");
 	}
 
@@ -3682,7 +3683,7 @@ static int sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
  * @param	key	Specified ed25519 key used for signing.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
+static int sgnt_sig_coc_sign(signet_t *signet, ED25519_KEY *key) {
 
 	if(!signet || !key) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -3692,7 +3693,7 @@ static int sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
 		RET_ERROR_INT(ERR_UNSPEC, "invalid signet type");
 	}
 
-	if((sgnt_sign_field(signet, SIGNET_SSR_COC_SIG, key)) < 0) {
+	if((sgnt_field_sign(signet, SIGNET_SSR_COC_SIG, key)) < 0) {
 		RET_ERROR_INT(ERR_UNSPEC, "error encountered in signet signing operation");
 	}
 
@@ -3734,75 +3735,116 @@ const char *sgnt_state_to_str(signet_state_t state) {
 
 	return NULL;
 }
+
+
+/**
+ * @brief	Create a copy of the provided signet.
+ * @param	signet	Signet to be copied.
+ * @return	The copy.
+ * @free_using{sgnt_destroy_signet}
+*/
+static signet_t *              sgnt_signet_dupe(signet_t *signet) {
+
+	signet_t *copy;
+
+	if(!signet) {
+		PUSH_ERROR(ERR_BAD_PARAM, NULL);
+	}
+
+	if(!(copy = sgnt_signet_create(sgnt_type_get(signet)))) {
+		PUSH_ERROR(ERR_UNSPEC, "failed to create new signet");
+		goto error;
+	}
+
+	copy->size = signet->size;
+
+	if(!(copy->data = malloc(copy->size))) {
+		PUSH_ERROR(ERR_NOMEM, "failed to allocate data buffer for signet copy");
+		goto cleanup_copy;
+	}
+
+	memcpy(copy->data, signet->data, copy->size);
+
+	for(unsigned int i = 0; i < 256; ++i) {
+		copy->fields[i] = signet->fields[i];
+	}
+
+	return copy;
+
+cleanup_copy:
+	sgnt_signet_destroy(copy);
+error:
+	return NULL;
+}
 /* PUBLIC FUNCTIONS */
 
 
-int dime_sgnt_create_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_defined_field, signet, fid, data_size, data);
+int dime_sgnt_field_defined_create(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_field_defined_create, signet, fid, data_size, data);
 }
 
-signet_t *dime_sgnt_create_signet(signet_type_t type) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_signet, type);
+signet_t *dime_sgnt_signet_create(signet_type_t type) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_create, type);
 }
 
-signet_t *dime_sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_signet_w_keys, type, keysfile);
+signet_t *dime_sgnt_signet_create_w_keys(signet_type_t type, const char *keysfile) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_create_w_keys, type, keysfile);
 }
 
-int dime_sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_sok, signet, key, format, perm);
+int dime_sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sok_create, signet, key, format, perm);
 }
 
-int dime_sgnt_create_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_create_undefined_field, signet, name_size, name, data_size, data);
+int dime_sgnt_field_undefined_create(signet_t *signet, size_t name_size, const unsigned char *name, size_t data_size, const unsigned char *data) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_field_undefined_create, signet, name_size, name, data_size, data);
 }
 
-void dime_sgnt_destroy_signet(signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_destroy_signet, signet);
+void dime_sgnt_signet_destroy(signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_signet_destroy, signet);
 }
 
-void dime_sgnt_dump_signet(FILE *fp, signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_dump_signet, fp, signet);
+void dime_sgnt_signet_dump(FILE *fp, signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT_VOID(sgnt_signet_dump, fp, signet);
 }
 
-EC_KEY *dime_sgnt_fetch_enckey(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_enckey, signet);
+EC_KEY *dime_sgnt_enckey_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_enckey_fetch, signet);
 }
 
-unsigned char *dime_sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_fid_num, signet, fid, num, data_size);
+unsigned char *dime_sgnt_fid_num_fetch(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fid_num_fetch, signet, fid, num, data_size);
 }
 
-ED25519_KEY **dime_sgnt_fetch_msg_signkeys(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_msg_signkeys, signet);
+ED25519_KEY **dime_sgnt_signkeys_msg_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkeys_msg_fetch, signet);
 }
 
-ED25519_KEY *dime_sgnt_fetch_signkey(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_signkey, signet);
+ED25519_KEY *dime_sgnt_signkey_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkey_fetch, signet);
 }
 
-ED25519_KEY **dime_sgnt_fetch_signet_signkeys(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_signet_signkeys, signet);
+ED25519_KEY **dime_sgnt_signkeys_signet_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkeys_signet_fetch, signet);
 }
 
-ED25519_KEY **dime_sgnt_fetch_software_signkeys(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_software_signkeys, signet);
+ED25519_KEY **dime_sgnt_signkeys_software_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkeys_software_fetch, signet);
 }
 
-ED25519_KEY *dime_sgnt_fetch_sok_num(const signet_t *signet, unsigned int num) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_sok_num, signet, num);
+ED25519_KEY *dime_sgnt_sok_num_fetch(const signet_t *signet, unsigned int num) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sok_num_fetch, signet, num);
 }
 
-ED25519_KEY **dime_sgnt_fetch_tls_signkeys(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_tls_signkeys, signet);
+ED25519_KEY **dime_sgnt_signkeys_tls_fetch(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkeys_tls_fetch, signet);
 }
 
-unsigned char *dime_sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fetch_undefined_field, signet, name_size, name, data_size);
+unsigned char *dime_sgnt_field_undefined_fetch(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_field_undefined_fetch, signet, name_size, name, data_size);
 }
 
-signet_t *dime_sgnt_file_to_signet(const char *filename) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_file_to_signet, filename);
+signet_t *dime_sgnt_signet_load(const char *filename) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_load, filename);
 }
 
 int dime_sgnt_file_create(signet_t *signet, const char *filename) {
@@ -3813,8 +3855,8 @@ int dime_sgnt_fid_exists(const signet_t *signet, unsigned char fid) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fid_exists, signet, fid);
 }
 
-int dime_sgnt_fid_get_count(const signet_t *signet, unsigned char fid) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fid_get_count, signet, fid);
+int dime_sgnt_fid_count_get(const signet_t *signet, unsigned char fid) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fid_count_get, signet, fid);
 }
 
 char *dime_sgnt_fingerprint_crypto(const signet_t *signet) {
@@ -3833,72 +3875,76 @@ char *dime_sgnt_fingerprint_ssr(const signet_t *signet) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fingerprint_ssr, signet);
 }
 
-int dime_sgnt_remove_fid_num(signet_t *signet, unsigned char fid, int num) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_remove_fid_num, signet, fid, num);
+int dime_sgnt_fid_num_remove(signet_t *signet, unsigned char fid, int num) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_fid_num_remove, signet, fid, num);
 }
 
-int dime_sgnt_remove_undefined_field(signet_t *signet, size_t name_size, const unsigned char *name) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_remove_undefined_field, signet, name_size, name);
+int dime_sgnt_field_undefined_remove(signet_t *signet, size_t name_size, const unsigned char *name) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_field_undefined_remove, signet, name_size, name);
 }
 
-signet_t *dime_sgnt_serial_b64_to_signet(const char *b64_in) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_serial_b64_to_signet, b64_in);
+signet_t *dime_sgnt_signet_b64_deserialize(const char *b64_in) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_b64_deserialize, b64_in);
 }
 
-char *dime_sgnt_serial_signet_to_b64(signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_serial_signet_to_b64, signet);
+char *dime_sgnt_signet_b64_serialize(signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_b64_serialize, signet);
 }
 
-signet_t *dime_sgnt_serial_to_signet(const unsigned char *in, size_t len) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_serial_to_signet, in, len);
+signet_t *dime_sgnt_signet_binary_deserialize(const unsigned char *in, size_t len) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_binary_binary_deserialize, in, len);
 }
 
-unsigned char *dime_sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_serial_from_signet, signet, serial_size);
+unsigned char *dime_sgnt_signet_binary_serialize(signet_t *signet, uint32_t *serial_size) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_binary_serialize, signet, serial_size);
 }
 
-int dime_sgnt_set_defined_field(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_defined_field, signet, fid, data_size, data);
+int dime_sgnt_field_defined_set(signet_t *signet, unsigned char fid, size_t data_size, const unsigned char *data) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_field_defined_set, signet, fid, data_size, data);
 }
 
-int dime_sgnt_set_enckey(signet_t *signet, EC_KEY *key, unsigned char format) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_enckey, signet, key, format);
+int dime_sgnt_enckey_set(signet_t *signet, EC_KEY *key, unsigned char format) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_enckey_set, signet, key, format);
 }
 
-int dime_sgnt_set_id_field(signet_t *signet, size_t id_size, const unsigned char *id) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_id_field, signet, id_size, id);
+int dime_sgnt_id_set(signet_t *signet, size_t id_size, const unsigned char *id) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_id_set, signet, id_size, id);
 }
 
-int dime_sgnt_set_signkey(signet_t *signet, ED25519_KEY *key, unsigned char format) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_set_signkey, signet, key, format);
+int dime_sgnt_signkey_set(signet_t *signet, ED25519_KEY *key, unsigned char format) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkey_set, signet, key, format);
 }
 
-int dime_sgnt_sign_coc_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_coc_sig, signet, key);
+int dime_sgnt_sig_coc_sign(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sig_coc_sign, signet, key);
 }
 
-int dime_sgnt_sign_crypto_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_crypto_sig, signet, key);
+int dime_sgnt_sig_crypto_sign(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sig_crypto_sign, signet, key);
 }
 
-int dime_sgnt_sign_full_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_full_sig, signet, key);
+int dime_sgnt_sig_full_sign(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sig_full_sign, signet, key);
 }
 
-int dime_sgnt_sign_id_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_id_sig, signet, key);
+int dime_sgnt_sig_id_sign(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sig_id_sign, signet, key);
 }
 
-int dime_sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *key) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sign_ssr_sig, signet, key);
+int dime_sgnt_sig_ssr_sign(signet_t *signet, ED25519_KEY *key) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sig_ssr_sign, signet, key);
 }
 
-signet_t *dime_sgnt_split_crypto(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_crypto, signet);
+signet_t * dime_sgnt_signet_dupe(signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_dupe, signet);
 }
 
-signet_t *dime_sgnt_split_full(const signet_t *signet) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_split_full, signet);
+signet_t *dime_sgnt_signet_crypto_split(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_crypto_split, signet);
+}
+
+signet_t *dime_sgnt_signet_full_split(const signet_t *signet) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signet_full_split, signet);
 }
 
 const char *dime_sgnt_state_to_str(signet_state_t state) {
@@ -3917,6 +3963,6 @@ signet_state_t dime_sgnt_validate_all(const signet_t *signet, const signet_t *pr
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_validate_all, signet, previous, orgsig, dime_pok);
 }
 
-int dime_sgnt_verify_message_sig(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len) {
-	PUBLIC_FUNCTION_IMPLEMENT(sgnt_verify_message_sig, signet, sig, buf, buf_len);
+int dime_sgnt_msg_sig_verify(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len) {
+	PUBLIC_FUNCTION_IMPLEMENT(sgnt_msg_sig_verify, signet, sig, buf, buf_len);
 }
