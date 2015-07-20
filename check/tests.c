@@ -1,4 +1,8 @@
 #include <stdlib.h>
+#include "common/checks.h"
+#include "core/checks.h"
+#include "dime/checks.h"
+#include "dmessage/checks.h"
 #include "signet/checks.h"
 
 int main(void) {
