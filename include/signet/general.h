@@ -147,21 +147,12 @@ typedef enum {
 	SIGNKEY_DEFAULT_FORMAT = 0x40,       /**< Currently the only legal format specifier for ED25519 signing keys*/
 } signkey_format_t;
 
-<<<<<<< HEAD
 typedef enum {				    /**< SOK = Secondary Organizational Key */
 	SIGNET_SOK_NONE =              0,   /**< Can not be used for signing anything */
 	SIGNET_SOK_SIGNET =            1,   /**< Can be used for signing signets */
 	SIGNET_SOK_MSG =               2,   /**< Can be used for signing messages */
 	SIGNET_SOK_TLS =               4,   /**< Can be used for signing TLS certificates */
 	SIGNET_SOK_SOFTWARE =          8    /**< Can be used for signing software */
-=======
-typedef enum {
-	SIGNET_SOK_NONE = 0b00000000,       /**< Can not be used for signing anything */
-	SIGNET_SOK_SIGNET = 0b00000001,     /**< Can be used for signing signets */
-	SIGNET_SOK_MSG = 0b00000010,        /**< Can be used for signing messages */
-	SIGNET_SOK_TLS = 0b00000100,        /**< Can be used for signing TLS certificates */
-	SIGNET_SOK_SOFTWARE = 0b00001000    /**< Can be used for signing software */
->>>>>>> make uncrustify
 } sok_permissions_t;
 
 typedef enum {

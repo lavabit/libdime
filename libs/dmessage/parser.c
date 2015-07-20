@@ -551,15 +551,11 @@ dmime_envelope_object_t *dime_prsr_envelope_parse(const unsigned char *in, size_
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
 }
 
-<<<<<<< HEAD
 stringer_t *                dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_signet, org_fp, type);
 }
 
 dmime_common_headers_t *    dime_prsr_headers_create(void) {
-=======
-dmime_common_headers_t *dime_prsr_headers_create(void) {
->>>>>>> make uncrustify
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_create);
 }
 

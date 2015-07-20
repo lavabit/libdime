@@ -194,15 +194,9 @@ END_TEST
 START_TEST(check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529",
-<<<<<<< HEAD
-			*name1 = "check undef", *data1 = "undef data",
-			*name2 = "check name", *data2 = "check check";
+		*name1 = "check undef", *data1 = "undef data",
+		*name2 = "check name", *data2 = "check check";
 	int res, count;
-=======
-	           *name1 = "check undef", *data1 = "undef data",
-	           *name2 = "check name", *data2 = "check check";
-	int res;
->>>>>>> make uncrustify
 	signet_t *signet;
 	size_t data_size;
 	unsigned char *data;
@@ -229,14 +223,10 @@ START_TEST(check_signet_modification)
 	res = dime_sgnt_create_undefined_field(signet, strlen(name2), (const unsigned char *)name2, strlen(data2), (const unsigned char *)data2);
 	ck_assert_msg(res == 0, "Failure to create undefined field.\n");
 
-<<<<<<< HEAD
 	count = dime_sgnt_fid_get_count(signet, SIGNET_ORG_UNDEFINED);
 	ck_assert_msg(count == 2, "Failure to count number of undefined fields.\n");
 
 	data = dime_sgnt_fetch_undefined_field(signet, strlen(name2), (const unsigned char*)name2, &data_size);
-=======
-	data = dime_sgnt_fetch_undefined_field(signet, strlen(name2), (const unsigned char *)name2, &data_size);
->>>>>>> make uncrustify
 	ck_assert_msg(data != NULL, "Failure to fetch undefined field.\n");
 	ck_assert_msg(data_size == strlen(data2), "Corrupted undefined field size.\n");
 	ck_assert_msg(memcmp(data, (unsigned char *)data2, data_size) == 0, "Corrupted undefined field data.\n");

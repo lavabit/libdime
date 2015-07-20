@@ -2415,14 +2415,7 @@ static int sgnt_create_sok(signet_t *signet, ED25519_KEY *key, unsigned char for
 		RET_ERROR_INT(ERR_NOMEM, "could not reallocate memory for signet serial SOK representation");
 	}
 
-<<<<<<< HEAD
 	memcpy(serial_field + 1, serial_key, serial_size);
-=======
-	memmove(serial_key, serial_key + 1, serial_size);
-	serial_key[0] = perm;
-	++serial_size;
-	res = sgnt_create_defined_field(signet, SIGNET_ORG_SOK, serial_size, serial_key);
->>>>>>> make uncrustify
 	free(serial_key);
 	serial_field[0] = (unsigned char) perm;
 	++serial_size;
