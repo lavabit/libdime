@@ -21,7 +21,7 @@ int                     dime_sgnt_create_defined_field(signet_t *signet, unsigne
  * @return	A pointer to a newly allocated signet_t structure type, NULL if failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_create_signet(signet_type_t type);
+signet_t *dime_sgnt_create_signet(signet_type_t type);
 
 /**
  * @brief	Creates a signet structure with public signing and encyption keys. Also creates a keys file in which the private keys are stored.
@@ -30,7 +30,7 @@ signet_t *              dime_sgnt_create_signet(signet_type_t type);
  * @return	Pointer to the newly created and allocated signet_t structure or NULL on error.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile);
+signet_t *dime_sgnt_create_signet_w_keys(signet_type_t type, const char *keysfile);
 
 /**
  * @brief	Adds a SOK (Secondary Organizational Signing Key) to an organizational signet.
@@ -72,7 +72,7 @@ void                    dime_sgnt_dump_signet(FILE *fp, signet_t *signet);
  * @return	Pointer to the target encryption public key.
  * @free_using{free_ec_key}
 */
-EC_KEY *                dime_sgnt_fetch_enckey(const signet_t *signet);
+EC_KEY *dime_sgnt_fetch_enckey(const signet_t *signet);
 
 /**
  * @brief	Fetches the binary data value of the field specified by field id and the number at which it appears in the signet amongst fields with the same field id (1, 2, ...).
@@ -83,7 +83,7 @@ EC_KEY *                dime_sgnt_fetch_enckey(const signet_t *signet);
  * @return	Array containing the binary data of the specified field, NULL if an error occurs.
  * @free_using{free}
 */
-unsigned char *         dime_sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size);
+unsigned char *dime_sgnt_fetch_fid_num(const signet_t *signet, unsigned char fid, unsigned int num, size_t *data_size);
 
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a message.
@@ -92,7 +92,7 @@ unsigned char *         dime_sgnt_fetch_fid_num(const signet_t *signet, unsigned
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-ED25519_KEY **          dime_sgnt_fetch_msg_signkeys(const signet_t *signet);
+ED25519_KEY **dime_sgnt_fetch_msg_signkeys(const signet_t *signet);
 
 /**
  * @brief	Retrieves the public signing key from the signet, if the signet is an org signet only retrieves the POK.
@@ -100,7 +100,7 @@ ED25519_KEY **          dime_sgnt_fetch_msg_signkeys(const signet_t *signet);
  * @return	Pointer to the target ed25519 public key.
  * @free_using{free_ed25519_key}
 */
-ED25519_KEY *           dime_sgnt_fetch_signkey(const signet_t *signet);
+ED25519_KEY *dime_sgnt_fetch_signkey(const signet_t *signet);
 
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a signet.
@@ -109,7 +109,7 @@ ED25519_KEY *           dime_sgnt_fetch_signkey(const signet_t *signet);
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-ED25519_KEY **          dime_sgnt_fetch_signet_signkeys(const signet_t *signet);
+ED25519_KEY **dime_sgnt_fetch_signet_signkeys(const signet_t *signet);
 
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign software.
@@ -118,7 +118,7 @@ ED25519_KEY **          dime_sgnt_fetch_signet_signkeys(const signet_t *signet);
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-ED25519_KEY **          dime_sgnt_fetch_software_signkeys(const signet_t *signet);
+ED25519_KEY **dime_sgnt_fetch_software_signkeys(const signet_t *signet);
 
 /**
  * @brief	Fetch the secondary organizational signing key from the signet by number (starting at 1)
@@ -127,7 +127,7 @@ ED25519_KEY **          dime_sgnt_fetch_software_signkeys(const signet_t *signet
  * @return	Retrieved ED25519 key.
  * @free_using{free_ed25519_key}
 */
-ED25519_KEY *           dime_sgnt_fetch_sok_num(const signet_t *signet, unsigned int num);
+ED25519_KEY *dime_sgnt_fetch_sok_num(const signet_t *signet, unsigned int num);
 
 /**
  * @brief	Retrieves all the signing keys from an org signet that can be used to sign a TLS certificate.
@@ -136,7 +136,7 @@ ED25519_KEY *           dime_sgnt_fetch_sok_num(const signet_t *signet, unsigned
  * @note	Always returns at least POK.
  * @free_using{free_ed25519_key_chain}
 */
-ED25519_KEY **          dime_sgnt_fetch_tls_signkeys(const signet_t *signet);
+ED25519_KEY **dime_sgnt_fetch_tls_signkeys(const signet_t *signet);
 
 /**
  * @brief	Fetches the first undefined field with the specified field name.
@@ -147,7 +147,7 @@ ED25519_KEY **          dime_sgnt_fetch_tls_signkeys(const signet_t *signet);
  * @return	The array containing the data from the specified field or NULL in case of failure such as if the field was not found.
  * @free_using{free}
 */
-unsigned char *         dime_sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size);
+unsigned char *dime_sgnt_fetch_undefined_field(const signet_t *signet, size_t name_size, const unsigned char *name, size_t *data_size);
 
 /**
  * @brief	Checks for presence of field with specified id in the signet
@@ -172,7 +172,7 @@ int                     dime_sgnt_fid_get_count(const signet_t *signet, unsigned
  * @return	Pointer to a newly created signet_t structure loaded from the file, NULL on failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_file_to_signet(const char *filename);
+signet_t *dime_sgnt_file_to_signet(const char *filename);
 
 /**
  * @brief	Stores a signet from the signet_t structure in a PEM formatted file specified by the filename.
@@ -189,7 +189,7 @@ int                     dime_sgnt_file_create(signet_t *signet, const char *file
  * @return	Allocated NULL terminated string to a base64 encoded unpadded fingerprint. Null on error.
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_crypto(const signet_t *signet);
+char *dime_sgnt_fingerprint_crypto(const signet_t *signet);
 
 /**
  * @brief	Takes a SHA512 fingerprint of the user or org signet with the ID and FULL signature fields stripped off.
@@ -198,7 +198,7 @@ char *                  dime_sgnt_fingerprint_crypto(const signet_t *signet);
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure.
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
+char *dime_sgnt_fingerprint_full(const signet_t *signet);
 
 /**
  * @brief	Takes a SHA512 fingerprint of the entire user or org signet.
@@ -206,7 +206,7 @@ char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint. Null on failure;
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_id(const signet_t *signet);
+char *dime_sgnt_fingerprint_id(const signet_t *signet);
 
 /**
  * @brief	Takes a SHA512 fingerprint of a user signet or an ssr with all fields after the SSR signature stripped off.
@@ -214,7 +214,7 @@ char *                  dime_sgnt_fingerprint_id(const signet_t *signet);
  * @return	Allocated NULL terminated buffer to a base64 encoded unpadded fingerprint.
  * @free_using{free}
 */
-char *                  dime_sgnt_fingerprint_ssr(const signet_t *signet);
+char *dime_sgnt_fingerprint_ssr(const signet_t *signet);
 
 /**
  * @brief	Removes the field specified by a field id and the number in which it appears in the target signet amongst fields with the same field id from the target signet.
@@ -240,7 +240,7 @@ int                     dime_sgnt_remove_undefined_field(signet_t *signet, size_
  * @return	Pointer to newly allocated signet structure, NULL if failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_serial_b64_to_signet(const char *b64_in);
+signet_t *dime_sgnt_serial_b64_to_signet(const char *b64_in);
 
 /**
  * @brief	Serializes a signet structure into binary data.
@@ -249,7 +249,7 @@ signet_t *              dime_sgnt_serial_b64_to_signet(const char *b64_in);
  * @return	Signet serialized into binary data. Null on error.
  * @free_using{free}
 */
-unsigned char *         dime_sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size);
+unsigned char *dime_sgnt_serial_from_signet(signet_t *signet, uint32_t *serial_size);
 
 /**
  * @brief	Serializes a signet structure into b64 data.
@@ -257,7 +257,7 @@ unsigned char *         dime_sgnt_serial_from_signet(signet_t *signet, uint32_t 
  * @return	Signet serialized into b64 data. Null on error.
  * @free_using{free}
 */
-char *                  dime_sgnt_serial_signet_to_b64(signet_t *signet);
+char *dime_sgnt_serial_signet_to_b64(signet_t *signet);
 
 /**
  * @brief	Returns a new signet_t structure that gets deserialized from a data buffer
@@ -351,7 +351,7 @@ int                     dime_sgnt_sign_ssr_sig(signet_t *signet, ED25519_KEY *ke
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_split_crypto(const signet_t *signet);
+signet_t *dime_sgnt_split_crypto(const signet_t *signet);
 
 /**
  * @brief	Creates a copy of the target signet with the ID field and the FULL signature stripped off.
@@ -359,7 +359,7 @@ signet_t *              dime_sgnt_split_crypto(const signet_t *signet);
  * @return	Pointer to a stripped signet on success, NULL on failure.
  * @free_using{dime_sgnt_destroy_signet}
 */
-signet_t *              dime_sgnt_split_full(const signet_t *signet);
+signet_t *dime_sgnt_split_full(const signet_t *signet);
 
 /**
  * @brief	Retrieves the signet type, org or user (SIGNET_TYPE_ORG or SIGNET_TYPE_USER)
@@ -373,7 +373,7 @@ signet_type_t           dime_sgnt_type_get(const signet_t *signet);
  * @param	state	Signet state.
  * @return	Null terminated string corresponding to the state.
 */
-const char *            dime_sgnt_state_to_str(signet_state_t state);
+const char *dime_sgnt_state_to_str(signet_state_t state);
 
 /**
  * @brief	Sets the target signet to a specified type.
