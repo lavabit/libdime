@@ -137,83 +137,42 @@ libsignet_resolver_a_SOURCES = \
 #TESTS = $(top_srcdir)/check/runner.sh
 # NOTE - Temporary!  Tests will be wired up to Automake test harness
 bin_PROGRAMS = \
-	common_tests \
-	core_tests \
-	dime_tests \
-	dmessage_tests \
-	signet_tests
+	tests
 
-TEST_CPPFLAGS = \
+tests_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(BUNDLED_CPPFLAGS) \
 	-I$(top_srcdir)/check
-TEST_CFLAGS = \
+tests_CFLAGS = \
 	@CHECK_CFLAGS@ \
 	@OPENSSL_CFLAGS@
-TEST_LDADD = \
+tests_LDADD = \
+	libdmessage.a \
+	libsignet_resolver.a \
+	libsignet.a \
+	libcommon.a \
+	libcore.a \
+	-lresolv \
 	$(DONNA_LIBS) \
 	@CHECK_LIBS@ \
 	@OPENSSL_LIBS@
-
-common_tests_CPPFLAGS = $(TEST_CPPFLAGS)
-common_tests_CFLAGS = $(TEST_CFLAGS)
-common_tests_LDADD = libcommon.a $(TEST_LDADD)
-common_tests_SOURCES = \
+tests_SOURCES = \
 	check/common/check_common.c \
 	check/common/check_crypto.c \
 	check/common/check_error.c \
 	check/common/check_misc.c \
-	check/common/checks.c
-
-core_tests_CPPFLAGS = $(TEST_CPPFLAGS)
-core_tests_CFLAGS = $(TEST_CFLAGS)
-core_tests_LDADD = libcore.a $(TEST_LDADD)
-core_tests_SOURCES = \
 	check/core/check_classify.c \
 	check/core/check_compare.c \
 	check/core/check_hash.c \
 	check/core/check_host_folder.c \
 	check/core/check_mail_counters.c \
 	check/core/check_memory.c \
-	check/core/checks.c
-
-dime_tests_CPPFLAGS = $(TEST_CPPFLAGS)
-dime_tests_CFLAGS = $(TEST_CFLAGS)
-dime_tests_LDADD = \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	-lresolv \
-	$(TEST_LDADD)
-dime_tests_SOURCES = \
 	check/dime/check_ssl.c \
-	check/dime/checks.c
-
-dmessage_tests_CPPFLAGS = $(TEST_CPPFLAGS)
-dmessage_tests_CFLAGS = $(TEST_CFLAGS)
-dmessage_tests_LDADD = \
-	libdmessage.a \
-	libcore.a \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	$(TEST_LDADD)
-dmessage_tests_SOURCES = \
 	check/dmessage/check_dmsg.c \
 	check/dmessage/check_parser.c \
-	check/dmessage/checks.c
-
-signet_tests_CPPFLAGS = $(TEST_CPPFLAGS)
-signet_tests_CFLAGS = $(TEST_CFLAGS)
-signet_tests_LDADD = \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	$(TEST_LDADD)
-signet_tests_SOURCES = \
 	check/signet/check_keys.c \
 	check/signet/check_signet.c \
-	check/signet/checks.c
+	check/tests.c
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp
