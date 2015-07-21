@@ -142,8 +142,8 @@ libsignet_resolver_a_SOURCES = \
 TEST_LOG_DRIVER = \
 	env AM_TAP_AWK='$(AWK)' \
 	$(SHELL) $(top_srcdir)/build-aux/tap-driver.sh
-TESTS = tests
-check_PROGRAMS = tests
+TESTS = gtest
+check_PROGRAMS = gtest
 check_LIBRARIES = libgtest.a
 
 # Note that googletest is compiled with the *same* flags we use to build
@@ -158,15 +158,20 @@ libgtest_a_CXXFLAGS = \
 libgtest_a_SOURCES = \
 	bundle/googletest/src/gtest-all.cc
 
-tests_CPPFLAGS = \
+gtest_CPPFLAGS = \
+	-DGTEST_HAS_PTHREAD=@GTEST_HAS_PTHREAD@
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS) \
 	-I$(top_srcdir)/check
-tests_CFLAGS = \
+gtest_CFLAGS = \
 	$(AM_CFLAGS) \
-	@CHECK_CFLAGS@ \
-	@OPENSSL_CFLAGS@
-tests_LDADD = \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+gtest_CXXFLAGS = \
+	$(AM_CXXFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+gtest_LDADD = \
 	libdmessage.a \
 	libsignet_resolver.a \
 	libsignet.a \
@@ -174,25 +179,11 @@ tests_LDADD = \
 	libcore.a \
 	-lresolv \
 	libdonna.a \
-	@CHECK_LIBS@ \
-	@OPENSSL_LIBS@
-tests_SOURCES = \
-	check/common/check_common.c \
-	check/common/check_crypto.c \
-	check/common/check_error.c \
-	check/common/check_misc.c \
-	check/core/check_classify.c \
-	check/core/check_compare.c \
-	check/core/check_hash.c \
-	check/core/check_host_folder.c \
-	check/core/check_mail_counters.c \
-	check/core/check_memory.c \
-	check/dime/check_ssl.c \
-	check/dmessage/check_dmsg.c \
-	check/dmessage/check_parser.c \
-	check/signet/check_keys.c \
-	check/signet/check_signet.c \
-	check/tests.c
+	libgtest.a \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
+gtest_SOURCES = \
+	check/gtest.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp

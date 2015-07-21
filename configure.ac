@@ -7,8 +7,6 @@ AC_INIT([libdime], [0.1])
 # Look for macros in the m4 directory
 AC_CONFIG_MACRO_DIR([m4])
 
-# Try to find dependencies using pkg-config
-PKG_CHECK_MODULES([CHECK], [check >= 0.9])
 # TODO - pin down min supported openssl version
 PKG_CHECK_MODULES([OPENSSL], [openssl >= 0.9.8])
 
@@ -43,14 +41,10 @@ AC_PROG_RANLIB
 # Define _GNU_SOURCE
 AC_GNU_SOURCE
 
-## Handle pthreads (See
-## http://stackoverflow.com/questions/17055279/autotools-for-pthreads-not-setting-correct-linker-flags)
-#AX_PTHREAD([
-#			AC_DEFINE([HAVE_PTHREAD],[1], [Define if you have pthreads.])
-#			LIBS="$PTHREAD_LIBS $LIBS"
-#			CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-#			LDFLAGS="$LDFLAGS $PTHREAD_CFLAGS"
-#			CC="$PTHREAD_CC"], [])
+# Handle pthreads
+AX_PTHREAD(
+	[AC_SUBST(GTEST_HAS_PTHREAD, [1])],
+	[AC_SUBST(GTEST_HAS_PTHREAD, [0])])
 
 #AC_DEFINE([HAVE_NS_TYPE])
 
