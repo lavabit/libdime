@@ -23,7 +23,7 @@ START_TEST(check_keys_file_handling)
 	res = dime_keys_file_create(KEYS_TYPE_USER, signkey, enckey, filename_u);
 	ck_assert_msg(res == 0, "Failure creating user keys file\n.");
 
-	signkey2 = dime_keys_fetch_sign_key(filename_u);
+	signkey2 = dime_keys_signkey_fetch(filename_u);
 	ck_assert_msg(signkey2 != NULL, "Failure fetching signing key.\n");
 
 
@@ -32,7 +32,7 @@ START_TEST(check_keys_file_handling)
 
 	_free_ed25519_key(signkey2);
 
-	enckey2 = dime_keys_fetch_enc_key(filename_u);
+	enckey2 = dime_keys_enckey_fetch(filename_u);
 	ck_assert_msg(enckey2 != NULL, "Failure fetching encryption key.\n");
 
 	ser_enc2 = _serialize_ec_privkey(enckey2, &enc2_size);
@@ -48,7 +48,7 @@ START_TEST(check_keys_file_handling)
 	res = dime_keys_file_create(KEYS_TYPE_ORG, signkey, enckey, filename_o);
 	ck_assert_msg(res == 0, "Failure to create organizational keys file\n.");
 
-	signkey2 = dime_keys_fetch_sign_key(filename_o);
+	signkey2 = dime_keys_signkey_fetch(filename_o);
 	ck_assert_msg(signkey2 != NULL, "Failure to fetch signing key.\n");
 
 	res = memcmp(signkey->private_key, signkey2->private_key, ED25519_KEY_SIZE);
@@ -56,7 +56,7 @@ START_TEST(check_keys_file_handling)
 
 	_free_ed25519_key(signkey2);
 
-	enckey2 = dime_keys_fetch_enc_key(filename_o);
+	enckey2 = dime_keys_enckey_fetch(filename_o);
 	ck_assert_msg(enckey2 != NULL, "Failure to fetch encryption key.\n");
 
 	ser_enc2 = _serialize_ec_privkey(enckey2, &enc2_size);

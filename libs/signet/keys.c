@@ -1,15 +1,15 @@
 #include <signet/keys.h>
 
-static int             keys_check_length(const unsigned char *in, size_t in_len);
-static EC_KEY *        keys_fetch_enc_key(const char *filename);
-static ED25519_KEY *   keys_fetch_sign_key(const char *filename);
-/* keys files not currently encrypted TODO */
-/* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
+static EC_KEY *        keys_enckey_fetch(const char *filename);
+static EC_KEY *        keys_enckey_from_binary(const unsigned char *bin_keys, size_t len);
 static int             keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename);
 static unsigned char * keys_file_serialize(const char *filename, size_t *len);
-static EC_KEY *        keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len);
-static ED25519_KEY *   keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len);
+static int             keys_length_check(const unsigned char *in, size_t in_len);
+static ED25519_KEY *   keys_signkey_fetch(const char *filename);
+static ED25519_KEY *   keys_signkey_from_binary(const unsigned char *bin_keys, size_t len);
 static keys_type_t     keys_type_get(const unsigned char *bin_keys, size_t len);
+/* keys files not currently encrypted TODO */
+/* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
 /* not implemented yet TODO*/
 /*
 static int             keys_file_add_sok(ED25519_KEY *sok, const char *filename);
@@ -25,7 +25,7 @@ static int             keys_file_add_sok(ED25519_KEY *sok, const char *filename)
  * @param	in_len	Keys buffer size.
  * @return	0 if the length checks pass, -1 if they do not.
 */
-static int keys_check_length(const unsigned char *in, size_t in_len) {
+static int keys_length_check(const unsigned char *in, size_t in_len) {
 
 	uint32_t signet_length;
 
@@ -54,7 +54,7 @@ static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
 
 	if(!bin_keys) {
 		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
-	} else if(keys_check_length(bin_keys, len) < 0) {
+	} else if(keys_length_check(bin_keys, len) < 0) {
 		RET_ERROR_CUST(KEYS_TYPE_ERROR, ERR_BAD_PARAM, NULL);
 	}
 
@@ -76,7 +76,7 @@ static keys_type_t keys_type_get(const unsigned char *bin_keys, size_t len) {
  * @return	Pointer to elliptic curve key, NULL if an error occurred.
  * @free_using{free_ec_key}
 */
-static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len) {
+static EC_KEY *keys_enckey_from_binary(const unsigned char *bin_keys, size_t len) {
 
 	unsigned char enc_fid;
 	size_t at = 0, privkeylen;
@@ -84,7 +84,7 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
 
 	if(!bin_keys) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(keys_check_length(bin_keys, len) < 0) {
+	} else if(keys_length_check(bin_keys, len) < 0) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	}
 
@@ -133,7 +133,7 @@ static EC_KEY *keys_serial_get_enc_key(const unsigned char *bin_keys, size_t len
  * @return	Pointer to ed25519 signing key, NULL if an error occurred.
  * @free_using{free_ed25519_key}
 */
-static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size_t len) {
+static ED25519_KEY *keys_signkey_from_binary(const unsigned char *bin_keys, size_t len) {
 
 	unsigned char sign_fid;
 	unsigned int at = 0;
@@ -141,7 +141,7 @@ static ED25519_KEY *keys_serial_get_sign_key(const unsigned char *bin_keys, size
 
 	if(!bin_keys) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-	} else if(keys_check_length(bin_keys, len) < 0) {
+	} else if(keys_length_check(bin_keys, len) < 0) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
 	} else if(len < KEYS_HEADER_SIZE + 2 + ED25519_KEY_SIZE) {
 		RET_ERROR_PTR(ERR_BAD_PARAM, "keys buffer too small for signing key");
@@ -304,7 +304,7 @@ static int keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc
  * @return	Pointer to the ed25519 signing key.
  * @free_using{free_ed25519_key}
 */
-static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
+static ED25519_KEY *keys_signkey_fetch(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -320,7 +320,7 @@ static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys binary string");
 	}
 
-	key = keys_serial_get_sign_key(keys_bin, keys_len);
+	key = keys_signkey_from_binary(keys_bin, keys_len);
 	_secure_wipe(keys_bin, keys_len);
 	free(keys_bin);
 
@@ -337,7 +337,7 @@ static ED25519_KEY *keys_fetch_sign_key(const char *filename) {
  * @return	Pointer to the elliptic curve encryption key.
  * @free_using{free_ec_key}
 */
-static EC_KEY *keys_fetch_enc_key(const char *filename) {
+static EC_KEY *keys_enckey_fetch(const char *filename) {
 
 	size_t keys_len;
 	unsigned char *keys_bin;
@@ -353,7 +353,7 @@ static EC_KEY *keys_fetch_enc_key(const char *filename) {
 		RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys binary string");
 	}
 
-	key = keys_serial_get_enc_key(keys_bin, keys_len);
+	key = keys_enckey_from_binary(keys_bin, keys_len);
 	_secure_wipe(keys_bin, keys_len);
 	free(keys_bin);
 
@@ -378,10 +378,10 @@ int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
 }
 */
 
-ED25519_KEY *dime_keys_fetch_sign_key(const char *filename) {
-	PUBLIC_FUNCTION_IMPLEMENT(keys_fetch_sign_key, filename);
+ED25519_KEY *dime_keys_signkey_fetch(const char *filename) {
+	PUBLIC_FUNCTION_IMPLEMENT(keys_signkey_fetch, filename);
 }
 
-EC_KEY *dime_keys_fetch_enc_key(const char *filename) {
-	PUBLIC_FUNCTION_IMPLEMENT(keys_fetch_enc_key, filename);
+EC_KEY *dime_keys_enckey_fetch(const char *filename) {
+	PUBLIC_FUNCTION_IMPLEMENT(keys_enckey_fetch, filename);
 }

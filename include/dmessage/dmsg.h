@@ -10,24 +10,43 @@
 */
 const char *dime_dmsg_actor_to_string(dmime_actor_t actor);
 
-/* @brief	Creates a dmime object chunk with the specified type, data and flags.
- * @param	type		Chunk type.
- * @param	data		Pointer to an array that gets copied into newly allocated memory.
- * @param	data_size	Length of data array.
- * @param	flags		Specified flags for the object chunk.
- * @free_using{dime_dmsg_destroy_object_chunk_list}
+/**
+ * @brief	Signs the encrypted, author signed dmime message with the origin signatures. The origin signature chunks must already exist in order for the signing to occur.
+ * @param	msg		Dmime message that will be signed by the origin.
+ * @param	bounce_flags	Flags indicating bounce signatures that the origin will sign.
+ * @param	kek		Origin's key encryption key.
+ * @param	signkey		Origin's private signing key that will be used to sign the message. The public part of this key must be included in the origin signet either as the pok or one of the soks with the message signing flag.
+ * @return	0 on success, anything else indicates failure.
 */
-dmime_object_chunk_t *dime_dmsg_create_object_chunk(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+int                       dime_dmsg_chunks_sig_origin_sign(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey);
 
 /**
- * @brief	Retrieves author name for the following actors: author, origin, recipient.
- * @param	msg		Dmime message the author of which is retrieved.
- * @param	actor		Who is trying to get the message author.
- * @param	kek		Key encryption key for the specified actor.
- * @return	A newly allocated dmime object containing the envelope ids available to the actor.
- * @free_using{dime_dmsg_destroy_object}
+ * @brief	Calculates the key encryption key for a given private encryption key and dmime message, using the ephemeral key chunk in the message
+ * @param	msg		Pointer to the dmime message, which has the ephemeral key chunk to be used.
+ * @param	enckey		Private EC encryption key.
+ * @param	kek		Pointer to a dmime_kek_t - a key encryption key object that can be used to decrypt the keyslots.
+ * @return	Returns 0 on success, all other values indicate failure.
  */
-dmime_object_t *dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
+int                       dime_dmsg_kek_in_derive(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek);
+
+/**
+ * @brief	Converts a binary message into a dmime message. The message is assumed to be encrypted.
+ * @param	in		Pointer to the binary message.
+ * @param	insize		Pointer to the binary size.
+ * @return	Pointer to a dmime message structure.
+ * @free_using{dime_dmsg_destroy_message}
+*/
+dmime_message_t *dime_dmsg_message_binary_deserialize(const unsigned char *in, size_t insize);
+
+/**
+ * @brief	Converts the specified sections of a dmime message to a complete binary form. The message must be at least signed by author.
+ * @param	msg		Dmime message to be converted.
+ * @param	sections	Sections to be included.
+ * @param	tracing		If set, include tracing, if clear don't include tracing.
+ * @param	outsize		Stores the output size of the binary.
+ * @free_using{free}
+*/
+unsigned char *dime_dmsg_message_binary_serialize(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
 
 /**
  * @brief	Decrypts, verifies and extracts all the information available to the author from the message.
@@ -36,7 +55,7 @@ dmime_object_t *dime_dmsg_decrypt_envelope(const dmime_message_t *msg, dmime_act
  * @param	kek		Author's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
-int                       dime_dmsg_decrypt_message_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+int                       dime_dmsg_message_decrypt_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
 
 /**
  * @brief	Decrypts, verifies and extracts all the information available to the destination from the message.
@@ -45,7 +64,7 @@ int                       dime_dmsg_decrypt_message_as_auth(dmime_object_t *obj,
  * @param	kek		Destination's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
-int                       dime_dmsg_decrypt_message_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+int                       dime_dmsg_message_decrypt_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
 
 /**
  * @brief	Decrypts, verifies and extracts all the information available to the origin from the message.
@@ -54,7 +73,7 @@ int                       dime_dmsg_decrypt_message_as_dest(dmime_object_t *obj,
  * @param	kek		Origin's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
-int                       dime_dmsg_decrypt_message_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+int                       dime_dmsg_message_decrypt_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
 
 /**
  * @brief	Decrypts, verifies and extracts all the information available to the recipient from the message.
@@ -63,32 +82,13 @@ int                       dime_dmsg_decrypt_message_as_orig(dmime_object_t *obj,
  * @param	kek		Recipient's key encryption key.
  * @return	0 on success, all other output values indicate failure.
 */
-int                       dime_dmsg_decrypt_message_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
+int                       dime_dmsg_message_decrypt_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
 
 /**
  * @brief	Destroys dmime_message_t structure.
  * @param	msg		Pointer to the dmime message to be destroyed.
 */
-void                      dime_dmsg_destroy_message(dmime_message_t *msg);
-
-/**
- * @brief	Destroy a dmime_object_t structure.
- * @param	object		Pointer to dmime object to be destroyed.
- */
-void                      dime_dmsg_destroy_object(dmime_object_t *object);
-
-/**
- * @brief	Destroy dmime object chunk list.
- * @param	list		Poitner to a dmime object chunk list to be destroyed.
- */
-void                      dime_dmsg_destroy_object_chunk_list(dmime_object_chunk_t *list);
-
-/**
- * @brief	Dumps the contents of the dmime object.
- * @param	object		Dmime object to be dumped.
- * @return	0 on success, all other values indicate failure.
-*/
-int                       dime_dmsg_dump_object(dmime_object_t *object);
+void                      dime_dmsg_message_destroy(dmime_message_t *msg);
 
 /**
  * @brief       Converts a dmime object to a dmime message, fully encrypting and signing the message !!AS AN AUTHOR!!
@@ -98,16 +98,53 @@ int                       dime_dmsg_dump_object(dmime_object_t *object);
  * @return	A pointer to a fully signed and encrypted dmime message.
  * @free_using{dime_dmsg_destroy_message}
 */
-dmime_message_t *dime_dmsg_encrypt_message(dmime_object_t *object, ED25519_KEY *signkey);
+dmime_message_t *dime_dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *signkey);
 
 /**
- * @brief	Calculates the key encryption key for a given private encryption key and dmime message, using the ephemeral key chunk in the message
- * @param	msg		Pointer to the dmime message, which has the ephemeral key chunk to be used.
- * @param	enckey		Private EC encryption key.
- * @param	kek		Pointer to a dmime_kek_t - a key encryption key object that can be used to decrypt the keyslots.
- * @return	Returns 0 on success, all other values indicate failure.
+ * @brief	Retrieves author name for the following actors: author, origin, recipient.
+ * @param	msg		Dmime message the author of which is retrieved.
+ * @param	actor		Who is trying to get the message author.
+ * @param	kek		Key encryption key for the specified actor.
+ * @return	A newly allocated dmime object containing the envelope ids available to the actor.
+ * @free_using{dime_dmsg_destroy_object}
  */
-int                       dime_dmsg_kek_derive_in(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek);
+dmime_object_t *dime_dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
+
+/**
+ * @brief	Retrieves dmime message state.
+ * @param	message		Pointer to a dmime message.
+ * @return	dmime_message_state_t corresponding to the current state.
+ */
+dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message);
+
+/**
+ * @brief	Creates a dmime object chunk with the specified type, data and flags.
+ * @param	type		Chunk type.
+ * @param	data		Pointer to an array that gets copied into newly allocated memory.
+ * @param	data_size	Length of data array.
+ * @param	flags		Specified flags for the object chunk.
+ * @free_using{dime_dmsg_object_chunklist_destroy}
+*/
+dmime_object_chunk_t *    dime_dmsg_object_chunk_create(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+
+/**
+ * @brief	Destroy dmime object chunk list.
+ * @param	list		Poitner to a dmime object chunk list to be destroyed.
+ */
+void                      dime_dmsg_object_chunklist_destroy(dmime_object_chunk_t *list);
+
+/**
+ * @brief	Destroy a dmime_object_t structure.
+ * @param	object		Pointer to dmime object to be destroyed.
+ */
+void                      dime_dmsg_object_destroy(dmime_object_t *object);
+
+/**
+ * @brief	Dumps the contents of the dmime object.
+ * @param	object		Dmime object to be dumped.
+ * @return	0 on success, all other values indicate failure.
+*/
+int                       dime_dmsg_object_dump(dmime_object_t *object);
 
 /**
  * @brief	Takes a dmime object and determines the state it is in.
@@ -122,42 +159,6 @@ dmime_object_state_t      dime_dmsg_object_state_init(dmime_object_t *object);
  * @return	String containing human readable dmime object state.
 */
 const char *dime_dmsg_object_state_to_string(dmime_object_state_t state);
-
-/**
- * @brief	Retrieves dmime message state.
- * @param	message		Pointer to a dmime message.
- * @return	dmime_message_state_t corresponding to the current state.
- */
-dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message);
-
-/**
- * @brief	Converts the specified sections of a dmime message to a complete binary form. The message must be at least signed by author.
- * @param	msg		Dmime message to be converted.
- * @param	sections	Sections to be included.
- * @param	tracing		If set, include tracing, if clear don't include tracing.
- * @param	outsize		Stores the output size of the binary.
- * @free_using{free}
-*/
-unsigned char *dime_dmsg_serial_from_message(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
-
-/**
- * @brief	Converts a binary message into a dmime message. The message is assumed to be encrypted.
- * @param	in		Pointer to the binary message.
- * @param	insize		Pointer to the binary size.
- * @return	Pointer to a dmime message structure.
- * @free_using{dime_dmsg_destroy_message}
-*/
-dmime_message_t *dime_dmsg_serial_to_message(const unsigned char *in, size_t insize);
-
-/**
- * @brief	Signs the encrypted, author signed dmime message with the origin signatures. The origin signature chunks must already exist in order for the signing to occur.
- * @param	msg		Dmime message that will be signed by the origin.
- * @param	bounce_flags	Flags indicating bounce signatures that the origin will sign.
- * @param	kek		Origin's key encryption key.
- * @param	signkey		Origin's private signing key that will be used to sign the message. The public part of this key must be included in the origin signet either as the pok or one of the soks with the message signing flag.
- * @return	0 on success, anything else indicates failure.
-*/
-int                       dime_dmsg_sign_origin_sig_chunks(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey);
 
 /* TODO not implemented yet */
 /*
