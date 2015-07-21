@@ -143,6 +143,14 @@ TEST_LOG_DRIVER = \
 	$(SHELL) $(top_srcdir)/build-aux/tap-driver.sh
 TESTS = tests
 check_PROGRAMS = tests
+check_LIBRARIES = libgtest.a
+
+libgtest_a_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	-I$(top_srcdir)/bundle/googletest \
+	-I$(top_srcdir)/bundle/googletest/include
+libgtest_a_SOURCES = \
+	bundle/googletest/src/gtest-all.cc
 
 tests_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \

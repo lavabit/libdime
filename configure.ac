@@ -34,6 +34,9 @@ AC_CONFIG_FILES([Makefile])
 # Find and probe C compiler (use "current" standard)
 AC_PROG_CC_STDC
 
+# Find and probe C++ compiler
+AC_PROG_CXX
+
 # Find ranlib
 AC_PROG_RANLIB
 
