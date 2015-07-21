@@ -2,7 +2,8 @@
 ACLOCAL_AMFLAGS = -I m4 --install
 EXTRA_DIST = m4/NOTES
 
-AM_CFLAGS = @WARNINGS@ -std=gnu99
+AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
+AM_CXXFLAGS = @WARNINGS@
 
 # Note that we specify the include directories for the bundled dependencies
 # here.
@@ -151,6 +152,9 @@ check_LIBRARIES = libgtest.a
 libgtest_a_CPPFLAGS = \
 	-I$(top_srcdir)/bundle/googletest \
 	-I$(top_srcdir)/bundle/googletest/include
+libgtest_a_CXXFLAGS = \
+	$(AM_CXXFLAGS) \
+	-Wno-missing-field-initializers
 libgtest_a_SOURCES = \
 	bundle/googletest/src/gtest-all.cc
 
@@ -159,6 +163,7 @@ tests_CPPFLAGS = \
 	$(DONNA_CPPFLAGS) \
 	-I$(top_srcdir)/check
 tests_CFLAGS = \
+	$(AM_CFLAGS) \
 	@CHECK_CFLAGS@ \
 	@OPENSSL_CFLAGS@
 tests_LDADD = \

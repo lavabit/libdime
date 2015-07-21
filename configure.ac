@@ -54,48 +54,48 @@ AC_GNU_SOURCE
 
 #AC_DEFINE([HAVE_NS_TYPE])
 
-WARNINGS="\
-	-Wfatal-errors \
-	-Werror \
-	-Wall \
-	-Wextra \
-	-Wformat=2 \
-	-Wstrict-prototypes \
-	-Wmissing-prototypes \
-	-Wwrite-strings \
-	-Wno-format-nonliteral \
-	-Wno-pointer-sign \
-	"
-#CWARNS += "-Wstrict-overflow=5"
+WARNINGS="-Wfatal-errors "
+WARNINGS+="-Werror "
+WARNINGS+="-Wall "
+WARNINGS+="-Wextra "
+WARNINGS+="-Wformat=2 "
+WARNINGS+="-Wwrite-strings "
+WARNINGS+="-Wno-format-nonliteral "
+#WARNINGS += "-Wstrict-overflow=5"
+
+CWARNINGS="-Wstrict-prototypes "
+CWARNINGS+="-Wmissing-prototypes "
+CWARNINGS+="-Wno-pointer-sign "
 
 if `$CC -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
-	WARNINGS+="\
-		-ferror-limit=5 \
-		-Weverything \
-		-Wno-bad-function-cast \
-		-Wno-cast-align \
-		-Wno-conditional-uninitialized \
-		-Wno-conversion \
-		-Wno-covered-switch-default \
-		-Wno-disabled-macro-expansion \
-		-Wno-documentation \
-		-Wno-documentation-unknown-command \
-		-Wno-float-equal \
-		-Wno-gnu-designator \
-		-Wno-packed \
-		-Wno-padded \
-		-Wno-pedantic \
-		-Wno-shorten-64-to-32 \
-		-Wno-sign-conversion \
-		-Wno-switch-enum \
-		-Wno-unreachable-code \
-		-Wno-cast-qual \
-		-Wno-class-varargs \
-		-Wno-unreachable-code-break \
-		"
+	WARNINGS+="-Wno-cast-align "
+	WARNINGS+="-Wno-conditional-uninitialized "
+	WARNINGS+="-Wno-conversion "
+	WARNINGS+="-Wno-covered-switch-default "
+	WARNINGS+="-Wno-disabled-macro-expansion "
+	WARNINGS+="-Wno-documentation "
+	WARNINGS+="-Wno-documentation-unknown-command "
+	WARNINGS+="-Wno-float-equal "
+	WARNINGS+="-Wno-gnu-designator "
+	WARNINGS+="-Wno-packed "
+	WARNINGS+="-Wno-padded "
+	WARNINGS+="-Wno-pedantic "
+	WARNINGS+="-Wno-shorten-64-to-32 "
+	WARNINGS+="-Wno-sign-conversion "
+	WARNINGS+="-Wno-switch-enum "
+	WARNINGS+="-Wno-unreachable-code "
+	WARNINGS+="-Wno-cast-qual "
+	WARNINGS+="-Wno-class-varargs "
+	WARNINGS+="-Wno-unreachable-code-break "
+	WARNINGS+="-Wno-assign-enum "
+
+	CWARNINGS+="-ferror-limit=5 "
+	CWARNINGS+="-Weverything "
+	CWARNINGS+="-Wno-bad-function-cast "
 fi
 
 AC_SUBST(WARNINGS)
+AC_SUBST(CWARNINGS)
 
 # Include support for TAP test output
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
