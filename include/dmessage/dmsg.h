@@ -118,6 +118,22 @@ dmime_message_t *dime_dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *
 dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message);
 
 /**
+ * @brief	Creates a dmime object chunk with the specified type, data and flags.
+ * @param	type		Chunk type.
+ * @param	data		Pointer to an array that gets copied into newly allocated memory.
+ * @param	data_size	Length of data array.
+ * @param	flags		Specified flags for the object chunk.
+ * @free_using{dime_dmsg_object_chunklist_destroy}
+*/
+dmime_object_chunk_t *    dime_dmsg_object_chunk_create(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
+
+/**
+ * @brief	Destroy dmime object chunk list.
+ * @param	list		Poitner to a dmime object chunk list to be destroyed.
+ */
+void                      dime_dmsg_object_chunklist_destroy(dmime_object_chunk_t *list);
+
+/**
  * @brief	Destroy a dmime_object_t structure.
  * @param	object		Pointer to dmime object to be destroyed.
  */

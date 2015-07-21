@@ -2798,8 +2798,8 @@ static int dmsg_chunk_headers_other_decrypt(dmime_object_t *object, const dmime_
 	return 0;
 }
 
-
-/* @brief	Creates a dmime object chunk with the specified type, data and flags.
+/**
+ * @brief	Creates a dmime object chunk with the specified type, data and flags.
  * @param	type		Chunk type.
  * @param	data		Pointer to an array that gets copied into newly allocated memory.
  * @param	data_size	Length of data array.
@@ -4267,6 +4267,14 @@ dmime_message_t *         dime_dmsg_message_encrypt(dmime_object_t *object, ED25
 
 dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_message_state_get, message);
+}
+
+dmime_object_chunk_t *    dime_dmsg_object_chunk_create(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_chunk_create, type, data, data_size, flags);
+}
+
+void                      dime_dmsg_object_chunklist_destroy(dmime_object_chunk_t *list) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_object_chunklist_destroy, list);
 }
 
 void                      dime_dmsg_object_destroy(dmime_object_t *object) {
