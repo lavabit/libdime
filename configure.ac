@@ -54,7 +54,7 @@ AC_GNU_SOURCE
 
 #AC_DEFINE([HAVE_NS_TYPE])
 
-WARNINGS = "\
+WARNINGS="\
 	-Wfatal-errors \
 	-Werror \
 	-Wall \
