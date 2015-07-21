@@ -66,8 +66,8 @@ WARNINGS="\
 	"
 #CWARNS += "-Wstrict-overflow=5"
 
-if `clang -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
-	WARNINGS += "\
+if `$CC -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
+	WARNINGS+="\
 		-ferror-limit=5 \
 		-Weverything \
 		-Wno-bad-function-cast \
