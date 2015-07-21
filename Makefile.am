@@ -145,6 +145,9 @@ TESTS = tests
 check_PROGRAMS = tests
 check_LIBRARIES = libgtest.a
 
+# Note that googletest is compiled with the *same* flags we use to build
+# everything else.  This is the reason googletest encourages bundling in the
+# first place.
 libgtest_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	-I$(top_srcdir)/bundle/googletest \
