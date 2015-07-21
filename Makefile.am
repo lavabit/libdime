@@ -4,8 +4,6 @@ EXTRA_DIST = m4/NOTES
 
 AM_CFLAGS = $(WARNINGS) -std=gnu99
 
-DONNA_LIBS = $(top_srcdir)/deps/sources/donna/ed25519.o
-
 # Note that we specify the include directories for the bundled dependencies
 # here.
 COMMON_CPPFLAGS = \
