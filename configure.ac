@@ -63,6 +63,8 @@ WARNINGS="\
 	-Wstrict-prototypes \
 	-Wmissing-prototypes \
 	-Wwrite-strings \
+	-Wno-format-nonliteral \
+	-Wno-pointer-sign \
 	"
 #CWARNS += "-Wstrict-overflow=5"
 
@@ -87,6 +89,9 @@ if `$CC -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
 		-Wno-sign-conversion \
 		-Wno-switch-enum \
 		-Wno-unreachable-code \
+		-Wno-cast-qual \
+		-Wno-class-varargs \
+		-Wno-unreachable-code-break \
 		"
 fi
 
