@@ -20,12 +20,12 @@ noinst_LIBRARIES = \
 	libdmessage.a \
 	libsignet.a \
 	libsignet_resolver.a \
-	donna.a
+	libdonna.a
 
-donna_a_CPPFLAGS = \
+libdonna_a_CPPFLAGS = \
 	$(DONNA_CPPFLAGS)
-donna_a_CFLAGS =
-donna_a_SOURCES = \
+libdonna_a_CFLAGS =
+libdonna_a_SOURCES = \
 	bundle/ed25519-donna/ed25519.c
 
 libcore_a_CPPFLAGS = \
@@ -158,7 +158,7 @@ tests_LDADD = \
 	libcommon.a \
 	libcore.a \
 	-lresolv \
-	donna.a \
+	libdonna.a \
 	@CHECK_LIBS@ \
 	@OPENSSL_LIBS@
 tests_SOURCES = \
