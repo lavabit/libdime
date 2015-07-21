@@ -11,16 +11,6 @@
 const char *dime_dmsg_actor_to_string(dmime_actor_t actor);
 
 /**
- * @brief	Retrieves author name for the following actors: author, origin, recipient.
- * @param	msg		Dmime message the author of which is retrieved.
- * @param	actor		Who is trying to get the message author.
- * @param	kek		Key encryption key for the specified actor.
- * @return	A newly allocated dmime object containing the envelope ids available to the actor.
- * @free_using{dime_dmsg_destroy_object}
- */
-dmime_object_t *dime_dmsg_chunks_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
-
-/**
  * @brief	Signs the encrypted, author signed dmime message with the origin signatures. The origin signature chunks must already exist in order for the signing to occur.
  * @param	msg		Dmime message that will be signed by the origin.
  * @param	bounce_flags	Flags indicating bounce signatures that the origin will sign.
@@ -109,6 +99,16 @@ void                      dime_dmsg_message_destroy(dmime_message_t *msg);
  * @free_using{dime_dmsg_destroy_message}
 */
 dmime_message_t *dime_dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *signkey);
+
+/**
+ * @brief	Retrieves author name for the following actors: author, origin, recipient.
+ * @param	msg		Dmime message the author of which is retrieved.
+ * @param	actor		Who is trying to get the message author.
+ * @param	kek		Key encryption key for the specified actor.
+ * @return	A newly allocated dmime object containing the envelope ids available to the actor.
+ * @free_using{dime_dmsg_destroy_object}
+ */
+dmime_object_t *dime_dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
 
 /**
  * @brief	Retrieves dmime message state.

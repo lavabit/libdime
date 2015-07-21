@@ -27,7 +27,6 @@ static int                       dmsg_chunk_sig_validate(dmime_message_chunk_t *
 static int                       dmsg_chunk_sign(dmime_message_chunk_t *chunk, ED25519_KEY *signkey);
 static dmime_chunk_key_t *       dmsg_chunk_type_key_get(dmime_chunk_type_t type);
 static int                       dmsg_chunks_content_decrypt(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek);
-static dmime_object_t *          dmsg_chunks_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
 static int                       dmsg_chunks_message_encrypt(dmime_message_t *message, dmime_kekset_t *keks);
 static unsigned char *           dmsg_chunks_serialize(const dmime_message_t *msg, dmime_chunk_type_t first, dmime_chunk_type_t last, size_t *outsize);
 static int                       dmsg_chunks_sig_author_sign(dmime_message_t *message, ED25519_KEY *signkey, dmime_kekset_t *keks);
@@ -49,6 +48,7 @@ static dmime_message_t *         dmsg_message_deserialize(const unsigned char *i
 static size_t                    dmsg_message_deserialize_helper(dmime_message_t *msg, const unsigned char *in, size_t insize, dmime_chunk_type_t *last_type);
 static void                      dmsg_message_destroy(dmime_message_t *msg);
 static dmime_message_t *         dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *signkey);
+static dmime_object_t *          dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
 static unsigned char *           dmsg_message_serialize(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
 static dmime_message_state_t     dmsg_message_state_get(const dmime_message_t *message);
 static dmime_object_chunk_t *    dmsg_object_chunk_create(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
@@ -2247,7 +2247,7 @@ static void dmsg_object_destroy(dmime_object_t *object) {
  * @return	A newly allocated dmime object containing the envelope ids available to the actor.
  * @free_using{dmsg_destroy_object}
  */
-static dmime_object_t *dmsg_chunks_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
+static dmime_object_t *dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 
 	dmime_envelope_object_t *parsed;
 	dmime_message_chunk_t *decrypted;
@@ -4221,10 +4221,6 @@ const char *dime_dmsg_actor_to_string(dmime_actor_t actor) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_actor_to_string, actor);
 }
 
-dmime_object_t *dime_dmsg_chunks_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
-	PUBLIC_FUNCTION_IMPLEMENT(dmsg_chunks_envelope_decrypt, msg, actor, kek);
-}
-
 int                       dime_dmsg_chunks_sig_origin_sign(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_chunks_sig_origin_sign, msg, bounce_flags, kek, signkey);
 }
@@ -4263,6 +4259,10 @@ void                      dime_dmsg_message_destroy(dmime_message_t *msg) {
 
 dmime_message_t *         dime_dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *signkey) {
 	PUBLIC_FUNCTION_IMPLEMENT(dmsg_message_encrypt, object, signkey);
+}
+
+dmime_object_t *          dime_dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
+	PUBLIC_FUNCTION_IMPLEMENT(dmsg_message_envelope_decrypt, msg, actor, kek);
 }
 
 dmime_message_state_t     dime_dmsg_message_state_get(const dmime_message_t *message) {
