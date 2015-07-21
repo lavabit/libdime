@@ -13,20 +13,26 @@ COMMON_CPPFLAGS = \
 	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
 	-I$(top_srcdir)/include
 
-BUNDLED_CPPFLAGS = \
-	-I$(top_srcdir)/deps/sources/donna
-#	-I$(top_srcdir)/deps/sources/openssl/include
+DONNA_CPPFLAGS = \
+	-I$(top_srcdir)/bundle/ed25519-donna
 
 noinst_LIBRARIES = \
 	libcore.a \
 	libcommon.a \
 	libdmessage.a \
 	libsignet.a \
-	libsignet_resolver.a
+	libsignet_resolver.a \
+	donna.a
+
+donna_a_CPPFLAGS = \
+	$(DONNA_CPPFLAGS)
+donna_a_CFLAGS =
+donna_a_SOURCES = \
+	bundle/ed25519-donna/ed25519.c
 
 libcore_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS)
+	$(DONNA_CPPFLAGS)
 libcore_a_SOURCES = \
 	libs/core/buckets/arrays.c \
 	libs/core/buckets/pool.c \
@@ -94,7 +100,7 @@ libcore_a_SOURCES = \
 
 libcommon_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS)
+	$(DONNA_CPPFLAGS)
 libcommon_a_SOURCES = \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
@@ -106,14 +112,14 @@ libcommon_a_SOURCES = \
 
 libdmessage_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS)
+	$(DONNA_CPPFLAGS)
 libdmessage_a_SOURCES = \
 	libs/dmessage/dmsg.c \
 	libs/dmessage/parser.c
 
 libsignet_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS)
+	$(DONNA_CPPFLAGS)
 libsignet_a_SOURCES = \
 	libs/signet/general.c \
 	libs/signet/keys.c \
@@ -121,7 +127,7 @@ libsignet_a_SOURCES = \
 
 libsignet_resolver_a_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS)
+	$(DONNA_CPPFLAGS)
 libsignet_resolver_a_SOURCES = \
 	libs/signet-resolver/cache.c \
 	libs/signet-resolver/cache_pub.c \
@@ -142,7 +148,7 @@ check_PROGRAMS = tests
 
 tests_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(BUNDLED_CPPFLAGS) \
+	$(DONNA_CPPFLAGS) \
 	-I$(top_srcdir)/check
 tests_CFLAGS = \
 	@CHECK_CFLAGS@ \
@@ -154,7 +160,7 @@ tests_LDADD = \
 	libcommon.a \
 	libcore.a \
 	-lresolv \
-	$(DONNA_LIBS) \
+	donna.a \
 	@CHECK_LIBS@ \
 	@OPENSSL_LIBS@
 tests_SOURCES = \
