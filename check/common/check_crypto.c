@@ -68,8 +68,6 @@ START_TEST(check_ec_signatures)
 	}
 
 	free_ec_key(key);
-
-	fprintf(stderr, "EC signature/verification check completed.\n");
 }
 END_TEST
 
@@ -124,8 +122,6 @@ START_TEST(check_ec_sha_signatures)
 
 
 	free_ec_key(key);
-
-	fprintf(stderr, "EC SHA signature/verification check completed.\n");
 }
 END_TEST
 
@@ -171,8 +167,6 @@ START_TEST(load_ec_key_file)
 		ck_assert_msg(result != NULL, "load_ec_pubkey failed for %s", filename);
 		free_ec_key(result);
 	}
-
-	fprintf(stderr, "EC key load from file check completed.\n");
 }
 END_TEST
 
@@ -228,8 +222,6 @@ START_TEST(check_ec_serialization)
 		free(sbuf2);
 		free_ec_key(pair);
 	}
-
-	fprintf(stderr, "EC serialization check completed.\n");
 }
 END_TEST
 
@@ -276,8 +268,6 @@ START_TEST(check_ecdh_kdf)
 	ck_assert_msg((res == 0), "could not perform the second ECDH key exchange.\n");
 
 	ck_assert_msg((memcmp(key1, key2, 48) == 0), "the key derivation functions did not yield the correct result");
-
-	fprintf(stderr, "ECDH key derivation function check completed.\n");
 }
 END_TEST
 
@@ -318,8 +308,6 @@ START_TEST(check_ed25519_signatures)
 	}
 
 	free_ed25519_key(key);
-
-	fprintf(stderr, "ed25519 signature/verification check completed.\n");
 }
 END_TEST
 

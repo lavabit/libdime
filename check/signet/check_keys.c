@@ -82,8 +82,6 @@ START_TEST(check_keys_file_handling)
 
 	_free_ed25519_key(signkey);
 	_free_ec_key(enckey);
-
-	fprintf(stderr, "Keys file I/O check complete.\n");
 }
 END_TEST
 

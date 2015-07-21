@@ -37,8 +37,6 @@ START_TEST(check_signet_creation)
 
 	signet = dime_sgnt_create_signet(52);
 	ck_assert_msg(signet == NULL, "Unintended creation of signet with invalid type 52");
-
-	fprintf(stderr, "Signet creation check completed.\n");
 }
 END_TEST
 
@@ -186,8 +184,6 @@ START_TEST(check_signet_keys_pairing)
 	signet = dime_sgnt_create_signet_w_keys(31, filename_w);
 	ck_assert_msg(signet == NULL, "Unintended creation of signet with invalid type 31.\n");
 	ck_assert_msg(access(filename_w, F_OK) == -1, "Unintended creation of keys file for signet with invalid type 31.\n");
-
-	fprintf(stderr, "Signet file keypair check completed.\n");
 }
 END_TEST
 
@@ -288,8 +284,6 @@ START_TEST(check_signet_modification)
 
 	free(data);
 	dime_sgnt_destroy_signet(signet);
-
-	fprintf(stderr, "Signet modification check complete.\n");
 }
 END_TEST
 
@@ -373,8 +367,6 @@ START_TEST(check_signet_parsing)
 	free(b64_sigtwo);
 	dime_sgnt_destroy_signet(sigtwo);
 	dime_sgnt_destroy_signet(sigone);
-
-	fprintf(stderr, "Signet parsing check complete.\n");
 }
 END_TEST
 
@@ -518,8 +510,6 @@ START_TEST(check_signet_validation)
 	_free_ed25519_key(userkey);
 	dime_sgnt_destroy_signet(user_signet);
 	dime_sgnt_destroy_signet(org_signet);
-
-	fprintf(stderr, "Signet signing and validation check complete.\n");
 }
 END_TEST
 
@@ -560,8 +550,6 @@ START_TEST(check_signet_sok)
 
 	free_ed25519_key(sok_from_signet);
 	dime_sgnt_destroy_signet(signet);
-
-	fprintf(stderr, "Signet SOK check complete.\n");
 }
 END_TEST
 
@@ -670,8 +658,6 @@ START_TEST(check_signet_multi_signkey)
 	}
 
 	dime_sgnt_destroy_signet(signet);
-
-	fprintf(stderr, "Signet selective signing key multi-fetching check complete.\n");
 }
 END_TEST
 
@@ -743,8 +729,6 @@ START_TEST(check_signet_fingerprint)
 	free(fp2);
 	free(fp1);
 	dime_sgnt_destroy_signet(signet);
-	
-	fprintf(stderr, "Signet fingerprinting check complete.\n");
 }
 END_TEST
 
@@ -776,8 +760,6 @@ START_TEST(check_signet_signature_verification)
 
 	res = dime_sgnt_verify_message_sig(org_signet, signature, (const unsigned char *)fp, strlen(fp));
 	ck_assert_msg(res == 1, "Failed to verify signature using signet.\n");
-
-	fprintf(stderr, "Signet signature verification check complete.\n");
 }
 END_TEST
 

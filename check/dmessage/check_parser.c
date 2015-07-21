@@ -70,8 +70,6 @@ START_TEST(check_parser_envelope)
 
 	formatted = dime_prsr_envelope_format(usrid2, orgid2, usrsgnt2, orgfp2, CHUNK_TYPE_EPHEMERAL);
 	ck_assert_msg(formatted == NULL, "Failed to format destination chunk data.\n");
-
-	fprintf(stderr, "DMIME envelope parsing complete.\n");
 }
 END_TEST
 
@@ -117,8 +115,6 @@ START_TEST(check_parser_header) {
 	dime_prsr_headers_destroy(header1);
 	dime_prsr_headers_destroy(header2);
 	free(formatted);
-
-	fprintf(stderr, "DMIME common header parsing complete.\n");
 }
 END_TEST
 

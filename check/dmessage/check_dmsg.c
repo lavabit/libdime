@@ -317,8 +317,6 @@ START_TEST(check_dmsg_all)
 	free(from_orig_bin);
 	free(from_dest_bin);
 	ck_assert_dime_noerror();
-
-	fprintf(stderr, "Message encryption and decryption check complete.\n");
 }
 END_TEST
 
