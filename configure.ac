@@ -48,6 +48,7 @@ AX_PTHREAD(
 
 #AC_DEFINE([HAVE_NS_TYPE])
 
+# These flags are applied everywhere
 WARNINGS="-Wfatal-errors "
 WARNINGS+="-Werror "
 WARNINGS+="-Wall "
@@ -57,11 +58,14 @@ WARNINGS+="-Wwrite-strings "
 WARNINGS+="-Wno-format-nonliteral "
 #WARNINGS += "-Wstrict-overflow=5"
 
+# These flags are C only
 CWARNINGS="-Wstrict-prototypes "
 CWARNINGS+="-Wmissing-prototypes "
 CWARNINGS+="-Wno-pointer-sign "
 
 if `$CC -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
+	# Clang-specific flags
+
 	WARNINGS+="-Wno-cast-align "
 	WARNINGS+="-Wno-conditional-uninitialized "
 	WARNINGS+="-Wno-conversion "
