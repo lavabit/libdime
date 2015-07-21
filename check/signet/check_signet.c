@@ -283,7 +283,7 @@ START_TEST(check_signet_modification)
 	ck_assert_msg(memcmp(data, (unsigned char *)phone2, data_size) == 0, "Corrupted phone number field data.\n");
 
 	free(data);
-	dime_sgnt_destroy_signet(signet);
+	dime_sgnt_signet_destroy(signet);
 }
 END_TEST
 
