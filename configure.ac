@@ -89,4 +89,7 @@ fi
 
 AC_SUBST(WARNINGS)
 
+# Include support for TAP test output
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
+
 AC_OUTPUT

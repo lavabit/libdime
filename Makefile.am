@@ -134,10 +134,11 @@ libsignet_resolver_a_SOURCES = \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c
 
-#TESTS = $(top_srcdir)/check/runner.sh
-# NOTE - Temporary!  Tests will be wired up to Automake test harness
-bin_PROGRAMS = \
-	tests
+TEST_LOG_DRIVER = \
+	env AM_TAP_AWK='$(AWK)' \
+	$(SHELL) $(top_srcdir)/build-aux/tap-driver.sh
+TESTS = tests
+check_PROGRAMS = tests
 
 tests_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \

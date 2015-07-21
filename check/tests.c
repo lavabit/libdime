@@ -32,9 +32,9 @@ int main(void) {
 	srunner_add_suite(sr, suite_check_signet());
 
 	// publish test results in TAP format
-	srunner_set_tap(sr, "test_results.tap");
+	srunner_set_tap(sr, "-");
 
-	srunner_run_all(sr, CK_ENV);
+	srunner_run_all(sr, CK_SILENT);
 	int nr_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
 	return nr_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
