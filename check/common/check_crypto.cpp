@@ -2,9 +2,12 @@
 
 #include <openssl/ec.h>
 #include <openssl/rand.h>
-#include <common/dcrypto.h>
-#include <common/misc.h>
-#include "checks.h"
+
+extern "C" {
+#include "common/dcrypto.h"
+#include "common/misc.h"
+}
+#include "gtest/gtest.h"
 
 #define N_SERIALIZATION_TESTS  20
 #define N_SIGNATURE_TIER_TESTS 5
@@ -16,23 +19,23 @@ static unsigned char *gen_random_data(size_t minlen, size_t maxlen, size_t *outl
 	size_t rlen;
 	int res;
 
-	ck_assert_uint_ge(maxlen, minlen);
+	EXPECT_GE(maxlen, minlen);
 
 	res = RAND_pseudo_bytes((unsigned char *)&rval, sizeof(rval));
-	ck_assert(res == 0 || res == 1);
+	EXPECT_TRUE(res == 0 || res == 1);
 	rlen = minlen + (rval % (maxlen - minlen + 1));
 
-	result = malloc(rlen);
-	ck_assert(result != NULL);
+	result = (unsigned char *)malloc(rlen);
+	EXPECT_TRUE(result != NULL);
 
 	res = RAND_pseudo_bytes(result, rlen);
-	ck_assert(res == 0 || res == 1);
+	EXPECT_TRUE(res == 0 || res == 1);
 	*outlen = rlen;
 
 	return result;
 }
 
-START_TEST(check_ec_signatures)
+TEST(DIME, check_ec_signatures)
 {
 	EC_KEY *key;
 
@@ -42,23 +45,23 @@ START_TEST(check_ec_signatures)
 	int res;
 
 	res = crypto_init();
-	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
+	ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
 	key = generate_ec_keypair(0);
-	ck_assert_msg((key != NULL), "EC signature/verification check failed: could not generate key pair.\n");
+	ASSERT_TRUE(key != NULL) << "EC signature/verification check failed: could not generate key pair.";
 
 	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
 		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 			rdata = gen_random_data(last_min, dlens[i], &rsize);
-			ck_assert_msg((rdata != NULL), "EC signature/verification check failed: could not generate random data.\n");
+			ASSERT_TRUE(rdata != NULL) << "EC signature/verification check failed: could not generate random data.";
 
 			sigdata = ec_sign_data(rdata, rsize, key, &siglen);
-			ck_assert_msg((sigdata != NULL), "EC signature/verification check failed: could not sign data.\n");
-			ck_assert_msg((siglen > 0), "EC signature/verification check failed: signature result had bad length.\n");
+			ASSERT_TRUE(sigdata != NULL) << "EC signature/verification check failed: could not sign data.";
+			ASSERT_GT(siglen, 0U) << "EC signature/verification check failed: signature result had bad length.";
 
 			res = verify_ec_signature(rdata, rsize, sigdata, siglen, key);
-			ck_assert_msg((res == 1), "EC signature/verification check failed: signature verification failed (%d).\n", res);
+			ASSERT_EQ(1, res) << "EC signature/verification check failed: signature verification failed (" << res << ").";
 
 			free(sigdata);
 			free(rdata);
@@ -69,10 +72,8 @@ START_TEST(check_ec_signatures)
 
 	free_ec_key(key);
 }
-END_TEST
 
-
-START_TEST(check_ec_sha_signatures)
+TEST(DIME, check_ec_sha_signatures)
 {
 	EC_KEY *key;
 
@@ -83,10 +84,10 @@ START_TEST(check_ec_sha_signatures)
 	int res;
 
 	res = crypto_init();
-	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
+	ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
 	key = generate_ec_keypair(0);
-	ck_assert_msg((key != NULL), "EC SHA signature/verification check failed: could not generate key pair.\n");
+	ASSERT_TRUE(key != NULL) << "EC SHA signature/verification check failed: could not generate key pair.";
 
 	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
@@ -103,13 +104,13 @@ START_TEST(check_ec_sha_signatures)
 				}
 
 				rdata = gen_random_data(last_min, dlens[i], &rsize);
-				ck_assert_msg((rdata != NULL), "EC SHA signature/verification check failed: could not generate random data.\n");
+				ASSERT_TRUE(rdata != NULL) << "EC SHA signature/verification check failed: could not generate random data.";
 				sigdata = ec_sign_sha_data(rdata, rsize, shabits, key, &siglen);
-				ck_assert_msg((sigdata != NULL), "EC SHA signature/verification check failed: could not sign data.\n");
-				ck_assert_msg((siglen > 0), "EC SHA signature/verification check failed: signature result had bad length.\n");
+				ASSERT_TRUE(sigdata != NULL) << "EC SHA signature/verification check failed: could not sign data.";
+				ASSERT_GT(siglen, 0U) << "EC SHA signature/verification check failed: signature result had bad length.";
 
 				res = verify_ec_sha_signature(rdata, rsize, shabits, sigdata, siglen, key);
-				ck_assert_msg((res == 1), "EC SHA signature/verification check failed: signature verification failed (%d).\n", res);
+				ASSERT_EQ(1, res) << "EC SHA signature/verification check failed: signature verification failed (" << res << ").";
 
 				free(sigdata);
 				free(rdata);
@@ -123,10 +124,8 @@ START_TEST(check_ec_sha_signatures)
 
 	free_ec_key(key);
 }
-END_TEST
 
-
-START_TEST(load_ec_key_file)
+TEST(DIME, load_ec_key_file)
 {
 	char filename[256], *b64key;
 	EC_KEY *result, *key;
@@ -136,7 +135,7 @@ START_TEST(load_ec_key_file)
 
 	res = _crypto_init();
 
-	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
+	ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
 	for (size_t i = 0; i < 5; ++i) {
 		key = _generate_ec_keypair(0);
@@ -159,19 +158,17 @@ START_TEST(load_ec_key_file)
 	for (size_t i = 0; i < 5; i++) {
 		snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
 		result = _load_ec_privkey(filename);
-		ck_assert_msg(result != NULL, "load_ec_privkey failed for %s", filename);
+		ASSERT_TRUE(result != NULL) << "load_ec_privkey failed for " << filename;
 		free_ec_key(result);
 
 		snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i + 1);
 		result = _load_ec_pubkey(filename);
-		ck_assert_msg(result != NULL, "load_ec_pubkey failed for %s", filename);
+		ASSERT_TRUE(result != NULL) << "load_ec_pubkey failed for " << filename;
 		free_ec_key(result);
 	}
 }
-END_TEST
 
-
-START_TEST(check_ec_serialization)
+TEST(DIME, check_ec_serialization)
 {
 	EC_KEY *pair, *pair2;
 	unsigned char *sbuf, *sbuf2;
@@ -179,25 +176,25 @@ START_TEST(check_ec_serialization)
 	size_t ssize, ssize2;
 
 	res = crypto_init();
-	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
+	ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
 	for (size_t i = 0; i < N_SERIALIZATION_TESTS; i++) {
 		pair = _generate_ec_keypair(0);
-		ck_assert_msg((pair != NULL), "EC serialization check failed: could not generate key pair.\n");
+		ASSERT_TRUE(pair != NULL) << "EC serialization check failed: could not generate key pair.";
 
 		sbuf = _serialize_ec_pubkey(pair, &ssize);
-		ck_assert_msg((sbuf != NULL), "EC serialization check failed: pubkey serialization error.\n");
+		ASSERT_TRUE(sbuf != NULL) << "EC serialization check failed: pubkey serialization error.";
 
 		pair2 = _deserialize_ec_pubkey(sbuf, ssize, 0);
-		ck_assert_msg((pair2 != NULL), "EC serialization check failed: pubkey deserialization error.\n");
+		ASSERT_TRUE(pair2 != NULL) << "EC serialization check failed: pubkey deserialization error.";
 
 		sbuf2 = _serialize_ec_pubkey(pair, &ssize2);
-		ck_assert_msg((sbuf2 != NULL), "EC serialization check failed: pubkey serialization error [2].\n");
+		ASSERT_TRUE(sbuf2 != NULL) << "EC serialization check failed: pubkey serialization error [2].";
 
-		ck_assert_msg((ssize == ssize2), "EC serialization check failed: serialized pubkeys had different serialized lengths {%u vs %u}\n", ssize, ssize2);
+		ASSERT_EQ(ssize, ssize2) << "EC serialization check failed: serialized pubkeys had different serialized lengths {" << ssize << " vs " << ssize2 << "}";
 
 		res = memcmp(sbuf, sbuf2, ssize);
-		ck_assert_msg(!res, "EC serialization check failed: serialized pubkeys had different data.\n");
+		ASSERT_TRUE(!res) << "EC serialization check failed: serialized pubkeys had different data.";
 
 		free(sbuf);
 		free(sbuf2);
@@ -205,28 +202,26 @@ START_TEST(check_ec_serialization)
 		_free_ec_key(pair2);
 
 		sbuf = _serialize_ec_privkey(pair, &ssize);
-		ck_assert_msg((sbuf != NULL), "EC serialization check failed: pubkey serialization error.\n");
+		ASSERT_TRUE(sbuf != NULL) << "EC serialization check failed: pubkey serialization error.";
 
 		pair2 = _deserialize_ec_privkey(sbuf, ssize, 0);
-		ck_assert_msg((pair2 != NULL), "EC serialization check failed: pubkey deserialization error.\n");
+		ASSERT_TRUE(pair2 != NULL) << "EC serialization check failed: pubkey deserialization error.";
 
 		sbuf2 = _serialize_ec_privkey(pair, &ssize2);
-		ck_assert_msg((sbuf2 != NULL), "EC serialization check failed: pubkey serialization error [2].\n");
+		ASSERT_TRUE(sbuf2 != NULL) << "EC serialization check failed: pubkey serialization error [2].";
 
-		ck_assert_msg((ssize == ssize2), "EC serialization check failed: serialized pubkeys had different serialized lengths {%u vs %u}\n", ssize, ssize2);
+		ASSERT_EQ(ssize, ssize2) << "EC serialization check failed: serialized pubkeys had different serialized lengths {" << ssize << " vs " << ssize2 << "}";
 
 		res = memcmp(sbuf, sbuf2, ssize);
-		ck_assert_msg(!res, "EC serialization check failed: serialized pubkeys had different data.\n");
+		ASSERT_TRUE(!res) << "EC serialization check failed: serialized pubkeys had different data.";
 
 		free(sbuf);
 		free(sbuf2);
 		free_ec_key(pair);
 	}
 }
-END_TEST
 
-
-START_TEST(check_ecdh_kdf)
+TEST(DIME, check_ecdh_kdf)
 {
 
 	EC_KEY *ec1, *ec2, *pub1, *pub2;
@@ -242,40 +237,35 @@ START_TEST(check_ecdh_kdf)
 	ec1 = _generate_ec_keypair(0);
 	ec2 = _generate_ec_keypair(0);
 
-	ck_assert_msg((ec1 != NULL), "EC key generation failed.\n");
-	ck_assert_msg((ec2 != NULL), "EC key generation failed.\n");
+	ASSERT_TRUE(ec1 != NULL) << "EC key generation failed.";
+	ASSERT_TRUE(ec2 != NULL) << "EC key generation failed.";
 
 	serial_temp = _serialize_ec_pubkey(ec1, &serial_size);
 
-	ck_assert_msg(serial_temp != NULL, "could not serialize public key.\n");
+	ASSERT_TRUE(serial_temp != NULL) << "could not serialize public key.";
 
 	pub1 = _deserialize_ec_pubkey(serial_temp, serial_size, 0);
 
 	res = _compute_aes256_kek(pub1, ec2, key1);
 
-	ck_assert_msg((res == 0), "could not perform ECDH key exchange.\n");
+	ASSERT_EQ(0, res) << "could not perform ECDH key exchange.";
 
 	free(serial_temp);
 
 	serial_temp = _serialize_ec_pubkey(ec2, &serial_size);
 
-	ck_assert_msg((serial_temp != NULL), "could not serialize public key.\n");
+	ASSERT_TRUE(serial_temp != NULL) << "could not serialize public key.";
 
 	pub2 = _deserialize_ec_pubkey(serial_temp, serial_size, 0);
 
 	res = _compute_aes256_kek(pub2, ec1, key2);
 
-	ck_assert_msg((res == 0), "could not perform the second ECDH key exchange.\n");
+	ASSERT_EQ(0, res) << "could not perform the second ECDH key exchange.";
 
-	ck_assert_msg((memcmp(key1, key2, 48) == 0), "the key derivation functions did not yield the correct result");
+	ASSERT_EQ(0, memcmp(key1, key2, 48)) << "the key derivation functions did not yield the correct result";
 }
-END_TEST
 
-
-
-
-
-START_TEST(check_ed25519_signatures)
+TEST(DIME, check_ed25519_signatures)
 {
 	ED25519_KEY *key;
 	ed25519_signature sigbuf;
@@ -285,21 +275,21 @@ START_TEST(check_ed25519_signatures)
 	int res;
 
 	res = crypto_init();
-	ck_assert_msg(!res, "Crypto initialization routine failed.\n");
+	ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
 	key = generate_ed25519_keypair();
-	ck_assert_msg((key != NULL), "ed25519 signature/verification check failed: could not generate key pair.\n");
+	ASSERT_TRUE(key != NULL) << "ed25519 signature/verification check failed: could not generate key pair.";
 
 	for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
 
 		for (size_t j = 0; j < N_SIGNATURE_TIER_TESTS; j++) {
 			rdata = gen_random_data(last_min, dlens[i], &rsize);
 			memset(sigbuf, 0, sizeof(sigbuf));
-			ck_assert_msg((rdata != NULL), "ed25519 signature/verification check failed: could not generate random data.\n");
+			ASSERT_TRUE(rdata != NULL) << "ed25519 signature/verification check failed: could not generate random data.";
 			ed25519_sign_data(rdata, rsize, key, sigbuf);
 
 			res = ed25519_verify_sig(rdata, rsize, key, sigbuf);
-			ck_assert_msg((res == 1), "ed25519 signature/verification check failed: signature verification failed (%d).\n", res);
+			ASSERT_EQ(1, res) << "ed25519 signature/verification check failed: signature verification failed (" << res << ").";
 
 			free(rdata);
 		}
@@ -308,18 +298,4 @@ START_TEST(check_ed25519_signatures)
 	}
 
 	free_ed25519_key(key);
-}
-END_TEST
-
-
-Suite *suite_check_crypto(void) {
-
-	Suite *s = suite_create("\nCrypto");
-	suite_add_test(s, "EC Serialization/Deserialization", check_ec_serialization);
-	suite_add_test(s, "EC Key Load From File", load_ec_key_file);
-	suite_add_test(s, "EC Signing/Verification", check_ec_signatures);
-	suite_add_test(s, "EC SHA Signing/Verification", check_ec_sha_signatures);
-	suite_add_test(s, "ECDH Key Derivation Function", check_ecdh_kdf);
-	suite_add_test(s, "ed25519 Signing/Verification", check_ed25519_signatures);
-	return s;
 }

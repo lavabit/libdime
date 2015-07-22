@@ -11,6 +11,7 @@
 extern "C" {
 #include "common/error.h"
 }
+#include "gtest/gtest.h"
 
 #ifdef ERROR_API_FINISHED
 /** @brief Compute positive sum of two non-negative ints or raise errinfo error.
