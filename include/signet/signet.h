@@ -367,7 +367,7 @@ int                     dime_sgnt_signkey_set(signet_t *signet, ED25519_KEY *key
  * @param	perm		Permissions for the usage of the SOK.
  * @return	0 on success, -1 on failure.
 */
-int                     dime_sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
+int                     dime_sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, uint8_t perm);
 
 /**
  * @brief	Fetch the secondary organizational signing key from the signet by number (starting at 1)

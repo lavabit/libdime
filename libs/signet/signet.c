@@ -65,7 +65,7 @@ static ED25519_KEY **          sgnt_signkeys_msg_fetch(const signet_t *signet);
 static ED25519_KEY **          sgnt_signkeys_signet_fetch(const signet_t *signet);
 static ED25519_KEY **          sgnt_signkeys_software_fetch(const signet_t *signet);
 static ED25519_KEY **          sgnt_signkeys_tls_fetch(const signet_t *signet);
-static int                     sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm);
+static int                     sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, uint8_t perm);
 static ED25519_KEY *           sgnt_sok_num_fetch(const signet_t *signet, unsigned int num);
 static const char *            sgnt_state_to_str(signet_state_t state);
 static signet_type_t           sgnt_type_get(const signet_t *signet);
@@ -2393,7 +2393,7 @@ static int sgnt_field_defined_create(signet_t *signet, unsigned char fid, size_t
  * @param	perm		Permissions for the usage of the SOK.
  * @return	0 on success, -1 on failure.
 */
-static int sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
+static int sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, uint8_t perm) {
 
 	int res;
 	unsigned char *serial_key, *serial_field;
@@ -3943,7 +3943,7 @@ ED25519_KEY **dime_sgnt_signkeys_tls_fetch(const signet_t *signet) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_signkeys_tls_fetch, signet);
 }
 
-int dime_sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, sok_permissions_t perm) {
+int dime_sgnt_sok_create(signet_t *signet, ED25519_KEY *key, unsigned char format, uint8_t perm) {
 	PUBLIC_FUNCTION_IMPLEMENT(sgnt_sok_create, signet, key, format, perm);
 }
 
