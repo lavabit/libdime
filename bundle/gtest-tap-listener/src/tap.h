@@ -223,7 +223,7 @@ public:
     this->addTapTestResult(testInfo);
   }
 
-  virtual void OnTestProgramEnd(const testing::UnitTest& unit_test) {
+  virtual void OnTestProgramEnd(const testing::UnitTest&) {
     //--- Write the count and the word.
     std::map<std::string, tap::TestSet>::const_iterator ci;
     for (ci = this->testCaseTestResultMap.begin();
