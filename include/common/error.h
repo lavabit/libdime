@@ -44,16 +44,16 @@
 	rettype _ ## funcname(__VA_ARGS__, ...); \
 	rettype __ ## funcname(__VA_ARGS__, va_list ap)
 
-#define ERR_SYSCALL   1
-#define ERR_OPENSSL   2
-#define ERR_RESOLVER  3
-#define ERR_UNSPEC    4
-#define ERR_BAD_PARAM 5
-#define ERR_NOMEM     6
-#define ERR_PERM      7
+#define ERR_SYSCALL   1U
+#define ERR_OPENSSL   2U
+#define ERR_RESOLVER  3U
+#define ERR_UNSPEC    4U
+#define ERR_BAD_PARAM 5U
+#define ERR_NOMEM     6U
+#define ERR_PERM      7U
 
 
-#define ERR_STACK_SIZE 8
+#define ERR_STACK_SIZE 8U
 
 
 typedef struct {
