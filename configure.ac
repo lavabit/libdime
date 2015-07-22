@@ -38,6 +38,9 @@ AC_PROG_CXX
 # Find ranlib
 AC_PROG_RANLIB
 
+# Find awk
+AC_PROG_AWK
+
 # Define _GNU_SOURCE
 AC_GNU_SOURCE
 

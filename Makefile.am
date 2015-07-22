@@ -164,7 +164,8 @@ gtest_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS) \
 	-I$(top_srcdir)/bundle/googletest/include \
-	-I$(top_srcdir)/bundle/gtest-tap-listener/src
+	-I$(top_srcdir)/bundle/gtest-tap-listener/src \
+	-I$(top_srcdir)/check
 gtest_CFLAGS = \
 	$(AM_CFLAGS) \
 	@OPENSSL_CFLAGS@ \
@@ -186,7 +187,8 @@ gtest_LDADD = \
 	@PTHREAD_LIBS@
 gtest_SOURCES = \
 	check/gtest.cpp \
-	check/dime/check_ssl.cpp
+	check/dime/check_ssl.cpp \
+	check/dmessage/check_dmsg.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp

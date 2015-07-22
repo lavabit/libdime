@@ -15,7 +15,7 @@ static inline void suite_add_test(Suite *s, const char *name, TFun func) {
 #define suite_add_testfunc(s, func) \
 	suite_add_test(s, #func, func)
 
-#define ck_assert_dime_noerror() \
+#define ASSERT_DIME_NO_ERROR() \
 	ck_assert_dime_noerror_impl(__FILE__, __LINE__)
 static inline void ck_assert_dime_noerror_impl(const char *filename, int lineno) {
 	if (get_last_error() != NULL) {
