@@ -193,7 +193,13 @@ gtest_SOURCES = \
 	check/common/check_common.cpp \
 	check/common/check_crypto.cpp \
 	check/common/check_error.cpp \
-	check/common/check_misc.cpp
+	check/common/check_misc.cpp \
+	check/core/check_classify.cpp \
+	check/core/check_compare.cpp \
+	check/core/check_hash.cpp \
+	check/core/check_host_folder.cpp \
+	check/core/check_mail_counters.cpp \
+	check/core/check_memory.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp
