@@ -183,7 +183,8 @@ gtest_LDADD = \
 	@OPENSSL_LIBS@ \
 	@PTHREAD_LIBS@
 gtest_SOURCES = \
-	check/gtest.cpp
+	check/gtest.cpp \
+	check/dime/check_ssl.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp
