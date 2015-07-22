@@ -1,0 +1,9 @@
+.project
+.classpath
+.settings
+.cproject
+target
+bin
+Release
+Debug
+
