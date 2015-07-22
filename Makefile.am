@@ -197,7 +197,9 @@ gtest_SOURCES = \
 	check/core/check_hash.cpp \
 	check/core/check_host_folder.cpp \
 	check/core/check_mail_counters.cpp \
-	check/core/check_memory.cpp
+	check/core/check_memory.cpp \
+	check/signet/check_keys.cpp \
+	check/signet/check_signet.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp

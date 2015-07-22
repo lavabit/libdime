@@ -1,8 +1,10 @@
 #include <unistd.h>
+extern "C" {
 #include "signet/keys.h"
-#include "checks.h"
+}
+#include "gtest/gtest.h"
 
-START_TEST(check_keys_file_handling)
+TEST(DIME, check_keys_file_handling)
 {
 
 	const char *filename_u = "keys_user.keys", *filename_o = "keys_org.keys", *filename_w = "keys_wrong.keys";
@@ -21,49 +23,49 @@ START_TEST(check_keys_file_handling)
 
 /* testing user keys file */
 	res = dime_keys_file_create(KEYS_TYPE_USER, signkey, enckey, filename_u);
-	ck_assert_msg(res == 0, "Failure creating user keys file\n.");
+	ASSERT_EQ(0, res) << "Failure creating user keys file.";
 
 	signkey2 = dime_keys_signkey_fetch(filename_u);
-	ck_assert_msg(signkey2 != NULL, "Failure fetching signing key.\n");
+	ASSERT_TRUE(signkey2 != NULL) << "Failure fetching signing key.";
 
 
 	res = memcmp(signkey->private_key, signkey2->private_key, ED25519_KEY_SIZE);
-	ck_assert_msg(res == 0, "Corruption of signing key data.\n");
+	ASSERT_EQ(0, res) << "Corruption of signing key data.";
 
 	_free_ed25519_key(signkey2);
 
 	enckey2 = dime_keys_enckey_fetch(filename_u);
-	ck_assert_msg(enckey2 != NULL, "Failure fetching encryption key.\n");
+	ASSERT_TRUE(enckey2 != NULL) << "Failure fetching encryption key.";
 
 	ser_enc2 = _serialize_ec_privkey(enckey2, &enc2_size);
 	_free_ec_key(enckey2);
-	ck_assert_msg(enc1_size == enc2_size, "Corruption of serialized encryption key size.\n");
+	ASSERT_EQ(enc1_size, enc2_size) << "Corruption of serialized encryption key size.";
 
 	res = memcmp(ser_enc1, ser_enc2, enc1_size);
-	ck_assert_msg(res == 0, "Corruption of encryption key data.\n");
+	ASSERT_EQ(0, res) << "Corruption of encryption key data.";
 
 	free(ser_enc2);
 
 /* testing organizational keys file */
 	res = dime_keys_file_create(KEYS_TYPE_ORG, signkey, enckey, filename_o);
-	ck_assert_msg(res == 0, "Failure to create organizational keys file\n.");
+	ASSERT_EQ(0, res) << "Failure to create organizational keys file.";
 
 	signkey2 = dime_keys_signkey_fetch(filename_o);
-	ck_assert_msg(signkey2 != NULL, "Failure to fetch signing key.\n");
+	ASSERT_TRUE(signkey2 != NULL) << "Failure to fetch signing key.";
 
 	res = memcmp(signkey->private_key, signkey2->private_key, ED25519_KEY_SIZE);
-	ck_assert_msg(res == 0, "Corruption of signing key data.\n");
+	ASSERT_EQ(0, res) << "Corruption of signing key data.";
 
 	_free_ed25519_key(signkey2);
 
 	enckey2 = dime_keys_enckey_fetch(filename_o);
-	ck_assert_msg(enckey2 != NULL, "Failure to fetch encryption key.\n");
+	ASSERT_TRUE(enckey2 != NULL) << "Failure to fetch encryption key.";
 
 	ser_enc2 = _serialize_ec_privkey(enckey2, &enc2_size);
-	ck_assert_msg(enc1_size == enc2_size, "Corruption of serialized encryption key size.\n");
+	ASSERT_EQ(enc1_size, enc2_size) << "Corruption of serialized encryption key size.";
 
 	res = memcmp(ser_enc1, ser_enc2, enc1_size);
-	ck_assert_msg(res == 0, "Corruption of encryption key data.\n");
+	ASSERT_EQ(0, res) << "Corruption of encryption key data.";
 
 	_free_ec_key(enckey2);
 	free(ser_enc1);
@@ -71,24 +73,15 @@ START_TEST(check_keys_file_handling)
 
 /* testing invalid keys file types */
 	res = dime_keys_file_create(KEYS_TYPE_ERROR, signkey, enckey, filename_w);
-	ck_assert_msg(res != 0, "Failure to trigger error creating keys file type KEYS_TYPE_ERROR.\n");
+	ASSERT_TRUE(res != 0) << "Failure to trigger error creating keys file type KEYS_TYPE_ERROR.";
 
-	ck_assert_msg(access(filename_w, F_OK) == -1, "Unintended creation of keys file with invalid type.\n");
+	ASSERT_EQ(-1, access(filename_w, F_OK)) << "Unintended creation of keys file with invalid type.";
 
-	res = dime_keys_file_create(4, signkey, enckey, filename_w);
-	ck_assert_msg(res != 0, "Failure to trigger error creating keys file type 4.\n");
+	res = dime_keys_file_create(static_cast<keys_type_t>(4), signkey, enckey, filename_w);
+	ASSERT_NE(0, res) << "Failure to trigger error creating keys file type 4.";
 
-	ck_assert_msg(access(filename_w, F_OK) == -1, "Unintended creation of keys file with invalid type.\n");
+	ASSERT_EQ(-1, access(filename_w, F_OK)) << "Unintended creation of keys file with invalid type.";
 
 	_free_ed25519_key(signkey);
 	_free_ec_key(enckey);
-}
-END_TEST
-
-
-Suite *suite_check_keys(void) {
-
-	Suite *s = suite_create("\nKeys");
-	suite_add_test(s, "check keys file I/O", check_keys_file_handling);
-	return s;
 }
