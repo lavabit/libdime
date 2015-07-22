@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 EXTRA_DIST = m4/NOTES
 
 AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
-AM_CXXFLAGS = @WARNINGS@
+AM_CXXFLAGS = @WARNINGS@ -std=c++11
 
 # Note that we specify the include directories for the bundled dependencies
 # here.
@@ -160,9 +160,11 @@ libgtest_a_SOURCES = \
 
 gtest_CPPFLAGS = \
 	-DGTEST_HAS_PTHREAD=@GTEST_HAS_PTHREAD@ \
+	-DGTEST_TAP_PRINT_TO_STDOUT \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS) \
-	-I$(top_srcdir)/bundle/googletest/include
+	-I$(top_srcdir)/bundle/googletest/include \
+	-I$(top_srcdir)/bundle/gtest-tap-listener/src
 gtest_CFLAGS = \
 	$(AM_CFLAGS) \
 	@OPENSSL_CFLAGS@ \
