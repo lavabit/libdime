@@ -5,8 +5,6 @@ EXTRA_DIST = m4/NOTES
 AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
 AM_CXXFLAGS = @WARNINGS@ -std=c++11
 
-# Note that we specify the include directories for the bundled dependencies
-# here.
 COMMON_CPPFLAGS = \
 	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
 	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
