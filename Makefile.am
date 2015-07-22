@@ -188,7 +188,8 @@ gtest_LDADD = \
 gtest_SOURCES = \
 	check/gtest.cpp \
 	check/dime/check_ssl.cpp \
-	check/dmessage/check_dmsg.cpp
+	check/dmessage/check_dmsg.cpp \
+	check/dmessage/check_parser.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp

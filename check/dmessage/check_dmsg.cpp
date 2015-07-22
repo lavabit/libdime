@@ -5,7 +5,8 @@ extern "C" {
 #include "dmessage/parser.h"
 #include "dmessage/dmsg.h"
 }
-#include "gtest-helper.h"
+#include "gtest/gtest.h"
+#include "error-assert.h"
 
 /**
  * Demonstrates how a message travels from the author to the recipient.
