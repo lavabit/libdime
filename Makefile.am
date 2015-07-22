@@ -139,7 +139,7 @@ libsignet_resolver_a_SOURCES = \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c
 
-TEST_LOG_DRIVER = \
+LOG_DRIVER = \
 	env AM_TAP_AWK='$(AWK)' \
 	$(SHELL) $(top_srcdir)/build-aux/tap-driver.sh
 TESTS = gtest
