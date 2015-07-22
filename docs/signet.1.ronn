@@ -1,0 +1,112 @@
+signet(1) -- Signet manager for Dark Internet Mail Environment
+====
+
+## SYNOPSIS
+
+`signet` command [command-args] [options]
+
+## DESCRIPTION
+
+Signets are the public ID of mail addresses and organizations, and contain the public keys
+used to encrypt and sign messages. The `signet` command offers a
+command-line interface for generating, verifying, fetching, and modifying mail and organizational signets.
+
+Signets can be mail signets or organizational signets. Mail signets are named in the form *mailbox@dom.ain* while 
+organizational signets are named in the form *dom.ain*. All valid mail signets are **signed** by the associated
+organizational signet's private key to indicate the validity of the mail address by the organization.
+
+## COMMANDS
+
+--create *signet* [ *signet* ]
+	Create a new signet. For mail signets, optionally supply an organizational signet.
+	
+--decrypt  
+	Decrypt the contents of a file encrypted with a signet's public key.
+	
+-d, --dump [ *signet* | *signing-request* ]
+	Produce a concise textual listing of a signet or signet signing request's contents.
+
+--encrypt *signet* *file*
+	Encrypt the specified file using the public key of the mail signet.
+
+--help [ *command* ]
+	List help for the command.
+
+-p, --parse *signet*
+	A version of the `--dump` command with output formetted for human inspection.
+
+--resolve *signet*
+	Does a full lookup; finding, fetching via DMTP, and validating the specified signet.
+	
+--rotate *signet*
+	Generate new public and private keys for the specified signet, then sign the signet with the last private key. Only useful
+	for mail signets.
+	
+-s, --sign 
+	Sign a signet, given a SSR and organizational private key. Up to three organizations may sign a mail signet. 
+
+--verify-custody
+	Verify the chain of custody starting from a root mail signet to a specified signet.
+
+--version
+	List the libDIME version information used to build `signet`.
+
+## COMMAND ARGUMENTS
+
+--dmime-msg *file*
+	Specify a file containing a DMIME message.
+
+--ephemeral
+	Generate an ephemeral fingerprint from two mail signets.
+
+--fingerprint *file*
+	Specify a signet fingerprint. Used to retrieve a specific signet.
+
+--password *password*
+	Supply a password on the command line.
+
+--key *file*
+	Supply a key in a PEM encoded file.
+
+--out *file*
+	Direct non-informational output to the specified file. Signets are output in PEM format.
+
+--signet *file*
+	Supply a signet in a PEM encoded file.
+
+--ssr *file*
+	Supply a PEM encoded signet signing request.
+
+## OPTIONS
+
+--disable-verification
+	Turns off the verification of a signet itself.
+
+-v, --verbose
+	Provide expanded information.
+
+## EXAMPLES
+
+`signet --resolve mbox@dom.ain` - Lookup, fetch, and verify the mail signet named `mbox@dom.ain`
+
+`signet --resolve dom.ain` - Lookup, fetch, and verify the organizational signet published by `dom.ain`
+
+`signet --create mbox@dom.ain --key pubkey.pem --out mbox.pem` - Create a mail signet named `mbox@dom.ain` with the public key found in `pubkey.pem`
+and write the signet to `mbox.pem`.
+
+`signet --create dom.ain --key pubkey.pem --out dom.ain.pem` - Create an organizational signet named `dom.ain` with the public key found in 
+`pubkey.pem` and write the output to `dom.ain.pem`.
+
+`signet --sign dom.ain --ssr ssr.pem --out mbox@dom.ain.pem` - Sign the signet specified in the signet signing request found in `ssr.pem` using
+the organizational key associated with the organizational signet for `dom.ain`.
+
+`signet --verify-custody mbox@dom.ain --signet mbox.root.pem` - Verify the chain of custody of mail signet `mbox@dom.ain` starting from the
+signet root specified in the file `mbox.root.pem`.
+
+`signet --ephemeral --signet mbox.pem --signet mbox2.pem` - Create an ephemeral fingerprint using the signets in the files `mbox.pem` and `mbox2.pem`.
+
+`signet --ephemeral mbox@dom.ain mbox2@sub.dom.ain` - Create an ephemeral fingerprint using the signets `mbox@dom.ain` and `mbox2@sub.dom.ain`. The
+signets are looked up and fetched from their authoritative domains.
+
+## DIAGNOSTICS
+

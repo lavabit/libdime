@@ -1,0 +1,87 @@
+dime(1) -- dwcwCommand line tool for Dark Internet Mail Environment
+====
+
+## SYNOPSIS
+
+`dime *command* [ *command-args* ] [ *command-options* ]`
+
+## DESCRIPTION
+
+The `dime` command offers a
+command-line interface for generating, verifying, signing, encrypting, and
+decrypting Dark Internet Mail Environment messages in DMIME format.
+
+DMIME messages sprcify an (A)uthor, (O)rigin, (D)estination, and (R)ecipient. Each AODR entity
+has an associated signet containing cryptographic keys for encryption or signing. Each of these 
+signets can be provided in PEM encoded files or resolved over the network. If the signets
+are unavailable, the appropriate key can be provided in a PEM encoded file.
+
+## COMMANDS
+
+--create
+	Create a DMIME message.	Must specify a `--msg` file. All signet information will be
+	inferred from the specified author and recipient addresses unless `--no-signet` is
+	specified.
+
+-d, --dump
+	Produce a concise textual listing of a DMIME message.
+
+-p, --parse
+	A version of the `--dump` command with output formatted for human inspection and
+	showing the logical structure of the message.
+
+--sign
+	Sign a DMIME message, given a subset of AODR signets or keys.
+		
+-v, --verify
+	Verify the logical structure of a DMIME message, including the AODR slots.
+
+--verify-org
+	Verify the logical structure of a DMIME message using only the organizational signets
+	or signing keys.
+
+## COMMAND ARGUMENTS
+
+--author-signet *file*
+	Specify a file containing the author's signet.
+
+--author-key *file*
+	Specify a file containing the signing key of the mail author.
+
+--destination-key *file*
+	Specify a file containing the recipient's organizational signing key.
+
+--destination-signet *file*
+	Specify a file containing the organizational signet of the recipient's organization.
+
+--msg *file*
+	Write the DMIME message to the specified file.
+
+--origin-key *file*
+	Specify a file containing the author's organizational signing key.
+
+--origin-signet *file*
+	Specify a file containing the organizational signet of the author's organization.
+
+--recipient-key *file*
+	Specify a file containing the public encryption key of the recipient's mailbox.
+
+--recipient-signet *file*
+	Specify a file containing the signet of the recipient's mailbox.
+
+## COMMAND OPTIONS
+
+--disable-verification
+	Turns off the verification of the DMIME message AODR slots.
+
+--no-signet
+	Do not infer any signet information from the message's author and recipient email
+	addresses. The associated AODR slots will be zero filled unless explicity provided.
+
+--verbose
+	Provide expanded information.
+
+## EXAMPLES
+
+## DIAGNOSTICS
+
