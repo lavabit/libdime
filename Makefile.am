@@ -159,10 +159,10 @@ libgtest_a_SOURCES = \
 	bundle/googletest/src/gtest-all.cc
 
 gtest_CPPFLAGS = \
-	-DGTEST_HAS_PTHREAD=@GTEST_HAS_PTHREAD@
+	-DGTEST_HAS_PTHREAD=@GTEST_HAS_PTHREAD@ \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS) \
-	-I$(top_srcdir)/check
+	-I$(top_srcdir)/bundle/googletest/include
 gtest_CFLAGS = \
 	$(AM_CFLAGS) \
 	@OPENSSL_CFLAGS@ \
