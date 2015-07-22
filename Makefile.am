@@ -191,7 +191,9 @@ gtest_SOURCES = \
 	check/dmessage/check_dmsg.cpp \
 	check/dmessage/check_parser.cpp \
 	check/common/check_common.cpp \
-	check/common/check_crypto.cpp
+	check/common/check_crypto.cpp \
+	check/common/check_error.cpp \
+	check/common/check_misc.cpp
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp

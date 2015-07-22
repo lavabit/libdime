@@ -1,7 +1,9 @@
 #include <stdio.h>
 
+extern "C" {
 #include <common/misc.h>
-#include "checks.h"
+}
+#include "gtest/gtest.h"
 
 /* 24 void set_dbg_level(unsigned int level);
  25 unsigned int get_dbg_level(void);
@@ -21,38 +23,28 @@
  39 int get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out); */
 
 
-START_TEST(check_debug_level)
+TEST(DIME, check_debug_level)
 {
 	for (unsigned int i = 0; i < 100; i++) {
 		set_dbg_level(i);
-		ck_assert_uint_eq(i, get_dbg_level());
+		ASSERT_EQ(i, get_dbg_level());
 	}
 }
-END_TEST
 
-START_TEST(check_base64_macros)
+TEST(DIME, check_base64_macros)
 {
-	ck_assert_uint_eq(0, B64_ENCODED_LEN(0));
-	ck_assert_uint_eq(4, B64_ENCODED_LEN(1));
-	ck_assert_uint_eq(4, B64_ENCODED_LEN(2));
-	ck_assert_uint_eq(4, B64_ENCODED_LEN(3));
-	ck_assert_uint_eq(40, B64_ENCODED_LEN(30));
-	ck_assert_uint_eq(44, B64_ENCODED_LEN(31));
-	ck_assert_uint_eq(40, B64_ENCODED_LEN(10 + 10 + 10));
+	ASSERT_EQ(0, B64_ENCODED_LEN(0));
+	ASSERT_EQ(4, B64_ENCODED_LEN(1));
+	ASSERT_EQ(4, B64_ENCODED_LEN(2));
+	ASSERT_EQ(4, B64_ENCODED_LEN(3));
+	ASSERT_EQ(40, B64_ENCODED_LEN(30));
+	ASSERT_EQ(44, B64_ENCODED_LEN(31));
+	ASSERT_EQ(40, B64_ENCODED_LEN(10 + 10 + 10));
 
-	ck_assert_uint_eq(0, B64_DECODED_LEN(0));
-	ck_assert_uint_eq(1, B64_DECODED_LEN(2));
-	ck_assert_uint_eq(2, B64_DECODED_LEN(3));
-	ck_assert_uint_eq(3, B64_DECODED_LEN(4));
-	ck_assert_uint_eq(57, B64_DECODED_LEN(76));
-	ck_assert_uint_eq(30 + 30 + 30, B64_DECODED_LEN(40 + 40 + 40));
-}
-END_TEST
-
-Suite *suite_check_misc(void) {
-
-	Suite *s = suite_create("\nMisc");
-	suite_add_testfunc(s, check_debug_level);
-	suite_add_testfunc(s, check_base64_macros);
-	return s;
+	ASSERT_EQ(0, B64_DECODED_LEN(0));
+	ASSERT_EQ(1, B64_DECODED_LEN(2));
+	ASSERT_EQ(2, B64_DECODED_LEN(3));
+	ASSERT_EQ(3, B64_DECODED_LEN(4));
+	ASSERT_EQ(57, B64_DECODED_LEN(76));
+	ASSERT_EQ(30 + 30 + 30, B64_DECODED_LEN(40 + 40 + 40));
 }

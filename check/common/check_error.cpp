@@ -8,13 +8,16 @@
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
+
+extern "C" {
 #include <common/error.h>
-#include "checks.h"
+}
+#include "gtest/gtest.h"
 
 #define ERRMSG "error:02001002:system library:fopen:No such file or directory:filename:100"
 #define SEP    " | "
 
-START_TEST(test_openssl_error_1)
+TEST(DIME, test_openssl_error_1)
 {
 	ERR_clear_error();
 	ERR_put_error(ERR_LIB_SYS, SYS_F_FOPEN, ERR_R_SYS_LIB, "filename", 100);
@@ -22,13 +25,12 @@ START_TEST(test_openssl_error_1)
 	PUSH_ERROR_OPENSSL();
 
 	const errinfo_t *last_error = get_last_error();
-	ck_assert_ptr_ne(NULL, last_error);
-	ck_assert_int_eq(ERR_OPENSSL, last_error->errcode);
-	ck_assert_str_eq(ERRMSG, last_error->auxmsg);
+	ASSERT_TRUE(NULL != last_error);
+	ASSERT_EQ(ERR_OPENSSL, last_error->errcode);
+	ASSERT_STREQ(ERRMSG, last_error->auxmsg);
 }
-END_TEST
 
-START_TEST(test_openssl_error_5)
+TEST(DIME, test_openssl_error_5)
 {
 	ERR_clear_error();
 	for (int i = 0; i < 5; i++) {
@@ -38,13 +40,12 @@ START_TEST(test_openssl_error_5)
 	PUSH_ERROR_OPENSSL();
 
 	const errinfo_t *last_error = get_last_error();
-	ck_assert_ptr_ne(NULL, last_error);
-	ck_assert_int_eq(ERR_OPENSSL, last_error->errcode);
-	ck_assert_str_eq(ERRMSG SEP ERRMSG SEP ERRMSG SEP ERRMSG SEP ERRMSG, last_error->auxmsg);
+	ASSERT_TRUE(NULL != last_error);
+	ASSERT_EQ(ERR_OPENSSL, last_error->errcode);
+	ASSERT_STREQ(ERRMSG SEP ERRMSG SEP ERRMSG SEP ERRMSG SEP ERRMSG, last_error->auxmsg);
 }
-END_TEST
 
-START_TEST(test_openssl_error_100)
+TEST(DIME, test_openssl_error_100)
 {
 	ERR_clear_error();
 	for (int i = 0; i < 100; i++) {
@@ -54,16 +55,15 @@ START_TEST(test_openssl_error_100)
 	PUSH_ERROR_OPENSSL();
 
 	const errinfo_t *last_error = get_last_error();
-	ck_assert_ptr_ne(NULL, last_error);
-	ck_assert_int_eq(ERR_OPENSSL, last_error->errcode);
-	ck_assert_uint_eq(sizeof(last_error->auxmsg) - 1, strlen(last_error->auxmsg));
+	ASSERT_TRUE(NULL != last_error);
+	ASSERT_EQ(ERR_OPENSSL, last_error->errcode);
+	ASSERT_EQ(sizeof(last_error->auxmsg) - 1, strlen(last_error->auxmsg));
 }
-END_TEST
 
 /**
  * In an old version of the code that used strncat, this caused a SIGSEGV.
  */
-START_TEST(test_openssl_error_longfilename)
+TEST(DIME, test_openssl_error_longfilename)
 {
 	ERR_clear_error();
 #define fn10   "1234567890"
@@ -76,20 +76,7 @@ START_TEST(test_openssl_error_longfilename)
 	PUSH_ERROR_OPENSSL();
 
 	const errinfo_t *last_error = get_last_error();
-	ck_assert_ptr_ne(NULL, last_error);
-	ck_assert_int_eq(ERR_OPENSSL, last_error->errcode);
-	ck_assert_uint_eq(sizeof(last_error->auxmsg) - 1, strlen(last_error->auxmsg));
-}
-END_TEST
-
-Suite *suite_check_error(void) {
-
-	Suite *s = suite_create("\nError");
-	TCase *tcase = tcase_create("core");
-	tcase_add_test(tcase, test_openssl_error_1);
-	tcase_add_test(tcase, test_openssl_error_5);
-	tcase_add_test(tcase, test_openssl_error_100);
-	tcase_add_test(tcase, test_openssl_error_longfilename);
-	suite_add_tcase(s, tcase);
-	return s;
+	ASSERT_TRUE(NULL != last_error);
+	ASSERT_EQ(ERR_OPENSSL, last_error->errcode);
+	ASSERT_EQ(sizeof(last_error->auxmsg) - 1, strlen(last_error->auxmsg));
 }
