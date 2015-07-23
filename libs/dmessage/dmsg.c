@@ -185,9 +185,8 @@ static void  dmsg_message_destroy(dmime_message_t *msg) {
 */
 static dmime_message_chunk_t *dmsg_chunk_origin_encode(dmime_object_t *object) {
 
-	char *author_crypto_signet_b64, *destination_signet_fingerprint_b64;
+	char *author_signet_fingerprint_b64, *destination_signet_fingerprint_b64;
 	dmime_message_chunk_t *result;
-	signet_t *crypto_signet;
 	stringer_t *data = NULL;
 
 	if(!object) {
@@ -198,29 +197,22 @@ static dmime_message_chunk_t *dmsg_chunk_origin_encode(dmime_object_t *object) {
 		RET_ERROR_PTR(ERR_UNSPEC, "the dmime object does not contain necessary information to encode an origin message chunk");
 	}
 
-	if(!(crypto_signet = dime_sgnt_signet_crypto_split(object->signet_author))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not split author signet");
-	}
-
-	author_crypto_signet_b64 = dime_sgnt_signet_b64_serialize(crypto_signet);
-	dime_sgnt_signet_destroy(crypto_signet);
-
-	if(!author_crypto_signet_b64) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize the split signet into b64 data");
+	if(!(author_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_author))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate author signer cryptographic fingerprint");
 	}
 
 	if(!(destination_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_destination))) {
-		free(author_crypto_signet_b64);
+		free(author_signet_fingerprint_b64);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate fingerprint");
 	}
 
 	data = dime_prsr_envelope_format(
 		object->author,
 		object->destination,
-		(const char *)author_crypto_signet_b64,
+		(const char *)author_signet_fingerprint_b64,
 		(const char *)destination_signet_fingerprint_b64,
 		CHUNK_TYPE_ORIGIN);
-	free(author_crypto_signet_b64);
+	free(author_signet_fingerprint_b64);
 	free(destination_signet_fingerprint_b64);
 	
 	if(!data) {
@@ -250,9 +242,8 @@ static dmime_message_chunk_t *dmsg_chunk_origin_encode(dmime_object_t *object) {
 */
 static dmime_message_chunk_t *dmsg_chunk_destination_encode(dmime_object_t *object) {
 
-	char *recipient_crypto_signet_b64, *origin_signet_fingerprint_b64;
+	char *recipient_signet_fingerprint_b64, *origin_signet_fingerprint_b64;
 	dmime_message_chunk_t *result;
-	signet_t *crypto_signet;
 	stringer_t *data;
 
 	if(!object) {
@@ -263,29 +254,22 @@ static dmime_message_chunk_t *dmsg_chunk_destination_encode(dmime_object_t *obje
 		RET_ERROR_PTR(ERR_UNSPEC, "the dmime object does not contain necessary information to encode an origin message chunk");
 	}
 
-	if(!(crypto_signet = dime_sgnt_signet_crypto_split(object->signet_recipient))) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not split author signet");
-	}
-
-	recipient_crypto_signet_b64 = dime_sgnt_signet_b64_serialize(crypto_signet);
-	dime_sgnt_signet_destroy(crypto_signet);
-
-	if(!recipient_crypto_signet_b64) {
-		RET_ERROR_PTR(ERR_UNSPEC, "could not serialize the split signet into b64 data");
+	if(!(recipient_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_recipient))) {
+		RET_ERROR_PTR(ERR_UNSPEC, "failed to calculate recipient's cryptographic signet fingerprint");
 	}
 
 	if(!(origin_signet_fingerprint_b64 = dime_sgnt_fingerprint_crypto(object->signet_origin))) {
-		free(recipient_crypto_signet_b64);
+		free(recipient_signet_fingerprint_b64);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not calculate fingerprint");
 	}
 
 	data = dime_prsr_envelope_format(
 		object->recipient,
 		object->origin,
-		(const char *)recipient_crypto_signet_b64,
+		(const char *)recipient_signet_fingerprint_b64,
 		(const char *)origin_signet_fingerprint_b64,
 		CHUNK_TYPE_DESTINATION);
-	free(recipient_crypto_signet_b64);
+	free(recipient_signet_fingerprint_b64);
 	free(origin_signet_fingerprint_b64);
 	
 	if(!data) {
@@ -2224,18 +2208,40 @@ static void dmsg_object_chunklist_destroy(dmime_object_chunk_t *list) {
  */
 static void dmsg_object_destroy(dmime_object_t *object) {
 
-	if(object) {
-		st_cleanup(object->author);
-		st_cleanup(object->recipient);
-		st_cleanup(object->origin);
-		st_cleanup(object->destination);
-		dime_prsr_headers_destroy(object->common_headers);
-		st_cleanup(object->other_headers);
-		dmsg_object_chunklist_destroy(object->display);
-		dmsg_object_chunklist_destroy(object->attach);
-		free(object);
+	if(!object) {
+		return;
 	}
 
+	st_cleanup(object->author);
+	st_cleanup(object->recipient);
+	st_cleanup(object->origin);
+	st_cleanup(object->destination);
+	st_cleanup(object->fp_author);
+	st_cleanup(object->fp_origin);
+	st_cleanup(object->fp_destination);
+	st_cleanup(object->fp_recipient);
+
+	if(object->signet_author) {
+		dime_sgnt_signet_destroy(object->signet_author);
+	}
+
+	if(object->signet_origin) {
+		dime_sgnt_signet_destroy(object->signet_origin);
+	}
+
+	if(object->signet_destination) {
+		dime_sgnt_signet_destroy(object->signet_destination);
+	}
+
+	if(object->signet_recipient) {
+		dime_sgnt_signet_destroy(object->signet_recipient);
+	}
+
+	dime_prsr_headers_destroy(object->common_headers);
+	st_cleanup(object->other_headers);
+	dmsg_object_chunklist_destroy(object->display);
+	dmsg_object_chunklist_destroy(object->attach);
+	free(object);
 }
 
 
@@ -2246,7 +2252,7 @@ static void dmsg_object_destroy(dmime_object_t *object) {
  * @param	kek		Key encryption key for the specified actor.
  * @return	A newly allocated dmime object containing the envelope ids available to the actor.
  * @free_using{dmsg_destroy_object}
- */
+*/
 static dmime_object_t *dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek) {
 
 	dmime_envelope_object_t *parsed;
@@ -2293,7 +2299,9 @@ static dmime_object_t *dmsg_message_envelope_decrypt(const dmime_message_t *msg,
 
 		dmsg_message_chunk_destroy(decrypted);
 		result->author = st_dupe(parsed->auth_recp);
+		result->fp_author = st_dupe(parsed->auth_recp_fp);
 		result->destination = st_dupe(parsed->dest_orig);
+		result->fp_destination = st_dupe(parsed->dest_orig_fp);
 		dime_prsr_envelope_destroy(parsed);
 	}
 
@@ -2318,7 +2326,9 @@ static dmime_object_t *dmsg_message_envelope_decrypt(const dmime_message_t *msg,
 
 		dmsg_message_chunk_destroy(decrypted);
 		result->recipient = st_dupe(parsed->auth_recp);
+		result->fp_author = st_dupe(parsed->auth_recp_fp);
 		result->origin = st_dupe(parsed->dest_orig);
+		result->fp_origin = st_dupe(parsed->dest_orig_fp);
 		dime_prsr_envelope_destroy(parsed);
 	}
 
@@ -2372,17 +2382,12 @@ static int dmsg_chunk_sig_validate(dmime_message_chunk_t *chunk, signet_t *signe
  * @param	msg		Pointer to the dmime message containing the origin chunk.
  * @param	kek		The actor's key encryption key.
  * @return	0 on success, -1 on failure.
- *///TODO pull out reusuable code for dmsg_decrypt_destination ???
+*///TODO pull out reusuable code for dmsg_decrypt_destination ???
 static int dmsg_chunk_origin_decrypt(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek) {
 
-	char *auth_signet_b64, *dest_fp_b64;
 	dmime_actor_t actor;
-	dmime_envelope_object_t *parsed;
 	dmime_message_chunk_t *decrypted;
 	int res;
-	signet_t *auth_split_signet;
-	size_t size;
-	unsigned char *chunk_data;
 
 	if(!object || !msg || !kek) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -2396,87 +2401,19 @@ static int dmsg_chunk_origin_decrypt(dmime_object_t *object, const dmime_message
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the signets have been loaded");
 	}
 
-	if(!(auth_split_signet = dime_sgnt_signet_crypto_split(object->signet_author))) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not split author signet");
-	}
-
-	auth_signet_b64 = dime_sgnt_signet_b64_serialize(auth_split_signet);
-	dime_sgnt_signet_destroy(auth_split_signet);
-
-	if(!auth_signet_b64) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not serialize split author signet");
-	}
-
-
-	if(!(dest_fp_b64 = dime_sgnt_fingerprint_crypto(object->signet_destination))) {
-		free(auth_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not take fingerprint of destination signet");
-	}
-
 	if(!(decrypted = dmsg_chunk_decrypt(msg->origin, actor, kek))) {
-		free(dest_fp_b64);
-		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt origin chunk");
 	}
 
-	res = dmsg_chunk_sig_validate(decrypted, object->signet_author);
-
-	if(res < 0) {
+	if((res = dmsg_chunk_sig_validate(decrypted, object->signet_author)) < 0) {
 		dmsg_message_chunk_destroy(decrypted);
-		free(dest_fp_b64);
-		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "error during validation of origin chunk signature");
 	} else if (!res) {
 		dmsg_message_chunk_destroy(decrypted);
-		free(dest_fp_b64);
-		free(auth_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "origin chunk plaintext signature is invalid");
 	}
 
-	if(!(chunk_data = dmsg_chunk_data_get(decrypted, &size))) {
-		dmsg_message_chunk_destroy(decrypted);
-		free(dest_fp_b64);
-		free(auth_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve origin chunk data");
-	}
-
-	if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_ORIGIN))) {
-		dmsg_message_chunk_destroy(decrypted);
-		free(dest_fp_b64);
-		free(auth_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not parse origin chunk");
-	}
-
 	dmsg_message_chunk_destroy(decrypted);
-
-	if(strlen(auth_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(auth_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(auth_signet_b64))) {
-		dime_prsr_envelope_destroy(parsed);
-		free(dest_fp_b64);
-		free(auth_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "the object author signet does not match the message author signet");
-	}
-
-	free(auth_signet_b64);
-
-	if(strlen(dest_fp_b64) != st_length_get(parsed->dest_orig_fingerprint) || memcmp(dest_fp_b64, st_data_get(parsed->dest_orig_fingerprint), strlen(dest_fp_b64))) {
-		dime_prsr_envelope_destroy(parsed);
-		free(dest_fp_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "the object destination signet fingerprint does not match the message destination signet fingerprint");
-	}
-
-	free(dest_fp_b64);
-
-	if(st_length_get(object->author) != st_length_get(parsed->auth_recp) || memcmp(st_data_get(object->author), st_data_get(parsed->auth_recp), st_length_get(object->author))) {
-		dime_prsr_envelope_destroy(parsed);
-		RET_ERROR_INT(ERR_UNSPEC, "the object author id does not match the message author id");
-	}
-
-	if(st_length_get(object->destination) != st_length_get(parsed->dest_orig) || memcmp(st_data_get(object->destination), st_data_get(parsed->dest_orig), st_length_get(object->destination))) {
-		dime_prsr_envelope_destroy(parsed);
-		RET_ERROR_INT(ERR_UNSPEC, "the object destination id does not match the message destination id");
-	}
-
-	dime_prsr_envelope_destroy(parsed);
 
 	return 0;
 }
@@ -2488,17 +2425,12 @@ static int dmsg_chunk_origin_decrypt(dmime_object_t *object, const dmime_message
  * @param	msg		Pointer to the dmime message containing the destination chunk.
  * @param	kek		The actor's key encryption key.
  * @return	0 on success, -1 on failure.
- */
+*/
 static int dmsg_chunk_destination_decrypt(dmime_object_t *object, const dmime_message_t *msg, dmime_kek_t *kek) {
 
-	char *recp_signet_b64, *orig_fp_b64;
 	dmime_actor_t actor;
-	dmime_envelope_object_t *parsed;
 	dmime_message_chunk_t *decrypted;
 	int res;
-	signet_t *recp_split_signet;
-	size_t size;
-	unsigned char *chunk_data;
 
 	if(!object || !msg || !kek) {
 		RET_ERROR_INT(ERR_BAD_PARAM, NULL);
@@ -2512,89 +2444,23 @@ static int dmsg_chunk_destination_decrypt(dmime_object_t *object, const dmime_me
 		RET_ERROR_INT(ERR_UNSPEC, "the state of this dmime object does not indicate that the signets have been loaded");
 	}
 
-	if(!(recp_split_signet = dime_sgnt_signet_crypto_split(object->signet_recipient))) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not split recipient signet");
-	}
-
-	recp_signet_b64 = dime_sgnt_signet_b64_serialize(recp_split_signet);
-	dime_sgnt_signet_destroy(recp_split_signet);
-
-	if(!recp_signet_b64) {
-		RET_ERROR_INT(ERR_UNSPEC, "could not serialize split recipient signet");
-	}
-
-	if(!(orig_fp_b64 = dime_sgnt_fingerprint_crypto(object->signet_origin))) {
-		free(recp_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not take fingerprint of origin signet");
+	if(actor == id_destination) {
+		return 0;
 	}
 
 	if(!(decrypted = dmsg_chunk_decrypt(msg->destination, actor, kek))) {
-		free(orig_fp_b64);
-		free(recp_signet_b64);
 		RET_ERROR_INT(ERR_UNSPEC, "could not decrypt destination chunk");
 	}
 
-	if(actor != id_destination) {
-		res = dmsg_chunk_sig_validate(decrypted, object->signet_author);
-
-		if(res < 0) {
-			dmsg_message_chunk_destroy(decrypted);
-			free(orig_fp_b64);
-			free(recp_signet_b64);
-			RET_ERROR_INT(ERR_UNSPEC, "error during validation of destination chunk signature");
-		} else if(!res) {
-			dmsg_message_chunk_destroy(decrypted);
-			free(orig_fp_b64);
-			free(recp_signet_b64);
-			RET_ERROR_INT(ERR_UNSPEC, "destination chunk plaintext signature is invalid");
-		}
-
-	}
-
-	if(!(chunk_data = dmsg_chunk_data_get(decrypted, &size))) {
+	if((res = dmsg_chunk_sig_validate(decrypted, object->signet_author)) < 0) {
 		dmsg_message_chunk_destroy(decrypted);
-		free(orig_fp_b64);
-		free(recp_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not retrieve destination chunk data");
-	}
-
-	if(!(parsed = dime_prsr_envelope_parse(chunk_data, size, CHUNK_TYPE_DESTINATION))) {
+		RET_ERROR_INT(ERR_UNSPEC, "error during validation of destination chunk signature");
+	} else if(!res) {
 		dmsg_message_chunk_destroy(decrypted);
-		free(orig_fp_b64);
-		free(recp_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "could not parse destination chunk");
+		RET_ERROR_INT(ERR_UNSPEC, "destination chunk plaintext signature is invalid");
 	}
 
 	dmsg_message_chunk_destroy(decrypted);
-
-	if(strlen(recp_signet_b64) != st_length_get(parsed->auth_recp_signet) || memcmp(recp_signet_b64, st_data_get(parsed->auth_recp_signet), strlen(recp_signet_b64))) {
-		dime_prsr_envelope_destroy(parsed);
-		free(orig_fp_b64);
-		free(recp_signet_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "the object recipient signet does not match the message recipient signet");
-	}
-
-	free(recp_signet_b64);
-
-	if(strlen(orig_fp_b64) != st_length_get(parsed->dest_orig_fingerprint) || memcmp(orig_fp_b64, st_data_get(parsed->dest_orig_fingerprint), strlen(orig_fp_b64))) {
-		dime_prsr_envelope_destroy(parsed);
-		free(orig_fp_b64);
-		RET_ERROR_INT(ERR_UNSPEC, "the object origin signet fingerprint does not match the message origin signet fingerprint");
-	}
-
-	free(orig_fp_b64);
-
-	if(st_length_get(object->recipient) != st_length_get(parsed->auth_recp) || memcmp(st_data_get(object->recipient), st_data_get(parsed->auth_recp), st_length_get(object->recipient))) {
-		dime_prsr_envelope_destroy(parsed);
-		RET_ERROR_INT(ERR_UNSPEC, "the object recipient id does not match the message recipient id");
-	}
-
-	if(st_length_get(object->origin) != st_length_get(parsed->dest_orig) || memcmp(st_data_get(object->origin), st_data_get(parsed->dest_orig), st_length_get(object->origin))) {
-		dime_prsr_envelope_destroy(parsed);
-		RET_ERROR_INT(ERR_UNSPEC, "the object origin id does not match the message origin id");
-	}
-
-	dime_prsr_envelope_destroy(parsed);
 
 	return 0;
 }

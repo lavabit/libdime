@@ -148,10 +148,10 @@ START_TEST(check_dmsg_all)
 	draft->recipient = st_import(recp, strlen(recp));
 	draft->origin = st_import(orig, strlen(orig));
 	draft->destination = st_import(dest, strlen(dest));
-	draft->signet_author = signet_auth;
-	draft->signet_origin = signet_orig;
-	draft->signet_destination = signet_dest;
-	draft->signet_recipient = signet_recp;
+	draft->signet_author = dime_sgnt_signet_dupe(signet_auth);
+	draft->signet_origin = dime_sgnt_signet_dupe(signet_orig);
+	draft->signet_destination = dime_sgnt_signet_dupe(signet_dest);
+	draft->signet_recipient = dime_sgnt_signet_dupe(signet_recp);
 	draft->common_headers->headers[HEADER_TYPE_DATE] = st_import(common_date, strlen(common_date));
 	draft->common_headers->headers[HEADER_TYPE_FROM] = st_import(common_from, strlen(common_from));
 	draft->common_headers->headers[HEADER_TYPE_ORGANIZATION] = st_import(common_organization, strlen(common_organization));
@@ -190,10 +190,10 @@ START_TEST(check_dmsg_all)
 	ck_assert_msg(res == 0, "The message destination was corrupted in the envelope.\n");
 	ck_assert_dime_noerror();
 
-	at_orig->signet_author = signet_auth;
-	at_orig->signet_destination = signet_dest;
+	at_orig->signet_author = dime_sgnt_signet_dupe(signet_auth);
+	at_orig->signet_destination = dime_sgnt_signet_dupe(signet_dest);
 	at_orig->origin = st_import(orig, strlen(orig));
-	at_orig->signet_origin = signet_orig;
+	at_orig->signet_origin = dime_sgnt_signet_dupe(signet_orig);
 
 	res = dime_dmsg_message_decrypt_as_orig(at_orig, message, &orig_kek);
 	ck_assert_msg(res == 0, "Origin could not decrypt the chunks it needs access to.\n");
@@ -227,10 +227,10 @@ START_TEST(check_dmsg_all)
 	ck_assert_msg(res == 0, "The message recipient was corrupted in the envelope.\n");
 	ck_assert_dime_noerror();
 
-	at_dest->signet_origin = signet_orig;
-	at_dest->signet_recipient = signet_recp;
+	at_dest->signet_origin = dime_sgnt_signet_dupe(signet_orig);
+	at_dest->signet_recipient = dime_sgnt_signet_dupe(signet_recp);
 	at_dest->destination = st_import(dest, strlen(dest));
-	at_dest->signet_destination = signet_dest;
+	at_dest->signet_destination = dime_sgnt_signet_dupe(signet_dest);
 
 	res = dime_dmsg_message_decrypt_as_dest(at_dest, message, &dest_kek);
 	ck_assert_msg(res == 0, "Destination could not decrypt the chunks it needs access to.\n");
@@ -265,10 +265,10 @@ START_TEST(check_dmsg_all)
 	ck_assert_msg(res == 0, "The message recipient was corrupted in the envelope.\n");
 	ck_assert_dime_noerror();
 	
-	at_recp->signet_author = signet_auth;
-	at_recp->signet_origin = signet_orig;
-	at_recp->signet_destination = signet_dest;
-	at_recp->signet_recipient = signet_recp;
+	at_recp->signet_author = dime_sgnt_signet_dupe(signet_auth);
+	at_recp->signet_origin = dime_sgnt_signet_dupe(signet_orig);
+	at_recp->signet_destination = dime_sgnt_signet_dupe(signet_dest);
+	at_recp->signet_recipient = dime_sgnt_signet_dupe(signet_recp);
 
 	res = dime_dmsg_message_decrypt_as_recp(at_recp, message, &recp_kek);
 	ck_assert_msg(res == 0, "Failed to decrypt the message as recipient.\n");
