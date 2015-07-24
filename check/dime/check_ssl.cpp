@@ -1,4 +1,6 @@
+extern "C" {
 #include "signet-resolver/signet-ssl.h"
+}
 #include "gtest/gtest.h"
 
 TEST(DIME, domain_wildcard) {

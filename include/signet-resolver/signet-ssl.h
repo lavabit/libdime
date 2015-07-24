@@ -18,10 +18,6 @@
 
 // The public interface.
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Initialization and finalization routines.
 PUBLIC_FUNC_DECL(int,       ssl_initialize,           void);
 PUBLIC_FUNC_DECL(void,      ssl_shutdown,             void);
@@ -54,9 +50,5 @@ char *       _get_cache_ocsp_id(X509 *cert, OCSP_CERTID *cid, char *buf, size_t 
 void *       _serialize_ocsp_response_cb(void *record, size_t *outlen);
 void *       _deserialize_ocsp_response_cb(void *data, size_t len);
 void         _dump_ocsp_response_cb(FILE *fp, void *record, int brief);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
