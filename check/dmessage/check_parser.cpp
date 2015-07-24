@@ -36,10 +36,10 @@ TEST(DIME, check_parser_envelope)
 	res = st_cmp_cs_eq(orgid1, envelope->dest_orig);
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
-	res = memcmp(usrsgnt1, st_char_get(envelope->auth_recp_signet), strlen(usrsgnt1));
+	res = memcmp(usrsgnt1, st_char_get(envelope->auth_recp_fp), strlen(usrsgnt1));
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
-	res = memcmp(orgfp1, st_char_get(envelope->dest_orig_fingerprint), strlen(orgfp1));
+	res = memcmp(orgfp1, st_char_get(envelope->dest_orig_fp), strlen(orgfp1));
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
 	st_free(formatted);
@@ -61,10 +61,10 @@ TEST(DIME, check_parser_envelope)
 	res = st_cmp_cs_eq(orgid2, envelope->dest_orig);
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
-	res = memcmp(usrsgnt2, st_char_get(envelope->auth_recp_signet), strlen(usrsgnt2));
+	res = memcmp(usrsgnt2, st_char_get(envelope->auth_recp_fp), strlen(usrsgnt2));
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
-	res = memcmp(orgfp2, st_char_get(envelope->dest_orig_fingerprint), strlen(orgfp2));
+	res = memcmp(orgfp2, st_char_get(envelope->dest_orig_fp), strlen(orgfp2));
 	ASSERT_EQ(0, res) << "Data was corrupted during formatting and parsing.";
 
 	st_free(formatted);

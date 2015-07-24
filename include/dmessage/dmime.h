@@ -286,6 +286,11 @@ typedef struct {
 	// The origin and destination domains.
 	stringer_t *origin;
 	stringer_t *destination;
+	// Cryptographic signet fingerprint.
+	stringer_t *fp_author;
+	stringer_t *fp_recipient;
+	stringer_t *fp_origin;
+	stringer_t *fp_destination;
 	// Signets for the author and recipient and their orgs.
 	signet_t *signet_author;
 	signet_t *signet_recipient;
@@ -305,9 +310,9 @@ typedef struct {
 
 typedef struct {
 	stringer_t *auth_recp;
-	stringer_t *auth_recp_signet;
+	stringer_t *auth_recp_fp;
 	stringer_t *dest_orig;
-	stringer_t *dest_orig_fingerprint;
+	stringer_t *dest_orig_fp;
 } dmime_envelope_object_t;
 
 #endif

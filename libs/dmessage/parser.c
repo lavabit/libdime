@@ -132,13 +132,13 @@ prsr_envelope_labels_get(
 		*label1 = "Author: <";
 		*label2 = "Author-Signet: [";
 		*label3 = "Destination: <";
-		*label4 = "Destination-Signet_Fingerprint: [";
+		*label4 = "Destination-Signet: [";
 		break;
 	case CHUNK_TYPE_DESTINATION:
 		*label1 = "Recipient: <";
 		*label2 = "Recipient-Signet: [";
 		*label3 = "Origin: <";
-		*label4 = "Origin-Signet_Fingerprint: [";
+		*label4 = "Origin-Signet: [";
 		break;
 	default:
 		PUSH_ERROR(ERR_UNSPEC, "Specified chunk type does not have envelope labels associated with it.");
@@ -351,9 +351,9 @@ static void prsr_envelope_destroy(dmime_envelope_object_t *obj) {
 		st_cleanup(obj->auth_recp);
 	}
 
-	if(obj->auth_recp_signet) {
-		_secure_wipe(st_data_get(obj->auth_recp_signet), st_length_get(obj->auth_recp_signet));
-		st_cleanup(obj->auth_recp_signet);
+	if(obj->auth_recp_fp) {
+		_secure_wipe(st_data_get(obj->auth_recp_fp), st_length_get(obj->auth_recp_fp));
+		st_cleanup(obj->auth_recp_fp);
 	}
 
 	if(obj->dest_orig) {
@@ -361,9 +361,9 @@ static void prsr_envelope_destroy(dmime_envelope_object_t *obj) {
 		st_cleanup(obj->dest_orig);
 	}
 
-	if(obj->dest_orig_fingerprint) {
-		_secure_wipe(st_data_get(obj->dest_orig_fingerprint), st_length_get(obj->dest_orig_fingerprint));
-		st_cleanup(obj->dest_orig_fingerprint);
+	if(obj->dest_orig_fp) {
+		_secure_wipe(st_data_get(obj->dest_orig_fp), st_length_get(obj->dest_orig_fp));
+		st_cleanup(obj->dest_orig_fp);
 	}
 
 	free(obj);
@@ -458,7 +458,7 @@ static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, siz
 
 	string_size = in + at - start;
 
-	if(!(result->auth_recp_signet = st_import(start, string_size))) {
+	if(!(result->auth_recp_fp = st_import(start, string_size))) {
 		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
@@ -522,7 +522,7 @@ static dmime_envelope_object_t *prsr_envelope_parse(const unsigned char *in, siz
 
 	string_size = in + at - start;
 
-	if(!(result->dest_orig_fingerprint = st_import(start, string_size))) {
+	if(!(result->dest_orig_fp = st_import(start, string_size))) {
 		prsr_envelope_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
 	}
