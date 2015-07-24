@@ -3,7 +3,7 @@
 # Example usage: ./coverage.sh -j4
 
 ROOT_DIR=`git rev-parse --show-toplevel`
-COVERAGE_DIR="$ROOT_DIR/build_coverage"
+COVERAGE_DIR="$ROOT_DIR/build/coverage"
 REPORT_DIR="$COVERAGE_DIR/report"
 if [ -d "$COVERAGE_DIR" ]; then
 	cd "$COVERAGE_DIR"
