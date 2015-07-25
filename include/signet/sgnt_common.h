@@ -1,5 +1,8 @@
-#ifndef SIGNET_GENERAL_H
-#define SIGNET_GENERAL_H
+#ifndef DIME_SGNT_COMMON_H
+#define DIME_SGNT_COMMON_H
+
+#include <stdint.h>
+#include "common/dcrypto.h"
 
 #define SIGNET_VER_NO           0x1
 #define SIGNET_HEADER_SIZE      5
@@ -15,26 +18,6 @@
 #define KEYS_FID_MAX            3
 #define DIME_NUMBER_SIZE        2
 
-#include <common/error.h>
-#include <common/misc.h>
-#include <common/dcrypto.h>
-
-typedef enum {
-	SIGNET_TYPE_ERROR,
-	SIGNET_TYPE_ORG = 1,
-	SIGNET_TYPE_USER,
-	SIGNET_TYPE_SSR
-} signet_type_t;
-
-
-typedef struct {
-	signet_type_t type;
-	uint32_t fields[256];           /**< Each index corresponds to a different field type identifier. The value of fields[index] is the byte directly after the first occurence of the corresponding field type identifier. */
-	                                /**< If fields[index] is 0 it means that the corresponding field type identifier occurred 0 times.*/
-	uint32_t size;                  /**< Combined length of all the fields */
-	unsigned char *data;
-} signet_t;
-
 typedef enum dime_number_t {		/**< Dime numbers are the magic numbers */
 	DIME_ORG_SIGNET = 1776,         /**< File contains an organizational signet */
 	DIME_USER_SIGNET = 1789,        /**< File contains a user signet */
@@ -45,11 +28,13 @@ typedef enum dime_number_t {		/**< Dime numbers are the magic numbers */
 	DIME_ENCRYPTED_MSG = 1847
 } dime_number_t;
 
-typedef enum {
-	KEYS_TYPE_ERROR = 0,
-	KEYS_TYPE_ORG,
-	KEYS_TYPE_USER
-} keys_type_t;
+typedef enum {				    /**< SOK = Secondary Organizational Key */
+	SIGNET_SOK_NONE =              0,   /**< Can not be used for signing anything */
+	SIGNET_SOK_SIGNET =            1,   /**< Can be used for signing signets */
+	SIGNET_SOK_MSG =               2,   /**< Can be used for signing messages */
+	SIGNET_SOK_TLS =               4,   /**< Can be used for signing TLS certificates */
+	SIGNET_SOK_SOFTWARE =          8    /**< Can be used for signing software */
+} sok_permissions_t;
 
 typedef enum {
 	SIGNET_ORG_POK = 1,             /**< The ed25519 public signing key of the signet holder */
@@ -86,7 +71,7 @@ typedef enum {
 	SIGNET_ORG_FULL_SIG,            /**< ORG signature*/
 	SIGNET_ORG_ID,                  /**< Org Signet ID */
 	SIGNET_ORG_ID_SIG             /**< Org Signature following the ID field */
-} SIGNET_ORG_FIELD_T;
+} signet_org_field_t;
 
 typedef enum {
 	SIGNET_USER_SIGN_KEY = 1,       /**< The ed25519 public signing key of the signet holder*/
@@ -122,7 +107,7 @@ typedef enum {
 	SIGNET_USER_FULL_SIG,           /**< Final Organizational Signature*/
 	SIGNET_USER_ID,                 /**< User Signet ID */
 	SIGNET_USER_ID_SIG            /**< Org Signature following the ID field */
-} SIGNET_USER_FIELD_T;
+} signet_user_field_t;
 
 typedef enum {
 	SIGNET_SSR_SIGN_KEY = 1,        /**< The proposed ed25519 public signing key of the ssr creator*/
@@ -130,43 +115,24 @@ typedef enum {
 	SIGNET_SSR_ALT_KEY,             /**< Alternative encryption keys for the ssr creator */
 	SIGNET_SSR_COC_SIG,             /**< Chain of custody signature by user's previous signing key*/
 	SIGNET_SSR_SSR_SIG,             /**< User signature with user's signing key*/
-} SIGNET_SSR_FIELD_T;
+} signet_ssr_field_t;
 
 typedef enum {
 	KEYS_ORG_PRIVATE_POK = 1,
 	KEYS_ORG_PRIVATE_SOK,
 	KEYS_ORG_PRIVATE_ENC,
-} KEYS_ORG_T;
+} keys_org_t;
 
 typedef enum {
 	KEYS_USER_PRIVATE_SIGN = 1,
 	KEYS_USER_PRIVATE_ENC,
-} KEYS_USER_T;
+} keys_user_t;
 
 typedef enum {
 	SIGNKEY_DEFAULT_FORMAT = 0x40,       /**< Currently the only legal format specifier for ED25519 signing keys*/
 } signkey_format_t;
 
-typedef enum {				    /**< SOK = Secondary Organizational Key */
-	SIGNET_SOK_NONE =              0,   /**< Can not be used for signing anything */
-	SIGNET_SOK_SIGNET =            1,   /**< Can be used for signing signets */
-	SIGNET_SOK_MSG =               2,   /**< Can be used for signing messages */
-	SIGNET_SOK_TLS =               4,   /**< Can be used for signing TLS certificates */
-	SIGNET_SOK_SOFTWARE =          8    /**< Can be used for signing software */
-} sok_permissions_t;
-
-typedef enum {
-	SS_UNKNOWN = 0,                 /**< Invalid signet, state unknown/currently unclassified */
-	SS_MALFORMED,                   /**< Invalid signet, it either doesn't fit the field format or has multiple unique fields */
-	SS_OVERFLOW,                    /**< Invalid signet due to it being too large. */
-	SS_INCOMPLETE,                  /**< Invalid signet, it is missing fields required to fit one of the valid categories, likely unsigned */
-	SS_BROKEN_COC,                  /**< Invalid signet due to chain of custody signature being invalid*/
-	SS_INVALID,                     /**< Invalid signet, one or more signatures can not be verified */
-	SS_SSR,                         /**< Valid unsigned SSR */
-	SS_CRYPTO,                      /**< Valid cryptographic signet */
-	SS_FULL,                        /**< Valid full signet */
-	SS_ID,                          /**< Valid full signet with ID and organizational-identifiable-signature */
-} signet_state_t;
+const char *dime_number_to_str(dime_number_t number);
 
 typedef enum {                          /**< Currently barely used, meant to classify signet field data types*/
 	B64,
@@ -176,9 +142,7 @@ typedef enum {                          /**< Currently barely used, meant to cla
 } field_data_t;
 
 typedef struct {
-
 /* field properties */
-
 	unsigned int required;          /**< is this field required*/
 	unsigned int unique;            /**< can there be multiple fields of this identifier */
 
@@ -192,23 +156,6 @@ typedef struct {
 	const char *description;        /**< field type description*/
 
 } signet_field_key_t;
-
-/** A signet field index structure for temporary convenience organization of field data */
-typedef struct signet_field_t {
-
-	const signet_t *signet;
-	signet_field_key_t *key;
-	unsigned char name_size;
-	unsigned int data_size;
-
-	unsigned int id_offset;
-	unsigned int name_offset;
-	unsigned int data_offset;
-
-	struct signet_field_t *next;
-} signet_field_t;
-
-const char *dime_number_to_str(dime_number_t number);
 
 extern signet_field_key_t signet_org_field_keys[256];
 extern signet_field_key_t signet_user_field_keys[256];
