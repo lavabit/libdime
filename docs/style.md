@@ -1,4 +1,62 @@
-#Programming Style
+# C Language Style Guide for Lavabit Projects
+
+##version 0.9
+
+##Table of Contents
+
+<!-- TOC depth:2 withLinks:1 updateOnSave:1 orderedList:0 -->
+- [General Principles](#general-principles)
+	- [Character Encoding](#character-encoding)
+	- [Line Length/Text Width](#line-lengthtext-width)
+	- [Tabs and Spaces](#tabs-and-spaces)
+	- [Indentation](#indentation)
+	- [Column Alignment](#column-alignment)
+	- [Compiler Warnings](#compiler-warnings)
+- [Defining and Declaring Objects](#defining-and-declaring-objects)
+	- [C99 Integer types](#c99-integer-types)
+	- [Variable Declarations](#variable-declarations)
+	- [Use of `const`](#use-of-const)
+	- [Scope](#scope)
+	- [Global Variables](#global-variables)
+	- [Local Variables](#local-variables)
+	- [Pointers](#pointers)
+	- [Enumeration, Structure, and Union Definitions](#enumeration-structure-and-union-definitions)
+	- [C99 Flexible Array Members](#c99-flexible-array-members)
+	- [Function Definitions and Prototypes](#function-definitions-and-prototypes)
+- [Statement Formatting](#statement-formatting)
+	- [Operator Spacing](#operator-spacing)
+	- [Parenthesis](#parenthesis)
+	- [Constants](#constants)
+	- [Symbolic Constants](#symbolic-constants)
+	- [Preprocessor Macro formatting](#preprocessor-macro-formatting)
+- [Executable Code](#executable-code)
+	- [If, Else If, and Else Statements](#if-else-if-and-else-statements)
+	- [Switch Statements](#switch-statements)
+	- [Loop Statements](#loop-statements)
+	- [Return Statements](#return-statements)
+	- [Goto and Label Statements](#goto-and-label-statements)
+	- [Preprocessor Directives](#preprocessor-directives)
+	- [Function Calls](#function-calls)
+- [Comments](#comments)
+	- [Single Line Comments](#single-line-comments)
+	- [Multiline Comments](#multiline-comments)
+	- [Variable Comments](#variable-comments)
+	- [Implementation Comments](#implementation-comments)
+	- [Todo Comments](#todo-comments)
+	- [Function comments](#function-comments)
+	- [File Comments](#file-comments)
+	- [Javadoc tags](#javadoc-tags)
+- [Function Organization](#function-organization)
+- [File Organization](#file-organization)
+	- [Files](#files)
+	- [Header Guard](#header-guard)
+	- [Enumeration, Structure, and Union Definitions](#enumeration-structure-and-union-definitions)
+	- [Function Definitions and Prototypes](#function-definitions-and-prototypes)
+	- [Global Variables](#global-variables)
+	- [Local Variables](#local-variables)
+	- [Pointers](#pointers)
+	- [Function Calls](#function-calls)
+- [Security](#security)
 
 ## General Principles
 
@@ -33,11 +91,13 @@ usage (void)
 
 ### Tabs and Spaces
 
-Tabs are used for indentation. Spaces are used for column alignment.
+Spaces are used for indentation and column alignment. Tabs shall not be used. Code indentation
+is 4 spaces per level.
 
 ### Indentation
 
-Each level of indentation shall add one tab to the previous level.
+The standard code level indentation is 4 spaces. Each level of indentation shall add
+4 spaces to the previous level.
 
 ### Column Alignment
 
@@ -77,21 +137,50 @@ Code should compile cleanly with warnings enabled. Any warnings that remain shou
 reason why the warning could not be easily removed.
 
 For GCC, some options, such as `-Wall` and `-Wextra`, turn on other options, such as `-Wunused`, which may turn on further options,
-such as `-Wunused-value`. When combining multiple options, more specific options have priority 
+such as `-Wunused-value`. When combining multiple options, more specific options have priority
 over less specific ones, independent of their position in the command-line. For options of the same specificity, the last
-one takes effect. Options enabled or disabled via `#pragma` take effect as if they appeared at the end of the command-line. 
+one takes effect. Options enabled or disabled via `#pragma` take effect as if they appeared at the end of the command-line.
 
 
 Suggested GCC compiler flags:
 
 ```
--Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith -Wbad-function-cast \
+-Wall -Wextra -Wcast-align -Wpointer-arith -Wbad-function-cast -Wpointer-arith \
 -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Winline -Wundef \
--Wnested-externs -Wcast-qual -Wshadow -Wwrite-strings -Wno-unused-parameter \
--Wfloat-equal -pedantic -ansi
+-Wnested-externs -Wcast-qual -Wshadow -Wwrite-strings -Wunused-parameter \
+-Wconversion -Wunreachable-code -pedantic -pedantic-errors
 ```
 
-Consult the compiler documentation for the definition and explanation of each compiler flag.
+`-Wall, -Wextra`: enable a host of essential compiler warnings.
+`-Wcast-align`: warn whenever a pointer is cast such that the required alignment of the target is increased.
+`-Wpointer-arith`: warn if anything depends upon the size of a function or of void.
+`-Wbad-function-cast`: warn if a function return is cast to a non-matching type.
+`-Wpointer-arith`: warn if anything depends upon the size of a function or of void.
+`-Wmissing-prototypes`: warn if a globally visible function is defined without a previous prototype declaration.
+`-Wstrict-prototypes`: warn if a function is declared or defined without specifying the argument types.
+`-Wmissing-declarations`: warn if a function is defined without a previous prototype declaration, even if the
+definition provides the prototype (the function prototype is missing from a header file).
+`-Winline`: warn if a function declared `inline` cannot be inlined.
+`-Wundef`: warn if an uninitialized identifier is evaluated in an `#if` directive.
+`-Wnested-externs`: warn if an `extern` declaration is encounted in a function.
+`-Wcast-qual`: warn whenever a pointer is cast to remove a type qualifier from the target type.
+`-Wshadow`: warn whenever a local variable shadows another local variable, parameter or global variable or whenever a built-in function is shadowed.
+`-Wwrite-strings`: give string constants the type `char const *` so assigning the constant's address
+to a non-const char * pointer will get a warning.
+`-Wunused-parameter`: warn whenever a function parameter is unused aside from its declaration.
+`-Wconversion`: warn for implicit conversions that may alter a value.
+`-Wunreachable-code`: warn if the compiler detects that code will never be executed.
+`-pedantic`: Issue all warning demanded by C99. Reject all forbidden extensions.
+`-pedantic-errors`: Additional warnings not required by the standard. Not equivalent to `-pedantic`.
+
+Consult the compiler documentation for a fuller explanation of each compiler flag.
+
+### Additional compiler flags
+
+The following gcc compiler flags may be useful in debugging and testing.
+
+The `-save-temps` flag leaves behind the results of the preprocessor and assembly stages. This
+may be useful for debugging macros or for determining what optimizations have been applied.
 
 ## Defining and Declaring Objects
 
@@ -157,18 +246,18 @@ int32_t * const py;		// constant pointer to an int32_t
 Prefer using `<type> const` over the special case `const <type>` where the `const` is the first part of the declaration.
 
 *CAUTION:* The C Standard limits identifier length to 63 significant initial characters
-in an internal identifier or a macro name, and 31 significant initial characters in an external 
+in an internal identifier or a macro name, and 31 significant initial characters in an external
 identifier. Even if the compiler accepts a larger number of significant characters, do not
 exceed these limits.
 
 *CAUTION:* Avoid creating typedefs of pointer types. It makes writing *const-correct* code difficult
 as the `const` qualifier will be applied to the pointer type and not the underlying declared type.
 
-*CAUTION:* As late as 2008, in (Volatiles Are Miscompiled, and What to Do about It)[http://dl.acm.org/citation.cfm?id=1450058.1450093], 
-all tested compilers generated some percentage of incorrect compiled code with regard to volatile accesses. Therefore, it 
+*CAUTION:* As late as 2008, in (Volatiles Are Miscompiled, and What to Do about It)[http://dl.acm.org/citation.cfm?id=1450058.1450093],
+all tested compilers generated some percentage of incorrect compiled code with regard to volatile accesses. Therefore, it
 is necessary to know how the compiler behaves when the standard volatile behavior is required.
 
-The paper's authors tested a workaround by wrapping volatile accesses with function calls. They describe it with the 
+The paper's authors tested a workaround by wrapping volatile accesses with function calls. They describe it with the
 intuition that "we can replace an action that compilers empirically get wrong by a different action—a function
 call—that compilers can get right". An example of this workaround is:
 
@@ -178,7 +267,7 @@ vol_read_int (volatile int32_t *vp) {
   return *vp;
 }
 
-volatile int32_t 
+volatile int32_t
 *vol_id_int (volatile int32_t *vp) {
   return vp;
 }
@@ -186,7 +275,7 @@ volatile int32_t
 const volatile int32_t x;
 volatile int32_t y;
 
-void 
+void
 foo (void) {
   for (*vol_id_int(&y) = 0; vol_read_int(&y) < 10; *vol_id_int(&y) = vol_read_int(&y) + 1) {
     int32_t z = vol_read_int(&x);
@@ -250,12 +339,12 @@ aligned.
 
 Local function variable definitions shall be placed at the current indentation level.
 Variable definitions and declarations at the same indentation level shall have names,
-equal signs, and initilization values column aligned. If only one local
+equal signs, and initialization values column aligned. If only one local
 variable exists then a single space may be used to separate the variable
 type, variable name, and equals sign.
 
 All variables shall be initialized to a meaningful value. If no meaningful value exists yet
-then they shall be initialized according to the following rules. 
+then they shall be initialized according to the following rules.
 * integer types shall be initialized to `0` and `0L` for `long` types
 * floating types shall be initialized to `0.0F`
 * char types shall be initialized to `0`
@@ -299,7 +388,7 @@ variable name during declaration/definition.
 
 #### Exception
 
-Declarations of functions returning pointers shall have a space between the `*` and the function name.
+Declarations of functions returning pointers shall have a newline or space between the `*` and the function name.
 
 #### Example
 
@@ -362,14 +451,14 @@ typedef enum color
 ### C99 Flexible Array Members
 
 As a special case, the last element of a structure with more than one named member may have
-an incomplete array type; this is called a flexible array member. In most situations, the flexible 
+an incomplete array type; this is called a flexible array member. In most situations, the flexible
 array member is ignored. In particular, the size of the structure is as if the flexible array
 member were omitted except that it may have more trailing padding than the omission would imply.
-However, when a . (or ->) operator has a left operand that is (a pointer to) a structure with 
-a flexible array member and the right operand names that member, it behaves as if that member 
+However, when a . (or ->) operator has a left operand that is (a pointer to) a structure with
+a flexible array member and the right operand names that member, it behaves as if that member
 were replaced with the longest array (with the same element type) that would not make the structure
-larger than the object being accessed; the offset of the array shall remain that of the flexible 
-array member, even if this would differ from that of the replacement array. If this array would 
+larger than the object being accessed; the offset of the array shall remain that of the flexible
+array member, even if this would differ from that of the replacement array. If this array would
 have no elements, it behaves as if it had one element but the behavior is undefined if any attempt
 is made to access that element or to generate a pointer one past it.
 
@@ -385,27 +474,27 @@ However, some restrictions apply:
 
 ```C
 #include <stdlib.h>
- 
+
 struct flex_array_struct
 {
   int32_t num;
   int32_t data[];
 };
- 
-void 
-func (size_t array_size) 
+
+void
+func (size_t array_size)
 {
 	// Space is allocated for the struct
 
-	struct flex_array_struct *structp = (struct flex_array_struct *) malloc(sizeof(struct flex_array_struct) 
+	struct flex_array_struct *structp = (struct flex_array_struct *) malloc(sizeof(struct flex_array_struct)
          + sizeof(int) * array_size);
 
 	if (structP == NULL) {
 		// Handle malloc failure
 	}
- 
+
 	structp->num = array_size;
- 
+
 	/*
 	 * Access data[] as if it had been allocated
 	 * as data[array_size].
@@ -423,15 +512,15 @@ func (size_t array_size)
 ### Function Definitions and Prototypes
 
 A function prototype or definition shall not be indented, except for the
-parameter list as decribed below. It shall be formatted such that the
+parameter list as described below. It shall be formatted such that the
 return type is placed first, then the function name on a new line, and
-then the parameters. One space shall separate the function name from the opening parenthesis 
+then the parameters. One space shall separate the function name from the opening parenthesis
 of the parameter list. Parameters shall go on the same line
 as the function name unless they will extend past the line's text width or
 there are more than three parameters. In these two cases the opening
 parenthesis of the parameter list shall go on the same line as the
 function name and the parameter list shall begin on the following line.
-The parameter list shall be indented by one tab and have the parameter
+The parameter list shall be indented by one level and have the parameter
 types and names column aligned. Parameters which fit on the same line
 as the function name shall have 1 space following each `,` character
 which separates the parameters. If a function takes no parameters then
@@ -439,7 +528,7 @@ use `void` as the parameter list.
 
 Function braces shall be placed as follows.
 The opening brace shall be placed one line after the parameter list closing parenthesis, at
-the same indentation level as the function declaration. 
+the same indentation level as the function declaration.
 The closing function brace shall be placed one line after the last
 statement in the function, at the same indentation level as the function declaration.
 
@@ -454,9 +543,8 @@ statement in the function, at the same indentation level as the function declara
  * @return	This function returns no value.
  */
 void
-con_reverse_domain (connection_t *con, stringer_t *domain, int32_t status) 
+con_reverse_domain (connection_t *con, stringer_t *domain, int32_t status)
 {
-
 	mutex_lock(&(con->lock));
 	con->network.reverse.status = status;
 	con->network.reverse.domain = domain;
@@ -484,7 +572,7 @@ Always use 'L' in place of 'l' when defining *long* constants. Do not begin deci
 
 ### Symbolic Constants
 
-C has several mechanisms for creating named, symbolic constants: 
+C has several mechanisms for creating named, symbolic constants:
 
 * const-qualified objects
 * enumeration constants
@@ -493,7 +581,7 @@ C has several mechanisms for creating named, symbolic constants:
 Each of these mechanisms has associated advantages and disadvantages.
 
 Objects that are *const-qualified* have scope and type and so can be
-type-checked by the compiler. Because they 
+type-checked by the compiler. Because they
 are named objects (unlike macro definitions), some debugging tools can show the name of the object.
 The object also consumes memory.
 
@@ -501,7 +589,7 @@ The object also consumes memory.
 int32_t const max_len = 25;    // const-qualified object
 ```
 
-Unfortunately, const-qualified objects cannot be used where compile-time integer constants are 
+Unfortunately, const-qualified objects cannot be used where compile-time integer constants are
 required, namely to define the
 
 * Size of a bit-field member of a structure.
@@ -512,7 +600,7 @@ required, namely to define the
 If any compile-time values are required, a `#define` or `enum` must be used.
 
 *Enumeration constants* can be used to represent an integer constant expression that has an integer value.
-Unlike const-qualified objects, enumeration constants do not consume memory. No storage is allocated for 
+Unlike const-qualified objects, enumeration constants do not consume memory. No storage is allocated for
 the value, so it is not possible to take the address of an enumeration constant.
 
 A preprocessor directive of the form
@@ -529,9 +617,9 @@ C programmers frequently define symbolic constants as macro definitions. For exa
 #define buffer_size (256)
 ```
 
-defines `buffer_size` as a macro definition whose replacement-list is `(256)`. The preprocessor 
-substitutes macro definitions before the compiler does any other symbol processing. Later compilation 
-phases never see macro definition symbols, such as `buffer_size`; they see only the replacement-list text after 
+defines `buffer_size` as a macro definition whose replacement-list is `(256)`. The preprocessor
+substitutes macro definitions before the compiler does any other symbol processing. Later compilation
+phases never see macro definition symbols, such as `buffer_size`; they see only the replacement-list text after
 macro substitution. As a result, many compilers do not preserve macro names among the symbols they pass on to their debuggers.
 
 Macro names do not observe the scope rules that apply to other names, and may substitute in unanticipated places with unexpected results.
@@ -550,13 +638,13 @@ parenthesis. For replacement-lists which span multiple lines, align the
 replacement-list. Wrap all multiline preprocessor macros in a `do { } while (0)`
 statement.
 
-Prefer inline functions or static functions to preprocessor macros defining statements. Such macros are dangerous 
+Prefer inline functions or static functions to preprocessor macros defining statements. Such macros are dangerous
 because their use resembles that of real functions, but they have different semantics.
 Always avoid side effects in preprocessor macros which may evaluate arguments more than once or not at all.
 
-*CAUTION:* Do not end preprocessor macros with a semicolon. 
+*CAUTION:* Do not end preprocessor macros with a semicolon.
 Never use preprocessor directives in invocations of preprocessor macros.
- 
+
 #### Example
 
 ```C
@@ -613,12 +701,12 @@ same indentation level as the `if` statement which they follow.
 #### Example
 
 ```C
-bool_t 
-chr_punctuation (uchr_t c) 
+bool_t
+chr_punctuation (uchr_t c)
 {
-	if ((c >= '!' && c <= '/') || 
-		(c >= ':' && c <= '@') || 
-		(c >= '[' && c <= '`') || 
+	if ((c >= '!' && c <= '/') ||
+		(c >= ':' && c <= '@') ||
+		(c >= '[' && c <= '`') ||
 		(c >= '{' && c <= '~')) {
 		return true;
 	}
@@ -631,13 +719,16 @@ chr_punctuation (uchr_t c)
 if (!(point = EC_KEY_get0_public_key_d(key))) {
 	log_info("No public key available. {%s}", ERR_error_string_d(ERR_get_error_d(), NULL));
 	return NULL;
-} else if (!(group = EC_KEY_get0_group_d(key))) {
+}
+else if (!(group = EC_KEY_get0_group_d(key))) {
 	log_info("No group available. {%s}", ERR_error_string_d(ERR_get_error_d(), NULL));
     return NULL;
-} else if (!(result = mm_alloc(blen))) {
+}
+else if (!(result = mm_alloc(blen))) {
 	log_info("Error allocating space for ECIES public key.");
     return NULL;
-} else if ((rlen = EC_POINT_point2oct_d(group, point, POINT_CONVERSION_COMPRESSED, result, blen, NULL)) <= 0) {
+}
+else if ((rlen = EC_POINT_point2oct_d(group, point, POINT_CONVERSION_COMPRESSED, result, blen, NULL)) <= 0) {
 	log_info("Unable to extract the public key. {%s}", ERR_error_string_d(ERR_get_error_d(), NULL));
 	mm_free(result);
 	return NULL;
@@ -645,7 +736,7 @@ if (!(point = EC_KEY_get0_public_key_d(key))) {
 ```
 
 All assignments in conditional statements should not be *bare*. That is, the assignment
-should be enclosed in parenthesis and an explicit comparison made to denote the intnetionality
+should be enclosed in parenthesis and an explicit comparison made to denote the intentionality
 of the assignment.
 
 #### Example
@@ -686,8 +777,8 @@ in alphanumeric order when possible.
 ### Example
 
 ```C
-int32_t 
-function (void) 
+int32_t
+function (void)
 {
 	...
 
@@ -716,7 +807,7 @@ Iterated statements shall be placed at one indentation level in from
 the enclosing loop statement.
 Braces enclosing the iterated statements are required. Loop control expressions
 should be formatted the same way as conditional expressions for `if` statements.
-The control expressions should express all condtions under which the loop will exit;
+The control expressions should express all conditions under which the loop will exit;
 `break` statements should not be used.
 
 For-loops shall have a space separating the `for` and the opening
@@ -749,8 +840,8 @@ iteration statement at the same indentation level as the `while`.
 #### Example
 
 ```C
-uint32_t 
-function (void) 
+uint32_t
+function (void)
 {
 	uint32_t i;
 
@@ -780,8 +871,8 @@ the return value is a constant expression or a variable name.
 #### Example
 
 ```C
-uint32_t 
-pool_get_timeout (pool_t *pool) 
+uint32_t
+pool_get_timeout (pool_t *pool)
 {
 	if (!pool)
 		return 0;
@@ -792,11 +883,13 @@ pool_get_timeout (pool_t *pool)
 
 ### Goto and Label Statements
 
-`goto`s and `label`s shall not be used, except in the resource Allocation Pattern discussed below.
+`goto`s and `label`s shall not be used, except as shown in the resource
+Allocation Pattern discussed below.  No `goto` statements will be used to
+jump to a label located earlier in the code.
 
 ### Preprocessor Directives
 
-Preprocessor directives shall 
+Preprocessor directives shall
 be indented according to the code that precedes it. Nested preprocessor
 directives shall indent by one level for each nesting level. Each `#endif`
 shall include a comment on the same line which specifies which `#if` it
@@ -811,8 +904,8 @@ is matched with.
 	#define DPRINTF(x)  perror(x)
 #endif // WINDOWS
 
-uint32_t 
-function (char *buf, int len) 
+uint32_t
+function (char *buf, int len)
 {
 	if (0 == count) {
 		#ifdef WINDOWS
@@ -828,11 +921,11 @@ function (char *buf, int len)
 
 ### Function Calls
 
-A function call shall be placed at the current indentation level 
+A function call shall be placed at the current indentation level
 on one line with all arguments separated by a comma and a single
-space. If the argumnts extend past the line's text width, the first
+space. If the arguments extend past the line's text width, the first
 shall go on the function invocation line and all following arguments shall be placed on
-their own lines and indented one tab from the function invacation. The terminating
+their own lines and indented one tab from the function invocation. The terminating
 parenthesis and semi-colon shall be placed on the same line and
 immediately after the final argument. When parameters are spread across
 multiple lines, no space shall follow the separating comma.
@@ -864,7 +957,7 @@ function(void)
 
 ### Single Line Comments
 
-A single line comment shall be introduced with the characters `//` and 
+A single line comment shall be introduced with the characters `//` and
 placed on its own line, indented to
 the same level of the code which immediately follows it.
 
@@ -876,12 +969,12 @@ If no code follows the comment then it shall not be indented.
 
     // This is a single line comment
     int hello(void) {
-    
+
         // Single line comment with code that mandates indenting the comment
         printf("Hello, world!");
         return 0;
     }
-    
+
     // Single line comment with no code following it
 
 ```
@@ -891,14 +984,14 @@ If no code follows the comment then it shall not be indented.
 A multiline comment is introduced with the characters `/*` and terminated with the
 characters `*/`. Each line between the beginning and ending lines shall
 begin with the characters `* ` aligned with the matching characters in
-the comment delimeters. A multiline comment shall follow the same indentation rules 
+the comment delimiters. A multiline comment shall follow the same indentation rules
 for a single line comment.
 
 #### Example
 
 ```c
 int hello(void) {
- 
+
         /*
          * A multiline comment indented appropriately
          */
@@ -946,15 +1039,15 @@ making the comment, a colon and a space, and then the comment itself.
 
 ### Function comments
 
-Every function shall be commented with Javadoc style comments for use by Doxygen.
+Every function definition shall be commented with Javadoc style comments for use by Doxygen.
 
 Function prototypes shall not be commented.
 
 A function comment will be of the form of the example following.
 The @brief, @param, and @return tags are required.
-The @note on the function's behavior is optional, but highly encouraged if the functions's 
+The @note on the function's behavior is optional, but highly encouraged if the functions's
 behavior is not immediately apparent from the code.
-Each @param consists of a brief description of a single parameter on its own line. 
+Each @param consists of a brief description of a single parameter on its own line.
 The @return tag consists of a short description of the function's return value. If special
 values are returned, each special return value with its meaning
 
@@ -990,7 +1083,7 @@ void st_free(stringer_t *s) {
 
 ### File Comments
 
-Each file must begin with a Javadoc style header comment for use by Doxygen. 
+Each file must begin with a Javadoc style header comment for use by Doxygen.
 The @file and @author tags are required.
 
 #### Example
@@ -1008,7 +1101,7 @@ The @file and @author tags are required.
 ### Javadoc tags
 
 Tag and Parameter | Description | Notes
----- | ---- |---- 
+---- | ---- |----
 @file | file name | Name of the current file
 @brief | description | Brief description of the functionality
 @author | author name | One per author, in chronological order
@@ -1017,22 +1110,27 @@ Tag and Parameter | Description | Notes
 @see | reference | Link to other element of documentation
 @param | name | Describes a parameter
 @return | description | Describes the return value
-@deprecated | description | Describes release when this functinoality was outdated
+@deprecated | description | Describes release when this functionality was outdated
 
 ## Function Organization
 
-Typically a function carries out several tasks; collecting input, allocating resources, perform work, deallocating
-resources, returning output, and handling failures.
-Well structured functios carry out their tasks in that order. First, input parameters are validated, then resources needed for the work are fetched or allocated,
-the work is carried out, temporary resources are deallocated, and the computed output is returned to the caller.
-The C language doesn't have many high level constructs for handling failure, so we must use certain idiomatic patterns for
-handling the inevitable failures that happen.
+Typically a function carries out several tasks; collecting input, allocating
+resources, perform work, deallocating resources, returning output, and
+handling failures. Well structured functions carry out their tasks in that
+order. First, input parameters are validated, then resources needed for the
+work are fetched or allocated, the work is carried out, temporary resources
+are deallocated, and the computed output is returned to the caller. The C
+language doesn't have many high level constructs for handling failure, so we
+must use certain idiomatic patterns for handling the inevitable failures that
+happen.
 
-One such pattern is to validate the value of a passed parameter. If the value is out-of-range, the function can return an error immediately.
-Several 'if' statements may be necessary to validate all input parameters, and each can terminate the function if
-the value is unsuitable.
+One such pattern is to validate the value of a passed parameter. If the value
+is out-of-range, the function can return an error immediately. Several 'if'
+statements may be necessary to validate all input parameters, and each can
+terminate the function if the value is unsuitable.
 
-It is often useful to log when parameter errors occur, especially during testing.
+It is often useful to log when parameter errors occur, especially during
+testing.
 
 #### Example Parameter Checking Pattern
 
@@ -1046,28 +1144,36 @@ if (my_second_param > MAX_VALUE) {
 }
 ```
 
-Next, resources are allocated, and the temporary resources should be deallocated in reverse order after the work has been performed.
-Should an allocation fail, it is permissible to jump forward in the code to the deallocation section and begin deallocating 
-resources that had previously been created. This is the only pattern where a `goto` statement may be used. This pattern is clear, and
-slightly cleaner than successively nesting code inside an `if` for a successful allocation. 
+Next, resources are allocated and work is performed with those resources. If any
+errors are detected after having allocating a resource, those resources should be
+deallocated in reverse order. In this case it is permissible to jump forward in
+the code to a deallocation section with labels that control the entry point of
+deallocation. This is the only pattern where a `goto` statement may be used. The
+following is an example of the pattern we've adopted using goto statements. An
+additional benefit to this pattern is that it handsomely implements a single exit
+strategy.
+
+This pattern is easy to understand and cleaner than successively nesting code
+inside an `if` for a successful deallocation.
 
 #### Example Allocation Pattern
 
 ```C
-	/*
-	 * Allocate temporary resources
-	 */
+{
+	...
+
+	// Allocate temporary resources
 
 	if ((res1 = alloc(param)) == ERROR) {
-		goto error_res1;
+		goto error;
 	}
 
 	if ((res2 = alloc(param2)) == ERROR) {
-		goto error_res2;
+		goto cleanup_res1;
 	}
 
 	if ((res3 = alloc(param3)) == ERROR) {
-		goto error_res3;
+		goto cleanup_res2;
 	}
 
 	// perform work
@@ -1076,19 +1182,19 @@ slightly cleaner than successively nesting code inside an `if` for a successful 
 	 * Deallocate all temporary resources
 	 */
 
+	// Deallocation for successful exit
 	dealloc(res3);
-
-error_res3:
 	dealloc(res2);
-
-error_res2:
 	dealloc(res1);
+	return success_value;
 
-error_res1:
-	if (error_occurred)
-		return error_value;
-
-	return calculated_value;
+	// Deallocation for error exit
+cleanup_res2:
+	dealloc(res2);
+cleanup_res1:
+	dealloc(res1);
+error:
+	return error_value;
 }
 ```
 
@@ -1097,12 +1203,12 @@ error_res1:
 Code is organized into groups of related functions, called a *module* in most programming languages.
 A header file (.h file) declares the interface of your module. An implementation file (.c file)
 contain the code for a module.
-If a function in a module is used in other modules (i.e., other .c files), place the 
-function's prototype in a .h interface file. By including this interface file in your original module's .c file 
+If a function in a module is used in other modules (i.e., other .c files), place the
+function's prototype in a .h interface file. By including this interface file in your original module's .c file
 and every other .c file calling the function, the compiler makes the function visible to other modules.
 
 If you only need a function in a certain .c file (not in any other module), declare its scope `static`.
-This means it can only be called from within the c file it is defined in. 
+This means it can only be called from within the c file it is defined in.
 
 ### Files
 
@@ -1219,9 +1325,9 @@ typedef enum color
 ### Function Definitions and Prototypes
 
 A function prototype or definition shall not be indented, excluding the
-parameter list as decribed below. It shall be formatted such that the
+parameter list as described below. It shall be formatted such that the
 return type is placed first, then the function name on a new line, and
-then the parameters. One space shall separate the function name from the opening parenthesis 
+then the parameters. One space shall separate the function name from the opening parenthesis
 of the parameter list. Parameters shall go on the same line
 as the function name unless they will extend past the line's text width or
 there are more than three parameters. In these two cases the opening
@@ -1235,7 +1341,7 @@ use `void` as the parameter list.
 
 Function braces shall be placed as follows.
 The opening brace shall be placed one line after the parameter list closing parenthesis, at
-the same indentation level as the function declaration. 
+the same indentation level as the function declaration.
 The closing function brace shall be placed one line after the last
 statement in the function, at the same indentation level as the function declaration.
 
@@ -1251,7 +1357,7 @@ statement in the function, at the same indentation level as the function declara
  * @return  This function returns no value.
  */
 void
-con_reverse_domain (connection_t *con, stringer_t *domain, int32_t status) 
+con_reverse_domain (connection_t *con, stringer_t *domain, int32_t status)
 {
 
 	mutex_lock(&(con->lock));
@@ -1275,12 +1381,12 @@ aligned.
 
 Local function variables shall be placed one indentation level in
 from the function declaration. The variable types, names, equals signs, and
-initilization values shall be column aligned. If only one local
+initialization values shall be column aligned. If only one local
 variable exists then a single space may be used to separate the variable
 type, variable name, and equals sign.
 
 All types shall be initialized to a meaningful value. If no meaningful value exists yet
-then they shall be initialized according to the following rules. 
+then they shall be initialized according to the following rules.
 * integer types shall be initialized to `0` and `0L` for `long` types
 * floating types shall be initialized to `0.0F`
 * char types shall be initialized to `0`
@@ -1302,7 +1408,7 @@ following line of elements aligned with the elements above it.
 /**
  * @brief  Get a cached copy of a static web page.
  * @para   location: a pointer to a managed string containing the location of the requested resource.
- * @return NULL on failure, 
+ * @return NULL on failure,
  *         pointer to an http content object with the contents of the requested resource on success.
  */
 http_content_t *
@@ -1344,11 +1450,11 @@ function(void)
 
 ### Function Calls
 
-A function call shall be placed at the current indentation level 
+A function call shall be placed at the current indentation level
 one line with all arguments separated by a comma and a single
-on space. If the argumnts extend past the line's text width, the first
+on space. If the arguments extend past the line's text width, the first
 shall go on the function invocation line and all following arguments shall be placed on
-their own lines and indented one tab from the function invacation. The terminating
+their own lines and indented one tab from the function invocation. The terminating
 parenthesis and semi-colon shall be placed on the same line and
 immediately after the final argument. When parameters are spread across
 multiple lines, no space shall follow the separating comma.
@@ -1389,56 +1495,45 @@ Top 10 Secure Coding Practices
 the vast majority of software vulnerabilities. Be suspicious of most external data sources, including command
 line arguments, network interfaces, environmental variables, and user controlled files.
 
-1. **Heed compiler warningx**. Compile code using the highest warning level available for your compiler and
-eliminate warnings by modifying the cod. Use static and dynamic analysis tools to detect 
+1. **Heed compiler warnings**. Compile code using the highest warning level available for your compiler and
+eliminate warnings by modifying the cod. Use static and dynamic analysis tools to detect
 and eliminate additional security flaws.
 
-1. **Architect and design for security policies**. Create a software architecture and design your software to 
+1. **Architect and design for security policies**. Create a software architecture and design your software to
 implement and enforce security policies. For example, if your system requires different privileges at different
 times, consider dividing the system into distinct intercommunicating subsystems, each with an appropriate privilege set.
-    
+
 1. **Keep it simple**. Keep the design as simple and small as possible. Complex designs increase the likelihood
-that errors will be made in their implementation, configuration, and use. Additionally, the effort required 
+that errors will be made in their implementation, configuration, and use. Additionally, the effort required
 to achieve an appropriate level of assurance increases dramatically as security mechanisms become more complex.
 
-1. **Default deny**. Base access decisions on permission rather than exclusion. This means that, by default, 
+1. **Default deny**. Base access decisions on permission rather than exclusion. This means that, by default,
 access is denied and the protection scheme identifies conditions under which access is permitted.
 
-1. **Adhere to the principle of least privilege**. Every process should execute with the the least set of 
+1. **Adhere to the principle of least privilege**. Every process should execute with the the least set of
 privileges necessary to complete the job. Any elevated permission should be held for a minimum time.
 This approach reduces the opportunities an attacker has to execute arbitrary code with elevated privileges.
 
 1. **Sanitize data sent to other systems**. Sanitize all data passed to complex subsystems such as command shells,
-relational databases, and commercial off-the-shelf (COTS) components. Attackers may be able to invoke unused 
-functionality in these components through the use of SQL, command, or other injection attacks. 
+relational databases, and commercial off-the-shelf (COTS) components. Attackers may be able to invoke unused
+functionality in these components through the use of SQL, command, or other injection attacks.
 This is not necessarily an input validation problem because the complex subsystem being invoked does not understand
-the context in which the call is made. Because the calling process understands the context, it is responsible for 
+the context in which the call is made. Because the calling process understands the context, it is responsible for
 sanitizing the data before invoking the subsystem.
 
 1. **Practice defense in depth**. Manage risk with multiple defensive strategies, so that if one layer
-of defense turns out to be inadequate, another layer of defense can prevent a security flaw from becoming 
+of defense turns out to be inadequate, another layer of defense can prevent a security flaw from becoming
 an exploitable vulnerability and/or limit the consequences of a successful exploit. For example, combining
-secure programming techniques with secure runtime environments should reduce the likelihood that vulnerabilities 
+secure programming techniques with secure runtime environments should reduce the likelihood that vulnerabilities
 remaining in the code at deployment time can be exploited in the operational environment.
 
 1. **Use effective quality assurance techniques**. Good quality assurance techniques can be effective in identifying
-and eliminating vulnerabilities. Fuzz testing, penetration testing, and source code audits should all be 
+and eliminating vulnerabilities. Fuzz testing, penetration testing, and source code audits should all be
 incorporated as part of an effective quality assurance program. Independent security reviews can lead to more
 secure systems. External reviewers bring an independent perspective; for example, in identifying and correcting
 invalid assumptions.
 
 1. **Adopt a secure coding standard**. Develop and/or apply a secure coding standard for your target development language and platform.
-
-#### Bonus Secure Coding Practices
-
-1. **Define security requirements**. Identify and document security requirements early in the development 
-life cycle and make sure that subsequent development artifacts are evaluated for compliance with those
-requirements. When security requirements are not defined, the security of the resulting system cannot be effectively evaluated.
-
-1. **Model threats**. Use threat modeling to anticipate the threats to which the software will be subjected.
-Threat modeling involves identifying key assets, decomposing the application, identifying and categorizing
-the threats to each asset or component, rating the threats based on a risk ranking, and then developing 
-threat mitigation strategies that are implemented in designs, code, and test cases.
 
 ### Avoid information leakage in structure padding
 
@@ -1446,8 +1541,8 @@ The C99 Standard specifies that non-bit-field structure members are aligned in a
 and that there may be padding within or at the end of a structure. Furthermore, initializing the members of the
 structure does not guarantee initialization of the padding bytes. The standard says
 
->When a value is stored in an object of structure or union type, including in a member object, the bytes 
+>When a value is stored in an object of structure or union type, including in a member object, the bytes
 >of the object representation that correspond to any padding bytes take unspecified values.
 
-When passing a structure pointer to a different trusted domain, one must ensure that the padding bytes of the structure does 
+When passing a structure pointer to a different trusted domain, one must ensure that the padding bytes of the structure does
 not contain sensitive information.
