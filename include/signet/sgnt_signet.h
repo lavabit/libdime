@@ -47,6 +47,7 @@ char *                  dime_sgnt_fingerprint_crypto(const signet_t *signet);
 char *                  dime_sgnt_fingerprint_full(const signet_t *signet);
 char *                  dime_sgnt_fingerprint_id(const signet_t *signet);
 char *                  dime_sgnt_fingerprint_ssr(const signet_t *signet);
+char *                  dime_sgnt_id_fetch(signet_t *signet);
 int                     dime_sgnt_id_set(signet_t *signet, size_t id_size, const unsigned char *id);
 int                     dime_sgnt_msg_sig_verify(const signet_t *signet, ed25519_signature sig, const unsigned char *buf, size_t buf_len);
 int                     dime_sgnt_sig_coc_sign(signet_t *signet, ED25519_KEY *key);

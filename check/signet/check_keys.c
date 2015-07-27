@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include "signet/keys.h"
+#include "signet/sgnt_keys.h"
 #include "checks.h"
 
 START_TEST(check_keys_file_handling)

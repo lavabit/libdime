@@ -1,4 +1,5 @@
-#include <signet/keys.h>
+#include "common/misc.h"
+#include "signet/sgnt_keys.h"
 
 static EC_KEY *        keys_enckey_fetch(const char *filename);
 static EC_KEY *        keys_enckey_from_binary(const unsigned char *bin_keys, size_t len);
@@ -8,6 +9,7 @@ static int             keys_length_check(const unsigned char *in, size_t in_len)
 static ED25519_KEY *   keys_signkey_fetch(const char *filename);
 static ED25519_KEY *   keys_signkey_from_binary(const unsigned char *bin_keys, size_t len);
 static keys_type_t     keys_type_get(const unsigned char *bin_keys, size_t len);
+
 /* keys files not currently encrypted TODO */
 /* private key serialization currently occurs into DER encoded format which is long, therefore we have 2 bytes for private key length TODO*/
 /* not implemented yet TODO*/
@@ -367,21 +369,45 @@ static EC_KEY *keys_enckey_fetch(const char *filename) {
 
 /* PUBLIC FUNCTIONS */
 
+/**
+ * @brief	Creates a keys file with specified signing and encryption keys.
+ * @param	type	        Type of keys file, whether the keys correspond to a user or organizational signet.
+ * @param	sign_key        Pointer to the specified ed25519 key, the private portion of which will be stored in the keys file as the signing key.
+ * @param	enc_key		Pointer to the specified elliptic curve key, the private portion of which will be stored in the keys file as the encryption key.
+ * @param	filename	Pointer to the NULL terminated string containing the filename for the keys file.
+ * @return	0 on success, -1 on failure.
+*/
 int dime_keys_file_create(keys_type_t type, ED25519_KEY *sign_key, EC_KEY *enc_key, const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_file_create, type, sign_key, enc_key, filename);
 }
 
 /* not implemented yet TODO*/
 /*
-int dime_keys_file_add_sok(ED25519_KEY *sok, const char *filename) {
+int dime_keys_file_sok_add(ED25519_KEY *sok, sok_permissions_t perm, const char *filename) {
         PUBLIC_FUNCTION_IMPLEMENT(keys_file_add_sok, sok, filename);
+}
+
+ED25519_KEY * dime_keys_sok_fetch(char const *filename, unsigned int num) {
+        PUBLIC_FUNCTION_IMPLEMENT(keys_sok_fetch, sok, num);
 }
 */
 
+/**
+ * @brief	Retrieves the encryption key from the keys file.
+ * @param	filename	Null terminated filename string.
+ * @return	Pointer to the elliptic curve encryption key.
+ * @free_using{free_ec_key}
+*/
 ED25519_KEY *dime_keys_signkey_fetch(const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_signkey_fetch, filename);
 }
 
+/**
+ * @brief	Retrieves the signing key from the keys file.
+ * @param	filename	Null terminated filename string.
+ * @return	Pointer to the ed25519 signing key.
+ * @free_using{free_ed25519_key}
+*/
 EC_KEY *dime_keys_enckey_fetch(const char *filename) {
 	PUBLIC_FUNCTION_IMPLEMENT(keys_enckey_fetch, filename);
 }

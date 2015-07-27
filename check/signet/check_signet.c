@@ -1,6 +1,7 @@
 #include <unistd.h>
-#include "signet/keys.h"
-#include "signet/signet.h"
+#include "common/misc.h"
+#include "signet/sgnt_keys.h"
+#include "signet/sgnt_signet.h"
 #include "checks.h"
 
 START_TEST(check_signet_creation)
@@ -195,7 +196,8 @@ START_TEST(check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529",
 		*name1 = "check undef", *data1 = "undef data",
-		*name2 = "check name", *data2 = "check check";
+		*name2 = "check name", *data2 = "check check", *id = "thisid";
+	char *idout;
 	int res, count;
 	signet_t *signet;
 	size_t data_size;
@@ -232,6 +234,18 @@ START_TEST(check_signet_modification)
 	ck_assert_msg(memcmp(data, (unsigned char *)data2, data_size) == 0, "Corrupted undefined field data.\n");
 
 	free(data);
+
+	res = dime_sgnt_id_set(signet, strlen(id), (unsigned char const *)id);
+	ck_assert_msg(data == 0, "Failed to set id of signet.\n");
+
+	idout = dime_sgnt_id_fetch(signet);
+	ck_assert_msg(idout != NULL, "Failed o retrieve id of signet.\n");
+
+	res = (strlen(idout) == strlen(id));
+	ck_assert_msg(res == 0, "Setting and retrieving signet id corrupted its size.\n");
+
+	res = memcmp(idout, id, strlen(id));
+	ck_assert_msg(res == 0, "Setting and retrieving signet id corrupted its data.\n");
 
 	res = dime_sgnt_field_undefined_remove(signet, strlen(name1), (const unsigned char *)name1);
 	ck_assert_msg(res == 0, "Failure to remove undefined field.\n");

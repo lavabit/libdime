@@ -20,14 +20,17 @@
 #define GZIP_COMPRESSION_ENABLED            4
 #define DATA_SEGMENT_CONTINUATION_ENABLED   128
 
-#define META_BOUNCE    1
-#define DISPLAY_BOUNCE 2
-
 #define DEFAULT_CHUNK_FLAGS 0
 
 typedef struct {
 	stringer_t *headers[DMIME_NUM_COMMON_HEADERS];
 } dmime_common_headers_t;
+
+typedef enum {
+	META_BOUNCE = 1,
+	DISPLAY_BOUNCE
+} dmime_bounce_type_t;
+
 
 // Chunk type, used as index to global table of chunk keys dmime_chunk_keys
 typedef enum {
