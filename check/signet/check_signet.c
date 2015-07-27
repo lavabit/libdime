@@ -236,13 +236,13 @@ START_TEST(check_signet_modification)
 	free(data);
 
 	res = dime_sgnt_id_set(signet, strlen(id), (unsigned char const *)id);
-	ck_assert_msg(data == 0, "Failed to set id of signet.\n");
+	ck_assert_msg(res == 0, "Failed to set id of signet.\n");
 
 	idout = dime_sgnt_id_fetch(signet);
 	ck_assert_msg(idout != NULL, "Failed o retrieve id of signet.\n");
 
 	res = (strlen(idout) == strlen(id));
-	ck_assert_msg(res == 0, "Setting and retrieving signet id corrupted its size.\n");
+	ck_assert_msg(res == 1, "Setting and retrieving signet id corrupted its size.\n");
 
 	res = memcmp(idout, id, strlen(id));
 	ck_assert_msg(res == 0, "Setting and retrieving signet id corrupted its data.\n");
