@@ -1,6 +1,5 @@
 extern "C" {
-#include "dmessage/dmime.h"
-#include "dmessage/parser.h"
+#include "dmessage/dmsg_parse.h"
 }
 #include "gtest/gtest.h"
 

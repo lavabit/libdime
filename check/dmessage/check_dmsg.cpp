@@ -1,9 +1,8 @@
 extern "C" {
-#include "signet/keys.h"
-#include "signet/signet.h"
-#include "dmessage/dmime.h"
-#include "dmessage/parser.h"
-#include "dmessage/dmsg.h"
+#include "signet/sgnt_keys.h"
+#include "signet/sgnt_signet.h"
+#include "dmessage/dmsg_parse.h"
+#include "dmessage/dmsg_crypto.h"
 }
 #include "gtest/gtest.h"
 #include "error-assert.h"

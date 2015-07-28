@@ -1,7 +1,9 @@
-#include <dmessage/parser.h>
+#include "core/magma.h"
+#include "dmessage/dmsg_parse.h"
+
 
 static void                        prsr_envelope_destroy(dmime_envelope_object_t *obj);
-static stringer_t *                prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type);
+static stringer_t *                prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_fp, const char *org_fp, dmime_chunk_type_t type);
 static int                         prsr_envelope_labels_get(dmime_chunk_type_t type, const char **label1, const char **label2, const char **label3, const char **label4);
 static dmime_envelope_object_t *   prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type);
 static dmime_common_headers_t *    prsr_headers_create(void);
@@ -9,6 +11,7 @@ static void                        prsr_headers_destroy(dmime_common_headers_t *
 static unsigned char *             prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize);
 static dmime_common_headers_t *    prsr_headers_parse(unsigned char *in, size_t insize);
 static dmime_header_type_t         prsr_headers_type_get(unsigned char *in, size_t insize);
+
 
 /* PRIVATE FUNCTIONS */
 
@@ -36,7 +39,7 @@ static dmime_common_headers_t *prsr_headers_create(void) {
  * @brief	Formats the passed in envelope data into a string to be passed to an envelope chunk.
  * @param	user_id		Stringer containing the user email address.
  * @param	org_id		Stringer containing the organizational TLD.
- * @param	user_signet	Cstring containing cryptographic user signet.
+ * @param	user_fp		Cstring containing cryptographic user signet.
  * @param	org_fp		Cstring containing organizational signet fingerprint.
  * @param	type		The type of envelope chunk.
  * @return	Buffer with formated envelope data.
@@ -47,7 +50,7 @@ stringer_t *
 prsr_envelope_format(
 	stringer_t *user_id,
 	stringer_t *org_id,
-	const char *user_signet,
+	const char *user_fp,
 	const char *org_fp,
 	dmime_chunk_type_t type)
 {
@@ -69,7 +72,7 @@ prsr_envelope_format(
 		goto error;
 	}
 
-	if(!user_signet) {
+	if(!user_fp) {
 		PUSH_ERROR(ERR_BAD_PARAM, NULL);
 		goto error;
 	}
@@ -92,7 +95,7 @@ prsr_envelope_format(
 	result = st_merge(
 		"nsnnnnnsnnnn", 
 		label1, user_id, end1,
-		label2, user_signet, end2,
+		label2, user_fp, end2,
 		label3, org_id, end1,
 		label4, org_fp, end2);
 
@@ -549,30 +552,79 @@ dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS] = {
 
 /* PUBLIC FUNCTIONS */
 
-void                        dime_prsr_envelope_destroy(dmime_envelope_object_t *obj) {
-	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_envelope_destroy, obj);
+
+/**
+ * @brief	Destroys a dmime_envelop_object_t structure.
+ * @param	obj		Pointer to the object to be destroyed.
+ */
+void dime_prsr_envelope_destroy(dmime_envelope_object_t *obj) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_destroy, obj);
 }
 
-stringer_t *                dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_signet, const char *org_fp, dmime_chunk_type_t type) {
-	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_signet, org_fp, type);
+/**
+ * @brief	Formats the passed in envelope data into a string to be passed to an envelope chunk.
+ * @param	user_id		Stringer containing the user email address.
+ * @param	org_id		Stringer containing the organizational TLD.
+ * @param	user_fp		Cstring containing cryptographic user signet.
+ * @param	org_fp		Cstring containing organizational signet fingerprint.
+ * @param	type		The type of envelope chunk.
+ * @return	Buffer with formated envelope data.
+ * @free_using{st_free}
+ */
+stringer_t * dime_prsr_envelope_format(stringer_t *user_id, stringer_t *org_id, const char *user_fp, const char *org_fp, dmime_chunk_type_t type) {
+	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_fp, org_fp, type);
 }
 
-dmime_envelope_object_t *dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
+/**
+ * @brief	Parses a binary buffer from a dmime message into a dmime origin object.
+ * @param	in		Binary origin array.
+ * @param	insize		Size of input array.
+ * @param	type		Type of the chunk.
+ * @return	Pointer to a parsed dmime object or NULL on error.
+ * @free_using{dime_prsr_envelope_destroy}
+*/
+dmime_envelope_object_t * dime_prsr_envelope_parse(const unsigned char *in, size_t insize, dmime_chunk_type_t type) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_parse, in, insize, type);
 }
 
+/**
+ * @brief	Allocates memory for an empty dmime_common_headers_t type.
+ * @return	dmime_common_headers_t structure.
+ * @free_using{dime_prsr_headers_destroy}
+*/
 dmime_common_headers_t *    dime_prsr_headers_create(void) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_create);
 }
 
+/**
+ * @brief	Destroys a dmime_common_headers_t structure.
+ * @param	obj		Headers to be destroyed.
+*/
 void                        dime_prsr_headers_destroy(dmime_common_headers_t *obj) {
 	PUBLIC_FUNCTION_IMPLEMENT_VOID(prsr_headers_destroy, obj);
 }
 
+/**
+ * @brief	Formats the dmime_common_headers_t into a single array for the common headers chunk.
+ * @param	obj		The headers to be formatted.
+ * @param	outsize	Stores the size of the output array.
+ * @return	Returns the array of ASCII characters (not terminated by '\0') as pointer to unsigned char.
+ * @free_using{free}
+*/
 unsigned char *dime_prsr_headers_format(dmime_common_headers_t *obj, size_t *outsize) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_format, obj, outsize);
 }
 
+/**
+ * @brief	Parses the passed array of bytes into dmime_common_headers_t.
+ * @param	in		Input buffer.
+ * @param	insize	Input buffer size.
+ * @return	A dmime_common_headers_t array of stringers containing parsed header info.
+ * @free_using{dime_prsr_headers_destroy}
+*/
 dmime_common_headers_t *dime_prsr_headers_parse(unsigned char *in, size_t insize) {
 	PUBLIC_FUNCTION_IMPLEMENT(prsr_headers_parse, in, insize);
 }
+
+
+

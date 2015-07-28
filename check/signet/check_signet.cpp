@@ -1,7 +1,8 @@
 #include <unistd.h>
 extern "C" {
-#include "signet/keys.h"
-#include "signet/signet.h"
+#include "common/misc.h"
+#include "signet/sgnt_keys.h"
+#include "signet/sgnt_signet.h"
 }
 #include "gtest/gtest.h"
 
@@ -191,7 +192,8 @@ TEST(DIME, check_signet_modification)
 {
 	const char *phone1 = "1SOMENUMBER", *phone2 = "15124123529",
 		*name1 = "check undef", *data1 = "undef data",
-		*name2 = "check name", *data2 = "check check";
+		*name2 = "check name", *data2 = "check check", *id = "thisid";
+	char *idout;
 	int res, count;
 	signet_t *signet;
 	size_t data_size;
@@ -228,6 +230,18 @@ TEST(DIME, check_signet_modification)
 	ASSERT_EQ(0, memcmp(data, (unsigned char *)data2, data_size)) << "Corrupted undefined field data.";
 
 	free(data);
+
+	res = dime_sgnt_id_set(signet, strlen(id), (unsigned char const *)id);
+	ASSERT_EQ(0, res) << "Failed to set id of signet.";
+
+	idout = dime_sgnt_id_fetch(signet);
+	ASSERT_TRUE(idout != NULL) << "Failed o retrieve id of signet.";
+
+	res = (strlen(idout) == strlen(id));
+	ASSERT_EQ(1, res) << "Setting and retrieving signet id corrupted its size.";
+
+	res = memcmp(idout, id, strlen(id));
+	ASSERT_EQ(0, res) << "Setting and retrieving signet id corrupted its data.";
 
 	res = dime_sgnt_field_undefined_remove(signet, strlen(name1), (const unsigned char *)name1);
 	ASSERT_EQ(0, res) << "Failure to remove undefined field.";

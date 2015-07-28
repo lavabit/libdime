@@ -1,8 +1,9 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include <signet/keys.h>
-#include <signet/signet.h>
+#include "common/misc.h"
+#include "signet/sgnt_keys.h"
+#include "signet/sgnt_signet.h"
 
 /**
  * @brief	Display the app options to the user.
