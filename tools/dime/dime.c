@@ -4,8 +4,8 @@
 #include <signet-resolver/mrec.h>
 #include <signet-resolver/signet-ssl.h>
 
-#include <signet/keys.h>
-#include <signet/signet.h>
+#include "signet/sgnt_keys.h"
+#include "signet/sgnt_signet.h"
 
 #include <common/misc.h>
 #include <common/network.h>
@@ -92,11 +92,11 @@ static void show_coc(const char *cocstr) {
 
 		fprintf(stdout, "%zu. %s\n", i, token);
 
-		if (!(signet = dime_sgnt_serial_b64_to_signet(token))) {
+		if (!(signet = dime_sgnt_signet_b64_deserialize(token))) {
 			fprintf(stderr, "Error: could not deserialize signet.\n");
 			dump_error_stack();
 		} else {
-			dime_sgnt_dump_signet(stdout, signet);
+			dime_sgnt_signet_dump(stdout, signet);
 		}
 
 		token = strtok_r(NULL, "\n", &tokens);
@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
 
 		// If all we're doing is querying the signet, we can do that now and exit.
 		if (!(do_hist || do_vrfy)) {
-			dime_sgnt_dump_signet(stdout, obj->data);
+			dime_sgnt_signet_dump(stdout, obj->data);
 			exit(EXIT_SUCCESS);
 		}
 
@@ -398,7 +398,7 @@ exit(0); */
 				exit(EXIT_FAILURE);
 			}
 
-			if (!(org_signet = dime_sgnt_serial_b64_to_signet(line))) {
+			if (!(org_signet = dime_sgnt_signet_b64_deserialize(line))) {
 				free(line);
 				fprintf(stderr, "Error: could not retrieve org signet to verify requested user signet.\n");
 				dump_error_stack();
@@ -426,8 +426,8 @@ exit(0); */
 		_dbgprint(1, "Signet data: %s\n", line);
 	}
 
-	if ((signet = dime_sgnt_serial_b64_to_signet(line))) {
-		dime_sgnt_dump_signet(stdout, signet);
+	if ((signet = dime_sgnt_signet_b64_deserialize(line))) {
+		dime_sgnt_signet_dump(stdout, signet);
 	} else {
 		fprintf(stderr, "Error: unable to decode signet received from server.\n");
 		dump_error_stack();

@@ -237,12 +237,12 @@ errinfo_t *_push_error_stack_fmt(const char *filename, const char *funcname, int
  */
 errinfo_t *_push_error_stack_syscall(const char *filename, const char *funcname, int lineno, int xerrno, const char *errfunc) {
 
-	char auxmsg[256], *ptr;
+	char auxmsg[256], *ptr, *auxmsg_end = auxmsg + sizeof(auxmsg);
 
 	memset(auxmsg, 0, sizeof(auxmsg));
 	snprintf(auxmsg, sizeof(auxmsg) - 1, "%s: ", errfunc);
 	ptr = auxmsg + strlen(auxmsg);
-	strerror_r(xerrno, ptr, (unsigned long)(auxmsg + sizeof(auxmsg)) - (unsigned long)ptr);
+	(void)strerror_r(xerrno, ptr, auxmsg_end - ptr);
 
 	return (_push_error_stack(filename, funcname, lineno, ERR_SYSCALL, xerrno, auxmsg));
 }

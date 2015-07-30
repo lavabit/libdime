@@ -34,7 +34,6 @@ PUBLIC_FUNC_DECL(int,       do_x509_hostname_check,   X509 *cert, const char *do
 PUBLIC_FUNC_DECL(int,       do_ocsp_validation,       SSL *connection, int *fallthrough);
 PUBLIC_FUNC_DECL(char *,    get_cert_subject_cn,      X509 *cert);
 
-
 // Internal routines.
 void         _ssl_fd_loop(SSL *connection);
 

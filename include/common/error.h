@@ -32,8 +32,8 @@
 #define PUBLIC_FUNC_IMPL_VA2_RET(ret, funcname, p1, p2) PUBLIC_FUNC_PROLOGUE(); { va_list ap; ret result; va_start(ap, p2); result = __ ## funcname(p1, p2, ap); va_end(ap); return result; }
 
 /* new public function implementations */
-#define PUBLIC_FUNCTION_IMPLEMENT(funcname, ...)        PUBLIC_FUNC_PROLOGUE(); return (funcname(__VA_ARGS__))
-#define PUBLIC_FUNCTION_IMPLEMENT_VOID(funcname, ...)   PUBLIC_FUNC_PROLOGUE(); funcname(__VA_ARGS__)
+#define PUBLIC_FUNCTION_IMPLEMENT(funcname, ...)      PUBLIC_FUNC_PROLOGUE(); return (funcname(__VA_ARGS__))
+#define PUBLIC_FUNCTION_IMPLEMENT_VOID(funcname, ...) PUBLIC_FUNC_PROLOGUE(); funcname(__VA_ARGS__)
 
 #define PUBLIC_FUNC_DECL(rettype, funcname, ...) \
 	rettype funcname(__VA_ARGS__); \
@@ -44,16 +44,16 @@
 	rettype _ ## funcname(__VA_ARGS__, ...); \
 	rettype __ ## funcname(__VA_ARGS__, va_list ap)
 
-#define ERR_SYSCALL   1
-#define ERR_OPENSSL   2
-#define ERR_RESOLVER  3
-#define ERR_UNSPEC    4
-#define ERR_BAD_PARAM 5
-#define ERR_NOMEM     6
-#define ERR_PERM      7
+#define ERR_SYSCALL   1U
+#define ERR_OPENSSL   2U
+#define ERR_RESOLVER  3U
+#define ERR_UNSPEC    4U
+#define ERR_BAD_PARAM 5U
+#define ERR_NOMEM     6U
+#define ERR_PERM      7U
 
 
-#define ERR_STACK_SIZE 8
+#define ERR_STACK_SIZE 8U
 
 
 typedef struct {

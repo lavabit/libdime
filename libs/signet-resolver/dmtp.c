@@ -72,7 +72,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 			RET_ERROR_PTR(ERR_UNSPEC, "org signet retrieval for user signet verification failed");
 		}
 
-		if (!(org_signet = dime_sgnt_serial_b64_to_signet(line))) {
+		if (!(org_signet = dime_sgnt_signet_b64_deserialize(line))) {
 			free(line);
 			_destroy_dmtp_session(session);
 			RET_ERROR_PTR(ERR_UNSPEC, "org signet deserialization for user signet verification failed");
@@ -93,7 +93,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 		RET_ERROR_PTR(ERR_UNSPEC, "signet retrieval failed");
 	}
 
-	if (!(result = dime_sgnt_serial_b64_to_signet(line))) {
+	if (!(result = dime_sgnt_signet_b64_deserialize(line))) {
 		free(line);
 		_destroy_dmtp_session(session);
 		RET_ERROR_PTR(ERR_UNSPEC, "unable to decode signet received from server");
@@ -104,14 +104,14 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 //	if (is_org && (sig_pok_compare(result, (const unsigned char **)session->drec->pubkey) < 0)) {
 	if (is_org && (dime_sgnt_validate_all(result, NULL, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL)) {
 		_destroy_dmtp_session(session);
-		dime_sgnt_destroy_signet(result);
+		dime_sgnt_signet_destroy(result);
 		RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
 	} else if (is_org) {
 		_dbgprint(1, "Org signet validation succeeded for: %s\n", name);
 	} else if (!is_org && (dime_sgnt_validate_all(result, NULL, org_signet, NULL) != SS_FULL)) {
 		_destroy_dmtp_session(session);
-		dime_sgnt_destroy_signet(result);
-		dime_sgnt_destroy_signet(org_signet);
+		dime_sgnt_signet_destroy(result);
+		dime_sgnt_signet_destroy(org_signet);
 		RET_ERROR_PTR(ERR_UNSPEC, "user signet could not be verified against org signet");
 	} else if (!is_org) {
 		_dbgprint(1, "User signet validation succeeded for: %s\n", name);
@@ -120,7 +120,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 	_destroy_dmtp_session(session);
 
 	if (org_signet) {
-		dime_sgnt_destroy_signet(org_signet);
+		dime_sgnt_signet_destroy(org_signet);
 	}
 
 	if (use_cache) {

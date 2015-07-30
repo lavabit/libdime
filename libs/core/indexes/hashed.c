@@ -51,7 +51,7 @@ static uint32_t hashed_bucket(uint32_t buckets, multi_t key) {
 			result = (result % buckets);
 		}
 	} else {
-		result = hash_fletcher32(mt_get_char(key), mt_get_length(key)) % buckets;
+		result = hash_fletcher32(mt_get_char(&key), mt_get_length(key)) % buckets;
 	}
 
 	return result;

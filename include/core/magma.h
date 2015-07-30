@@ -6,10 +6,6 @@
 #ifndef MAGMA_H
 #define MAGMA_H
 
-#ifndef __USE_GNU
-#define __USE_GNU
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
