@@ -1,4 +1,4 @@
-dime(1) -- dwcwCommand line tool for Dark Internet Mail Environment
+dime(1) -- Command line tool for Dark Internet Mail Environment
 ====
 
 ## SYNOPSIS
