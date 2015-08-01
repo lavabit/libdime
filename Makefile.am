@@ -230,7 +230,7 @@ gtest_LDADD = \
 	libcore.la \
 	-lresolv \
 	libdonna.la \
-	libgtest.la \
+	libgtest.a \
 	@OPENSSL_LIBS@ \
 	@PTHREAD_LIBS@
 gtest_SOURCES = \
