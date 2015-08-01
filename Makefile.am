@@ -17,12 +17,12 @@ lib_LTLIBRARIES = \
 	libdime.la
 libdime_la_SOURCES =
 libdime_la_LIBADD = \
-	libcore.a \
-	libcommon.a \
-	libdmessage.a \
-	libsignet.a \
-	libsignet_resolver.a \
-	libdonna.a
+	libcore.la \
+	libcommon.la \
+	libdmessage.la \
+	libsignet.la \
+	libsignet_resolver.la \
+	libdonna.la
 commonincludedir = \
 	$(includedir)/dime/common
 commoninclude_HEADERS = \
@@ -35,13 +35,13 @@ bin_PROGRAMS = \
 	dime \
 	signet
 
-noinst_LIBRARIES = \
-	libcore.a \
-	libcommon.a \
-	libdmessage.a \
-	libsignet.a \
-	libsignet_resolver.a \
-	libdonna.a
+noinst_LTLIBRARIES = \
+	libcore.la \
+	libcommon.la \
+	libdmessage.la \
+	libsignet.la \
+	libsignet_resolver.la \
+	libdonna.la
 
 dime_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
@@ -49,13 +49,13 @@ dime_CPPFLAGS = \
 dime_SOURCES = \
 	tools/dime/dime.c
 dime_LDADD = \
-	libdmessage.a \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	libcore.a \
+	libdmessage.la \
+	libsignet_resolver.la \
+	libsignet.la \
+	libcommon.la \
+	libcore.la \
 	-lresolv \
-	libdonna.a \
+	libdonna.la \
 	@OPENSSL_LIBS@
 
 signet_CPPFLAGS = \
@@ -64,25 +64,27 @@ signet_CPPFLAGS = \
 signet_SOURCES = \
 	tools/signet/signet.c
 signet_LDADD = \
-	libdmessage.a \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	libcore.a \
+	libdmessage.la \
+	libsignet_resolver.la \
+	libsignet.la \
+	libcommon.la \
+	libcore.la \
 	-lresolv \
-	libdonna.a \
+	libdonna.la \
 	@OPENSSL_LIBS@
 
-libdonna_a_CPPFLAGS = \
+libdonna_la_CPPFLAGS = \
 	$(DONNA_CPPFLAGS)
-libdonna_a_CFLAGS =
-libdonna_a_SOURCES = \
+libdonna_la_CFLAGS =
+libdonna_la_SOURCES = \
 	bundle/ed25519-donna/ed25519.c
 
-libcore_a_CPPFLAGS = \
+libcore_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libcore_a_SOURCES = \
+libcore_la_CFLAGS = \
+	$(AM_CFLAGS)
+libcore_la_SOURCES = \
 	libs/core/buckets/arrays.c \
 	libs/core/buckets/pool.c \
 	libs/core/buckets/stacked.c \
@@ -147,10 +149,12 @@ libcore_a_SOURCES = \
 	libs/core/thread/thread.c \
 	libs/core/type.c
 
-libcommon_a_CPPFLAGS = \
+libcommon_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libcommon_a_SOURCES = \
+libcommon_la_CFLAGS = \
+	$(AM_CFLAGS)
+libcommon_la_SOURCES = \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
 	libs/common/error.c \
@@ -159,25 +163,31 @@ libcommon_a_SOURCES = \
 	libs/common/network.c \
 	libs/common/network_pub.c
 
-libdmessage_a_CPPFLAGS = \
+libdmessage_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libdmessage_a_SOURCES = \
+libdmessage_la_CFLAGS = \
+	$(AM_CFLAGS)
+libdmessage_la_SOURCES = \
 	libs/dmessage/dmsg.c \
 	libs/dmessage/parser.c
 
-libsignet_a_CPPFLAGS = \
+libsignet_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libsignet_a_SOURCES = \
+libsignet_la_CFLAGS = \
+	$(AM_CFLAGS)
+libsignet_la_SOURCES = \
 	libs/signet/general.c \
 	libs/signet/keys.c \
 	libs/signet/signet.c
 
-libsignet_resolver_a_CPPFLAGS = \
+libsignet_resolver_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libsignet_resolver_a_SOURCES = \
+libsignet_resolver_la_CFLAGS = \
+	$(AM_CFLAGS)
+libsignet_resolver_la_SOURCES = \
 	libs/signet-resolver/cache.c \
 	libs/signet-resolver/cache_pub.c \
 	libs/signet-resolver/dmtp.c \
@@ -224,14 +234,14 @@ gtest_CXXFLAGS = \
 	@OPENSSL_CFLAGS@ \
 	@PTHREAD_CFLAGS@
 gtest_LDADD = \
-	libdmessage.a \
-	libsignet_resolver.a \
-	libsignet.a \
-	libcommon.a \
-	libcore.a \
+	libdmessage.la \
+	libsignet_resolver.la \
+	libsignet.la \
+	libcommon.la \
+	libcore.la \
 	-lresolv \
-	libdonna.a \
-	libgtest.a \
+	libdonna.la \
+	libgtest.la \
 	@OPENSSL_LIBS@ \
 	@PTHREAD_LIBS@
 gtest_SOURCES = \
