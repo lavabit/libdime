@@ -30,6 +30,51 @@ commoninclude_HEADERS = \
 	include/dime/common/error.h \
 	include/dime/common/misc.h \
 	include/dime/common/network.h
+coreincludedir = \
+	$(includedir)/dime/core
+coreinclude_HEADERS = \
+	include/dime/core/buckets.h \
+	include/dime/core/classify.h \
+	include/dime/core/compare.h \
+	include/dime/core/config.h \
+	include/dime/core/core.h \
+	include/dime/core/encodings.h \
+	include/dime/core/formats.h \
+	include/dime/core/hash.h \
+	include/dime/core/host.h \
+	include/dime/core/indexes.h \
+	include/dime/core/log.h \
+	include/dime/core/magma.h \
+	include/dime/core/mail.h \
+	include/dime/core/memory.h \
+	include/dime/core/mime.h \
+	include/dime/core/numbers.h \
+	include/dime/core/other.h \
+	include/dime/core/parsers.h \
+	include/dime/core/smtp.h \
+	include/dime/core/special.h \
+	include/dime/core/strings.h \
+	include/dime/core/thread.h
+dmessageincludedir = \
+	$(includedir)/dime/dmessage
+dmessageinclude_HEADERS = \
+	include/dime/dmessage/dmsg_common.h \
+	include/dime/dmessage/dmsg_crypto.h \
+	include/dime/dmessage/dmsg_parse.h
+signetincludedir = \
+	$(includedir)/dime/signet
+signetinclude_HEADERS = \
+	include/dime/signet/sgnt_common.h \
+	include/dime/signet/sgnt_keys.h \
+	include/dime/signet/sgnt_signet.h
+signetresolverincludedir = \
+	$(includedir)/dime/signet-resolver
+signetresolverinclude_HEADERS = \
+	include/dime/signet-resolver/cache.h \
+	include/dime/signet-resolver/dmtp.h \
+	include/dime/signet-resolver/dns.h \
+	include/dime/signet-resolver/mrec.h \
+	include/dime/signet-resolver/signet-ssl.h
 
 bin_PROGRAMS = \
 	dime \
