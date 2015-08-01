@@ -46,8 +46,8 @@ AC_GNU_SOURCE
 
 # Handle pthreads
 AX_PTHREAD(
-	[AC_SUBST(GTEST_HAS_PTHREAD, [1])],
-	[AC_SUBST(GTEST_HAS_PTHREAD, [0])])
+    [AC_SUBST(GTEST_HAS_PTHREAD, [1])],
+    [AC_SUBST(GTEST_HAS_PTHREAD, [0])])
 
 #AC_DEFINE([HAVE_NS_TYPE])
 
@@ -67,32 +67,32 @@ CWARNINGS+="-Wmissing-prototypes "
 CWARNINGS+="-Wno-pointer-sign "
 
 if `$CC -v 2>&1 | grep 'clang version' > /dev/null 2>&1`; then
-	# Clang-specific flags
+    # Clang-specific flags
 
-	WARNINGS+="-Wno-cast-align "
-	WARNINGS+="-Wno-conditional-uninitialized "
-	WARNINGS+="-Wno-conversion "
-	WARNINGS+="-Wno-covered-switch-default "
-	WARNINGS+="-Wno-disabled-macro-expansion "
-	WARNINGS+="-Wno-documentation "
-	WARNINGS+="-Wno-documentation-unknown-command "
-	WARNINGS+="-Wno-float-equal "
-	WARNINGS+="-Wno-gnu-designator "
-	WARNINGS+="-Wno-packed "
-	WARNINGS+="-Wno-padded "
-	WARNINGS+="-Wno-pedantic "
-	WARNINGS+="-Wno-shorten-64-to-32 "
-	WARNINGS+="-Wno-sign-conversion "
-	WARNINGS+="-Wno-switch-enum "
-	WARNINGS+="-Wno-unreachable-code "
-	WARNINGS+="-Wno-cast-qual "
-	WARNINGS+="-Wno-class-varargs "
-	WARNINGS+="-Wno-unreachable-code-break "
-	WARNINGS+="-Wno-assign-enum "
+    WARNINGS+="-Wno-cast-align "
+    WARNINGS+="-Wno-conditional-uninitialized "
+    WARNINGS+="-Wno-conversion "
+    WARNINGS+="-Wno-covered-switch-default "
+    WARNINGS+="-Wno-disabled-macro-expansion "
+    WARNINGS+="-Wno-documentation "
+    WARNINGS+="-Wno-documentation-unknown-command "
+    WARNINGS+="-Wno-float-equal "
+    WARNINGS+="-Wno-gnu-designator "
+    WARNINGS+="-Wno-packed "
+    WARNINGS+="-Wno-padded "
+    WARNINGS+="-Wno-pedantic "
+    WARNINGS+="-Wno-shorten-64-to-32 "
+    WARNINGS+="-Wno-sign-conversion "
+    WARNINGS+="-Wno-switch-enum "
+    WARNINGS+="-Wno-unreachable-code "
+    WARNINGS+="-Wno-cast-qual "
+    WARNINGS+="-Wno-class-varargs "
+    WARNINGS+="-Wno-unreachable-code-break "
+    WARNINGS+="-Wno-assign-enum "
 
-	CWARNINGS+="-ferror-limit=5 "
-	CWARNINGS+="-Weverything "
-	CWARNINGS+="-Wno-bad-function-cast "
+    CWARNINGS+="-ferror-limit=5 "
+    CWARNINGS+="-Weverything "
+    CWARNINGS+="-Wno-bad-function-cast "
 fi
 
 AC_SUBST(WARNINGS)
