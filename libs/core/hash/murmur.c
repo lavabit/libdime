@@ -3,7 +3,7 @@
  * @brief	An x64 implementation of the Murmur hash function.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 
 /**

@@ -10,7 +10,7 @@
 #include <openssl/rand.h>
 
 extern "C" {
-#include <common/error.h>
+#include "dime/common/error.h"
 }
 #include "gtest/gtest.h"
 

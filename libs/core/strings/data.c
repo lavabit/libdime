@@ -3,7 +3,7 @@
  * @brief	Functions used to inspect the data of managed strings.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Determine whether the specified managed string is empty or not.

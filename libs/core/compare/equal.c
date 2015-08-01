@@ -3,7 +3,7 @@
  * @brief	Functions to check for string equality.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Perform a case-sensitive comparison of two memory blocks.

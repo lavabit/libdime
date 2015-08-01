@@ -3,7 +3,7 @@
  * @brief	A collection of functions used to validate stringer allocation option combinations.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	A sanity check to determine whether the managed string is a valid placer.

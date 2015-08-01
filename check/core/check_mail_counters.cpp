@@ -1,5 +1,5 @@
 extern "C" {
-#include <core/magma.h>
+#include "dime/core/magma.h"
 }
 #include "gtest/gtest.h"
 

@@ -1,5 +1,5 @@
-#include <common/dcrypto.h>
-#include <common/error.h>
+#include "dime/common/dcrypto.h"
+#include "dime/common/error.h"
 
 int crypto_init(void) {
 	PUBLIC_FUNC_IMPL(crypto_init, );

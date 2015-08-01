@@ -3,7 +3,7 @@
  * @brief	Interface to the name/value pair parser.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * on success the number of valid pairs is returned

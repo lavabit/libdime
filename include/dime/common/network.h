@@ -11,7 +11,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
-#include <common/error.h>
+#include "dime/common/error.h"
 
 PUBLIC_FUNC_DECL(int, connect_host, const char *hostname, unsigned short port, int force_family);
 

@@ -1,5 +1,5 @@
-#include "common/misc.h"
-#include "signet/sgnt_keys.h"
+#include "dime/common/misc.h"
+#include "dime/signet/sgnt_keys.h"
 
 static EC_KEY *        keys_enckey_fetch(const char *filename);
 static EC_KEY *        keys_enckey_from_binary(const unsigned char *bin_keys, size_t len);

@@ -3,7 +3,7 @@
  * @brief	Map numeric system values to their string equivalents.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Translate an error number into a descriptive, human-readable message.

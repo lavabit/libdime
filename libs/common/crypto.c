@@ -5,9 +5,9 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#include <common/dcrypto.h>
-#include <common/misc.h>
-#include <common/error.h>
+#include "dime/common/dcrypto.h"
+#include "dime/common/misc.h"
+#include "dime/common/error.h"
 
 static EC_GROUP *_signing_group = NULL;
 static EC_GROUP *_encryption_group = NULL;

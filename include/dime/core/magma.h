@@ -54,10 +54,10 @@
 // added
 #include <math.h>
 
-#include <core/core.h>
-#include <core/config.h>
-#include <core/global.h>
-#include <core/mail.h>
+#include <dime/core/core.h>
+#include <dime/core/config.h>
+#include <dime/core/global.h>
+#include <dime/core/mail.h>
 
 extern magma_t magma;
 

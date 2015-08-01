@@ -1,8 +1,8 @@
 #ifndef DIME_DMSG_CRYPTO_H
 #define DIME_DMSG_CRYPTO_H
 
-#include "signet/sgnt_signet.h"
-#include "dmessage/dmsg_common.h"
+#include "dime/signet/sgnt_signet.h"
+#include "dime/dmessage/dmsg_common.h"
 
 #define TRACING_LENGTH_SIZE 2
 

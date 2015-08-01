@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 extern "C" {
-#include <common/misc.h>
+#include "dime/common/misc.h"
 }
 #include "gtest/gtest.h"
 

@@ -3,7 +3,7 @@
  * @brief	Functions used for string replacement.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Replace all instances of a substring inside another string.

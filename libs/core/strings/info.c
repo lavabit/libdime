@@ -3,7 +3,7 @@
  * @brief	A collection of functions used to extract information from stringer options.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 static const chr_t *st_option_flags[] = {
 	"FOREIGNDATA"

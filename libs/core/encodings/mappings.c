@@ -3,7 +3,7 @@
  * @brief	Character-to-value mappings employed by the various base64 encoders.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 mappings_t mappings = {
 	.zbase32 = {

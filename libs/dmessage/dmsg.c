@@ -1,6 +1,6 @@
-#include "signet/sgnt_signet.h"
-#include "dmessage/dmsg_parse.h"
-#include "dmessage/dmsg_crypto.h"
+#include "dime/signet/sgnt_signet.h"
+#include "dime/dmessage/dmsg_parse.h"
+#include "dime/dmessage/dmsg_crypto.h"
 
 typedef dmime_kek_t dmime_kekset_t[4];
 

@@ -1,7 +1,7 @@
-#include <string.h>
-#include "common/misc.h"
-#include "signet/sgnt_keys.h"
-#include "signet/sgnt_signet.h"
+#include "string.h"
+#include "dime/common/misc.h"
+#include "dime/signet/sgnt_keys.h"
+#include "dime/signet/sgnt_signet.h"
 
 /** A signet field index structure for temporary convenience organization of field data */
 typedef struct signet_field_t {

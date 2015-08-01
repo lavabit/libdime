@@ -3,7 +3,7 @@
  * @brief	An x86 implementation of the Adler hash algorithm.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Return an Adler-32 hash of the specified data.

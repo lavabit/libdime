@@ -3,7 +3,7 @@
  * @brief	Functions for converting different string types into binary numbers.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Convert a managed string to a float.

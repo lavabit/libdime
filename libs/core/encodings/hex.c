@@ -3,7 +3,7 @@
  * @brief	Functions for encoding/decoding hexadecimal data.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Determine whether a character is a valid hexadecimal (base 16) character.

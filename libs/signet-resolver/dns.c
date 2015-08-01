@@ -1,8 +1,8 @@
-#include <signet-resolver/dns.h>
+#include "dime/signet-resolver/dns.h"
 
-#include <signet-resolver/cache.h>
-#include <common/misc.h>
-#include <common/error.h>
+#include "dime/signet-resolver/cache.h"
+#include "dime/common/misc.h"
+#include "dime/common/error.h"
 
 #define INITIALIZE_DNS() { if (!_dns_initialized && (_initialize_resolver() < 0)) { RET_ERROR_PTR(ERR_UNSPEC, "failed to initialize DNS resolver"); } }
 

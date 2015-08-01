@@ -8,7 +8,7 @@
 #include <openssl/rand.h>
 #include <openssl/ocsp.h>
 
-#include <common/error.h>
+#include "dime/common/error.h"
 
 
 #define CA_FILE  "cacert.pem"

@@ -3,7 +3,7 @@
  * @brief	Functions for handling null terminated strings.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 
 /**

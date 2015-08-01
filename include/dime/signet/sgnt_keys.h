@@ -1,7 +1,7 @@
 #ifndef DIME_SGNT_KEYS_H
 #define DIME_SGNT_KEYS_H
 
-#include "signet/sgnt_common.h"
+#include "dime/signet/sgnt_common.h"
 
 typedef enum {
 	KEYS_TYPE_ERROR = 0,

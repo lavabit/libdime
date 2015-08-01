@@ -3,7 +3,7 @@
  * @brief	Functions used to encode and decode website URLs.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Determine whether a given character is a valid character in a URL.

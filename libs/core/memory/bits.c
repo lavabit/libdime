@@ -3,7 +3,7 @@
  * @brief	A collection of functions used handle common bit manipulation tasks.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Count the number of bits that are set in a 64-bit number.

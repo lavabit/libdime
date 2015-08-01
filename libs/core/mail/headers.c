@@ -3,7 +3,7 @@
  * @brief	Functions used to handle mail message header information.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Fetch the value of a specified line from a mail header, performing whitespace and line cleaning.

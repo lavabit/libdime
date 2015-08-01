@@ -3,7 +3,7 @@
  * @brief	The generic index interface used to abstract away the underlying data structure used for storage.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Unlock an inx object.

@@ -3,7 +3,7 @@
  * @brief	A collection of functions used for manipulating the capitalization of characters.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Return the uppercase representation of a character.

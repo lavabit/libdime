@@ -3,7 +3,7 @@
  * @brief	The functions used to handle Magma memory buffers.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Performed a checked memory free.

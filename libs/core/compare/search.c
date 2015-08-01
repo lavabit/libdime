@@ -3,7 +3,7 @@
  * @brief	String search functions.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Search one managed string for an occurrence of another in a case-sensitive manner, and save its location.

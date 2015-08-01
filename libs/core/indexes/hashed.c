@@ -3,7 +3,7 @@
  * @brief	Function declarations and types for the hashed list.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 #define MAGMA_HASHED_BUCKETS 1024
 

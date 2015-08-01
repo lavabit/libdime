@@ -3,7 +3,7 @@
  * @brief	An interface for handling FIFO stacks.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Free a stacked list and all of its underlying data nodes.

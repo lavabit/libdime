@@ -1,4 +1,4 @@
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Generate a random unsigned 64 bit number.

@@ -1,8 +1,8 @@
 #include <unistd.h>
 extern "C" {
-#include "common/misc.h"
-#include "signet/sgnt_keys.h"
-#include "signet/sgnt_signet.h"
+#include "dime/common/misc.h"
+#include "dime/signet/sgnt_keys.h"
+#include "dime/signet/sgnt_signet.h"
 }
 #include "gtest/gtest.h"
 

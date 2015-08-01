@@ -1,7 +1,7 @@
 #ifndef DMSG_PARSER_H
 #define DMSG_PARSER_H
 
-#include "dmessage/dmsg_common.h"
+#include "dime/dmessage/dmsg_common.h"
 
 
 typedef struct {

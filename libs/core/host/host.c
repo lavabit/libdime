@@ -3,7 +3,7 @@
  * @brief	Functions to retrieve information about the operating system.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Get a description of the local operating system.

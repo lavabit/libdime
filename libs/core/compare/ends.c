@@ -3,7 +3,7 @@
  * @brief	Functions used to compare the ends of strings with other strings.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Perform a case-sensitive check to see if one string ends in another, comparing backwards.

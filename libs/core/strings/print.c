@@ -3,7 +3,7 @@
  * @brief	Functions for printing formatted data to managed strings.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Print to a managed string and return the number of bytes written.

@@ -1,6 +1,6 @@
 #include <unistd.h>
 extern "C" {
-#include "signet/sgnt_keys.h"
+#include "dime/signet/sgnt_keys.h"
 }
 #include "gtest/gtest.h"
 

@@ -3,7 +3,7 @@
  * @brief	Functions used to classify ASCII characters.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Determine whether a specified character is an ASCII character.

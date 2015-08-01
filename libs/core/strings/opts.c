@@ -3,7 +3,7 @@
  * @brief	Functions for handling managed string options.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Enable or disable a set of option(s) for a managed string, with validity testing.

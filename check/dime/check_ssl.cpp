@@ -1,5 +1,5 @@
 extern "C" {
-#include "signet-resolver/signet-ssl.h"
+#include "dime/signet-resolver/signet-ssl.h"
 }
 #include "gtest/gtest.h"
 

@@ -3,7 +3,7 @@
  * @brief	Functions for managing processes.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Kill a named process with the specified signal, and retry if necessary.

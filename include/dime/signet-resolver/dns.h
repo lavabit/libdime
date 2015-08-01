@@ -15,7 +15,7 @@
 #include <openssl/ssl.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
-#include <common/error.h>
+#include "dime/common/error.h"
 
 // TODO: Does DNSKEY RR have "key revoked" bit?
 //		 SEP bit indicates KSK vs. 0=ZSK?

@@ -3,7 +3,7 @@
  * @brief	Functions for base64 encoding/decoding of data.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Perform base64 encoding on a managed string with padding and line splitting at BASE64_LINE_WRAP_LENGTH characters.

@@ -3,7 +3,7 @@
  * @brief	Functions for memory alignment operations.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Align a size to a specified boundary.

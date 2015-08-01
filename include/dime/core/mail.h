@@ -6,7 +6,7 @@
 #ifndef MAGMA_OBJECTS_MAIL_H
 #define MAGMA_OBJECTS_MAIL_H
 
-#include <core/mime.h>
+#include <dime/core/mime.h>
 
 #define MAIL_MIME_RECURSION_LIMIT       16
 #define MAIL_SIGNATURES_RECURSION_LIMIT 16

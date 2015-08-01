@@ -3,7 +3,7 @@
  * @brief	Functions used to parse and manipulate MIME messages.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 static const media_type_t media_types[] = {
 	{ "",       true,  "application/octet-stream"},

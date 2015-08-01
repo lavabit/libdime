@@ -5,7 +5,7 @@
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/pem.h>
-#include <common/error.h>
+#include "dime/common/error.h"
 #include <ed25519.h>
 
 #define AES_256_PADDING_SIZE 16

@@ -1,13 +1,13 @@
-#include <common/network.h>
-#include <common/misc.h>
-#include <common/error.h>
+#include "dime/common/network.h"
+#include "dime/common/misc.h"
+#include "dime/common/error.h"
 
-#include <openssl/ocsp.h>
-#include <openssl/x509.h>
+#include "openssl/ocsp.h"
+#include "openssl/x509.h"
 
-#include <signet-resolver/cache.h>
-#include <signet-resolver/dmtp.h>
-#include <signet-resolver/signet-ssl.h>
+#include "dime/signet-resolver/cache.h"
+#include "dime/signet-resolver/dmtp.h"
+#include "dime/signet-resolver/signet-ssl.h"
 
 
 /* Thoughts: Any reason to change our code to leverage X509_digest() ? */

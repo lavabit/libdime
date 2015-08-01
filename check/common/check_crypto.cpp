@@ -4,8 +4,8 @@
 #include <openssl/rand.h>
 
 extern "C" {
-#include "common/dcrypto.h"
-#include "common/misc.h"
+#include "dime/common/dcrypto.h"
+#include "dime/common/misc.h"
 }
 #include "gtest/gtest.h"
 

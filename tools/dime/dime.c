@@ -1,14 +1,14 @@
-#include <signet-resolver/cache.h>
-#include <signet-resolver/dmtp.h>
-#include <signet-resolver/dns.h>
-#include <signet-resolver/mrec.h>
-#include <signet-resolver/signet-ssl.h>
+#include <dime/signet-resolver/cache.h>
+#include <dime/signet-resolver/dmtp.h>
+#include <dime/signet-resolver/dns.h>
+#include <dime/signet-resolver/mrec.h>
+#include <dime/signet-resolver/signet-ssl.h>
 
-#include "signet/sgnt_keys.h"
-#include "signet/sgnt_signet.h"
+#include <dime/signet/sgnt_keys.h>
+#include <dime/signet/sgnt_signet.h>
 
-#include <common/misc.h>
-#include <common/network.h>
+#include <dime/common/misc.h>
+#include <dime/common/network.h>
 
 static void __attribute__((noreturn)) usage(const char *progname)  {
 

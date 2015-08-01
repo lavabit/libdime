@@ -2,7 +2,7 @@
 #define DIME_SGNT_SIGNET_H
 
 #include <stdint.h>
-#include "signet/sgnt_common.h"
+#include "dime/signet/sgnt_common.h"
 
 typedef enum {
 	SS_UNKNOWN = 0,                 /**< Invalid signet, state unknown/currently unclassified */

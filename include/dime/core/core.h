@@ -53,18 +53,18 @@ enum {
 const char *type(M_TYPE type);
 /************ TYPE ************/
 
-#include <core/memory.h>
-#include <core/strings.h>
-#include <core/classify.h>
-#include <core/encodings.h>
-#include <core/log.h>
-#include <core/indexes.h>
-#include <core/compare.h>
-#include <core/thread.h>
-#include <core/buckets.h>
-#include <core/parsers.h>
-#include <core/hash.h>
-#include <core/host.h>
-#include <core/other.h>
+#include <dime/core/memory.h>
+#include <dime/core/strings.h>
+#include <dime/core/classify.h>
+#include <dime/core/encodings.h>
+#include <dime/core/log.h>
+#include <dime/core/indexes.h>
+#include <dime/core/compare.h>
+#include <dime/core/thread.h>
+#include <dime/core/buckets.h>
+#include <dime/core/parsers.h>
+#include <dime/core/hash.h>
+#include <dime/core/host.h>
+#include <dime/core/other.h>
 
 #endif

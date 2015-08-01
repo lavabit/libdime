@@ -3,8 +3,8 @@
 
 #include <errno.h>
 
-#include <common/network.h>
-#include <common/misc.h>
+#include "dime/common/network.h"
+#include "dime/common/misc.h"
 
 #define CONNECT_TIMEOUT 5               /* the timeout value for connection attempts, in seconds */
 

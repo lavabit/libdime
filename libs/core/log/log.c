@@ -3,7 +3,7 @@
  * @brief	Internal logging functions. This function should be accessed using the appropriate macro.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 static uint64_t log_date;
 static bool_t log_enabled = true;

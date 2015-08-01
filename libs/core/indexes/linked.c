@@ -3,7 +3,7 @@
  * @brief	The linked list implementation functions utilized by the generic index interface.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 // Linked lists.
 typedef struct {

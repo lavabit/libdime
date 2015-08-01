@@ -3,7 +3,7 @@
  * @brief       A collection of functions used to create, maintain and safely utilize arrays of pointers.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Allocate an array of a specified number of elements.

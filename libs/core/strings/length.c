@@ -3,7 +3,7 @@
  * @brief	Functions used to find stringer lengths.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Return the length of the data in a managed string.

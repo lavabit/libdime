@@ -3,7 +3,7 @@
  * @brief	Generic system file I/O operations.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Get the contents of a file on disk.

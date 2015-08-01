@@ -3,7 +3,7 @@
  * @brief	Functions used to allocate stringers.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Free a managed string.

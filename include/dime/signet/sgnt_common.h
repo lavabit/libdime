@@ -2,7 +2,7 @@
 #define DIME_SGNT_COMMON_H
 
 #include <stdint.h>
-#include "common/dcrypto.h"
+#include "dime/common/dcrypto.h"
 
 #define SIGNET_VER_NO           0x1
 #define SIGNET_HEADER_SIZE      5

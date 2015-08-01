@@ -1,4 +1,4 @@
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * Takes a type code and returns the fully enumerated string associated with that type.

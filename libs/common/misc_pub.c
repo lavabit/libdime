@@ -1,5 +1,5 @@
-#include <common/misc.h>
-#include <common/error.h>
+#include "dime/common/misc.h"
+#include "dime/common/error.h"
 
 void int_no_put_4b(void *buf, uint32_t val) {
 	PUBLIC_FUNC_IMPL_VOID(int_no_put_4b, buf, val);

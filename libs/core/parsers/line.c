@@ -3,7 +3,7 @@
  * @brief	Functions used to extract lines from within a larger block of data.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Get a placer pointing to the specified line ('\n' delimited) of content in a data buffer.

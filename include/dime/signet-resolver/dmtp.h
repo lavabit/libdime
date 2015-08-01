@@ -1,10 +1,10 @@
 #ifndef DMTP_H
 #define DMTP_H
 
-#include <signet/sgnt_signet.h>
-#include <signet-resolver/mrec.h>
-#include <common/error.h>
-#include <signet-resolver/signet-ssl.h>
+#include "dime/signet/sgnt_signet.h"
+#include "dime/signet-resolver/mrec.h"
+#include "dime/common/error.h"
+#include "dime/signet-resolver/signet-ssl.h"
 
 
 #define DMTP_PORT      26

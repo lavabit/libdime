@@ -3,7 +3,7 @@
  * @brief	Functions used to calculate mail message metrics needed to implement business rules.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Count the number of "Received:" lines in a mail message.

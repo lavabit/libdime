@@ -3,7 +3,7 @@
  * @brief	An implementation of the Fletcher hash algorithim.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Computer a 32-bit Fletcher hash for a block of data.

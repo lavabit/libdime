@@ -8,8 +8,8 @@
 
 #include <openssl/x509.h>
 #include <openssl/err.h>
-#include <common/misc.h>
-#include <common/error.h>
+#include "dime/common/misc.h"
+#include "dime/common/error.h"
 
 int _verbose = 0;
 

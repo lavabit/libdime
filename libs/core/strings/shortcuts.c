@@ -3,7 +3,7 @@
  * @brief	A collection of shortcuts used to call various string functions using sensible default values.
  */
 
-#include <core/magma.h>
+#include <dime/core/magma.h>
 
 /**
  * @brief	Return a zero-length placer pointing to NULL data.

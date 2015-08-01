@@ -1,8 +1,8 @@
 #ifndef DIME_DMSG_COMMON_H
 #define DIME_DMSG_COMMON_H
 
-#include "core/magma.h"
-#include "common/misc.h"
+#include "dime/core/magma.h"
+#include "dime/common/misc.h"
 
 #define DMIME_NUM_COMMON_HEADERS 7
 #define CHUNK_LENGTH_SIZE   3
