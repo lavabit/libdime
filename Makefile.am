@@ -75,15 +75,12 @@ signet_LDADD = \
 
 libdonna_la_CPPFLAGS = \
 	$(DONNA_CPPFLAGS)
-libdonna_la_CFLAGS =
 libdonna_la_SOURCES = \
 	bundle/ed25519-donna/ed25519.c
 
 libcore_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libcore_la_CFLAGS = \
-	$(AM_CFLAGS)
 libcore_la_SOURCES = \
 	libs/core/buckets/arrays.c \
 	libs/core/buckets/pool.c \
@@ -152,8 +149,6 @@ libcore_la_SOURCES = \
 libcommon_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libcommon_la_CFLAGS = \
-	$(AM_CFLAGS)
 libcommon_la_SOURCES = \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
@@ -166,8 +161,6 @@ libcommon_la_SOURCES = \
 libdmessage_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libdmessage_la_CFLAGS = \
-	$(AM_CFLAGS)
 libdmessage_la_SOURCES = \
 	libs/dmessage/dmsg.c \
 	libs/dmessage/parser.c
@@ -175,8 +168,6 @@ libdmessage_la_SOURCES = \
 libsignet_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libsignet_la_CFLAGS = \
-	$(AM_CFLAGS)
 libsignet_la_SOURCES = \
 	libs/signet/general.c \
 	libs/signet/keys.c \
@@ -185,8 +176,6 @@ libsignet_la_SOURCES = \
 libsignet_resolver_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
-libsignet_resolver_la_CFLAGS = \
-	$(AM_CFLAGS)
 libsignet_resolver_la_SOURCES = \
 	libs/signet-resolver/cache.c \
 	libs/signet-resolver/cache_pub.c \
