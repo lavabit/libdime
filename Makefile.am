@@ -13,6 +13,24 @@ COMMON_CPPFLAGS = \
 DONNA_CPPFLAGS = \
 	-I$(top_srcdir)/bundle/ed25519-donna
 
+lib_LTLIBRARIES = \
+	libdime.la
+libdime_la_SOURCES =
+libdime_la_LIBADD = \
+	libcore.a \
+	libcommon.a \
+	libdmessage.a \
+	libsignet.a \
+	libsignet_resolver.a \
+	libdonna.a
+commonincludedir = \
+	$(includedir)/dime/common
+commoninclude_HEADERS = \
+	include/dime/common/dcrypto.h \
+	include/dime/common/error.h \
+	include/dime/common/misc.h \
+	include/dime/common/network.h
+
 bin_PROGRAMS = \
 	dime \
 	signet
@@ -25,8 +43,6 @@ noinst_LIBRARIES = \
 	libsignet_resolver.a \
 	libdonna.a
 
-# TODO - The command line tools should eventually link against libdime.la
-# instead of the intermediate static libs
 dime_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)

@@ -35,14 +35,16 @@ AC_PROG_CC_STDC
 # Find and probe C++ compiler
 AC_PROG_CXX
 
-# Find ranlib
-AC_PROG_RANLIB
+# Set common system defines for POSIX extensions, such as _GNU_SOURCE Must be
+# called before any macros that run the compiler (like AC_PROG_LIBTOOL) to
+# avoid autoconf errors.
+AC_USE_SYSTEM_EXTENSIONS
+
+# Find libtool
+AC_PROG_LIBTOOL
 
 # Find awk
 AC_PROG_AWK
-
-# Define _GNU_SOURCE
-AC_GNU_SOURCE
 
 # Handle pthreads
 AX_PTHREAD(
