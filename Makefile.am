@@ -93,34 +93,32 @@ noinst_LTLIBRARIES = \
 dime_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
+dime_CFLAGS = \
+	$(AM_CFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+dime_LDADD = \
+	libdime.la \
+	-lresolv \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
 dime_SOURCES = \
 	tools/dime/dime.c
-dime_LDADD = \
-	libsds.la \
-	libdmessage.la \
-	libsignet_resolver.la \
-	libsignet.la \
-	libcommon.la \
-	libcore.la \
-	-lresolv \
-	libdonna.la \
-	@OPENSSL_LIBS@
 
 signet_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS)
+signet_CFLAGS = \
+	$(AM_CFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+signet_LDADD = \
+	libdime.la \
+	-lresolv \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
 signet_SOURCES = \
 	tools/signet/signet.c
-signet_LDADD = \
-	libsds.la \
-	libdmessage.la \
-	libsignet_resolver.la \
-	libsignet.la \
-	libcommon.la \
-	libcore.la \
-	-lresolv \
-	libdonna.la \
-	@OPENSSL_LIBS@
 
 libsds_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
@@ -281,14 +279,8 @@ gtest_CXXFLAGS = \
 	@OPENSSL_CFLAGS@ \
 	@PTHREAD_CFLAGS@
 gtest_LDADD = \
-	libsds.la \
-	libdmessage.la \
-	libsignet_resolver.la \
-	libsignet.la \
-	libcommon.la \
-	libcore.la \
+	libdime.la \
 	-lresolv \
-	libdonna.la \
 	libgtest.a \
 	@OPENSSL_LIBS@ \
 	@PTHREAD_LIBS@
