@@ -233,9 +233,8 @@ libsignet_resolver_la_SOURCES = \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c
 
-LOG_DRIVER = \
-	$(SHELL) $(top_srcdir)/check/gtest-driver.sh
-TESTS = gtest
+check: gtest
+	@$(top_builddir)/gtest --gtest_output=xml
 check_PROGRAMS = gtest
 check_LIBRARIES = libgtest.a
 
