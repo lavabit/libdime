@@ -17,6 +17,7 @@ lib_LTLIBRARIES = \
 	libdime.la
 libdime_la_SOURCES =
 libdime_la_LIBADD = \
+	libsds.la \
 	libcore.la \
 	libcommon.la \
 	libdmessage.la \
@@ -81,6 +82,7 @@ bin_PROGRAMS = \
 	signet
 
 noinst_LTLIBRARIES = \
+	libsds.la \
 	libcore.la \
 	libcommon.la \
 	libdmessage.la \
@@ -94,6 +96,7 @@ dime_CPPFLAGS = \
 dime_SOURCES = \
 	tools/dime/dime.c
 dime_LDADD = \
+	libsds.la \
 	libdmessage.la \
 	libsignet_resolver.la \
 	libsignet.la \
@@ -109,6 +112,7 @@ signet_CPPFLAGS = \
 signet_SOURCES = \
 	tools/signet/signet.c
 signet_LDADD = \
+	libsds.la \
 	libdmessage.la \
 	libsignet_resolver.la \
 	libsignet.la \
@@ -117,6 +121,16 @@ signet_LDADD = \
 	-lresolv \
 	libdonna.la \
 	@OPENSSL_LIBS@
+
+libsds_la_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	-I$(top_srcdir)/bundle/sds
+libsds_la_CFLAGS = \
+	-Wall \
+	-std=c99 \
+	-pedantic
+libsds_la_SOURCES = \
+	bundle/sds/sds.c
 
 libdonna_la_CPPFLAGS = \
 	$(DONNA_CPPFLAGS)
@@ -267,6 +281,7 @@ gtest_CXXFLAGS = \
 	@OPENSSL_CFLAGS@ \
 	@PTHREAD_CFLAGS@
 gtest_LDADD = \
+	libsds.la \
 	libdmessage.la \
 	libsignet_resolver.la \
 	libsignet.la \
