@@ -1,7 +1,7 @@
 #ifndef DMTP_H
 #define DMTP_H
 
-#include "dime/signet/sgnt_signet.h"
+#include "dime/signet/signet.h"
 #include "dime/signet-resolver/mrec.h"
 #include "dime/common/error.h"
 #include "dime/signet-resolver/signet-ssl.h"

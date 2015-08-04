@@ -8,8 +8,8 @@
 #include "dime/signet-resolver/dns.h"
 #include "dime/signet-resolver/mrec.h"
 #include "dime/signet-resolver/signet-ssl.h"
-#include "dime/signet/sgnt_keys.h"
-#include "dime/signet/sgnt_signet.h"
+#include "dime/signet/keys.h"
+#include "dime/signet/signet.h"
 #include "dime/common/misc.h"
 #include "dime/common/error.h"
 

@@ -1,4 +1,4 @@
-#include "dime/signet/sgnt_common.h"
+#include "dime/signet/common.h"
 
 #define SKEY_EMPTY {     0,     0,     0, 0, 0,       0, NULL, NULL }
 #define SKEY_SIZE1 {     0,     1,     0, 1, 0, UNICODE, NULL, NULL }

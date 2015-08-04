@@ -1,6 +1,6 @@
 #include "dime/core/magma.h"
 #include "dime/common/misc.h"
-#include "dime/dmessage/dmsg_parse.h"
+#include "dime/dmessage/parse.h"
 
 static void
 prsr_envelope_destroy(
