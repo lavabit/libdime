@@ -6,7 +6,8 @@
 
 #define TRACING_LENGTH_SIZE 2
 
-// Actor type, used to encrypt and retrieve the correct keyslot, kek, maybe more
+// Actor type, used to encrypt and retrieve the correct keyslot, kek, maybe
+// more
 typedef enum {
     id_author = 0,
     id_origin = 1,
@@ -14,8 +15,8 @@ typedef enum {
     id_recipient = 3
 } dmime_actor_t;
 
-
-// State of dmime_content_t object, used to identify if it is ready to be turned into a dmime_message_t object, maybe more.
+// State of dmime_content_t object, used to identify if it is ready to be
+// turned into a dmime_message_t object, maybe more.
 typedef enum {
     DMIME_OBJECT_STATE_NONE = 0,
     DMIME_OBJECT_STATE_CREATION,
@@ -26,8 +27,10 @@ typedef enum {
     DMIME_OBJECT_STATE_COMPLETE
 } dmime_object_state_t;
 
-// State of dmime_message_t, used to identify if the encrypted message contains the user and domain signatures.
-// This is used by origin to determine whether the message is ready to be signed and by destination and recipient whether the message contains required chunks to be valid.
+// State of dmime_message_t, used to identify if the encrypted message contains
+// the user and domain signatures.  This is used by origin to determine whether
+// the message is ready to be signed and by destination and recipient whether
+// the message contains required chunks to be valid.
 typedef enum {
     MESSAGE_STATE_NONE = 0,
     MESSAGE_STATE_INCOMPLETE,
@@ -45,7 +48,6 @@ typedef struct __attribute__((packed)) {
     unsigned char key[AES_256_KEY_SIZE];
 } dmime_kek_t;
 
-
 typedef struct object_chunk {
     struct object_chunk *next;
     dmime_chunk_type_t type;
@@ -53,7 +55,6 @@ typedef struct object_chunk {
     size_t data_size;
     unsigned char *data;
 } dmime_object_chunk_t;
-
 
 typedef struct {
     // The current actor on the object.
@@ -85,16 +86,15 @@ typedef struct {
     dmime_object_state_t state;
 } dmime_object_t;
 
-
 //tracing structure
 typedef struct __attribute__((packed)) {
     unsigned char size[TRACING_LENGTH_SIZE];
     unsigned char data[];
 } dmime_tracing_t;
 
-
-// message chunk state used by message chunks to keep track of encrypted and unencrypted chunks.
-// Must be used in conjunction with the 'encrypted' flag in the global table of chunk types to determine if encryption is necessary.
+// message chunk state used by message chunks to keep track of encrypted and
+// unencrypted chunks.  Must be used in conjunction with the 'encrypted' flag
+// in the global table of chunk types to determine if encryption is necessary.
 typedef enum {
     MESSAGE_CHUNK_STATE_NONE = 0,
     MESSAGE_CHUNK_STATE_UNKNOWN,
@@ -104,18 +104,15 @@ typedef enum {
     MESSAGE_CHUNK_STATE_ENCRYPTED
 } dmime_message_chunk_state_t;
 
-
-/**
- * Chunk of a DIME message.
- */
+// Chunk of a DIME message.
 typedef struct __attribute__((packed)) {
     dmime_message_chunk_state_t state;
-    size_t serial_size;                             // this size is used to serialize the chunk which follows
+    // this size is used to serialize the chunk which follows
+    size_t serial_size;
     unsigned char type;
     unsigned char payload_size[CHUNK_LENGTH_SIZE];
     unsigned char data[];
 } dmime_message_chunk_t;
-
 
 typedef struct {
     // DIME magic number for current version of dmime messages
@@ -152,35 +149,115 @@ typedef struct {
     dmime_message_state_t state;
 } dmime_message_t;
 
-const char *           dime_dmsg_actor_to_string(dmime_actor_t actor);
-int                    dime_dmsg_chunks_sig_origin_sign(dmime_message_t *msg, unsigned char bounce_flags, dmime_kek_t *kek, ED25519_KEY *signkey);
-int                    dime_dmsg_kek_in_derive(const dmime_message_t *msg, EC_KEY *enckey, dmime_kek_t *kek);
-dmime_message_t *      dime_dmsg_message_binary_deserialize(const unsigned char *in, size_t insize);
-unsigned char *        dime_dmsg_message_binary_serialize(const dmime_message_t *msg, unsigned char sections, unsigned char tracing, size_t *outsize);
-int                    dime_dmsg_message_decrypt_as_auth(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
-int                    dime_dmsg_message_decrypt_as_dest(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
-int                    dime_dmsg_message_decrypt_as_orig(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
-int                    dime_dmsg_message_decrypt_as_recp(dmime_object_t *obj, const dmime_message_t *msg, dmime_kek_t *kek);
-void                   dime_dmsg_message_destroy(dmime_message_t *msg);
-dmime_message_t *      dime_dmsg_message_encrypt(dmime_object_t *object, ED25519_KEY *signkey);
-dmime_object_t *       dime_dmsg_message_envelope_decrypt(const dmime_message_t *msg, dmime_actor_t actor, dmime_kek_t *kek);
-dmime_message_state_t  dime_dmsg_message_state_get(const dmime_message_t *message);
-dmime_object_chunk_t * dime_dmsg_object_chunk_create(dmime_chunk_type_t type, unsigned char *data, size_t data_size, unsigned char flags);
-void                   dime_dmsg_object_chunklist_destroy(dmime_object_chunk_t *list);
-void                   dime_dmsg_object_destroy(dmime_object_t *object);
-int                    dime_dmsg_object_dump(dmime_object_t *object);
-dmime_object_state_t   dime_dmsg_object_state_init(dmime_object_t *object);
-const char *           dime_dmsg_object_state_to_string(dmime_object_state_t state);
+char const *
+dime_dmsg_actor_to_string(
+    dmime_actor_t actor);
 
-/* TODO not implemented yet */
-/*
-int                       dime_dmsg_file_create(const dmime_message_t *msg, const char *filename)
+int
+dime_dmsg_chunks_sig_origin_sign(
+    dmime_message_t *msg,
+    unsigned char bounce_flags,
+    dmime_kek_t *kek,
+    ED25519_KEY *signkey);
 
-dmime_message_t *         dime_dmsg_file_to_message(const char *filename);
-*/
+int
+dime_dmsg_kek_in_derive(
+    dmime_message_t const *msg,
+    EC_KEY *enckey,
+    dmime_kek_t *kek);
 
-//TODO public interface for dmime_object_t !!
-//TODO Review of message and object states (I think at least one of them doesn't need to be a structure member.)
+dmime_message_t *
+dime_dmsg_message_binary_deserialize(
+    unsigned char const *in,
+    size_t insize);
 
+unsigned char *
+dime_dmsg_message_binary_serialize(
+    dmime_message_t const *msg,
+    unsigned char sections,
+    unsigned char tracing,
+    size_t *outsize);
+
+int
+dime_dmsg_message_decrypt_as_auth(
+    dmime_object_t *obj,
+    dmime_message_t const *msg,
+    dmime_kek_t *kek);
+
+int
+dime_dmsg_message_decrypt_as_dest(
+    dmime_object_t *obj,
+    dmime_message_t const *msg,
+    dmime_kek_t *kek);
+
+int dime_dmsg_message_decrypt_as_orig(
+    dmime_object_t *obj,
+    dmime_message_t const *msg,
+    dmime_kek_t *kek);
+
+int dime_dmsg_message_decrypt_as_recp(
+    dmime_object_t *obj,
+    dmime_message_t const *msg,
+    dmime_kek_t *kek);
+
+void
+dime_dmsg_message_destroy(
+    dmime_message_t *msg);
+
+dmime_message_t *
+dime_dmsg_message_encrypt(
+    dmime_object_t *object,
+    ED25519_KEY *signkey);
+
+dmime_object_t *
+dime_dmsg_message_envelope_decrypt(
+    dmime_message_t const *msg,
+    dmime_actor_t actor,
+    dmime_kek_t *kek);
+
+dmime_message_state_t
+dime_dmsg_message_state_get(
+    dmime_message_t const *message);
+
+dmime_object_chunk_t *
+dime_dmsg_object_chunk_create(
+    dmime_chunk_type_t type,
+    unsigned char *data,
+    size_t data_size,
+    unsigned char flags);
+
+void
+dime_dmsg_object_chunklist_destroy(
+    dmime_object_chunk_t *list);
+
+void
+dime_dmsg_object_destroy(
+    dmime_object_t *object);
+
+int
+dime_dmsg_object_dump(
+    dmime_object_t *object);
+
+dmime_object_state_t
+dime_dmsg_object_state_init(
+    dmime_object_t *object);
+
+const char *
+dime_dmsg_object_state_to_string(
+    dmime_object_state_t state);
+
+// TODO not implemented yet
+//int
+//dime_dmsg_file_create(
+//    const dmime_message_t *msg,
+//    const char *filename);
+//
+//dmime_message_t *
+//dime_dmsg_file_to_message(
+//    const char *filename);
+
+// TODO public interface for dmime_object_t !!  TODO Review of message and
+// object states (I think at least one of them doesn't need to be a structure
+// member.)
 
 #endif
