@@ -86,6 +86,24 @@ LIBDIME_SOURCES = \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c
 
+# Add/remove test source files here!
+LIBDIME_TESTS = \
+	check/dime/check_ssl.cpp \
+	check/dmessage/check_dmsg.cpp \
+	check/dmessage/check_parser.cpp \
+	check/common/check_common.cpp \
+	check/common/check_crypto.cpp \
+	check/common/check_error.cpp \
+	check/common/check_misc.cpp \
+	check/core/check_classify.cpp \
+	check/core/check_compare.cpp \
+	check/core/check_hash.cpp \
+	check/core/check_host_folder.cpp \
+	check/core/check_mail_counters.cpp \
+	check/core/check_memory.cpp \
+	check/signet/check_keys.cpp \
+	check/signet/check_signet.cpp
+
 # Use m4 macros from m4
 ACLOCAL_AMFLAGS = -I m4 --install
 EXTRA_DIST = m4/NOTES
@@ -260,21 +278,7 @@ gtest_LDADD = \
 	@PTHREAD_LIBS@
 gtest_SOURCES = \
 	check/gtest.cpp \
-	check/dime/check_ssl.cpp \
-	check/dmessage/check_dmsg.cpp \
-	check/dmessage/check_parser.cpp \
-	check/common/check_common.cpp \
-	check/common/check_crypto.cpp \
-	check/common/check_error.cpp \
-	check/common/check_misc.cpp \
-	check/core/check_classify.cpp \
-	check/core/check_compare.cpp \
-	check/core/check_hash.cpp \
-	check/core/check_host_folder.cpp \
-	check/core/check_mail_counters.cpp \
-	check/core/check_memory.cpp \
-	check/signet/check_keys.cpp \
-	check/signet/check_signet.cpp
+	$(LIBDIME_TESTS)
 
 # Targets to build before we start compiling
 BUILT_SOURCES = git_stamp date_stamp
