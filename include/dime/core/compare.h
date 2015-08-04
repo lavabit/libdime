@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Function declarations for various data and string comparison functions.
+ * @brief   Function declarations for various data and string comparison functions.
  */
 
 #ifndef MAGMA_CORE_COMPARE_H

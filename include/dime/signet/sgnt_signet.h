@@ -5,30 +5,30 @@
 #include "dime/signet/sgnt_common.h"
 
 typedef enum {
-	SS_UNKNOWN = 0,                 /**< Invalid signet, state unknown/currently unclassified */
-	SS_MALFORMED,                   /**< Invalid signet, it either doesn't fit the field format or has multiple unique fields */
-	SS_OVERFLOW,                    /**< Invalid signet due to it being too large. */
-	SS_INCOMPLETE,                  /**< Invalid signet, it is missing fields required to fit one of the valid categories, likely unsigned */
-	SS_BROKEN_COC,                  /**< Invalid signet due to chain of custody signature being invalid*/
-	SS_INVALID,                     /**< Invalid signet, one or more signatures can not be verified */
-	SS_SSR,                         /**< Valid unsigned SSR */
-	SS_CRYPTO,                      /**< Valid cryptographic signet */
-	SS_FULL,                        /**< Valid full signet */
-	SS_ID,                          /**< Valid full signet with ID and organizational-identifiable-signature */
+    SS_UNKNOWN = 0,                 /**< Invalid signet, state unknown/currently unclassified */
+    SS_MALFORMED,                   /**< Invalid signet, it either doesn't fit the field format or has multiple unique fields */
+    SS_OVERFLOW,                    /**< Invalid signet due to it being too large. */
+    SS_INCOMPLETE,                  /**< Invalid signet, it is missing fields required to fit one of the valid categories, likely unsigned */
+    SS_BROKEN_COC,                  /**< Invalid signet due to chain of custody signature being invalid*/
+    SS_INVALID,                     /**< Invalid signet, one or more signatures can not be verified */
+    SS_SSR,                         /**< Valid unsigned SSR */
+    SS_CRYPTO,                      /**< Valid cryptographic signet */
+    SS_FULL,                        /**< Valid full signet */
+    SS_ID,                          /**< Valid full signet with ID and organizational-identifiable-signature */
 } signet_state_t;
 
 typedef enum {
-	SIGNET_TYPE_ERROR,
-	SIGNET_TYPE_ORG = 1,
-	SIGNET_TYPE_USER,
-	SIGNET_TYPE_SSR
+    SIGNET_TYPE_ERROR,
+    SIGNET_TYPE_ORG = 1,
+    SIGNET_TYPE_USER,
+    SIGNET_TYPE_SSR
 } signet_type_t;
 
 typedef struct {
-	signet_type_t type;	uint32_t fields[256];           /**< Each index corresponds to a different field type identifier. The value of fields[index] is the byte directly after the first occurence of the corresponding field type identifier. */
-	                                /**< If fields[index] is 0 it means that the corresponding field type identifier occurred 0 times.*/
-	uint32_t size;                  /**< Combined length of all the fields */
-	unsigned char *data;
+    signet_type_t type; uint32_t fields[256];           /**< Each index corresponds to a different field type identifier. The value of fields[index] is the byte directly after the first occurence of the corresponding field type identifier. */
+                                    /**< If fields[index] is 0 it means that the corresponding field type identifier occurred 0 times.*/
+    uint32_t size;                  /**< Combined length of all the fields */
+    unsigned char *data;
 } signet_t;
 
 EC_KEY *                dime_sgnt_enckey_fetch(const signet_t *signet);

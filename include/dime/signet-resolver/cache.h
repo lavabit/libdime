@@ -22,44 +22,44 @@
 
 
 typedef enum {
-	cached_data_unknown = 0,
-	cached_data_drec = 1,
-	cached_data_dnskey = 2,
-	cached_data_ds = 3,
-	cached_data_ocsp = 4,
-	cached_data_signet = 5
+    cached_data_unknown = 0,
+    cached_data_drec = 1,
+    cached_data_dnskey = 2,
+    cached_data_ds = 3,
+    cached_data_ocsp = 4,
+    cached_data_signet = 5
 } cached_data_type_t;
 
 typedef struct cached_object {
-	time_t timestamp;                       ///< The UTC timestamp for when this object was cached. Used with ttl.
-	unsigned char id[32];                   ///< The identifier of the cached item as a SHA-256 hash.
-	cached_data_type_t dtype;               ///< The type of the cached data being stored.
-	unsigned long ttl;                      ///< Optional time-to-live in seconds.
-	time_t expiration;                      ///< The time when the record will expire, in UTC.
-	int relaxed;                            ///< Whether or not the cache follows a relaxed eviction policy
-	void *data;                             ///< The data associated with the cached object.
-	struct cached_object *prev;             ///< A pointer to the previous cached object in the linked list.
-	struct cached_object *next;             ///< A pointer to the next cached object in the linked list.
-	unsigned char persists;                 ///< Not everything in the cache should be persisted.
-	struct cached_object *shadow;           ///< A saved copy of the "real" cache entry to be saved, if this cached
-	                                        ///< object is merely temporarily overriding it.
+    time_t timestamp;                       ///< The UTC timestamp for when this object was cached. Used with ttl.
+    unsigned char id[32];                   ///< The identifier of the cached item as a SHA-256 hash.
+    cached_data_type_t dtype;               ///< The type of the cached data being stored.
+    unsigned long ttl;                      ///< Optional time-to-live in seconds.
+    time_t expiration;                      ///< The time when the record will expire, in UTC.
+    int relaxed;                            ///< Whether or not the cache follows a relaxed eviction policy
+    void *data;                             ///< The data associated with the cached object.
+    struct cached_object *prev;             ///< A pointer to the previous cached object in the linked list.
+    struct cached_object *next;             ///< A pointer to the next cached object in the linked list.
+    unsigned char persists;                 ///< Not everything in the cache should be persisted.
+    struct cached_object *shadow;           ///< A saved copy of the "real" cache entry to be saved, if this cached
+                                            ///< object is merely temporarily overriding it.
 } cached_object_t;
 
 
 typedef struct {
-	cached_data_type_t dtype;               ///< The type of data that will be stored within.
-	const char *description;                ///< A text description of the cache store.
-	unsigned char internal;                 ///< Determines whether the cached store is for internal use only.
-	                                        ///< If it is, objects will not be cloned before being returned to the caller.
-	cached_object_t *head;                  ///< A pointer to the head of the cached object list.
-	pthread_mutex_t lock;                   ///< For multi-threaded safe code.
-	void (*destructor)(void *);             ///< A function pointer to a destructor used to free cached object data.
-	void * (*serialize)(void *, size_t *);  ///< A function pointer to a routine used to serialize cached data.
-	void * (*deserialize)(void *, size_t);  ///< A function pointer to a routine used to deserialize cached data.
-	void (*dump)(FILE *, void *, int);      ///< A function pointer to a routine used to dump the cached data.
-	void * (*clone)(void *);                ///< An optional pointer to a routine that can be used to clone data.
-	                                        ///<    If not specified, the serialize and deserialize routine will be used
-	                                        ///<    together to recreate the functionality of this function.
+    cached_data_type_t dtype;               ///< The type of data that will be stored within.
+    const char *description;                ///< A text description of the cache store.
+    unsigned char internal;                 ///< Determines whether the cached store is for internal use only.
+                                            ///< If it is, objects will not be cloned before being returned to the caller.
+    cached_object_t *head;                  ///< A pointer to the head of the cached object list.
+    pthread_mutex_t lock;                   ///< For multi-threaded safe code.
+    void (*destructor)(void *);             ///< A function pointer to a destructor used to free cached object data.
+    void * (*serialize)(void *, size_t *);  ///< A function pointer to a routine used to serialize cached data.
+    void * (*deserialize)(void *, size_t);  ///< A function pointer to a routine used to deserialize cached data.
+    void (*dump)(FILE *, void *, int);      ///< A function pointer to a routine used to dump the cached data.
+    void * (*clone)(void *);                ///< An optional pointer to a routine that can be used to clone data.
+                                            ///<    If not specified, the serialize and deserialize routine will be used
+                                            ///<    together to recreate the functionality of this function.
 } cached_store_t;
 
 

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Function declarations for the number conversion functions.
+ * @brief   Function declarations for the number conversion functions.
  */
 
 #ifndef MAGMA_CORE_PARSERS_NUMBERS_H

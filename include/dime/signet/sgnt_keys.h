@@ -4,9 +4,9 @@
 #include "dime/signet/sgnt_common.h"
 
 typedef enum {
-	KEYS_TYPE_ERROR = 0,
-	KEYS_TYPE_ORG,
-	KEYS_TYPE_USER
+    KEYS_TYPE_ERROR = 0,
+    KEYS_TYPE_ORG,
+    KEYS_TYPE_USER
 } keys_type_t;
 
 /* PUBLIC FUNCTIONS */

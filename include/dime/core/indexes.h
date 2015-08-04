@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Function declarations and types for the generic index interface.
+ * @brief   Function declarations and types for the generic index interface.
  */
 
 #ifndef MAGMA_CORE_INDEXES_H
@@ -10,11 +10,11 @@
  * Index types and options.
  */
 typedef enum {
-	M_INX_TREE = 1, //!< M_INX_BTREE
-	M_INX_HASHED = 2, //!< M_INX_HASHED
-	M_INX_LINKED = 4, //!< M_INX_LINKED
-	//M_INX_ALLOW_DUPE = 8, //!< M_INX_ALLOW_DUPE
-	M_INX_LOCK_MANUAL = 16, //!< M_INX_LOCK_MANUAL
+    M_INX_TREE = 1, //!< M_INX_BTREE
+    M_INX_HASHED = 2, //!< M_INX_HASHED
+    M_INX_LINKED = 4, //!< M_INX_LINKED
+    //M_INX_ALLOW_DUPE = 8, //!< M_INX_ALLOW_DUPE
+    M_INX_LOCK_MANUAL = 16, //!< M_INX_LOCK_MANUAL
 
 } MAGMA_INDEX;
 
@@ -30,35 +30,35 @@ typedef enum {
 
 typedef struct {
 
-	// Data and record count
-	void *index;
-	pthread_rwlock_t lock;
-	uint64_t count, serial, automatic, options, references;
+    // Data and record count
+    void *index;
+    pthread_rwlock_t lock;
+    uint64_t count, serial, automatic, options, references;
 
-	// Index function pointers.
-	void (*data_free)(void *data);
-	void (*index_free)(void *index);
-	void (*index_truncate)(void *index);
+    // Index function pointers.
+    void (*data_free)(void *data);
+    void (*index_free)(void *index);
+    void (*index_truncate)(void *index);
 
-	bool_t (*delete_entry)(void *index, multi_t envelope);
-	bool_t (*insert)(void *index, multi_t envelope, void *data);
+    bool_t (*delete_entry)(void *index, multi_t envelope);
+    bool_t (*insert)(void *index, multi_t envelope, void *data);
 
-	void * (*find)(void *index, multi_t envelope);
+    void * (*find)(void *index, multi_t envelope);
 
-	void (*cursor_free)(void *cursor);
-	void (*cursor_reset)(void *cursor);
-	void * (*cursor_alloc)(void *index);
+    void (*cursor_free)(void *cursor);
+    void (*cursor_reset)(void *cursor);
+    void * (*cursor_alloc)(void *index);
 
-	void * (*cursor_value_next)(void *cursor);
-	void * (*cursor_value_active)(void *cursor);
+    void * (*cursor_value_next)(void *cursor);
+    void * (*cursor_value_active)(void *cursor);
 
-	multi_t (*cursor_key_next)(void *cursor);
-	multi_t (*cursor_key_active)(void *cursor);
+    multi_t (*cursor_key_next)(void *cursor);
+    multi_t (*cursor_key_active)(void *cursor);
 
 } inx_t;
 
 typedef struct {
-	inx_t *inx;
+    inx_t *inx;
 } __attribute__((__packed__)) inx_cursor_t;
 
 /// cursors.c

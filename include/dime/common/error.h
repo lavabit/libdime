@@ -36,13 +36,13 @@
 #define PUBLIC_FUNCTION_IMPLEMENT_VOID(funcname, ...) PUBLIC_FUNC_PROLOGUE(); funcname(__VA_ARGS__)
 
 #define PUBLIC_FUNC_DECL(rettype, funcname, ...) \
-	rettype funcname(__VA_ARGS__); \
-	rettype _ ## funcname(__VA_ARGS__)
+    rettype funcname(__VA_ARGS__); \
+    rettype _ ## funcname(__VA_ARGS__)
 
 #define PUBLIC_FUNC_DECL_VA(rettype, funcname, ...) \
-	rettype funcname(__VA_ARGS__, ...); \
-	rettype _ ## funcname(__VA_ARGS__, ...); \
-	rettype __ ## funcname(__VA_ARGS__, va_list ap)
+    rettype funcname(__VA_ARGS__, ...); \
+    rettype _ ## funcname(__VA_ARGS__, ...); \
+    rettype __ ## funcname(__VA_ARGS__, va_list ap)
 
 #define ERR_SYSCALL   1U
 #define ERR_OPENSSL   2U
@@ -57,18 +57,18 @@
 
 
 typedef struct {
-	unsigned int errcode;
-	const char *errmsg;
+    unsigned int errcode;
+    const char *errmsg;
 } err_desc_t;
 
 
 struct errinfo {
-	char filename[56];
-	char funcname[56];
-	int lineno;
-	unsigned int errcode;
-	int xerrno;
-	char auxmsg[384];
+    char filename[56];
+    char funcname[56];
+    int lineno;
+    unsigned int errcode;
+    int xerrno;
+    char auxmsg[384];
 } __attribute__((__packed__));
 
 typedef struct errinfo errinfo_t;

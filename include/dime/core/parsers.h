@@ -7,9 +7,9 @@
 #define MAGMA_CORE_PARSERS_H
 
 typedef struct {
-	char token;
-	char *block, *position;
-	size_t length, remaining;
+    char token;
+    char *block, *position;
+    size_t length, remaining;
 } tok_state_t;
 
 /// time.c

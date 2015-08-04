@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Functions used to classify characters into specific classes.
+ * @brief   Functions used to classify characters into specific classes.
  */
 
 #ifndef MAGMA_CORE_CLASSIFY_H

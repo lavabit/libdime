@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Provide access to system interfaces.
+ * @brief   Provide access to system interfaces.
  */
 
 #ifndef MAGMA_CORE_SYSTEM_H
@@ -10,9 +10,9 @@
 
 // The spool_start function uses a for loop to validate the spool directory tree. If additional spool locations are enumerated, make sure that function is updated.
 enum {
-	MAGMA_SPOOL_BASE = 0,
-	MAGMA_SPOOL_DATA = 1,
-	MAGMA_SPOOL_SCAN = 2
+    MAGMA_SPOOL_BASE = 0,
+    MAGMA_SPOOL_DATA = 1,
+    MAGMA_SPOOL_SCAN = 2
 };
 
 /// files.c

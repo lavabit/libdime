@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Functions for handling the global configuration.
+ * @brief   Functions for handling the global configuration.
  */
 
 #include <dime/core/magma.h>

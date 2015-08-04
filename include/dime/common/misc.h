@@ -32,8 +32,8 @@
 #define chr_isprint(c) isprint((unsigned char)(c))
 
 typedef struct {
-	void *data;
-	size_t len;
+    void *data;
+    size_t len;
 } sha_databuf_t;
 
 

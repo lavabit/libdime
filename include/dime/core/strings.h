@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Function declarations and types used by the different modules involved with handling stringers and null terminated strings.
+ * @brief   Function declarations and types used by the different modules involved with handling stringers and null terminated strings.
  */
 
 #ifndef MAGMA_CORE_STRINGS_H
@@ -11,70 +11,70 @@
 
 enum {
 
-	// Type
-	CONSTANT_T = 1,                         // An immutable string
-	PLACER_T = 2,                           /* Placeholder stores no data on its own and MUST be jointed;
-	                                                           it points to a chunk of another managed string */
-	NULLER_T = 4,                           // Null-terminated string
-	BLOCK_T = 8,                            // A binary blob
-	MANAGED_T = 16,                         // A vanilla managed string for wrapping string data
-	MAPPED_T = 32,                          // The managed string is allocated with mmap()
+    // Type
+    CONSTANT_T = 1,                         // An immutable string
+    PLACER_T = 2,                           /* Placeholder stores no data on its own and MUST be jointed;
+                                                               it points to a chunk of another managed string */
+    NULLER_T = 4,                           // Null-terminated string
+    BLOCK_T = 8,                            // A binary blob
+    MANAGED_T = 16,                         // A vanilla managed string for wrapping string data
+    MAPPED_T = 32,                          // The managed string is allocated with mmap()
 
-	// Layout
-	CONTIGUOUS = 64,                        /* Data and chunk header are adjacent */
-	JOINTED = 128,                          /* Data is not contiguous with chunk header */
+    // Layout
+    CONTIGUOUS = 64,                        /* Data and chunk header are adjacent */
+    JOINTED = 128,                          /* Data is not contiguous with chunk header */
 
-	// Memory
-	STACK = 256,                            // More properly, data is not on the heap (stack or static initialization)
-	HEAP = 512,
-	SECURE = 1024,                          // Must be on the heap
+    // Memory
+    STACK = 256,                            // More properly, data is not on the heap (stack or static initialization)
+    HEAP = 512,
+    SECURE = 1024,                          // Must be on the heap
 
-	// Flags
-	FOREIGNDATA = 4096                      // Do not free data upon deallocation - this is somebody else's job!
+    // Flags
+    FOREIGNDATA = 4096                      // Do not free data upon deallocation - this is somebody else's job!
 
-	              // If you add any new flags, make sure you update the info.c arrays!
+                  // If you add any new flags, make sure you update the info.c arrays!
 };
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	char data[];
+    uint32_t opts;
+    char data[];
 } constant_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	char *data;
+    uint32_t opts;
+    char *data;
 } nuller_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	size_t length;
-	void *data;
+    uint32_t opts;
+    size_t length;
+    void *data;
 } block_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	size_t length;
-	void *data;
+    uint32_t opts;
+    size_t length;
+    void *data;
 } placer_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	size_t length;
-	size_t avail;
-	void *data;
+    uint32_t opts;
+    size_t length;
+    size_t avail;
+    void *data;
 } managed_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	size_t length;
-	size_t avail;
-	int handle;
-	void *data;
+    uint32_t opts;
+    size_t length;
+    size_t avail;
+    int handle;
+    void *data;
 } mapped_t;
 
 typedef struct __attribute__((packed)) {
-	uint32_t opts;
-	/* The remaining data fields depend on the options. */
+    uint32_t opts;
+    /* The remaining data fields depend on the options. */
 } stringer_t;
 
 /// nuller.c
@@ -170,7 +170,7 @@ int_t         st_replace(stringer_t **target, stringer_t *pattern, stringer_t *r
 stringer_t *  st_swap(stringer_t *target, uchr_t pattern, uchr_t replacement);
 
 static inline char *const_cast_char_ptr(const char *str) {
-	return (char *)str;
+    return (char *)str;
 }
 
 // Shortcut Macros
@@ -202,23 +202,23 @@ static inline char *const_cast_char_ptr(const char *str) {
 
 /************ TYPES ************/
 typedef struct {
-	M_TYPE type;
-	union {
-		bool_t binary;
-		void *bl;
-		char *ns;
-		stringer_t *st;
-		uint8_t u8;
-		uint16_t u16;
-		uint32_t u32;
-		uint64_t u64;
-		int8_t i8;
-		int16_t i16;
-		int32_t i32;
-		int64_t i64;
-		float fl;
-		double dbl;
-	} val;
+    M_TYPE type;
+    union {
+        bool_t binary;
+        void *bl;
+        char *ns;
+        stringer_t *st;
+        uint8_t u8;
+        uint16_t u16;
+        uint32_t u32;
+        uint64_t u64;
+        int8_t i8;
+        int16_t i16;
+        int32_t i32;
+        int64_t i64;
+        float fl;
+        double dbl;
+    } val;
 } multi_t;
 /************ TYPES ************/
 

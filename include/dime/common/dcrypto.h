@@ -23,8 +23,8 @@
 
 // Wrappers around ED25519 functions
 typedef struct {
-	ed25519_secret_key private_key;
-	ed25519_public_key public_key;
+    ed25519_secret_key private_key;
+    ed25519_public_key public_key;
 } ED25519_KEY;
 
 

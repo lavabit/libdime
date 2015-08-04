@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Declarations for functions involved in extracting data from specialized formats.
+ * @brief   Declarations for functions involved in extracting data from specialized formats.
  */
 
 #ifndef MAGMA_CORE_PARSERS_SPECIAL_H

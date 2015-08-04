@@ -5,7 +5,7 @@
 #define SKEY_SIZE2 {     0,     1,     0, 2, 0, UNICODE, NULL, NULL }
 
 signet_field_key_t signet_org_field_keys[256] = {
-//	{ .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
+//  { .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
 /*  0*/ SKEY_EMPTY,
 /*  1*/ {     1,     1,     0, 1,  0,                   B64,           "Primary-Organizational-Key", "Primary organizational signing key, also located in the DIME record SIGNET." },
 /*  2*/ {     0,     0,     0, 1,  0,                   B64,         "Secondary-Organizational-Key", "Secondary organizational signing key fields." },
@@ -70,7 +70,7 @@ signet_field_key_t signet_org_field_keys[256] = {
 
 
 signet_field_key_t signet_user_field_keys[256] = {
-//	{ .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
+//  { .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
 /*  0*/ SKEY_EMPTY,
 /*  1*/ {     1,     1,     0, 1, 0,                    B64,                          "Signing-Key", "User signing key." },
 /*  2*/ {     1,     1,     0, 2, 0,                    B64,                       "Encryption-Key", "User encryption key which is used to encrypt messages to the holder of the user signet." },
@@ -136,7 +136,7 @@ signet_field_key_t signet_user_field_keys[256] = {
 
 
 signet_field_key_t signet_ssr_field_keys[256] = {
-//	{ .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
+//  { .required .unique .bytes_name_size .bytes_data_size, .data_size, .data_type, .name, .description }
 /*  0*/ SKEY_EMPTY,
 /*  1*/ {     1,     1,     0, 1,  0,                   B64,                     "User-Signing-Key", "User signing key." },
 /*  2*/ {     1,     1,     0, 2,  0,                   B64,                  "User-Encryption-Key", "User encryption key which is used to encrypt messages to the holder of the user signet." },
@@ -173,29 +173,29 @@ signet_field_key_t signet_ssr_field_keys[256] = {
 
 
 /**
- * @brief	Returns a string from a dime_number_t enum type.
- * @param	number	Dime number input.
- * @return	Null terminated string corresponding to the dime number.
+ * @brief   Returns a string from a dime_number_t enum type.
+ * @param   number  Dime number input.
+ * @return  Null terminated string corresponding to the dime number.
 */
 const char *dime_number_to_str(dime_number_t number) {
 
-	switch(number) {
+    switch(number) {
 
-	case DIME_ORG_SIGNET:
-		return "organizational signet";
-	case DIME_USER_SIGNET:
-		return "user signet";
-	case DIME_SSR:
-		return "SSR";
-	case DIME_ORG_KEYS:
-		return "organizational signet keychain";
-	case DIME_USER_KEYS:
-		return "user signet keychain";
-	case DIME_MSG_TRACING:
-		return "message tracing";
-	case DIME_ENCRYPTED_MSG:
-		return "encrypted message";
-	}
+    case DIME_ORG_SIGNET:
+        return "organizational signet";
+    case DIME_USER_SIGNET:
+        return "user signet";
+    case DIME_SSR:
+        return "SSR";
+    case DIME_ORG_KEYS:
+        return "organizational signet keychain";
+    case DIME_USER_KEYS:
+        return "user signet keychain";
+    case DIME_MSG_TRACING:
+        return "message tracing";
+    case DIME_ENCRYPTED_MSG:
+        return "encrypted message";
+    }
 
-	return NULL;
+    return NULL;
 }

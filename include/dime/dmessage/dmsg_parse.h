@@ -5,29 +5,29 @@
 
 
 typedef struct {
-	int required;
-	const char *label;
-	size_t label_length;
+    int required;
+    const char *label;
+    size_t label_length;
 } dmime_header_key_t;
 
 
 typedef struct {
-	stringer_t *auth_recp;
-	stringer_t *auth_recp_fp;
-	stringer_t *dest_orig;
-	stringer_t *dest_orig_fp;
+    stringer_t *auth_recp;
+    stringer_t *auth_recp_fp;
+    stringer_t *dest_orig;
+    stringer_t *dest_orig_fp;
 } dmime_envelope_object_t;
 
 extern dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS];
 
 typedef enum {
-	HEADER_TYPE_DATE = 0,
-	HEADER_TYPE_TO,
-	HEADER_TYPE_CC,
-	HEADER_TYPE_FROM,
-	HEADER_TYPE_ORGANIZATION,
-	HEADER_TYPE_SUBJECT,
-	HEADER_TYPE_NONE
+    HEADER_TYPE_DATE = 0,
+    HEADER_TYPE_TO,
+    HEADER_TYPE_CC,
+    HEADER_TYPE_FROM,
+    HEADER_TYPE_ORGANIZATION,
+    HEADER_TYPE_SUBJECT,
+    HEADER_TYPE_NONE
 } dmime_header_type_t;
 
 void                      dime_prsr_envelope_destroy(dmime_envelope_object_t *obj);

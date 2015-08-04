@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	The function declarations and types for the thread-safe object pool interface.
+ * @brief   The function declarations and types for the thread-safe object pool interface.
  */
 
 #ifndef MAGMA_CORE_BUCKETS_H
@@ -30,33 +30,33 @@
 typedef char array_t;
 
 typedef enum {
-	PL_ERROR = -1,
-	PL_AVAILABLE = 0,
-	PL_RESERVED = 1
+    PL_ERROR = -1,
+    PL_AVAILABLE = 0,
+    PL_RESERVED = 1
 } M_POOL_STATUS;
 
 typedef M_POOL_STATUS status_t;
 
 typedef struct stacker_node_t {
-	void *data;
-	struct stacker_node_t *next;
+    void *data;
+    struct stacker_node_t *next;
 } stacker_node_t;
 
 typedef struct {
-	uint64_t items;
-	pthread_mutex_t mutex;
-	stacker_node_t *list, *last;
-	void (*free_function)(void *data);
+    uint64_t items;
+    pthread_mutex_t mutex;
+    stacker_node_t *list, *last;
+    void (*free_function)(void *data);
 } stacker_t;
 
 typedef struct {
-	uint32_t count; /* Number of objects allocated. */
-	uint32_t timeout; /* How long to wait for an object before timing out. Zero is forever. */
-	uint64_t failures; /* Tracks the number of times a thread was forced to return empty handed. */
-	sem_t available; /* Semaphore holding the number of objects currently available. */
-	pthread_mutex_t lock; /* Mutex for locking coordinating updates between threads. */
-	status_t *status; /* Array of booleans to indicate object availability. */
-	void **objects; /* Array of objects. */
+    uint32_t count; /* Number of objects allocated. */
+    uint32_t timeout; /* How long to wait for an object before timing out. Zero is forever. */
+    uint64_t failures; /* Tracks the number of times a thread was forced to return empty handed. */
+    sem_t available; /* Semaphore holding the number of objects currently available. */
+    pthread_mutex_t lock; /* Mutex for locking coordinating updates between threads. */
+    status_t *status; /* Array of booleans to indicate object availability. */
+    void **objects; /* Array of objects. */
 } pool_t;
 
 // Pool interface

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Declarations for hash functions that have been implemented internally.
+ * @brief   Declarations for hash functions that have been implemented internally.
  */
 
 #ifndef MAGMA_CORE_HASH_H

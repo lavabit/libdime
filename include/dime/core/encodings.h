@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Functions used to encode and decode data in various formats.
+ * @brief   Functions used to encode and decode data in various formats.
  */
 
 #ifndef MAGMA_CORE_ENCODINGS_H
@@ -9,12 +9,12 @@
 /**
  * @note When considering a change to the URL length limit, the following statistics may be useful:
  *
- *	Internet Explorer: 2,048 characters for the host/path and 2,083 characters overall
- *	Firefox: limited to 65,536 visible characters, but longer URL will still work
- *	Safari: at least 80,000 characters
- *	Opera: at least 190,000 characters
- *	IIS: by default the limit is 16,384 but can be increased
- *	Apache: by default 4,000 characters
+ *  Internet Explorer: 2,048 characters for the host/path and 2,083 characters overall
+ *  Firefox: limited to 65,536 visible characters, but longer URL will still work
+ *  Safari: at least 80,000 characters
+ *  Opera: at least 190,000 characters
+ *  IIS: by default the limit is 16,384 but can be increased
+ *  Apache: by default 4,000 characters
  *
  */
 
@@ -29,18 +29,18 @@
 
 
 typedef struct {
-	struct {
-		chr_t characters[32];
-		uchr_t values[128];
-	} zbase32;
-	struct {
-		chr_t characters[64];
-		uchr_t values[128];
-	} base64;
-	struct {
-		chr_t characters[64];
-		uchr_t values[128];
-	} base64_mod;
+    struct {
+        chr_t characters[32];
+        uchr_t values[128];
+    } zbase32;
+    struct {
+        chr_t characters[64];
+        uchr_t values[128];
+    } base64;
+    struct {
+        chr_t characters[64];
+        uchr_t values[128];
+    } base64_mod;
 } mappings_t;
 
 extern mappings_t mappings;

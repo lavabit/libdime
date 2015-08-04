@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Functions used to interface with and manage message data.
+ * @brief   Functions used to interface with and manage message data.
  */
 
 #ifndef MAGMA_OBJECTS_MAIL_H
@@ -12,36 +12,36 @@
 #define MAIL_SIGNATURES_RECURSION_LIMIT 16
 
 typedef struct {
-	uint64_t messagenum;
-	stringer_t *text;
+    uint64_t messagenum;
+    stringer_t *text;
 } mail_cache_t;
 
 typedef struct {
-	placer_t to;
-	placer_t from;
-	placer_t date;
-	placer_t subject;
-	stringer_t *text;
+    placer_t to;
+    placer_t from;
+    placer_t date;
+    placer_t subject;
+    stringer_t *text;
 } basic_message_t;
 
 typedef struct {
-	array_t *children;
-	stringer_t *boundary;
-	uint32_t type, encoding;
-	placer_t header, body, entire;
+    array_t *children;
+    stringer_t *boundary;
+    uint32_t type, encoding;
+    placer_t header, body, entire;
 } mail_mime_t;
 
 typedef struct {
-	mail_mime_t *mime;
-	size_t header_length;
-	placer_t to, from, date, subject;
-	stringer_t *text;
+    mail_mime_t *mime;
+    size_t header_length;
+    placer_t to, from, date, subject;
+    stringer_t *text;
 } mail_message_t;
 
 typedef struct {
-	const chr_t *extension;
-	bool_t bin;
-	const chr_t *name;
+    const chr_t *extension;
+    bool_t bin;
+    const chr_t *name;
 } media_type_t;
 
 // counters.c

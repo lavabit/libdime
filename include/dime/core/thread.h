@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	Interface for providing pthread functionality.
+ * @brief   Interface for providing pthread functionality.
  */
 
 #ifndef MAGMA_CORE_THREAD_H

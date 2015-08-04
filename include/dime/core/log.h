@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief	The function declarations and macros needed to access the error log subsystem.
+ * @brief   The function declarations and macros needed to access the error log subsystem.
  */
 
 #ifndef MAGMA_CORE_LOG_H
@@ -10,25 +10,25 @@
  *  Options used to control the behavior of the log subsystem.
  */
 typedef enum {
-	M_LOG_PEDANTIC = 1,
-	M_LOG_INFO,
-	M_LOG_ERROR,
-	M_LOG_CRITICAL,
-	M_LOG_TIME,
-	M_LOG_FILE,
-	M_LOG_LINE,
-	M_LOG_FUNCTION,
-	M_LOG_STACK_TRACE,
-	M_LOG_PEDANTIC_DISABLE,
-	M_LOG_INFO_DISABLE,
-	M_LOG_ERROR_DISABLE,
-	M_LOG_CRITICAL_DISABLE,
-	M_LOG_LINE_FEED_DISABLE,
-	M_LOG_TIME_DISABLE,
-	M_LOG_FILE_DISABLE,
-	M_LOG_LINE_DISABLE,
-	M_LOG_FUNCTION_DISABLE,
-	M_LOG_STACK_TRACE_DISABLE
+    M_LOG_PEDANTIC = 1,
+    M_LOG_INFO,
+    M_LOG_ERROR,
+    M_LOG_CRITICAL,
+    M_LOG_TIME,
+    M_LOG_FILE,
+    M_LOG_LINE,
+    M_LOG_FUNCTION,
+    M_LOG_STACK_TRACE,
+    M_LOG_PEDANTIC_DISABLE,
+    M_LOG_INFO_DISABLE,
+    M_LOG_ERROR_DISABLE,
+    M_LOG_CRITICAL_DISABLE,
+    M_LOG_LINE_FEED_DISABLE,
+    M_LOG_TIME_DISABLE,
+    M_LOG_FILE_DISABLE,
+    M_LOG_LINE_DISABLE,
+    M_LOG_FUNCTION_DISABLE,
+    M_LOG_STACK_TRACE_DISABLE
 } M_LOG_OPTIONS;
 
 // All of the different log levels.
@@ -51,7 +51,7 @@ void     debug_hook(void);
 #define log_pedantic(...) log_internal(__FILE__, __FUNCTION__, __LINE__, M_LOG_PEDANTIC, __VA_ARGS__)
 
 /**
- * @brief	Log an error message if the specified conditional evaluates to true.
+ * @brief   Log an error message if the specified conditional evaluates to true.
  */
 #define log_check(expr) if (expr) log_internal(__FILE__, __FUNCTION__, __LINE__, M_LOG_PEDANTIC, __STRING(expr))
 
