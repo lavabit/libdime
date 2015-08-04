@@ -72,6 +72,7 @@ LIBDIME_SOURCES = \
 	libs/common/network_pub.c \
 	libs/dmessage/dmsg.c \
 	libs/dmessage/parser.c \
+	libs/dmtp/commands.c \
 	libs/signet/general.c \
 	libs/signet/keys.c \
 	libs/signet/signet.c \
@@ -91,6 +92,7 @@ LIBDIME_TESTS = \
 	check/dime/check_ssl.cpp \
 	check/dmessage/check_dmsg.cpp \
 	check/dmessage/check_parser.cpp \
+	check/dmtp/check_commands.cpp \
 	check/common/check_common.cpp \
 	check/common/check_crypto.cpp \
 	check/common/check_error.cpp \
