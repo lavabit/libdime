@@ -2,8 +2,8 @@
 #include <getopt.h>
 
 #include <dime/common/misc.h>
-#include <dime/signet/sgnt_keys.h>
-#include <dime/signet/sgnt_signet.h>
+#include <dime/signet/keys.h>
+#include <dime/signet/signet.h>
 
 /**
  * @brief	Display the app options to the user.

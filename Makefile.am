@@ -59,15 +59,15 @@ coreinclude_HEADERS = \
 dmessageincludedir = \
 	$(includedir)/dime/dmessage
 dmessageinclude_HEADERS = \
-	include/dime/dmessage/dmsg_common.h \
-	include/dime/dmessage/dmsg_crypto.h \
-	include/dime/dmessage/dmsg_parse.h
+	include/dime/dmessage/common.h \
+	include/dime/dmessage/crypto.h \
+	include/dime/dmessage/parse.h
 signetincludedir = \
 	$(includedir)/dime/signet
 signetinclude_HEADERS = \
-	include/dime/signet/sgnt_common.h \
-	include/dime/signet/sgnt_keys.h \
-	include/dime/signet/sgnt_signet.h
+	include/dime/signet/common.h \
+	include/dime/signet/keys.h \
+	include/dime/signet/signet.h
 signetresolverincludedir = \
 	$(includedir)/dime/signet-resolver
 signetresolverinclude_HEADERS = \

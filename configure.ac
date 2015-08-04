@@ -11,7 +11,7 @@ AC_CONFIG_MACRO_DIR([m4])
 PKG_CHECK_MODULES([OPENSSL], [openssl >= 0.9.8])
 
 # Sanity check to make sure the specified srcdir actually contains the source
-AC_CONFIG_SRCDIR([include/dime/signet/sgnt_signet.h])
+AC_CONFIG_SRCDIR([include/dime/signet/signet.h])
 
 # Auxiliary autotools files go here
 AC_CONFIG_AUX_DIR([build-aux])
