@@ -1,144 +1,5 @@
-# Use m4 macros from m4
-ACLOCAL_AMFLAGS = -I m4 --install
-EXTRA_DIST = m4/NOTES
-
-AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
-AM_CXXFLAGS = @WARNINGS@ -std=c++11
-
-COMMON_CPPFLAGS = \
-	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
-	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
-	-I$(top_srcdir)/include
-
-DONNA_CPPFLAGS = \
-	-I$(top_srcdir)/bundle/ed25519-donna
-
-lib_LTLIBRARIES = \
-	libdime.la
-libdime_la_SOURCES =
-libdime_la_LIBADD = \
-	libsds.la \
-	libcore.la \
-	libcommon.la \
-	libdmessage.la \
-	libsignet.la \
-	libsignet_resolver.la \
-	libdonna.la
-commonincludedir = \
-	$(includedir)/dime/common
-commoninclude_HEADERS = \
-	include/dime/common/dcrypto.h \
-	include/dime/common/error.h \
-	include/dime/common/misc.h \
-	include/dime/common/network.h
-coreincludedir = \
-	$(includedir)/dime/core
-coreinclude_HEADERS = \
-	include/dime/core/buckets.h \
-	include/dime/core/classify.h \
-	include/dime/core/compare.h \
-	include/dime/core/config.h \
-	include/dime/core/core.h \
-	include/dime/core/encodings.h \
-	include/dime/core/formats.h \
-	include/dime/core/hash.h \
-	include/dime/core/host.h \
-	include/dime/core/indexes.h \
-	include/dime/core/log.h \
-	include/dime/core/magma.h \
-	include/dime/core/mail.h \
-	include/dime/core/memory.h \
-	include/dime/core/mime.h \
-	include/dime/core/numbers.h \
-	include/dime/core/other.h \
-	include/dime/core/parsers.h \
-	include/dime/core/smtp.h \
-	include/dime/core/special.h \
-	include/dime/core/strings.h \
-	include/dime/core/thread.h
-dmessageincludedir = \
-	$(includedir)/dime/dmessage
-dmessageinclude_HEADERS = \
-	include/dime/dmessage/common.h \
-	include/dime/dmessage/crypto.h \
-	include/dime/dmessage/parse.h
-signetincludedir = \
-	$(includedir)/dime/signet
-signetinclude_HEADERS = \
-	include/dime/signet/common.h \
-	include/dime/signet/keys.h \
-	include/dime/signet/signet.h
-signetresolverincludedir = \
-	$(includedir)/dime/signet-resolver
-signetresolverinclude_HEADERS = \
-	include/dime/signet-resolver/cache.h \
-	include/dime/signet-resolver/dmtp.h \
-	include/dime/signet-resolver/dns.h \
-	include/dime/signet-resolver/mrec.h \
-	include/dime/signet-resolver/signet-ssl.h
-
-bin_PROGRAMS = \
-	dime \
-	signet
-
-noinst_LTLIBRARIES = \
-	libsds.la \
-	libcore.la \
-	libcommon.la \
-	libdmessage.la \
-	libsignet.la \
-	libsignet_resolver.la \
-	libdonna.la
-
-dime_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-dime_CFLAGS = \
-	$(AM_CFLAGS) \
-	@OPENSSL_CFLAGS@ \
-	@PTHREAD_CFLAGS@
-dime_LDADD = \
-	libdime.la \
-	-lresolv \
-	@OPENSSL_LIBS@ \
-	@PTHREAD_LIBS@
-dime_SOURCES = \
-	tools/dime/dime.c
-
-signet_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-signet_CFLAGS = \
-	$(AM_CFLAGS) \
-	@OPENSSL_CFLAGS@ \
-	@PTHREAD_CFLAGS@
-signet_LDADD = \
-	libdime.la \
-	-lresolv \
-	@OPENSSL_LIBS@ \
-	@PTHREAD_LIBS@
-signet_SOURCES = \
-	tools/signet/signet.c
-
-libsds_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	-I$(top_srcdir)/bundle/sds
-libsds_la_CFLAGS = \
-	-Wall \
-	-std=c99 \
-	-pedantic
-libsds_la_SOURCES = \
-	bundle/sds/sds.c
-
-libdonna_la_CPPFLAGS = \
-	$(DONNA_CPPFLAGS)
-libdonna_la_SOURCES = \
-	bundle/ed25519-donna/ed25519.c
-
-libcore_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-libcore_la_SOURCES = \
+# Add/remove libdime source files here!
+LIBDIME_SOURCES = \
 	libs/core/buckets/arrays.c \
 	libs/core/buckets/pool.c \
 	libs/core/buckets/stacked.c \
@@ -201,39 +62,19 @@ libcore_la_SOURCES = \
 	libs/core/thread/mutex.c \
 	libs/core/thread/rwlock.c \
 	libs/core/thread/thread.c \
-	libs/core/type.c
-
-libcommon_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-libcommon_la_SOURCES = \
+	libs/core/type.c \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
 	libs/common/error.c \
 	libs/common/misc.c \
 	libs/common/misc_pub.c \
 	libs/common/network.c \
-	libs/common/network_pub.c
-
-libdmessage_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-libdmessage_la_SOURCES = \
+	libs/common/network_pub.c \
 	libs/dmessage/dmsg.c \
-	libs/dmessage/parser.c
-
-libsignet_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-libsignet_la_SOURCES = \
+	libs/dmessage/parser.c \
 	libs/signet/general.c \
 	libs/signet/keys.c \
-	libs/signet/signet.c
-
-libsignet_resolver_la_CPPFLAGS = \
-	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
-libsignet_resolver_la_SOURCES = \
+	libs/signet/signet.c \
 	libs/signet-resolver/cache.c \
 	libs/signet-resolver/cache_pub.c \
 	libs/signet-resolver/dmtp.c \
@@ -244,6 +85,139 @@ libsignet_resolver_la_SOURCES = \
 	libs/signet-resolver/mrec_pub.c \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c
+
+# Use m4 macros from m4
+ACLOCAL_AMFLAGS = -I m4 --install
+EXTRA_DIST = m4/NOTES
+
+AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
+AM_CXXFLAGS = @WARNINGS@ -std=c++11
+
+COMMON_CPPFLAGS = \
+	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
+	-DDIME_STAMP="\"$(shell cat .dime_stamp)\"" \
+	-I$(top_srcdir)/include
+
+DONNA_CPPFLAGS = \
+	-I$(top_srcdir)/bundle/ed25519-donna
+
+lib_LTLIBRARIES = \
+	libdime.la
+
+libdime_la_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(DONNA_CPPFLAGS)
+libdime_la_SOURCES = \
+	$(LIBDIME_SOURCES)
+libdime_la_LIBADD = \
+	libsds.la \
+	libdonna.la
+
+commonincludedir = \
+	$(includedir)/dime/common
+commoninclude_HEADERS = \
+	include/dime/common/dcrypto.h \
+	include/dime/common/error.h \
+	include/dime/common/misc.h \
+	include/dime/common/network.h
+coreincludedir = \
+	$(includedir)/dime/core
+coreinclude_HEADERS = \
+	include/dime/core/buckets.h \
+	include/dime/core/classify.h \
+	include/dime/core/compare.h \
+	include/dime/core/config.h \
+	include/dime/core/core.h \
+	include/dime/core/encodings.h \
+	include/dime/core/formats.h \
+	include/dime/core/hash.h \
+	include/dime/core/host.h \
+	include/dime/core/indexes.h \
+	include/dime/core/log.h \
+	include/dime/core/magma.h \
+	include/dime/core/mail.h \
+	include/dime/core/memory.h \
+	include/dime/core/mime.h \
+	include/dime/core/numbers.h \
+	include/dime/core/other.h \
+	include/dime/core/parsers.h \
+	include/dime/core/smtp.h \
+	include/dime/core/special.h \
+	include/dime/core/strings.h \
+	include/dime/core/thread.h
+dmessageincludedir = \
+	$(includedir)/dime/dmessage
+dmessageinclude_HEADERS = \
+	include/dime/dmessage/common.h \
+	include/dime/dmessage/crypto.h \
+	include/dime/dmessage/parse.h
+signetincludedir = \
+	$(includedir)/dime/signet
+signetinclude_HEADERS = \
+	include/dime/signet/common.h \
+	include/dime/signet/keys.h \
+	include/dime/signet/signet.h
+signetresolverincludedir = \
+	$(includedir)/dime/signet-resolver
+signetresolverinclude_HEADERS = \
+	include/dime/signet-resolver/cache.h \
+	include/dime/signet-resolver/dmtp.h \
+	include/dime/signet-resolver/dns.h \
+	include/dime/signet-resolver/mrec.h \
+	include/dime/signet-resolver/signet-ssl.h
+
+bin_PROGRAMS = \
+	dime \
+	signet
+
+noinst_LTLIBRARIES = \
+	libsds.la \
+	libdonna.la
+
+dime_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(DONNA_CPPFLAGS)
+dime_CFLAGS = \
+	$(AM_CFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+dime_LDADD = \
+	libdime.la \
+	-lresolv \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
+dime_SOURCES = \
+	tools/dime/dime.c
+
+signet_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(DONNA_CPPFLAGS)
+signet_CFLAGS = \
+	$(AM_CFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+signet_LDADD = \
+	libdime.la \
+	-lresolv \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
+signet_SOURCES = \
+	tools/signet/signet.c
+
+libsds_la_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	-I$(top_srcdir)/bundle/sds
+libsds_la_CFLAGS = \
+	-Wall \
+	-std=c99 \
+	-pedantic
+libsds_la_SOURCES = \
+	bundle/sds/sds.c
+
+libdonna_la_CPPFLAGS = \
+	$(DONNA_CPPFLAGS)
+libdonna_la_SOURCES = \
+	bundle/ed25519-donna/ed25519.c
 
 check: gtest
 	@$(top_builddir)/gtest --gtest_output=xml
