@@ -24,7 +24,6 @@ TEST(DIME, check_parser_envelope)
 
 	envelope = dime_prsr_envelope_parse((const unsigned char *)st_data_get(formatted), st_length_get(formatted), CHUNK_TYPE_DESTINATION);
 	ASSERT_TRUE(envelope == NULL) << "Was able to parse an origin chunk as a destination.";
-	_clear_error_stack();
 
 	envelope = dime_prsr_envelope_parse((const unsigned char *)st_data_get(formatted), st_length_get(formatted), CHUNK_TYPE_ORIGIN);
 	ASSERT_TRUE(envelope != NULL) << "Was unable to parse an origin chunk.";
@@ -49,7 +48,6 @@ TEST(DIME, check_parser_envelope)
 
 	envelope = dime_prsr_envelope_parse((const unsigned char *)st_data_get(formatted), st_length_get(formatted), CHUNK_TYPE_ORIGIN);
 	ASSERT_TRUE(envelope == NULL) << "Was able to parse an destination chunk as a origin.";
-	_clear_error_stack();
 
 	envelope = dime_prsr_envelope_parse((const unsigned char *)st_data_get(formatted), st_length_get(formatted), CHUNK_TYPE_DESTINATION);
 	ASSERT_TRUE(envelope != NULL) << "Was unable to parse an destination chunk.";
