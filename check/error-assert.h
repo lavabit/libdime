@@ -4,12 +4,12 @@
 #include "gtest/gtest.h"
 
 #define ASSERT_DIME_NO_ERROR() \
-	assert_dime_no_error_impl(__FILE__, __LINE__)
+    assert_dime_no_error_impl(__FILE__, __LINE__)
 static void assert_dime_no_error_impl(char const *filename, int lineno) {
-	if (get_last_error() != NULL) {
-		dump_error_stack();
-		ASSERT_TRUE(false) << filename << lineno << "Unexpected DIME error";
-	}
+    if (get_last_error() != NULL) {
+        dump_error_stack();
+        ASSERT_TRUE(false) << filename << lineno << "Unexpected DIME error";
+    }
 }
 
 #endif

@@ -5,13 +5,13 @@ extern "C" {
 
 TEST(DIME, test_chr_alphanumeric)
 {
-	ASSERT_TRUE(chr_alphanumeric('X'));
-	ASSERT_TRUE(chr_alphanumeric('x'));
-	ASSERT_TRUE(chr_alphanumeric('0'));
-	ASSERT_TRUE(chr_alphanumeric('9'));
-	ASSERT_TRUE(!chr_alphanumeric(' '));
-	ASSERT_TRUE(!chr_alphanumeric('\t'));
-	ASSERT_TRUE(!chr_alphanumeric('\n'));
+    ASSERT_TRUE(chr_alphanumeric('X'));
+    ASSERT_TRUE(chr_alphanumeric('x'));
+    ASSERT_TRUE(chr_alphanumeric('0'));
+    ASSERT_TRUE(chr_alphanumeric('9'));
+    ASSERT_TRUE(!chr_alphanumeric(' '));
+    ASSERT_TRUE(!chr_alphanumeric('\t'));
+    ASSERT_TRUE(!chr_alphanumeric('\n'));
 }
 
 TEST(DIME, DISABLED_test_chr_ascii)

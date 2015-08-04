@@ -25,26 +25,26 @@ extern "C" {
 
 TEST(DIME, check_debug_level)
 {
-	for (unsigned int i = 0; i < 100; i++) {
-		set_dbg_level(i);
-		ASSERT_EQ(i, get_dbg_level());
-	}
+    for (unsigned int i = 0; i < 100; i++) {
+        set_dbg_level(i);
+        ASSERT_EQ(i, get_dbg_level());
+    }
 }
 
 TEST(DIME, check_base64_macros)
 {
-	ASSERT_EQ(0, B64_ENCODED_LEN(0));
-	ASSERT_EQ(4, B64_ENCODED_LEN(1));
-	ASSERT_EQ(4, B64_ENCODED_LEN(2));
-	ASSERT_EQ(4, B64_ENCODED_LEN(3));
-	ASSERT_EQ(40, B64_ENCODED_LEN(30));
-	ASSERT_EQ(44, B64_ENCODED_LEN(31));
-	ASSERT_EQ(40, B64_ENCODED_LEN(10 + 10 + 10));
+    ASSERT_EQ(0, B64_ENCODED_LEN(0));
+    ASSERT_EQ(4, B64_ENCODED_LEN(1));
+    ASSERT_EQ(4, B64_ENCODED_LEN(2));
+    ASSERT_EQ(4, B64_ENCODED_LEN(3));
+    ASSERT_EQ(40, B64_ENCODED_LEN(30));
+    ASSERT_EQ(44, B64_ENCODED_LEN(31));
+    ASSERT_EQ(40, B64_ENCODED_LEN(10 + 10 + 10));
 
-	ASSERT_EQ(0, B64_DECODED_LEN(0));
-	ASSERT_EQ(1, B64_DECODED_LEN(2));
-	ASSERT_EQ(2, B64_DECODED_LEN(3));
-	ASSERT_EQ(3, B64_DECODED_LEN(4));
-	ASSERT_EQ(57, B64_DECODED_LEN(76));
-	ASSERT_EQ(30 + 30 + 30, B64_DECODED_LEN(40 + 40 + 40));
+    ASSERT_EQ(0, B64_DECODED_LEN(0));
+    ASSERT_EQ(1, B64_DECODED_LEN(2));
+    ASSERT_EQ(2, B64_DECODED_LEN(3));
+    ASSERT_EQ(3, B64_DECODED_LEN(4));
+    ASSERT_EQ(57, B64_DECODED_LEN(76));
+    ASSERT_EQ(30 + 30 + 30, B64_DECODED_LEN(40 + 40 + 40));
 }

@@ -5,25 +5,25 @@ extern "C" {
 
 static stringer_t *mkstringer(const char *s) {
 
-	stringer_t *st = st_import(s, strlen(s) + 1);
-	EXPECT_TRUE(NULL != st);
-	return st;
+    stringer_t *st = st_import(s, strlen(s) + 1);
+    EXPECT_TRUE(NULL != st);
+    return st;
 }
 
 TEST(DIME, test_st_cmp_ci_ends)
 {
-	stringer_t *empty = mkstringer("");
-	stringer_t *whatever = mkstringer("whatever");
-	stringer_t *whatever_uc = mkstringer("WHATEVER");
+    stringer_t *empty = mkstringer("");
+    stringer_t *whatever = mkstringer("whatever");
+    stringer_t *whatever_uc = mkstringer("WHATEVER");
 
-	ASSERT_EQ(0, st_cmp_ci_ends(empty, empty));
-	ASSERT_LT(st_cmp_ci_ends(empty, whatever), 0);
-	ASSERT_EQ(0, st_cmp_ci_ends(whatever, empty)); /*- not symmetric */
-	ASSERT_EQ(0, st_cmp_ci_ends(whatever, whatever_uc));
+    ASSERT_EQ(0, st_cmp_ci_ends(empty, empty));
+    ASSERT_LT(st_cmp_ci_ends(empty, whatever), 0);
+    ASSERT_EQ(0, st_cmp_ci_ends(whatever, empty)); /*- not symmetric */
+    ASSERT_EQ(0, st_cmp_ci_ends(whatever, whatever_uc));
 
-	st_free(empty);
-	st_free(whatever);
-	st_free(whatever_uc);
+    st_free(empty);
+    st_free(whatever);
+    st_free(whatever_uc);
 }
 
 // int_t st_cmp_cs_ends(stringer_t *s, stringer_t *ends);
