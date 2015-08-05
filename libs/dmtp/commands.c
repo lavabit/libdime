@@ -20,9 +20,23 @@ static dmtp_command_type_t  dmtp_command_type_get(sds command);
 
 
 
-
-static
-int
+/**
+ * @brief
+ * Parse the next command string argument.
+ * @param line
+ * Pointer to the current location in the command string.
+ * @param insize
+ * Pointer to the remaining size of command string.
+ * @param arg_index
+ * The index of the least numbered argument to be checked for.
+ * @param parsed
+ * Stores the length of the data that gets parsed.
+ * @param command
+ * dmtp command structure where the parsed argument gets stored.
+ * @return
+ * Index of the next argument type to be parsed on success, -1 on failure.
+*/
+static int
 dmtp_command_argument_parse(
     const char *line,
     size_t insize,
@@ -149,10 +163,20 @@ error:
 }
 
 
-
-
-
-static dmtp_command_t * dmtp_command_create(dmtp_command_type_t type) {
+/**
+ * @brief
+ * Create a dmtp command structure.
+ * @param type
+ * dmtp command enum.
+ * @return
+ * A newly created dmtp command structure with specified type and NULL args.
+ * @free_using
+ * dmtp_command_destroy
+*/
+static dmtp_command_t *
+dmtp_command_create(
+    dmtp_command_type_t type)
+{
 
     dmtp_command_t *result;
 
@@ -176,8 +200,16 @@ error:
     return NULL;
 }
 
-
-static void dmtp_command_destroy(dmtp_command_t *command) {
+/**
+ * @brief
+ * Destroy a dmtp command structure.
+ * @param command
+ * dmtp command structure to be destroyed.
+*/
+static void
+dmtp_command_destroy(
+    dmtp_command_t *command)
+{
 
     if(!command) {
         return;
@@ -191,8 +223,20 @@ static void dmtp_command_destroy(dmtp_command_t *command) {
 }
 
 
-
-static sds dmtp_command_format(dmtp_command_t *command) {
+/**
+ * @brief
+ * Formats the specified dmtp command into a sds string.
+ * @param command
+ * Command to be formatted.
+ * @return
+ * sds string containing formatted command.
+ * @free_using
+ * sdsfree
+*/
+static sds
+dmtp_command_format(
+    dmtp_command_t *command)
+{
 
     dmtp_command_key_t *key;
     sds result;
@@ -310,7 +354,17 @@ error:
 }
 
 
-static int dmtp_command_is_valid(dmtp_command_t *command) {
+/**
+ * @brief
+ * Is the provided dmtp command structure a valid dmtp command.
+ * @param command
+ * dmtp command structure to be validated.
+ * @return 1 if valid (true) 0 if invalid (false).
+*/
+static int
+dmtp_command_is_valid(
+    dmtp_command_t *command)
+{
 
     dmtp_command_key_t *key;
     int arg1, arg2, arg3, result;
@@ -399,8 +453,19 @@ error:
     return 0;
 }
 
-
-static dmtp_command_key_t * dmtp_command_key_get(dmtp_command_type_t type) {
+/**
+ * @brief
+ * Retrieve the dmtp command key for the specific dmtp command type from the global table.
+ * @param type
+ * Specified dmtp command type.
+ * @return
+ * Pointer to the dmtp command key structure.
+ * @NOTE: do not free!
+*/
+static dmtp_command_key_t *
+dmtp_command_key_get(
+    dmtp_command_type_t type)
+{
 
     if(type >= DMTP_COMMANDS_NUM) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -413,8 +478,20 @@ error:
     return NULL;
 }
 
-
-static dmtp_command_t * dmtp_command_parse(sds command) {
+/**
+ * @brief
+ * Parse the provided sds string into a dmtp command structure.
+ * @param command
+ * sds dmtp command string.
+ * @return
+ * A valid dmtp command structure on success, NULL on failure.
+ * @free_using
+ * dmtp_command_destroy
+*/
+static dmtp_command_t *
+dmtp_command_parse(
+    sds command)
+{
 
     dmtp_command_key_t *key;
     dmtp_command_t *result;
@@ -564,8 +641,21 @@ error:
 }
 
 
-
-static int dmtp_command_type_cmp(sds command, dmtp_command_type_t type) {
+/**
+ * @brief
+ * Compare the provided command string start with a valid dmtp command type string.
+ * @param command
+ * sds command string.
+ * @param type
+ * dmtp command type.
+ * @return
+ * 0 if comparison was successful, -1 if it was not.
+*/
+static int
+dmtp_command_type_cmp(
+    sds command,
+    dmtp_command_type_t type)
+{
 
     dmtp_command_key_t *key;
 
@@ -601,8 +691,18 @@ error:
 }
 
 
-
-static dmtp_command_type_t  dmtp_command_type_get(sds command) {
+/**
+ * @brief
+ * Determine the dmtp command type of the provided command string.
+ * @command
+ * sds command string.
+ * @return
+ * A valid dmtp type on success, DMTP_COMMAND_INVALID on failure.
+*/
+static dmtp_command_type_t
+dmtp_command_type_get(
+    sds command)
+{
 
     dmtp_command_type_t result;
 
@@ -827,28 +927,57 @@ error:
 
 
 
+/**
+ * @brief
+ * Create a dmtp command structure.
+ * @param type
+ * dmtp command enum.
+ * @return
+ * A newly created dmtp command structure with specified type and NULL args.
+ * @free_using
+ * dime_dmtp_command_destroy
+*/
 dmtp_command_t *     dime_dmtp_command_create(dmtp_command_type_t type) {
     PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_create, type);
 }
 
+/**
+ * @brief
+ * Destroy a dmtp command structure.
+ * @param command
+ * dmtp command structure to be destroyed.
+*/
 void                 dime_dmtp_command_destroy(dmtp_command_t *command) {
     PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_destroy, command);
 }
 
+/**
+ * @brief
+ * Formats the specified dmtp command into a sds string.
+ * @param command
+ * Command to be formatted.
+ * @return
+ * sds string containing formatted command.
+ * @free_using
+ * sdsfree
+*/
 sds                  dime_dmtp_command_format(dmtp_command_t *command) {
     PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_format, command);
 }
 
+/**
+ * @brief
+ * Parse the provided sds string into a dmtp command structure.
+ * @param command
+ * sds dmtp command string.
+ * @return
+ * A valid dmtp command structure on success, NULL on failure.
+ * @free_using
+ * dime_dmtp_command_destroy
+*/
 dmtp_command_t *     dime_dmtp_command_parse(sds command) {
     PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_parse, command);
 }
-
-
-
-
-
-
-
 
 
 
