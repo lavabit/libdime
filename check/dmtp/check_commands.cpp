@@ -2,7 +2,6 @@ extern "C" {
 #include "dime/dmtp/commands.h"
 }
 #include "gtest/gtest.h"
-#include "error-assert.h"
 
 /**
  * Command parsing and formatting

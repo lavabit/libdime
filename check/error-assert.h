@@ -2,6 +2,7 @@
 #define GTEST_HELPERS_H
 
 #include "gtest/gtest.h"
+#include "dime/common/error.h"
 
 #define ASSERT_DIME_NO_ERROR() \
     assert_dime_no_error_impl(__FILE__, __LINE__)
