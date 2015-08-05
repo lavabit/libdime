@@ -1,5 +1,6 @@
 extern "C" {
 #include "dime/dmtp/commands.h"
+#include "dime/common/error.h"
 }
 #include "gtest/gtest.h"
 

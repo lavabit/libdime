@@ -67,8 +67,8 @@ dmtp_command_argument_parse(
            continue;
        }
 
-       if(memcmp(line, key->args[arg_num].arg_name, key->args[arg_num].arg_name_len) != 0) {
-           continue;
+       if(memcmp(line, key->args[arg_num].arg_name, key->args[arg_num].arg_name_len) == 0) {
+           break;
        }
 
    }
@@ -196,7 +196,6 @@ static sds dmtp_command_format(dmtp_command_t *command) {
 
     dmtp_command_key_t *key;
     sds result;
-    size_t command_size = 0;
 
     if(!command) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -213,45 +212,12 @@ static sds dmtp_command_format(dmtp_command_t *command) {
         goto error;
     }
 
-    command_size = 2 + key->com_name_len;
-
-    for(int i = 0; i < DMTP_MAX_ARGUMENT_NUM; ++i) {
-
-        if(command->args[i]) {
-
-            switch(key->args[i].type) {
-
-            case DMTP_ARG_NONE:
-                    break;
-            case DMTP_ARG_REQ_STR:
-            case DMTP_ARG_OPT_STR:
-                command_size += 2;
-            case DMTP_ARG_PLAIN:
-                command_size += 1;
-                command_size += sdslen(command->args[i]);
-                command_size += key->args[i].arg_name_len;
-                    break;
-            default:
-                PUSH_ERROR(ERR_UNSPEC, "invalid argument type");
-                goto error;
-
-            }
-
-        }
-
-    }
-
-    if(command_size > 512) {
-        PUSH_ERROR(ERR_UNSPEC, "command is too long");
-        goto error;
-    }
-
     if(!(result = sdsempty())) {
         PUSH_ERROR(ERR_UNSPEC, "failed to allocate sds string for command");
         goto error;
     }
 
-    if(!(result = sdsMakeRoomFor(result, command_size))) {
+    if(!(result = sdsMakeRoomFor(result, 512))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to make room for arguments");
         goto cleanup_result;
     }
@@ -373,9 +339,9 @@ static int dmtp_command_is_valid(dmtp_command_t *command) {
 
     }
 
-    arg1 = (command->args[1] != NULL);
-    arg2 = (command->args[2] != NULL);
-    arg3 = (command->args[3] != NULL);
+    arg1 = (command->args[0] != NULL);
+    arg2 = (command->args[1] != NULL);
+    arg3 = (command->args[2] != NULL);
 
     switch(command->type) {
 
@@ -419,7 +385,7 @@ static int dmtp_command_is_valid(dmtp_command_t *command) {
         result = arg1;
         break;
     case DMTP_VRFY:
-        result = arg1 ^ arg2 && arg3;
+        result = (arg1 ^ arg2) && arg3;
         break;
     default:
         PUSH_ERROR(ERR_UNSPEC, "invalid command type");
@@ -1006,7 +972,7 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
         "HIST",      4,
         {
             { "USER",           4,             DMTP_ARG_REQ_STR, 0 },
-            { "START",          4,             DMTP_ARG_OPT_STR, 0 },
+            { "START",          5,             DMTP_ARG_OPT_STR, 0 },
             { "STOP",           4,             DMTP_ARG_OPT_STR, 0 }
         }
     },
