@@ -119,6 +119,9 @@ COMMON_CPPFLAGS = \
 DONNA_CPPFLAGS = \
 	-I$(top_srcdir)/bundle/ed25519-donna
 
+SDS_CPPFLAGS = \
+	-I$(top_srcdir)/bundle/sds
+
 lib_LTLIBRARIES = \
 	libdime.la
 
