@@ -72,7 +72,7 @@ dmsg_chunk_deserialize(
     size_t *read);
 
 static int
-DMSG_CHUNK_ENCODE(
+dmsg_chunk_encode(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks);
 
@@ -83,7 +83,7 @@ dmsg_chunk_flags_get(
 static int
 dmsg_chunk_headers_common_decrypt(
     dmime_object_t *object,
-    const dmime_message_t *msg,
+    dmime_message_t const *msg,
     dmime_kek_t *kek);
 
 static dmime_message_chunk_t *
@@ -181,7 +181,7 @@ dmsg_chunks_sig_author_validate(
     dmime_kek_t *kek);
 
 static int
-DMSG_CHUNKS_SIG_ORIGIN_SIGN(
+dmsg_chunks_sig_origin_sign(
     dmime_message_t *msg,
     unsigned char bounce_flags,
     dmime_kek_t *kek,
@@ -520,8 +520,7 @@ dmsg_chunk_origin_encode(dmime_object_t *object)
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (
-        !object->signet_author
+    if (!object->signet_author
         || !object->author
         || !object->signet_destination
         || !object->destination)
@@ -1214,7 +1213,7 @@ dmsg_keyslot_encrypt(
  *  0 on success, -1 on failure.
 */
 static int
-DMSG_CHUNK_ENCODE(
+dmsg_chunk_encode(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks)
 {
@@ -1487,25 +1486,25 @@ dmsg_chunks_message_encrypt(
             "the message chunks must be signed before they can be encrypted");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin, keks)) {
+    if (dmsg_chunk_encode(message->origin, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt origin chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->destination, keks)) {
+    if (dmsg_chunk_encode(message->destination, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt destination chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->common_headers, keks)) {
+    if (dmsg_chunk_encode(message->common_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt common headers chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->other_headers, keks)) {
+    if (dmsg_chunk_encode(message->other_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt other headers chunk");
     }
 
     if (message->display) {
         for (size_t i = 0; message->display[i]; i++) {
-            if(DMSG_CHUNK_ENCODE(message->display[i], keks)) {
+            if(dmsg_chunk_encode(message->display[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt display chunks");
             }
         }
@@ -1513,7 +1512,7 @@ dmsg_chunks_message_encrypt(
 
     if(message->attach) {
         for (size_t i = 0; message->attach[i]; i++) {
-            if(DMSG_CHUNK_ENCODE(message->attach[i], keks)) {
+            if(dmsg_chunk_encode(message->attach[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt attachment chunks");
             }
         }
@@ -2357,7 +2356,7 @@ dmsg_chunks_sig_author_sign(
             "could not create author tree signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->author_tree_sig, keks)) {
+    if (dmsg_chunk_encode(message->author_tree_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author tree signature chunk");
@@ -2392,7 +2391,7 @@ dmsg_chunks_sig_author_sign(
             "could not not create author full signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->author_full_sig, keks)) {
+    if (dmsg_chunk_encode(message->author_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author full signature chunk");
@@ -2448,7 +2447,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin meta bounce signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin_meta_bounce_sig, keks)) {
+    if (dmsg_chunk_encode(message->origin_meta_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin meta bounce signature chunk");
@@ -2466,7 +2465,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin display bounce signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin_display_bounce_sig, keks)) {
+    if (dmsg_chunk_encode(message->origin_display_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin display bounce signature chunk");
@@ -2484,7 +2483,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin full signature chunk");
     }
 
-    if(DMSG_CHUNK_ENCODE(message->origin_full_sig, keks)) {
+    if(dmsg_chunk_encode(message->origin_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin full signature chunk");
@@ -4441,7 +4440,7 @@ dmsg_message_decrypt_as_orig(
  *  0 on success, -1 on failure.
  */
 static int
-DMSG_CHUNKS_SIG_ORIGIN_SIGN(
+dmsg_chunks_sig_origin_sign(
     dmime_message_t *msg,
     unsigned char bounce_flags,
     dmime_kek_t *kek,
@@ -6096,7 +6095,7 @@ dime_dmsg_chunks_sig_origin_sign(
     ED25519_KEY *signkey)
 {
     PUBLIC_FUNCTION_IMPLEMENT(
-        DMSG_CHUNKS_SIG_ORIGIN_SIGN,
+        dmsg_chunks_sig_origin_sign,
         msg,
         bounce_flags,
         kek,

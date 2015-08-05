@@ -334,8 +334,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_TO].label,
             dmime_header_keys[HEADER_TYPE_TO].label_length))
@@ -343,8 +342,7 @@ prsr_headers_type_get(
         return HEADER_TYPE_TO;
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_CC].label,
             dmime_header_keys[HEADER_TYPE_CC].label_length))
@@ -356,8 +354,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_FROM].label,
             dmime_header_keys[HEADER_TYPE_FROM].label_length))
@@ -365,8 +362,7 @@ prsr_headers_type_get(
         return HEADER_TYPE_FROM;
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_DATE].label,
             dmime_header_keys[HEADER_TYPE_DATE].label_length))
@@ -378,8 +374,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_SUBJECT].label,
             dmime_header_keys[HEADER_TYPE_SUBJECT].label_length))
@@ -391,8 +386,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_ORGANIZATION].label,
             dmime_header_keys[HEADER_TYPE_ORGANIZATION].label_length))
@@ -436,8 +430,7 @@ prsr_headers_parse(
 
     while (at < insize) {
 
-        if (
-            (type = prsr_headers_type_get(in + at, insize - at))
+        if ((type = prsr_headers_type_get(in + at, insize - at))
             == HEADER_TYPE_NONE)
         {
             prsr_headers_destroy(result);
@@ -466,8 +459,7 @@ prsr_headers_parse(
             ++head_size;
         }
 
-        if (
-            (at + head_size + 1) > insize
+        if ((at + head_size + 1) > insize
             || (
                 (at + head_size + 1) == insize
                 && in[at + head_size + 1] != '\n'))
@@ -585,8 +577,7 @@ prsr_envelope_parse(
 
     memset(result, 0, sizeof(dmime_envelope_object_t));
 
-    if (
-        insize <= strlen(authrecp)
+    if (insize <= strlen(authrecp)
         || in != (unsigned char *)strstr((char *)in, authrecp))
     {
         prsr_envelope_destroy(result);
@@ -625,8 +616,7 @@ prsr_envelope_parse(
 
     at += strlen(end1);
 
-    if (
-        insize - at <= strlen(authrecp_signet)
+    if (insize - at <= strlen(authrecp_signet)
         || in + at != (unsigned char *)strstr((char *)in, authrecp_signet))
     {
         prsr_envelope_destroy(result);
@@ -665,8 +655,7 @@ prsr_envelope_parse(
 
     at += strlen(end2);
 
-    if (
-        insize - at <= strlen(destorig)
+    if (insize - at <= strlen(destorig)
         || in + at != (unsigned char *)strstr((char *)in, destorig))
     {
         prsr_envelope_destroy(result);
@@ -703,8 +692,7 @@ prsr_envelope_parse(
 
     at += strlen(end1);
 
-    if (
-        insize - at <= strlen(destorig_fp)
+    if (insize - at <= strlen(destorig_fp)
         || in + at != (unsigned char *)strstr((char *)in, destorig_fp))
     {
         prsr_envelope_destroy(result);
