@@ -31,6 +31,9 @@ typedef struct __attribute__((packed)) {
 } dmime_keyslot_t;
 
 
+static void *
+mm_set(void *block, unsigned char set, size_t len);
+
 static const char *
 dmsg_actor_to_string(
     dmime_actor_t actor);
@@ -376,6 +379,27 @@ dmsg_treesig_data_get(
     size_t *outsize);
 
 /* PRIVATE FUNCTIONS */
+
+/**
+ * @brief   Sets a block of memory to a specified value.
+ * @param   block   the block of memory to be set.
+ * @param   set     the byte value to be written to block.
+ * @param   len     the number of times to write the value of the byte repeatedly to block.
+ * @return  a pointer to the block of memory passed to the function.
+ */
+void *mm_set(void *block, unsigned char set, size_t len) {
+    volatile char *ptr = block;
+
+    asm ("");
+
+    while (len--) {
+        *ptr++ = set;
+    }
+
+    asm ("");
+
+    return block;
+}
 
 /**
  * @brief
@@ -1193,7 +1217,7 @@ dmsg_keyslot_encrypt(
     }
 
     // copy the newly encrypted information over the keyslot and return.
-    mm_copy(keyslot, &slot, sizeof(dmime_keyslot_t));
+    memcpy(keyslot, &slot, sizeof(dmime_keyslot_t));
     mm_set(&slot, 0, sizeof(slot));
 
     return 0;

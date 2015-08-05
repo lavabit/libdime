@@ -1,7 +1,6 @@
 #ifndef DIME_DMSG_COMMON_H
 #define DIME_DMSG_COMMON_H
 
-#include "dime/core/magma.h"
 #include "sds.h"
 
 #define DMIME_NUM_COMMON_HEADERS 7
