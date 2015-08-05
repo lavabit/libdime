@@ -72,7 +72,7 @@ dmsg_chunk_deserialize(
     size_t *read);
 
 static int
-DMSG_CHUNK_ENCODE(
+dmsg_chunk_encode(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks);
 
@@ -83,7 +83,7 @@ dmsg_chunk_flags_get(
 static int
 dmsg_chunk_headers_common_decrypt(
     dmime_object_t *object,
-    const dmime_message_t *msg,
+    dmime_message_t const *msg,
     dmime_kek_t *kek);
 
 static dmime_message_chunk_t *
@@ -181,7 +181,7 @@ dmsg_chunks_sig_author_validate(
     dmime_kek_t *kek);
 
 static int
-DMSG_CHUNKS_SIG_ORIGIN_SIGN(
+dmsg_chunks_sig_origin_sign(
     dmime_message_t *msg,
     unsigned char bounce_flags,
     dmime_kek_t *kek,
@@ -514,14 +514,13 @@ dmsg_chunk_origin_encode(dmime_object_t *object)
 {
     char *author_signet_fingerprint_b64, *destination_signet_fingerprint_b64;
     dmime_message_chunk_t *result;
-    stringer_t *data = NULL;
+    sds data = NULL;
 
     if (!object) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (
-        !object->signet_author
+    if (!object->signet_author
         || !object->author
         || !object->signet_destination
         || !object->destination)
@@ -562,10 +561,10 @@ dmsg_chunk_origin_encode(dmime_object_t *object)
 
     result = dmsg_message_chunk_create(
         CHUNK_TYPE_ORIGIN,
-        (unsigned char *)st_data_get(data),
-        st_length_get(data),
+        (unsigned char *)data,
+        sdslen(data),
         DEFAULT_CHUNK_FLAGS);
-    st_free(data);
+    sdsfree(data);
 
     if(!result) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -590,7 +589,7 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
 {
     char *recipient_signet_fingerprint_b64, *origin_signet_fingerprint_b64;
     dmime_message_chunk_t *result;
-    stringer_t *data;
+    sds data;
 
     if (!object) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -626,8 +625,8 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
     data = dime_prsr_envelope_format(
         object->recipient,
         object->origin,
-        (const char *)recipient_signet_fingerprint_b64,
-        (const char *)origin_signet_fingerprint_b64,
+        recipient_signet_fingerprint_b64,
+        origin_signet_fingerprint_b64,
         CHUNK_TYPE_DESTINATION);
     free(recipient_signet_fingerprint_b64);
     free(origin_signet_fingerprint_b64);
@@ -638,10 +637,10 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
 
     result = dmsg_message_chunk_create(
         CHUNK_TYPE_DESTINATION,
-        (unsigned char *)st_data_get(data),
-        st_length_get(data),
+        (unsigned char *)data,
+        sdslen(data),
         DEFAULT_CHUNK_FLAGS);
-    st_free(data);
+    sdsfree(data);
 
     if(!result) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -721,8 +720,8 @@ dmsg_chunk_headers_other_encode(dmime_object_t *object)
     if (!(result =
             dmsg_message_chunk_create(
                 CHUNK_TYPE_META_OTHER,
-                (unsigned char *)st_data_get(object->other_headers),
-                st_length_get(object->other_headers),
+                (unsigned char *)object->other_headers,
+                sdslen(object->other_headers),
                 DEFAULT_CHUNK_FLAGS)))
     {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -1214,7 +1213,7 @@ dmsg_keyslot_encrypt(
  *  0 on success, -1 on failure.
 */
 static int
-DMSG_CHUNK_ENCODE(
+dmsg_chunk_encode(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks)
 {
@@ -1487,25 +1486,25 @@ dmsg_chunks_message_encrypt(
             "the message chunks must be signed before they can be encrypted");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin, keks)) {
+    if (dmsg_chunk_encode(message->origin, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt origin chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->destination, keks)) {
+    if (dmsg_chunk_encode(message->destination, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt destination chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->common_headers, keks)) {
+    if (dmsg_chunk_encode(message->common_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt common headers chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->other_headers, keks)) {
+    if (dmsg_chunk_encode(message->other_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt other headers chunk");
     }
 
     if (message->display) {
         for (size_t i = 0; message->display[i]; i++) {
-            if(DMSG_CHUNK_ENCODE(message->display[i], keks)) {
+            if(dmsg_chunk_encode(message->display[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt display chunks");
             }
         }
@@ -1513,7 +1512,7 @@ dmsg_chunks_message_encrypt(
 
     if(message->attach) {
         for (size_t i = 0; message->attach[i]; i++) {
-            if(DMSG_CHUNK_ENCODE(message->attach[i], keks)) {
+            if(dmsg_chunk_encode(message->attach[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt attachment chunks");
             }
         }
@@ -2357,7 +2356,7 @@ dmsg_chunks_sig_author_sign(
             "could not create author tree signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->author_tree_sig, keks)) {
+    if (dmsg_chunk_encode(message->author_tree_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author tree signature chunk");
@@ -2392,7 +2391,7 @@ dmsg_chunks_sig_author_sign(
             "could not not create author full signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->author_full_sig, keks)) {
+    if (dmsg_chunk_encode(message->author_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author full signature chunk");
@@ -2448,7 +2447,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin meta bounce signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin_meta_bounce_sig, keks)) {
+    if (dmsg_chunk_encode(message->origin_meta_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin meta bounce signature chunk");
@@ -2466,7 +2465,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin display bounce signature chunk");
     }
 
-    if (DMSG_CHUNK_ENCODE(message->origin_display_bounce_sig, keks)) {
+    if (dmsg_chunk_encode(message->origin_display_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin display bounce signature chunk");
@@ -2484,7 +2483,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin full signature chunk");
     }
 
-    if(DMSG_CHUNK_ENCODE(message->origin_full_sig, keks)) {
+    if(dmsg_chunk_encode(message->origin_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin full signature chunk");
@@ -3414,14 +3413,14 @@ dmsg_object_destroy(dmime_object_t *object)
         return;
     }
 
-    st_cleanup(object->author);
-    st_cleanup(object->recipient);
-    st_cleanup(object->origin);
-    st_cleanup(object->destination);
-    st_cleanup(object->fp_author);
-    st_cleanup(object->fp_origin);
-    st_cleanup(object->fp_destination);
-    st_cleanup(object->fp_recipient);
+    sdsfree(object->author);
+    sdsfree(object->recipient);
+    sdsfree(object->origin);
+    sdsfree(object->destination);
+    sdsfree(object->fp_author);
+    sdsfree(object->fp_origin);
+    sdsfree(object->fp_destination);
+    sdsfree(object->fp_recipient);
 
     if(object->signet_author) {
         dime_sgnt_signet_destroy(object->signet_author);
@@ -3440,7 +3439,7 @@ dmsg_object_destroy(dmime_object_t *object)
     }
 
     dime_prsr_headers_destroy(object->common_headers);
-    st_cleanup(object->other_headers);
+    sdsfree(object->other_headers);
     dmsg_object_chunklist_destroy(object->display);
     dmsg_object_chunklist_destroy(object->attach);
     free(object);
@@ -3515,10 +3514,10 @@ dmsg_message_envelope_decrypt(
         }
 
         dmsg_message_chunk_destroy(decrypted);
-        result->author = st_dupe(parsed->auth_recp);
-        result->fp_author = st_dupe(parsed->auth_recp_fp);
-        result->destination = st_dupe(parsed->dest_orig);
-        result->fp_destination = st_dupe(parsed->dest_orig_fp);
+        result->author = sdsdup(parsed->auth_recp);
+        result->fp_author = sdsdup(parsed->auth_recp_fp);
+        result->destination = sdsdup(parsed->dest_orig);
+        result->fp_destination = sdsdup(parsed->dest_orig_fp);
         dime_prsr_envelope_destroy(parsed);
     }
 
@@ -3547,10 +3546,10 @@ dmsg_message_envelope_decrypt(
         }
 
         dmsg_message_chunk_destroy(decrypted);
-        result->recipient = st_dupe(parsed->auth_recp);
-        result->fp_author = st_dupe(parsed->auth_recp_fp);
-        result->origin = st_dupe(parsed->dest_orig);
-        result->fp_origin = st_dupe(parsed->dest_orig_fp);
+        result->recipient = sdsdup(parsed->auth_recp);
+        result->fp_author = sdsdup(parsed->auth_recp_fp);
+        result->origin = sdsdup(parsed->dest_orig);
+        result->fp_origin = sdsdup(parsed->dest_orig_fp);
         dime_prsr_envelope_destroy(parsed);
     }
 
@@ -4018,7 +4017,7 @@ dmsg_chunk_headers_other_decrypt(
         RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
     }
 
-    object->other_headers = st_import(data, data_size);
+    object->other_headers = sdsnewlen(data, data_size);
     dmsg_message_chunk_destroy(decrypted);
 
     return 0;
@@ -4441,7 +4440,7 @@ dmsg_message_decrypt_as_orig(
  *  0 on success, -1 on failure.
  */
 static int
-DMSG_CHUNKS_SIG_ORIGIN_SIGN(
+dmsg_chunks_sig_origin_sign(
     dmime_message_t *msg,
     unsigned char bounce_flags,
     dmime_kek_t *kek,
@@ -5099,29 +5098,29 @@ dmsg_object_dump(dmime_object_t *object)
     if ((object->actor != id_destination) && object->author) {
         printf(
             "message auth  : %.*s\n",
-            (int)st_length_get(object->author),
-            (char *)st_data_get(object->author));
+            (int)sdslen(object->author),
+            object->author);
     }
 
     if ((object->actor != id_origin) && object->origin) {
         printf(
             "message orig  : %.*s\n",
-            (int)st_length_get(object->origin),
-            (char *)st_data_get(object->origin));
+            (int)sdslen(object->origin),
+            object->origin);
     }
 
     if ((object->actor != id_destination) && object->destination) {
         printf(
             "message dest  : %.*s\n",
-            (int)st_length_get(object->destination),
-            (char *)st_data_get(object->destination));
+            (int)sdslen(object->destination),
+            object->destination);
     }
 
     if ((object->actor != id_origin) && object->recipient) {
         printf(
             "message recp  : %.*s\n",
-            (int)st_length_get(object->recipient),
-            (char *)st_data_get(object->recipient));
+            (int)sdslen(object->recipient),
+            object->recipient);
     }
 
     if ((object->actor == id_author)
@@ -5136,16 +5135,16 @@ dmsg_object_dump(dmime_object_t *object)
                 printf(
                     "%s%.*s\r\n",
                     dmime_header_keys[i].label,
-                    (int)st_length_get(object->common_headers->headers[i]),
-                    (char *)st_data_get(object->common_headers->headers[i]));
+                    (int)sdslen(object->common_headers->headers[i]),
+                    object->common_headers->headers[i]);
             }
 
         }
 
         printf(
             "other headers :\n %.*s\n",
-            (int)st_length_get(object->other_headers),
-            (char *)st_data_get(object->other_headers));
+            (int)sdslen(object->other_headers),
+            object->other_headers);
         display = object->display;
 
         for (unsigned int i = 0; display; i++) {
@@ -6096,7 +6095,7 @@ dime_dmsg_chunks_sig_origin_sign(
     ED25519_KEY *signkey)
 {
     PUBLIC_FUNCTION_IMPLEMENT(
-        DMSG_CHUNKS_SIG_ORIGIN_SIGN,
+        dmsg_chunks_sig_origin_sign,
         msg,
         bounce_flags,
         kek,

@@ -6,10 +6,10 @@ static void
 prsr_envelope_destroy(
     dmime_envelope_object_t *obj);
 
-static stringer_t *
+static sds
 prsr_envelope_format(
-    stringer_t *user_id,
-    stringer_t *org_id,
+    sds user_id,
+    sds org_id,
     const char *user_fp,
     const char *org_fp,
     dmime_chunk_type_t type);
@@ -17,14 +17,14 @@ prsr_envelope_format(
 static int
 prsr_envelope_labels_get(
     dmime_chunk_type_t type,
-    const char **label1,
-    const char **label2,
-    const char **label3,
-    const char **label4);
+    char const **label1,
+    char const **label2,
+    char const **label3,
+    char const **label4);
 
 static dmime_envelope_object_t *
 prsr_envelope_parse(
-    const unsigned char *in,
+    char const *in,
     size_t insize,
     dmime_chunk_type_t type);
 
@@ -95,59 +95,58 @@ prsr_headers_create(void)
  *  Buffer with formated envelope data.
  * @free_using{st_free}
  */
-static stringer_t *
+static sds
 prsr_envelope_format(
-    stringer_t *user_id,
-    stringer_t *org_id,
-    const char *user_fp,
-    const char *org_fp,
+    sds const user_id,
+    sds const org_id,
+    char const * user_fp,
+    char const * org_fp,
     dmime_chunk_type_t type)
 {
-    char *label1 = NULL;
-    char *label2 = NULL;
-    char *label3 = NULL;
-    char *label4 = NULL;
+    char const *label1 = NULL;
+    char const *label2 = NULL;
+    char const *label3 = NULL;
+    char const *label4 = NULL;
     char const *end1 = ">\r\n", *end2 = "]\r\n";
-    stringer_t *result;
+    sds result;
 
-    if (st_empty(user_id)) {
+    if (user_id == NULL
+        || sdslen(user_id) == 0
+        || org_id == NULL
+        || sdslen(org_id) == 0
+        || user_fp == NULL
+        || org_fp == NULL)
+    {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
         goto error;
     }
 
-    if (st_empty(org_id)) {
-        PUSH_ERROR(ERR_BAD_PARAM, NULL);
-        goto error;
-    }
-
-    if (!user_fp) {
-        PUSH_ERROR(ERR_BAD_PARAM, NULL);
-        goto error;
-    }
-
-    if (!org_fp) {
-        PUSH_ERROR(ERR_BAD_PARAM, NULL);
-        goto error;
-    }
-
-    if (prsr_envelope_labels_get(type,
-        (const char **)&label1,
-        (const char **)&label2,
-        (const char **)&label3,
-        (const char **)&label4) < 0)
+    if (prsr_envelope_labels_get(
+        type,
+        &label1,
+        &label2,
+        &label3,
+        &label4) < 0)
     {
         PUSH_ERROR(ERR_UNSPEC, "failed to get envelope chunk labels");
         goto error;
     }
 
-    result = st_merge(
-        "nsnnnnnsnnnn",
-        label1, user_id, end1,
-        label2, user_fp, end2,
-        label3, org_id, end1,
-        label4, org_fp, end2);
+    result = sdsempty();
+    result = sdscat(result, label1);
+    result = sdscat(result, user_id);
+    result = sdscat(result, end1);
+    result = sdscat(result, label2);
+    result = sdscat(result, user_fp);
+    result = sdscat(result, end2);
+    result = sdscat(result, label3);
+    result = sdscat(result, org_id);
+    result = sdscat(result, end1);
+    result = sdscat(result, label4);
+    result = sdscat(result, org_fp);
+    result = sdscat(result, end2);
 
-    if (!result) {
+    if (result == NULL) {
         PUSH_ERROR(
             ERR_UNSPEC,
             "failed to merge strings to form the envelope data");
@@ -179,10 +178,10 @@ error:
 static int
 prsr_envelope_labels_get(
     dmime_chunk_type_t type,
-    const char **label1,
-    const char **label2,
-    const char **label3,
-    const char **label4)
+    char const **label1,
+    char const **label2,
+    char const **label3,
+    char const **label4)
 {
     switch(type) {
     case CHUNK_TYPE_ORIGIN:
@@ -228,9 +227,9 @@ prsr_headers_destroy(
     for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
         if(obj->headers[i]) {
             _secure_wipe(
-                st_data_get(obj->headers[i]),
-                st_length_get(obj->headers[i]));
-            st_cleanup(obj->headers[i]);
+                obj->headers[i],
+                sdslen(obj->headers[i]));
+            sdsfree(obj->headers[i]);
         }
     }
 
@@ -273,7 +272,7 @@ prsr_headers_format(
         if(dmime_header_keys[i].label && obj->headers[i]) {
             size +=
               dmime_header_keys[i].label_length +
-              st_length_get(obj->headers[i]) +
+              sdslen(obj->headers[i]) +
               2;
         }
     }
@@ -296,9 +295,9 @@ prsr_headers_format(
             at += dmime_header_keys[i].label_length;
             memcpy(
                 result + at,
-                st_data_get(obj->headers[i]),
-                st_length_get(obj->headers[i]));
-            at += st_length_get(obj->headers[i]);
+                obj->headers[i],
+                sdslen(obj->headers[i]));
+            at += sdslen(obj->headers[i]);
             result[at++] = (unsigned char)'\r';
             result[at++] = (unsigned char)'\n';
         }
@@ -334,8 +333,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_TO].label,
             dmime_header_keys[HEADER_TYPE_TO].label_length))
@@ -343,8 +341,7 @@ prsr_headers_type_get(
         return HEADER_TYPE_TO;
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_CC].label,
             dmime_header_keys[HEADER_TYPE_CC].label_length))
@@ -356,8 +353,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_FROM].label,
             dmime_header_keys[HEADER_TYPE_FROM].label_length))
@@ -365,8 +361,7 @@ prsr_headers_type_get(
         return HEADER_TYPE_FROM;
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_DATE].label,
             dmime_header_keys[HEADER_TYPE_DATE].label_length))
@@ -378,8 +373,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_SUBJECT].label,
             dmime_header_keys[HEADER_TYPE_SUBJECT].label_length))
@@ -391,8 +385,7 @@ prsr_headers_type_get(
         RET_ERROR_CUST(HEADER_TYPE_NONE, ERR_UNSPEC, "invalid header syntax");
     }
 
-    if (
-        !memcmp(
+    if (!memcmp(
             in,
             (unsigned char *)dmime_header_keys[HEADER_TYPE_ORGANIZATION].label,
             dmime_header_keys[HEADER_TYPE_ORGANIZATION].label_length))
@@ -411,7 +404,7 @@ prsr_headers_type_get(
  * @param insize
  *  Input buffer size.
  * @return
- *  A dmime_common_headers_t array of stringers containing parsed header info.
+ *  A dmime_common_headers_t array of sds strings containing parsed header info.
  * @free_using{prsr_headers_destroy}
  */
 static dmime_common_headers_t *
@@ -436,8 +429,7 @@ prsr_headers_parse(
 
     while (at < insize) {
 
-        if (
-            (type = prsr_headers_type_get(in + at, insize - at))
+        if ((type = prsr_headers_type_get(in + at, insize - at))
             == HEADER_TYPE_NONE)
         {
             prsr_headers_destroy(result);
@@ -466,8 +458,7 @@ prsr_headers_parse(
             ++head_size;
         }
 
-        if (
-            (at + head_size + 1) > insize
+        if ((at + head_size + 1) > insize
             || (
                 (at + head_size + 1) == insize
                 && in[at + head_size + 1] != '\n'))
@@ -476,7 +467,7 @@ prsr_headers_parse(
             RET_ERROR_CUST(0, ERR_UNSPEC, "invalid header syntax");
         }
 
-        result->headers[type] = st_import(in + at, head_size);
+        result->headers[type] = sdsnewlen(in + at, head_size);
         at += head_size + 2;
     }
 
@@ -500,30 +491,30 @@ prsr_envelope_destroy(
 
     if (obj->auth_recp) {
         _secure_wipe(
-            st_data_get(obj->auth_recp),
-            st_length_get(obj->auth_recp));
-        st_cleanup(obj->auth_recp);
+            obj->auth_recp,
+            sdslen(obj->auth_recp));
+        sdsfree(obj->auth_recp);
     }
 
     if (obj->auth_recp_fp) {
         _secure_wipe(
-            st_data_get(obj->auth_recp_fp),
-            st_length_get(obj->auth_recp_fp));
-        st_cleanup(obj->auth_recp_fp);
+            obj->auth_recp_fp,
+            sdslen(obj->auth_recp_fp));
+        sdsfree(obj->auth_recp_fp);
     }
 
     if (obj->dest_orig) {
         _secure_wipe(
-            st_data_get(obj->dest_orig),
-            st_length_get(obj->dest_orig));
-        st_cleanup(obj->dest_orig);
+            obj->dest_orig,
+            sdslen(obj->dest_orig));
+        sdsfree(obj->dest_orig);
     }
 
     if (obj->dest_orig_fp) {
         _secure_wipe(
-            st_data_get(obj->dest_orig_fp),
-            st_length_get(obj->dest_orig_fp));
-        st_cleanup(obj->dest_orig_fp);
+            obj->dest_orig_fp,
+            sdslen(obj->dest_orig_fp));
+        sdsfree(obj->dest_orig_fp);
     }
 
     free(obj);
@@ -545,30 +536,29 @@ prsr_envelope_destroy(
 */
 static dmime_envelope_object_t *
 prsr_envelope_parse(
-    unsigned char const *in,
+    char const *in,
     size_t insize,
     dmime_chunk_type_t type)
 {
     dmime_envelope_object_t *result;
-    char *authrecp = NULL;
-    char *authrecp_signet = NULL;
-    char *destorig = NULL;
-    char *destorig_fp = NULL;
+    char const *authrecp = NULL;
+    char const *authrecp_signet = NULL;
+    char const *destorig = NULL;
+    char const *destorig_fp = NULL;
     char const *end1 = ">\r\n", *end2 = "]\r\n";
-    unsigned char *start;
+    char const *start;
     size_t string_size = 0, at = 0;
 
     if (!in || !insize) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (
-        prsr_envelope_labels_get(
+    if (prsr_envelope_labels_get(
             type,
-            (const char **)&authrecp,
-            (const char **)&authrecp_signet,
-            (const char **)&destorig,
-            (const char **)&destorig_fp)
+            &authrecp,
+            &authrecp_signet,
+            &destorig,
+            &destorig_fp)
         < 0)
     {
         RET_ERROR_PTR(
@@ -585,9 +575,8 @@ prsr_envelope_parse(
 
     memset(result, 0, sizeof(dmime_envelope_object_t));
 
-    if (
-        insize <= strlen(authrecp)
-        || in != (unsigned char *)strstr((char *)in, authrecp))
+    if (insize <= strlen(authrecp)
+        || in != strstr(in, authrecp))
     {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
@@ -596,7 +585,7 @@ prsr_envelope_parse(
     }
 
     at += strlen(authrecp);
-    start = (unsigned char *)(in + at);
+    start = in + at;
 
     while (at < insize && in[at] != '>') {
         if(!isprint(in[at])) {
@@ -611,12 +600,12 @@ prsr_envelope_parse(
 
     string_size = in + at - start;
 
-    if (!(result->auth_recp = st_import(start, string_size))) {
+    if (!(result->auth_recp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
-    if (in + at != (unsigned char *)strstr((char *)in + at, end1)) {
+    if (in + at != strstr(in + at, end1)) {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
             ERR_UNSPEC,
@@ -625,9 +614,8 @@ prsr_envelope_parse(
 
     at += strlen(end1);
 
-    if (
-        insize - at <= strlen(authrecp_signet)
-        || in + at != (unsigned char *)strstr((char *)in, authrecp_signet))
+    if (insize - at <= strlen(authrecp_signet)
+        || in + at != strstr(in, authrecp_signet))
     {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
@@ -636,7 +624,7 @@ prsr_envelope_parse(
     }
 
     at += strlen(authrecp_signet);
-    start = (unsigned char *)(in + at);
+    start = in + at;
 
     while (at < insize && in[at] != ']') {
         if (!isprint(in[at])) {
@@ -651,12 +639,12 @@ prsr_envelope_parse(
 
     string_size = in + at - start;
 
-    if (!(result->auth_recp_fp = st_import(start, string_size))) {
+    if (!(result->auth_recp_fp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
-    if (in + at != (unsigned char *)strstr((char *)in + at, end2)) {
+    if (in + at != strstr(in + at, end2)) {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
             ERR_UNSPEC,
@@ -665,16 +653,15 @@ prsr_envelope_parse(
 
     at += strlen(end2);
 
-    if (
-        insize - at <= strlen(destorig)
-        || in + at != (unsigned char *)strstr((char *)in, destorig))
+    if (insize - at <= strlen(destorig)
+        || in + at != strstr(in, destorig))
     {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
     }
 
     at += strlen(destorig);
-    start = (unsigned char *)(in + at);
+    start = in + at;
 
     while (at < insize && in[at] != '>') {
         if (!isprint(in[at])) {
@@ -689,12 +676,12 @@ prsr_envelope_parse(
 
     string_size = in + at - start;
 
-    if (!(result->dest_orig = st_import(start, string_size))) {
+    if (!(result->dest_orig = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
-    if (in + at != (unsigned char *)strstr((char *)in + at, end1)) {
+    if (in + at != strstr(in + at, end1)) {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
             ERR_UNSPEC,
@@ -703,16 +690,15 @@ prsr_envelope_parse(
 
     at += strlen(end1);
 
-    if (
-        insize - at <= strlen(destorig_fp)
-        || in + at != (unsigned char *)strstr((char *)in, destorig_fp))
+    if (insize - at <= strlen(destorig_fp)
+        || in + at != strstr(in, destorig_fp))
     {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(ERR_UNSPEC, "invalid input buffer passed to envelope parser");
     }
 
     at += strlen(destorig_fp);
-    start = (unsigned char *)(in + at);
+    start = in + at;
 
     while (at < insize && in[at] != ']') {
         if (!isprint(in[at])) {
@@ -727,12 +713,12 @@ prsr_envelope_parse(
 
     string_size = in + at - start;
 
-    if (!(result->dest_orig_fp = st_import(start, string_size))) {
+    if (!(result->dest_orig_fp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
-    if (in + at != (unsigned char *)strstr((char *)in + at, end2)) {
+    if (in + at != strstr(in + at, end2)) {
         prsr_envelope_destroy(result);
         RET_ERROR_PTR(
             ERR_UNSPEC,
@@ -787,12 +773,12 @@ dime_prsr_envelope_destroy(
  *  Buffer with formated envelope data.
  * @free_using{st_free}
  */
-stringer_t *
+sds
 dime_prsr_envelope_format(
-    stringer_t *user_id,
-    stringer_t *org_id,
-    const char *user_fp,
-    const char *org_fp,
+    sds user_id,
+    sds org_id,
+    char const * user_fp,
+    char const * org_fp,
     dmime_chunk_type_t type)
 {
     PUBLIC_FUNCTION_IMPLEMENT(prsr_envelope_format, user_id, org_id, user_fp, org_fp, type);
@@ -813,7 +799,7 @@ dime_prsr_envelope_format(
 */
 dmime_envelope_object_t *
 dime_prsr_envelope_parse(
-    const unsigned char *in,
+    char const *in,
     size_t insize,
     dmime_chunk_type_t type)
 {
@@ -873,7 +859,7 @@ dime_prsr_headers_format(
  * @param insize
  *  Input buffer size.
  * @return
- *  A dmime_common_headers_t array of stringers containing parsed header info.
+ *  A dmime_common_headers_t array of sds strings containing parsed header info.
  * @free_using{dime_prsr_headers_destroy}
 */
 dmime_common_headers_t *

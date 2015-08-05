@@ -2,6 +2,7 @@
 #define DIME_DMSG_COMMON_H
 
 #include "dime/core/magma.h"
+#include "sds.h"
 
 #define DMIME_NUM_COMMON_HEADERS 7
 #define CHUNK_LENGTH_SIZE 3
@@ -22,7 +23,7 @@
 #define DEFAULT_CHUNK_FLAGS 0
 
 typedef struct {
-    stringer_t *headers[DMIME_NUM_COMMON_HEADERS];
+    sds headers[DMIME_NUM_COMMON_HEADERS];
 } dmime_common_headers_t;
 
 typedef enum {

@@ -60,16 +60,16 @@ typedef struct {
     // The current actor on the object.
     dmime_actor_t actor;
     // The author and recipient's dmail addresses.
-    stringer_t *author;
-    stringer_t *recipient;
+    sds author;
+    sds recipient;
     // The origin and destination domains.
-    stringer_t *origin;
-    stringer_t *destination;
+    sds origin;
+    sds destination;
     // Cryptographic signet fingerprint.
-    stringer_t *fp_author;
-    stringer_t *fp_recipient;
-    stringer_t *fp_origin;
-    stringer_t *fp_destination;
+    sds fp_author;
+    sds fp_recipient;
+    sds fp_origin;
+    sds fp_destination;
     // Signets for the author and recipient and their orgs.
     signet_t *signet_author;
     signet_t *signet_recipient;
@@ -78,7 +78,7 @@ typedef struct {
     // Common headers.
     dmime_common_headers_t *common_headers;
     // Other headers
-    stringer_t *other_headers;
+    sds other_headers;
     // display and attachment chunks
     dmime_object_chunk_t *display;
     dmime_object_chunk_t *attach;
