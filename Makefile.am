@@ -1,68 +1,5 @@
 # Add/remove libdime source files here!
 LIBDIME_SOURCES = \
-	libs/core/buckets/arrays.c \
-	libs/core/buckets/pool.c \
-	libs/core/buckets/stacked.c \
-	libs/core/classify/ascii.c \
-	libs/core/compare/ends.c \
-	libs/core/compare/equal.c \
-	libs/core/compare/search.c \
-	libs/core/compare/starts.c \
-	libs/core/encodings/base64.c \
-	libs/core/encodings/hex.c \
-	libs/core/encodings/mappings.c \
-	libs/core/encodings/qp.c \
-	libs/core/encodings/url.c \
-	libs/core/encodings/zbase32.c \
-	libs/core/global.c \
-	libs/core/hash/adler.c \
-	libs/core/hash/crc.c \
-	libs/core/hash/fletcher.c \
-	libs/core/hash/murmur.c \
-	libs/core/host/files.c \
-	libs/core/host/folder.c \
-	libs/core/host/host.c \
-	libs/core/host/mappings.c \
-	libs/core/host/process.c \
-	libs/core/host/spool.c \
-	libs/core/indexes/cursors.c \
-	libs/core/indexes/hashed.c \
-	libs/core/indexes/inx.c \
-	libs/core/indexes/linked.c \
-	libs/core/log/log.c \
-	libs/core/mail/counters.c \
-	libs/core/mail/headers.c \
-	libs/core/mail/mime.c \
-	libs/core/memory/align.c \
-	libs/core/memory/bits.c \
-	libs/core/memory/memory.c \
-	libs/core/memory/secure.c \
-	libs/core/other.c \
-	libs/core/parsers/case.c \
-	libs/core/parsers/formats/nvp.c \
-	libs/core/parsers/line.c \
-	libs/core/parsers/numbers/digits.c \
-	libs/core/parsers/numbers/numbers.c \
-	libs/core/parsers/special/bracket.c \
-	libs/core/parsers/time.c \
-	libs/core/parsers/token.c \
-	libs/core/parsers/trim.c \
-	libs/core/strings/allocation.c \
-	libs/core/strings/data.c \
-	libs/core/strings/info.c \
-	libs/core/strings/length.c \
-	libs/core/strings/multi.c \
-	libs/core/strings/nuller.c \
-	libs/core/strings/opts.c \
-	libs/core/strings/print.c \
-	libs/core/strings/replace.c \
-	libs/core/strings/shortcuts.c \
-	libs/core/strings/validate.c \
-	libs/core/thread/keys.c \
-	libs/core/thread/mutex.c \
-	libs/core/thread/rwlock.c \
-	libs/core/thread/thread.c \
-	libs/core/type.c \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
 	libs/common/error.c \
@@ -97,12 +34,6 @@ LIBDIME_TESTS = \
 	check/common/check_crypto.cpp \
 	check/common/check_error.cpp \
 	check/common/check_misc.cpp \
-	check/core/check_classify.cpp \
-	check/core/check_compare.cpp \
-	check/core/check_hash.cpp \
-	check/core/check_host_folder.cpp \
-	check/core/check_mail_counters.cpp \
-	check/core/check_memory.cpp \
 	check/signet/check_keys.cpp \
 	check/signet/check_signet.cpp
 
@@ -144,31 +75,6 @@ commoninclude_HEADERS = \
 	include/dime/common/error.h \
 	include/dime/common/misc.h \
 	include/dime/common/network.h
-coreincludedir = \
-	$(includedir)/dime/core
-coreinclude_HEADERS = \
-	include/dime/core/buckets.h \
-	include/dime/core/classify.h \
-	include/dime/core/compare.h \
-	include/dime/core/config.h \
-	include/dime/core/core.h \
-	include/dime/core/encodings.h \
-	include/dime/core/formats.h \
-	include/dime/core/hash.h \
-	include/dime/core/host.h \
-	include/dime/core/indexes.h \
-	include/dime/core/log.h \
-	include/dime/core/magma.h \
-	include/dime/core/mail.h \
-	include/dime/core/memory.h \
-	include/dime/core/mime.h \
-	include/dime/core/numbers.h \
-	include/dime/core/other.h \
-	include/dime/core/parsers.h \
-	include/dime/core/smtp.h \
-	include/dime/core/special.h \
-	include/dime/core/strings.h \
-	include/dime/core/thread.h
 dmessageincludedir = \
 	$(includedir)/dime/dmessage
 dmessageinclude_HEADERS = \
