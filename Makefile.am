@@ -121,12 +121,16 @@ COMMON_CPPFLAGS = \
 DONNA_CPPFLAGS = \
 	-I$(top_srcdir)/bundle/ed25519-donna
 
+SDS_CPPFLAGS = \
+	-I$(top_srcdir)/bundle/sds
+
 lib_LTLIBRARIES = \
 	libdime.la
 
 libdime_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
-	$(DONNA_CPPFLAGS)
+	$(DONNA_CPPFLAGS) \
+	$(SDS_CPPFLAGS)
 libdime_la_SOURCES = \
 	$(LIBDIME_SOURCES)
 libdime_la_LIBADD = \
@@ -261,6 +265,7 @@ gtest_CPPFLAGS = \
 	-DGTEST_TAP_PRINT_TO_STDOUT \
 	$(COMMON_CPPFLAGS) \
 	$(DONNA_CPPFLAGS) \
+	$(SDS_CPPFLAGS) \
 	-I$(top_srcdir)/bundle/googletest/include \
 	-I$(top_srcdir)/bundle/gtest-tap-listener/src \
 	-I$(top_srcdir)/check

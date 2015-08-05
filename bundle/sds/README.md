@@ -1,6 +1,23 @@
 Simple Dynamic Strings
 ===
 
+**Notes about verison 2**: this is an updated version of SDS in an attempt
+to finally unify Redis, Disque, Hiredis, and the stand alone SDS versions.
+This version is **NOT* binary compatible** with SDS verison 1, but the API
+is 99% compatible so switching to the new lib should be trivial.
+
+Note that this version of SDS may be a slower with certain workloads, but
+uses less memory compared to V1 since header size is dynamic and depends to
+the string to alloc.
+
+Moreover it includes a few more API functions, notably `sdscatfmt` which
+is a faster version of `sdscatprintf` that can be used for the simpler
+cases in order to avoid the libc `printf` family functions performance
+penalty.
+
+How SDS strings work
+===
+
 SDS is a string library for C designed to augment the limited libc string
 handling functionalities by adding heap allocated strings that are:
 
@@ -23,7 +40,7 @@ Because of meta data stored before the actual returned pointer as a prefix,
 and because of every SDS string implicitly adding a null term at the end of
 the string regardless of the actual content of the string, SDS strings work
 well together with C strings and the user is free to use them interchangeably
-with real-only functions that access the string in read-only.
+with other std C string functions that access the string in read-only.
 
 SDS was a C string I developed in the past for my everyday C programming needs,
 later it was moved into Redis where it is used extensively and where it was
@@ -50,7 +67,7 @@ struct yourAverageStringLibrary {
 };
 ```
 
-SDS strings are already mentioned don't follow this schema, and are instead
+SDS strings as already mentioned don't follow this schema, and are instead
 a single allocation with a prefix that lives *before* the address actually
 returned for the string.
 
@@ -212,7 +229,7 @@ void sdsfree(sds s);
 ```
 
 The destroy an SDS string there is just to call `sdsfree` with the string
-pointer. However note that empty strings created with `sdsempty` need to be
+pointer. Note that even empty strings created with `sdsempty` need to be
 destroyed as well otherwise they'll result into a memory leak.
 
 The function `sdsfree` does not perform any operation if instead of an SDS
@@ -310,7 +327,7 @@ s = sdscatprintf(s,"%d+%d = %d",a,b,a+b);
 ```
 
 Often you need to create SDS string directly from `printf` format specifiers.
-Because `sdscatprintf` is actually a function that concatenates strings all
+Because `sdscatprintf` is actually a function that concatenates strings, all
 you need is to concatenate your string to an empty string:
 
 
@@ -365,10 +382,10 @@ void sdsrange(sds s, int start, int end);
 
 SDS provides both the operations with the `sdstrim` and `sdsrange` functions.
 However note that both functions work differently than most functions modifying
-SDS strings since the return value is null: basically those functions always
+SDS strings since the return value is void: basically those functions always
 destructively modify the passed SDS string, never allocating a new one, because
 both trimming and ranges will never need more room: the operations can only
-remove characters from the original strings.
+remove characters from the original string.
 
 Because of this behavior, both functions are fast and don't involve reallocation.
 
@@ -497,7 +514,7 @@ purposes, it is often important to turn a string that may contain binary
 data or special characters into a quoted string. Here for quoted string
 we mean the common format for String literals in programming source code.
 However today this format is also part of the well known serialization formats
-like JSON and CSV, so it definitely escaped the simple gaol of representing
+like JSON and CSV, so it definitely escaped the simple goal of representing
 literals strings in the source code of programs.
 
 An example of quoted string literal is the following:
@@ -541,7 +558,7 @@ This is the rules `sdscatrepr` uses for conversion:
 * The function always adds initial and final double quotes characters.
 
 There is an SDS function that is able to perform the reverse conversion and is
-documented in the *Tokenization* paragraph below.
+documented in the *Tokenization* section below.
 
 Tokenization
 ---
@@ -873,3 +890,6 @@ Credits and license
 ===
 
 SDS was created by Salvatore Sanfilippo and is released under the BDS two clause license. See the LICENSE file in this source distribution for more information.
+
+Oran Agra improved SDS version 2 by adding dynamic sized headers in order to
+save memory for small strings and allow strings greater than 4GB.
