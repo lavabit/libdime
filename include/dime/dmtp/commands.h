@@ -2,7 +2,7 @@
 #define DIME_DMTP_COMMANDS
 
 #include <stdlib.h>
-#include "../../bundle/sds/sds.h"
+#include "sds.h"
 
 #define DMTP_MAX_ARGUMENT_NUM  3
 #define DMTP_COMMANDS_NUM     14
