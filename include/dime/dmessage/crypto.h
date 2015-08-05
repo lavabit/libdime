@@ -78,7 +78,7 @@ typedef struct {
     // Common headers.
     dmime_common_headers_t *common_headers;
     // Other headers
-    stringer_t *other_headers;
+    sds other_headers;
     // display and attachment chunks
     dmime_object_chunk_t *display;
     dmime_object_chunk_t *attach;

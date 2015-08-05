@@ -87,12 +87,12 @@ TEST(DIME, check_parser_header) {
     unsigned char *formatted;
 
     header1 = dime_prsr_headers_create();
-    header1->headers[HEADER_TYPE_DATE] = st_import("11:34:12 AM March 12, 2004", 26);
-    header1->headers[HEADER_TYPE_TO] = st_import("abc@hello.com", 13);
-    header1->headers[HEADER_TYPE_CC] = st_import("a312@goodbye.com", 16);
-    header1->headers[HEADER_TYPE_FROM] = st_import("author@authorplace.com", 22);
-    header1->headers[HEADER_TYPE_ORGANIZATION] = st_import("Cool people organization", 24);
-    header1->headers[HEADER_TYPE_SUBJECT] = st_import("here's stuff", 12);
+    header1->headers[HEADER_TYPE_DATE] = sdsnew("11:34:12 AM March 12, 2004");
+    header1->headers[HEADER_TYPE_TO] = sdsnew("abc@hello.com");
+    header1->headers[HEADER_TYPE_CC] = sdsnew("a312@goodbye.com");
+    header1->headers[HEADER_TYPE_FROM] = sdsnew("author@authorplace.com");
+    header1->headers[HEADER_TYPE_ORGANIZATION] = sdsnew("Cool people organization");
+    header1->headers[HEADER_TYPE_SUBJECT] = sdsnew("here's stuff");
 
     formatted = dime_prsr_headers_format(header1, &outsize);
     ASSERT_TRUE(formatted != NULL) << "Failed to format common headers.";
@@ -100,22 +100,22 @@ TEST(DIME, check_parser_header) {
     header2 = dime_prsr_headers_parse(formatted, outsize);
     ASSERT_TRUE(header2 != NULL) << "Failed to parse common headers.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_DATE], header2->headers[HEADER_TYPE_DATE]);
+    res = sdscmp(header1->headers[HEADER_TYPE_DATE], header2->headers[HEADER_TYPE_DATE]);
     ASSERT_EQ(0, res) << "Date header was corrupted.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_TO], header2->headers[HEADER_TYPE_TO]);
+    res = sdscmp(header1->headers[HEADER_TYPE_TO], header2->headers[HEADER_TYPE_TO]);
     ASSERT_EQ(0, res) << "To header was corrupted.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_CC], header2->headers[HEADER_TYPE_CC]);
+    res = sdscmp(header1->headers[HEADER_TYPE_CC], header2->headers[HEADER_TYPE_CC]);
     ASSERT_EQ(0, res) << "CC header was corrupted.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_FROM], header2->headers[HEADER_TYPE_FROM]);
+    res = sdscmp(header1->headers[HEADER_TYPE_FROM], header2->headers[HEADER_TYPE_FROM]);
     ASSERT_EQ(0, res) << "From header was corrupted.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_ORGANIZATION], header2->headers[HEADER_TYPE_ORGANIZATION]);
+    res = sdscmp(header1->headers[HEADER_TYPE_ORGANIZATION], header2->headers[HEADER_TYPE_ORGANIZATION]);
     ASSERT_EQ(0, res) << "Organization header was corrupted.";
 
-    res = st_cmp_cs_eq(header1->headers[HEADER_TYPE_SUBJECT], header2->headers[HEADER_TYPE_SUBJECT]);
+    res = sdscmp(header1->headers[HEADER_TYPE_SUBJECT], header2->headers[HEADER_TYPE_SUBJECT]);
     ASSERT_EQ(0, res) << "Subject header was corrupted.";
 
     dime_prsr_headers_destroy(header1);

@@ -720,8 +720,8 @@ dmsg_chunk_headers_other_encode(dmime_object_t *object)
     if (!(result =
             dmsg_message_chunk_create(
                 CHUNK_TYPE_META_OTHER,
-                (unsigned char *)st_data_get(object->other_headers),
-                st_length_get(object->other_headers),
+                (unsigned char *)object->other_headers,
+                sdslen(object->other_headers),
                 DEFAULT_CHUNK_FLAGS)))
     {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -3439,7 +3439,7 @@ dmsg_object_destroy(dmime_object_t *object)
     }
 
     dime_prsr_headers_destroy(object->common_headers);
-    st_cleanup(object->other_headers);
+    sdsfree(object->other_headers);
     dmsg_object_chunklist_destroy(object->display);
     dmsg_object_chunklist_destroy(object->attach);
     free(object);
@@ -4017,7 +4017,7 @@ dmsg_chunk_headers_other_decrypt(
         RET_ERROR_INT(ERR_UNSPEC, "could not retrieve chunk data");
     }
 
-    object->other_headers = st_import(data, data_size);
+    object->other_headers = sdsnewlen(data, data_size);
     dmsg_message_chunk_destroy(decrypted);
 
     return 0;
@@ -5135,16 +5135,16 @@ dmsg_object_dump(dmime_object_t *object)
                 printf(
                     "%s%.*s\r\n",
                     dmime_header_keys[i].label,
-                    (int)st_length_get(object->common_headers->headers[i]),
-                    (char *)st_data_get(object->common_headers->headers[i]));
+                    (int)sdslen(object->common_headers->headers[i]),
+                    object->common_headers->headers[i]);
             }
 
         }
 
         printf(
             "other headers :\n %.*s\n",
-            (int)st_length_get(object->other_headers),
-            (char *)st_data_get(object->other_headers));
+            (int)sdslen(object->other_headers),
+            object->other_headers);
         display = object->display;
 
         for (unsigned int i = 0; display; i++) {

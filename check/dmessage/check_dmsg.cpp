@@ -152,12 +152,12 @@ TEST(DIME, message_encryption_and_decryption)
     draft->signet_origin = dime_sgnt_signet_dupe(signet_orig);
     draft->signet_destination = dime_sgnt_signet_dupe(signet_dest);
     draft->signet_recipient = dime_sgnt_signet_dupe(signet_recp);
-    draft->common_headers->headers[HEADER_TYPE_DATE] = st_import(common_date, strlen(common_date));
-    draft->common_headers->headers[HEADER_TYPE_FROM] = st_import(common_from, strlen(common_from));
-    draft->common_headers->headers[HEADER_TYPE_ORGANIZATION] = st_import(common_organization, strlen(common_organization));
-    draft->common_headers->headers[HEADER_TYPE_SUBJECT] = st_import(common_subject, strlen(common_subject));
-    draft->common_headers->headers[HEADER_TYPE_TO] = st_import(common_to, strlen(common_to));
-    draft->other_headers = st_import(other_headers, strlen(other_headers));
+    draft->common_headers->headers[HEADER_TYPE_DATE] = sdsnew(common_date);
+    draft->common_headers->headers[HEADER_TYPE_FROM] = sdsnew(common_from);
+    draft->common_headers->headers[HEADER_TYPE_ORGANIZATION] = sdsnew(common_organization);
+    draft->common_headers->headers[HEADER_TYPE_SUBJECT] = sdsnew(common_subject);
+    draft->common_headers->headers[HEADER_TYPE_TO] = sdsnew(common_to);
+    draft->other_headers = sdsnew(other_headers);
     draft->display = dime_dmsg_object_chunk_create(CHUNK_TYPE_DISPLAY_CONTENT, (unsigned char *)display, strlen(display), DEFAULT_CHUNK_FLAGS);
     ASSERT_DIME_NO_ERROR();
 
@@ -273,17 +273,17 @@ TEST(DIME, message_encryption_and_decryption)
     res = dime_dmsg_message_decrypt_as_recp(at_recp, message, &recp_kek);
     ASSERT_EQ(0, res) << "Failed to decrypt the message as recipient.";
 
-    res = st_cmp_cs_eq(draft->common_headers->headers[HEADER_TYPE_DATE], at_recp->common_headers->headers[HEADER_TYPE_DATE]);
+    res = sdscmp(draft->common_headers->headers[HEADER_TYPE_DATE], at_recp->common_headers->headers[HEADER_TYPE_DATE]);
     ASSERT_EQ(0, res) << "DATE header was corrupted.";
-    res = st_cmp_cs_eq(draft->common_headers->headers[HEADER_TYPE_FROM], at_recp->common_headers->headers[HEADER_TYPE_FROM]);
+    res = sdscmp(draft->common_headers->headers[HEADER_TYPE_FROM], at_recp->common_headers->headers[HEADER_TYPE_FROM]);
     ASSERT_EQ(0, res) << "FROM header was corrupted.";
-    res = st_cmp_cs_eq(draft->common_headers->headers[HEADER_TYPE_ORGANIZATION], at_recp->common_headers->headers[HEADER_TYPE_ORGANIZATION]);
+    res = sdscmp(draft->common_headers->headers[HEADER_TYPE_ORGANIZATION], at_recp->common_headers->headers[HEADER_TYPE_ORGANIZATION]);
     ASSERT_EQ(0, res) << "ORGANIZATION header was corrupted.";
-    res = st_cmp_cs_eq(draft->common_headers->headers[HEADER_TYPE_SUBJECT], at_recp->common_headers->headers[HEADER_TYPE_SUBJECT]);
+    res = sdscmp(draft->common_headers->headers[HEADER_TYPE_SUBJECT], at_recp->common_headers->headers[HEADER_TYPE_SUBJECT]);
     ASSERT_EQ(0, res) << "SUBJECT header was corrupted.";
-    res = st_cmp_cs_eq(draft->common_headers->headers[HEADER_TYPE_TO], at_recp->common_headers->headers[HEADER_TYPE_TO]);
+    res = sdscmp(draft->common_headers->headers[HEADER_TYPE_TO], at_recp->common_headers->headers[HEADER_TYPE_TO]);
     ASSERT_EQ(0, res) << "TO header was corrupted.";
-    res = st_cmp_cs_eq(draft->other_headers, at_recp->other_headers);
+    res = sdscmp(draft->other_headers, at_recp->other_headers);
     ASSERT_EQ(0, res) << "Other headers were corrupted.";
     res = (draft->display->data_size == at_recp->display->data_size);
     ASSERT_EQ(1, res) << "Message body data size was corrupted.";

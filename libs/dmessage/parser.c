@@ -227,9 +227,9 @@ prsr_headers_destroy(
     for(unsigned int i = 0; i < DMIME_NUM_COMMON_HEADERS; ++i) {
         if(obj->headers[i]) {
             _secure_wipe(
-                st_data_get(obj->headers[i]),
-                st_length_get(obj->headers[i]));
-            st_cleanup(obj->headers[i]);
+                obj->headers[i],
+                sdslen(obj->headers[i]));
+            sdsfree(obj->headers[i]);
         }
     }
 
@@ -272,7 +272,7 @@ prsr_headers_format(
         if(dmime_header_keys[i].label && obj->headers[i]) {
             size +=
               dmime_header_keys[i].label_length +
-              st_length_get(obj->headers[i]) +
+              sdslen(obj->headers[i]) +
               2;
         }
     }
@@ -295,9 +295,9 @@ prsr_headers_format(
             at += dmime_header_keys[i].label_length;
             memcpy(
                 result + at,
-                st_data_get(obj->headers[i]),
-                st_length_get(obj->headers[i]));
-            at += st_length_get(obj->headers[i]);
+                obj->headers[i],
+                sdslen(obj->headers[i]));
+            at += sdslen(obj->headers[i]);
             result[at++] = (unsigned char)'\r';
             result[at++] = (unsigned char)'\n';
         }
@@ -404,7 +404,7 @@ prsr_headers_type_get(
  * @param insize
  *  Input buffer size.
  * @return
- *  A dmime_common_headers_t array of stringers containing parsed header info.
+ *  A dmime_common_headers_t array of sds strings containing parsed header info.
  * @free_using{prsr_headers_destroy}
  */
 static dmime_common_headers_t *
@@ -467,7 +467,7 @@ prsr_headers_parse(
             RET_ERROR_CUST(0, ERR_UNSPEC, "invalid header syntax");
         }
 
-        result->headers[type] = st_import(in + at, head_size);
+        result->headers[type] = sdsnewlen(in + at, head_size);
         at += head_size + 2;
     }
 
@@ -602,7 +602,7 @@ prsr_envelope_parse(
 
     if (!(result->auth_recp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
     if (in + at != strstr(in + at, end1)) {
@@ -641,7 +641,7 @@ prsr_envelope_parse(
 
     if (!(result->auth_recp_fp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
     if (in + at != strstr(in + at, end2)) {
@@ -678,7 +678,7 @@ prsr_envelope_parse(
 
     if (!(result->dest_orig = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
     if (in + at != strstr(in + at, end1)) {
@@ -715,7 +715,7 @@ prsr_envelope_parse(
 
     if (!(result->dest_orig_fp = sdsnewlen(start, string_size))) {
         prsr_envelope_destroy(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "could not import stringer");
+        RET_ERROR_PTR(ERR_UNSPEC, "could not import sds string");
     }
 
     if (in + at != strstr(in + at, end2)) {
@@ -859,7 +859,7 @@ dime_prsr_headers_format(
  * @param insize
  *  Input buffer size.
  * @return
- *  A dmime_common_headers_t array of stringers containing parsed header info.
+ *  A dmime_common_headers_t array of sds strings containing parsed header info.
  * @free_using{dime_prsr_headers_destroy}
 */
 dmime_common_headers_t *

@@ -23,7 +23,7 @@
 #define DEFAULT_CHUNK_FLAGS 0
 
 typedef struct {
-    stringer_t *headers[DMIME_NUM_COMMON_HEADERS];
+    sds headers[DMIME_NUM_COMMON_HEADERS];
 } dmime_common_headers_t;
 
 typedef enum {
