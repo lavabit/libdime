@@ -1,6 +1,9 @@
 #ifndef DIME_DMTP_COMMANDS
 #define DIME_DMTP_COMMANDS
 
+#include <stdlib.h>
+#include "../../bundle/sds/sds.h"
+
 #define DMTP_MAX_ARGUMENT_NUM  3
 #define DMTP_COMMANDS_NUM     14
 
@@ -49,5 +52,14 @@ typedef struct {
 } dmtp_command_key_t;
 
 extern dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM];
+
+
+dmtp_command_t *     dime_dmtp_command_create(dmtp_command_type_t type);
+void                 dime_dmtp_command_destroy(dmtp_command_t *command);
+sds                  dime_dmtp_command_format(dmtp_command_t *command);
+dmtp_command_t *     dime_dmtp_command_parse(sds command);
+
+
+
 
 #endif

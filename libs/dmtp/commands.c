@@ -1,10 +1,14 @@
-#include "sds.h"
-#include "dmtp_commands.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "../../bundle/sds/sds.h"
+#include "dime/dmtp/commands.h"
+#include "dime/common/error.h"
 
 #define DMTP_IGNORE_ARG { NULL, 0,  DMTP_ARG_PLAIN, 0 }
 #define DMTP_EMPTY_ARG  { NULL, 0,  DMTP_ARG_NONE,  0 }
 
-static int                  dmtp_command_argument_parse(const char *line, size_t insize, unsigned int arg_index, size_t *parsed, dmpt_command_t *command);
+static int                  dmtp_command_argument_parse(const char *line, size_t insize, unsigned int arg_index, size_t *parsed, dmtp_command_t *command);
 static dmtp_command_t *     dmtp_command_create(dmtp_command_type_t type);
 static void                 dmtp_command_destroy(dmtp_command_t *command);
 static sds                  dmtp_command_format(dmtp_command_t *command);
@@ -23,13 +27,13 @@ dmtp_command_argument_parse(
     const char *line,
     size_t insize,
     unsigned int arg_index,
-    size_t *parsed;
-    dmpt_command_t *command)
+    size_t *parsed,
+    dmtp_command_t *command)
 {
 
-   char *arg_start, arg_end;
+   char const *arg_start;
+   char arg_end;
    dmtp_command_key_t *key;
-   size_t arg_len;
    unsigned int arg_num, at, arg_offset;
 
    if(!line) {
@@ -47,11 +51,6 @@ dmtp_command_argument_parse(
        goto error;
    }
 
-   if(!key) {
-       PUSH_ERROR(ERR_BAD_PARAM, NULL);
-       goto error;
-   }
-  
    if(!command) {
        PUSH_ERROR(ERR_BAD_PARAM, NULL);
        goto error;
@@ -124,8 +123,8 @@ dmtp_command_argument_parse(
            goto error;
        }
 
-       command[arg_num] = sdsnewlen(line + arg_offset, at - arg_offset);
-       parsed = at+1;
+       command->args[arg_num] = sdsnewlen(line + arg_offset, at - arg_offset);
+       *parsed = at+1;
    }
    else {
 
@@ -138,15 +137,15 @@ dmtp_command_argument_parse(
            goto error;
        }
 
-       command[arg_num] = sdsnewlen(line + arg_offset, at - arg_offset);
-       parsed = at;
+       command->args[arg_num] = sdsnewlen(line + arg_offset, at - arg_offset);
+       *parsed = at;
 
    }
 
    return arg_num + 1;
 
 error:
-   return -1
+   return -1;
 }
 
 
@@ -195,7 +194,6 @@ static void dmtp_command_destroy(dmtp_command_t *command) {
 
 static sds dmtp_command_format(dmtp_command_t *command) {
 
-    char open, close;
     dmtp_command_key_t *key;
     sds result;
     size_t command_size = 0;
@@ -243,7 +241,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
 
     }
 
-    if(arg_size > 512) {
+    if(command_size > 512) {
         PUSH_ERROR(ERR_UNSPEC, "command is too long");
         goto error;
     }
@@ -253,7 +251,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
         goto error;
     }
 
-    if(!(result = sdsMakeRoomFor(result, arg_size))) {
+    if(!(result = sdsMakeRoomFor(result, command_size))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to make room for arguments");
         goto cleanup_result;
     }
@@ -282,7 +280,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
                 goto cleanup_result;
             }
 
-            if(keys->args[i].type == DMTP_ARG_REQ_STR) {
+            if(key->args[i].type == DMTP_ARG_REQ_STR) {
 
                 if(!(result = sdscatlen(result, "<", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate angular bracket");
@@ -291,7 +289,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
 
             }
 
-            if(keys->args[i].type == DMTP_ARG_OPT_STR) {
+            if(key->args[i].type == DMTP_ARG_OPT_STR) {
 
                 if(!(result = sdscatlen(result, "[", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate square bracket");
@@ -305,7 +303,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
                 goto cleanup_result;
             }
 
-            if(keys->args[i].type == DMTP_ARG_REQ_STR) {
+            if(key->args[i].type == DMTP_ARG_REQ_STR) {
 
                 if(!(result = sdscatlen(result, ">", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate angular bracket");
@@ -314,7 +312,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
 
             }
 
-            if(keys->args[i].type == DMTP_ARG_OPT_STR) {
+            if(key->args[i].type == DMTP_ARG_OPT_STR) {
 
                 if(!(result = sdscatlen(result, "]", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate square bracket");
@@ -332,7 +330,7 @@ static sds dmtp_command_format(dmtp_command_t *command) {
         goto cleanup_result;
     }
 
-    if(sdslen > 512) {
+    if(sdslen(result) > 512) {
         PUSH_ERROR(ERR_UNSPEC, "command is too long");
         goto error;
     }
@@ -368,7 +366,7 @@ static int dmtp_command_is_valid(dmtp_command_t *command) {
             goto error;
         }
 
-        if( key->args[i].size && ( key->args[i].size[i] != sdslen(comman->args[i])) ) {
+        if( key->args[i].size && ( key->args[i].size != sdslen(command->args[i])) ) {
             PUSH_ERROR(ERR_UNSPEC, "invalid argument size");
             goto error;
         }
@@ -415,13 +413,13 @@ static int dmtp_command_is_valid(dmtp_command_t *command) {
         result = !arg1 && !arg2 && !arg3;
         break;
     case DMTP_SGNT:
-        result = arg1 ^^ arg2;
+        result = arg1 ^ arg2;
         break;
     case DMTP_HIST:
         result = arg1;
         break;
     case DMTP_VRFY:
-        result = arg1 ^^ arg2 && arg3;
+        result = arg1 ^ arg2 && arg3;
         break;
     default:
         PUSH_ERROR(ERR_UNSPEC, "invalid command type");
@@ -443,7 +441,7 @@ static dmtp_command_key_t * dmtp_command_key_get(dmtp_command_type_t type) {
         goto error;
     }
 
-    return dmtp_command_list[type];
+    return &(dmtp_command_list[type]);
 
 error:
     return NULL;
@@ -456,7 +454,7 @@ static dmtp_command_t * dmtp_command_parse(sds command) {
     dmtp_command_t *result;
     dmtp_command_type_t type;
     size_t at = 0, len, parsed;
-    unsigned int i = 0;
+    int i = 0;
 
     if(!command) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -525,7 +523,7 @@ static dmtp_command_t * dmtp_command_parse(sds command) {
     }
 
 
-    while(i < DMTP_MAX_COMMANDS_NUM) {
+    while(i < DMTP_MAX_ARGUMENT_NUM) {
 
         if(key->args[i].type == DMTP_ARG_NONE) {
             PUSH_ERROR(ERR_UNSPEC, "unexpected command argument");
@@ -580,7 +578,17 @@ static dmtp_command_t * dmtp_command_parse(sds command) {
 
     }
 
+    if(memcmp(command + sdslen(command) - 2, "\r\n", 2) != 0) {
+        PUSH_ERROR(ERR_UNSPEC, "command did not end with required ending characters");
+        goto cleanup_result;
+    }
+
 out:
+    if(!(dmtp_command_is_valid(result))) {
+        PUSH_ERROR(ERR_UNSPEC, "invalid dmtp command");
+        goto cleanup_result;
+    }
+
     return result;
 
 cleanup_result:
@@ -594,8 +602,6 @@ error:
 static int dmtp_command_type_cmp(sds command, dmtp_command_type_t type) {
 
     dmtp_command_key_t *key;
-    int result;
-    size_t min_len;
 
     if(!command) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -633,7 +639,6 @@ error:
 static dmtp_command_type_t  dmtp_command_type_get(sds command) {
 
     dmtp_command_type_t result;
-    sds temp;
 
     if(!command) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -842,7 +847,7 @@ static dmtp_command_type_t  dmtp_command_type_get(sds command) {
         result = DMTP_VRFY;
         break;
     default:
-        PUSH_ERROR("invalid command");
+        PUSH_ERROR(ERR_UNSPEC, "invalid command");
         goto error;
 
     }
@@ -856,12 +861,26 @@ error:
 
 
 
+dmtp_command_t *     dime_dmtp_command_create(dmtp_command_type_t type) {
+    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_create, type);
+}
+
+void                 dime_dmtp_command_destroy(dmtp_command_t *command) {
+    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_destroy, command);
+}
+
+sds                  dime_dmtp_command_format(dmtp_command_t *command) {
+    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_format, command);
+}
+
+dmtp_command_t *     dime_dmtp_command_parse(sds command) {
+    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_parse, command);
+}
 
 
 
 
 
-sds dime_dmtp_command_format(dmtp_command_t *command);
 
 
 

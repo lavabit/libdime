@@ -9,6 +9,4 @@ extern "C" {
  */
 TEST(DIME, dmtp_command_formatting_and_parsing)
 {
-    dmtp_command_t *command;
-    sds formatted;
 }
