@@ -144,10 +144,10 @@ TEST(DIME, message_encryption_and_decryption)
     draft->common_headers = dime_prsr_headers_create();
 
     draft->actor = id_author;
-    draft->author = st_import(auth, strlen(auth));
-    draft->recipient = st_import(recp, strlen(recp));
-    draft->origin = st_import(orig, strlen(orig));
-    draft->destination = st_import(dest, strlen(dest));
+    draft->author = sdsnew(auth);
+    draft->recipient = sdsnew(recp);
+    draft->origin = sdsnew(orig);
+    draft->destination = sdsnew(dest);
     draft->signet_author = dime_sgnt_signet_dupe(signet_auth);
     draft->signet_origin = dime_sgnt_signet_dupe(signet_orig);
     draft->signet_destination = dime_sgnt_signet_dupe(signet_dest);
@@ -183,16 +183,16 @@ TEST(DIME, message_encryption_and_decryption)
     at_orig = dime_dmsg_message_envelope_decrypt(message, id_origin, &orig_kek);
     ASSERT_TRUE(at_orig != NULL) << "Failed to decrypt the message envelope as origin.";
 
-    res = st_cmp_cs_eq(draft->author, at_orig->author);
+    res = sdscmp(draft->author, at_orig->author);
     ASSERT_EQ(0, res) << "The message author was corrupted in the envelope.";
 
-    res = st_cmp_cs_eq(draft->destination, at_orig->destination);
+    res = sdscmp(draft->destination, at_orig->destination);
     ASSERT_EQ(0, res) << "The message destination was corrupted in the envelope.";
     ASSERT_DIME_NO_ERROR();
 
     at_orig->signet_author = dime_sgnt_signet_dupe(signet_auth);
     at_orig->signet_destination = dime_sgnt_signet_dupe(signet_dest);
-    at_orig->origin = st_import(orig, strlen(orig));
+    at_orig->origin = sdsnew(orig);
     at_orig->signet_origin = dime_sgnt_signet_dupe(signet_orig);
 
     res = dime_dmsg_message_decrypt_as_orig(at_orig, message, &orig_kek);
@@ -220,16 +220,16 @@ TEST(DIME, message_encryption_and_decryption)
     at_dest = dime_dmsg_message_envelope_decrypt(message, id_destination, &dest_kek);
     ASSERT_TRUE(at_dest != NULL) << "Failed to decrypt the message envelope as destination.";
 
-    res = st_cmp_cs_eq(draft->origin, at_dest->origin);
+    res = sdscmp(draft->origin, at_dest->origin);
     ASSERT_EQ(0, res) << "The message origin was corrupted in the envelope.";
 
-    res = st_cmp_cs_eq(draft->recipient, at_dest->recipient);
+    res = sdscmp(draft->recipient, at_dest->recipient);
     ASSERT_EQ(0, res) << "The message recipient was corrupted in the envelope.";
     ASSERT_DIME_NO_ERROR();
 
     at_dest->signet_origin = dime_sgnt_signet_dupe(signet_orig);
     at_dest->signet_recipient = dime_sgnt_signet_dupe(signet_recp);
-    at_dest->destination = st_import(dest, strlen(dest));
+    at_dest->destination = sdsnew(dest);
     at_dest->signet_destination = dime_sgnt_signet_dupe(signet_dest);
 
     res = dime_dmsg_message_decrypt_as_dest(at_dest, message, &dest_kek);
@@ -255,13 +255,13 @@ TEST(DIME, message_encryption_and_decryption)
     at_recp = dime_dmsg_message_envelope_decrypt(message, id_recipient, &recp_kek);
     ASSERT_TRUE(at_recp != NULL) << "Failed to decrypt the envelope as the recipient.";
 
-    res = st_cmp_cs_eq(draft->author, at_recp->author);
+    res = sdscmp(draft->author, at_recp->author);
     ASSERT_EQ(0, res) << "The message author was corrupted in the envelope.";
-    res = st_cmp_cs_eq(draft->origin, at_recp->origin);
+    res = sdscmp(draft->origin, at_recp->origin);
     ASSERT_EQ(0, res) << "The message origin was corrupted in the envelope.";
-    res = st_cmp_cs_eq(draft->destination, at_recp->destination);
+    res = sdscmp(draft->destination, at_recp->destination);
     ASSERT_EQ(0, res) << "The message destination was corrupted in the envelope.";
-    res = st_cmp_cs_eq(draft->recipient, at_recp->recipient);
+    res = sdscmp(draft->recipient, at_recp->recipient);
     ASSERT_EQ(0, res) << "The message recipient was corrupted in the envelope.";
     ASSERT_DIME_NO_ERROR();
 

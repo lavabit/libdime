@@ -10,10 +10,10 @@ typedef struct {
 } dmime_header_key_t;
 
 typedef struct {
-    stringer_t *auth_recp;
-    stringer_t *auth_recp_fp;
-    stringer_t *dest_orig;
-    stringer_t *dest_orig_fp;
+    sds auth_recp;
+    sds auth_recp_fp;
+    sds dest_orig;
+    sds dest_orig_fp;
 } dmime_envelope_object_t;
 
 extern dmime_header_key_t dmime_header_keys[DMIME_NUM_COMMON_HEADERS];
@@ -32,17 +32,17 @@ void
 dime_prsr_envelope_destroy(
     dmime_envelope_object_t *obj);
 
-stringer_t *
+sds
 dime_prsr_envelope_format(
-    stringer_t *user_id,
-    stringer_t *org_id,
+    sds user_id,
+    sds org_id,
     char const *user_fp,
     char const *org_fp,
     dmime_chunk_type_t type);
 
 dmime_envelope_object_t *
 dime_prsr_envelope_parse(
-    unsigned char const *in,
+    char const *in,
     size_t insize,
     dmime_chunk_type_t type);
 

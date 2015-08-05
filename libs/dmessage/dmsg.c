@@ -514,7 +514,7 @@ dmsg_chunk_origin_encode(dmime_object_t *object)
 {
     char *author_signet_fingerprint_b64, *destination_signet_fingerprint_b64;
     dmime_message_chunk_t *result;
-    stringer_t *data = NULL;
+    sds data = NULL;
 
     if (!object) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -561,10 +561,10 @@ dmsg_chunk_origin_encode(dmime_object_t *object)
 
     result = dmsg_message_chunk_create(
         CHUNK_TYPE_ORIGIN,
-        (unsigned char *)st_data_get(data),
-        st_length_get(data),
+        (unsigned char *)data,
+        sdslen(data),
         DEFAULT_CHUNK_FLAGS);
-    st_free(data);
+    sdsfree(data);
 
     if(!result) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -589,7 +589,7 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
 {
     char *recipient_signet_fingerprint_b64, *origin_signet_fingerprint_b64;
     dmime_message_chunk_t *result;
-    stringer_t *data;
+    sds data;
 
     if (!object) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
@@ -625,8 +625,8 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
     data = dime_prsr_envelope_format(
         object->recipient,
         object->origin,
-        (const char *)recipient_signet_fingerprint_b64,
-        (const char *)origin_signet_fingerprint_b64,
+        recipient_signet_fingerprint_b64,
+        origin_signet_fingerprint_b64,
         CHUNK_TYPE_DESTINATION);
     free(recipient_signet_fingerprint_b64);
     free(origin_signet_fingerprint_b64);
@@ -637,10 +637,10 @@ dmsg_chunk_destination_encode(dmime_object_t *object)
 
     result = dmsg_message_chunk_create(
         CHUNK_TYPE_DESTINATION,
-        (unsigned char *)st_data_get(data),
-        st_length_get(data),
+        (unsigned char *)data,
+        sdslen(data),
         DEFAULT_CHUNK_FLAGS);
-    st_free(data);
+    sdsfree(data);
 
     if(!result) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not create message chunk");
@@ -3413,14 +3413,14 @@ dmsg_object_destroy(dmime_object_t *object)
         return;
     }
 
-    st_cleanup(object->author);
-    st_cleanup(object->recipient);
-    st_cleanup(object->origin);
-    st_cleanup(object->destination);
-    st_cleanup(object->fp_author);
-    st_cleanup(object->fp_origin);
-    st_cleanup(object->fp_destination);
-    st_cleanup(object->fp_recipient);
+    sdsfree(object->author);
+    sdsfree(object->recipient);
+    sdsfree(object->origin);
+    sdsfree(object->destination);
+    sdsfree(object->fp_author);
+    sdsfree(object->fp_origin);
+    sdsfree(object->fp_destination);
+    sdsfree(object->fp_recipient);
 
     if(object->signet_author) {
         dime_sgnt_signet_destroy(object->signet_author);
@@ -3514,10 +3514,10 @@ dmsg_message_envelope_decrypt(
         }
 
         dmsg_message_chunk_destroy(decrypted);
-        result->author = st_dupe(parsed->auth_recp);
-        result->fp_author = st_dupe(parsed->auth_recp_fp);
-        result->destination = st_dupe(parsed->dest_orig);
-        result->fp_destination = st_dupe(parsed->dest_orig_fp);
+        result->author = sdsdup(parsed->auth_recp);
+        result->fp_author = sdsdup(parsed->auth_recp_fp);
+        result->destination = sdsdup(parsed->dest_orig);
+        result->fp_destination = sdsdup(parsed->dest_orig_fp);
         dime_prsr_envelope_destroy(parsed);
     }
 
@@ -3546,10 +3546,10 @@ dmsg_message_envelope_decrypt(
         }
 
         dmsg_message_chunk_destroy(decrypted);
-        result->recipient = st_dupe(parsed->auth_recp);
-        result->fp_author = st_dupe(parsed->auth_recp_fp);
-        result->origin = st_dupe(parsed->dest_orig);
-        result->fp_origin = st_dupe(parsed->dest_orig_fp);
+        result->recipient = sdsdup(parsed->auth_recp);
+        result->fp_author = sdsdup(parsed->auth_recp_fp);
+        result->origin = sdsdup(parsed->dest_orig);
+        result->fp_origin = sdsdup(parsed->dest_orig_fp);
         dime_prsr_envelope_destroy(parsed);
     }
 
@@ -5098,29 +5098,29 @@ dmsg_object_dump(dmime_object_t *object)
     if ((object->actor != id_destination) && object->author) {
         printf(
             "message auth  : %.*s\n",
-            (int)st_length_get(object->author),
-            (char *)st_data_get(object->author));
+            (int)sdslen(object->author),
+            object->author);
     }
 
     if ((object->actor != id_origin) && object->origin) {
         printf(
             "message orig  : %.*s\n",
-            (int)st_length_get(object->origin),
-            (char *)st_data_get(object->origin));
+            (int)sdslen(object->origin),
+            object->origin);
     }
 
     if ((object->actor != id_destination) && object->destination) {
         printf(
             "message dest  : %.*s\n",
-            (int)st_length_get(object->destination),
-            (char *)st_data_get(object->destination));
+            (int)sdslen(object->destination),
+            object->destination);
     }
 
     if ((object->actor != id_origin) && object->recipient) {
         printf(
             "message recp  : %.*s\n",
-            (int)st_length_get(object->recipient),
-            (char *)st_data_get(object->recipient));
+            (int)sdslen(object->recipient),
+            object->recipient);
     }
 
     if ((object->actor == id_author)
