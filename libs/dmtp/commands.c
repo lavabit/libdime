@@ -400,10 +400,17 @@ dmtp_command_format(
 
     }
 
+#ifndef MICROSOFT_COMMAND_FORMATTING
     if(!(result = sdscatlen(result, "\n", 1))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to concatenate end of command line character");
+        goto cleanup_result;
+    }
+#else
+    if(!(result = sdscatlen(result, "\r\n", 1))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to concatenate end of command line characters");
         goto cleanup_result;
     }
+#endif
 
     if(sdslen(result) > 512) {
         PUSH_ERROR(ERR_UNSPEC, "command is too long");
