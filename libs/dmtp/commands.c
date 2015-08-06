@@ -1013,7 +1013,7 @@ dime_dmtp_command_starttls(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!host) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1090,7 +1090,7 @@ dime_dmtp_command_helo(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!host) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1141,7 +1141,7 @@ dime_dmtp_command_ehlo(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!host) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1188,7 +1188,7 @@ dime_dmtp_command_mode() {
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_MODE))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp mode command struct");
@@ -1225,7 +1225,7 @@ dime_dmtp_command_rset() {
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_RSET))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp rset command struct");
@@ -1272,7 +1272,7 @@ dime_dmtp_command_noop(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_NOOP))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp noop command struct");
@@ -1324,7 +1324,7 @@ dime_dmtp_command_help() {
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_HELP))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp help command struct");
@@ -1361,7 +1361,7 @@ dime_dmtp_command_quit() {
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_QUIT))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp quit command struct");
@@ -1406,7 +1406,7 @@ dime_dmtp_command_mail(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!from) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1470,7 +1470,7 @@ dime_dmtp_command_rcpt(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!to) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1527,7 +1527,7 @@ dime_dmtp_command_data() {
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!(command = dmtp_command_create(DMTP_DATA))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create dmtp data command struct");
@@ -1571,7 +1571,7 @@ dime_dmtp_command_sgnt_user(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!address) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1630,7 +1630,7 @@ dime_dmtp_command_sgnt_domain(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!domain) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1692,7 +1692,7 @@ dime_dmtp_command_hist(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!address) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1756,7 +1756,7 @@ dime_dmtp_command_vrfy_user(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!address) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1820,7 +1820,7 @@ dime_dmtp_command_vrfy_domain(
     dmtp_command_t *command;
     sds result;
 
-    clear_error_stack();
+    PUBLIC_FUNC_PROLOGUE();
 
     if(!domain) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
