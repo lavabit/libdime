@@ -10,6 +10,7 @@ extern "C" {
 TEST(DIME, dmtp_command_formatting_and_parsing)
 {
     dmtp_command_t *command, *parsed;
+    dmtp_parse_state_t state;
     int res;
     sds formatted;
 
@@ -23,8 +24,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_STARTTLS command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_STARTTLS command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_STARTTLS command.";
@@ -46,8 +48,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_HELO command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_HELO command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_HELO command.";
@@ -67,8 +70,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_EHLO command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_EHLO command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_EHLO command.";
@@ -86,7 +90,7 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_MODE command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_MODE command.";
 
     sdsfree(formatted);
@@ -101,8 +105,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_RSET command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_RSET command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     sdsfree(formatted);
     dime_dmtp_command_destroy(command);
@@ -120,8 +125,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_NOOP command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_NOOP command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_NOOP command.";
@@ -144,8 +150,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_HELP command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_HELP command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     sdsfree(formatted);
     dime_dmtp_command_destroy(command);
@@ -162,8 +169,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_MAIL command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_MAIL command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_MAIL command.";
@@ -186,8 +194,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_RCPT command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_RCPT command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_RCPT command.";
@@ -207,8 +216,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_DATA command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_DATA command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     sdsfree(formatted);
     dime_dmtp_command_destroy(command);
@@ -225,8 +235,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_SGNT command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_SGNT command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[1], parsed->args[1]);
     ASSERT_EQ(0, res) << "Argument 2 data formatting and parsing DMTP_SGNT command.";
@@ -248,8 +259,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_SGNT command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_SGNT command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_SGNT command.";
@@ -273,8 +285,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_HIST command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_HIST command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_HIST command.";
@@ -300,8 +313,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_VRFY command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_VRFY command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[0], parsed->args[0]);
     ASSERT_EQ(0, res) << "Argument 1 data formatting and parsing DMTP_VRFY command.";
@@ -324,8 +338,9 @@ TEST(DIME, dmtp_command_formatting_and_parsing)
     formatted = dime_dmtp_command_format(command);
     ASSERT_TRUE(command != NULL) << "Failed to format DMTP_VRFY command.";
 
-    parsed = dime_dmtp_command_parse(formatted);
+    state = dime_dmtp_command_parse(formatted, &parsed);
     ASSERT_TRUE(command != NULL) << "Failed to parse DMTP_VRFY command.";
+    ASSERT_TRUE(state == DMTP_PARSE_SUCCESS) << "Command parsing returned a fail state.";
 
     res = sdscmp(command->args[1], parsed->args[1]);
     ASSERT_EQ(0, res) << "Argument 2 data formatting and parsing DMTP_VRFY command.";

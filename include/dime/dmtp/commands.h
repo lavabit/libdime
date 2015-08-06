@@ -38,6 +38,15 @@ typedef enum {
     DMTP_MODE_NONE
 } dmtp_mode_type_t;
 
+typedef enum {
+    DMTP_PARSE_SUCCESS,
+    DMTP_PARSE_INVALID_CALL,
+    DMTP_PARSE_INTERNAL_ERROR,
+    DMTP_PARSE_COMMAND_ERROR,
+    DMTP_PARSE_ARGUMENT_ERROR
+} dmtp_parse_state_t;
+
+
 typedef struct {
     char const *arg_name;
     size_t arg_name_len;
@@ -62,9 +71,9 @@ extern dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM];
 dmtp_command_t *     dime_dmtp_command_create(dmtp_command_type_t type);
 void                 dime_dmtp_command_destroy(dmtp_command_t *command);
 sds                  dime_dmtp_command_format(dmtp_command_t *command);
-dmtp_command_t *     dime_dmtp_command_parse(sds command);
+dmtp_parse_state_t   dime_dmtp_command_parse(sds comm_line, dmtp_command_t **comm_struct);
 
-//command specific functions
+//command specific formatting functions
 sds dime_dmtp_command_starttls(sds host, dmtp_mode_type_t mode);
 sds dime_dmtp_command_helo(sds host);
 sds dime_dmtp_command_ehlo(sds host);

@@ -15,7 +15,7 @@ static int                  dmtp_command_end_check(sds line, size_t at);
 static sds                  dmtp_command_format(dmtp_command_t *command);
 static int                  dmtp_command_is_valid(dmtp_command_t *command);
 static dmtp_command_key_t * dmtp_command_key_get(dmtp_command_type_t type);
-static dmtp_command_t *     dmtp_command_parse(sds command);
+static dmtp_parse_state_t   dmtp_command_parse(sds comm_line, dmtp_command_t **comm_struct);
 static int                  dmtp_command_type_cmp(sds command, dmtp_command_type_t type);
 static dmtp_command_type_t  dmtp_command_type_get(sds command);
 static int                  dmtp_command_whitespace_parse(sds line, size_t at);
@@ -553,56 +553,70 @@ error:
 /**
  * @brief
  * Parse the provided sds string into a dmtp command structure.
- * @param command
+ * @param comm_str
  * sds dmtp command string.
+ * @param comm_struct
  * @return
  * A valid dmtp command structure on success, NULL on failure.
  * @free_using
  * dmtp_command_destroy
 */
-static dmtp_command_t *
+static dmtp_parse_state_t
 dmtp_command_parse(
-    sds command)
+    sds comm_line,
+    dmtp_command_t **comm_struct)
 {
 
     dmtp_command_key_t *key;
-    dmtp_command_t *result;
     dmtp_command_type_t type;
+    dmtp_parse_state_t result;
     size_t at = 0, len, parsed;
     int i = 0, ws_count;
 
-    if(!command) {
+    if(!comm_line) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        result = DMTP_PARSE_INVALID_CALL;
         goto error;
     }
 
-    if((len = sdslen(command)) > 512) {
+    if(!comm_struct) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        result = DMTP_PARSE_INVALID_CALL;
+        goto error;
+    }
+
+    if((len = sdslen(comm_line)) > 512) {
         PUSH_ERROR(ERR_UNSPEC, "command line is too long");
+        result = DMTP_PARSE_INVALID_CALL;
         goto error;
     }
 
-    if( (type = dmtp_command_type_get(command)) == DMTP_COMMAND_INVALID ) {
+    if( (type = dmtp_command_type_get(comm_line)) == DMTP_COMMAND_INVALID ) {
         PUSH_ERROR(ERR_UNSPEC, "failed find a valid command");
+        result = DMTP_PARSE_COMMAND_ERROR;
         goto error;
     }
 
     if(!(key = dmtp_command_key_get(type))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to find command key");
+        result = DMTP_PARSE_COMMAND_ERROR;
         goto error;
     }
 
     at = key->com_name_len;
 
-    if(!(result = dmtp_command_create(type))) {
+    if(!((*comm_struct) = dmtp_command_create(type))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to create a new command object");
+        result = DMTP_PARSE_INTERNAL_ERROR;
         goto error;
     }
 
-    switch(dmtp_command_end_check(command, at)) {
+    switch(dmtp_command_end_check(comm_line, at)) {
 
     case -1:
         PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     case 0:
         break;
     case 1:
@@ -610,23 +624,26 @@ dmtp_command_parse(
 
     }
 
-    if((ws_count = dmtp_command_whitespace_parse(command, at)) < 0) {
+    if((ws_count = dmtp_command_whitespace_parse(comm_line, at)) < 0) {
         PUSH_ERROR(ERR_UNSPEC, "an error occurred while parsing whitespace");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     }
     else if(!ws_count) {
         PUSH_ERROR(ERR_UNSPEC, "expected at least a single white space after command name");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     }
     else {
         at += ws_count;
     }
 
-    switch(dmtp_command_end_check(command, at)) {
+    switch(dmtp_command_end_check(comm_line, at)) {
 
     case -1:
         PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     case 0:
         break;
     case 1:
@@ -638,21 +655,24 @@ dmtp_command_parse(
 
         if(key->args[i].type == DMTP_ARG_NONE) {
             PUSH_ERROR(ERR_UNSPEC, "unexpected command argument");
-            goto cleanup_result;
+            result = DMTP_PARSE_COMMAND_ERROR;
+            goto cleanup_comm_struct;
         }
 
-        if((i = dmtp_command_argument_parse(command + at, len - at, i, &parsed, result)) == -1) {
+        if((i = dmtp_command_argument_parse(comm_line + at, len - at, i, &parsed, *comm_struct)) == -1) {
             PUSH_ERROR(ERR_UNSPEC, "error occurred while parsing an argument");
-            goto cleanup_result;
+            result = DMTP_PARSE_ARGUMENT_ERROR;
+            goto cleanup_comm_struct;
         }
 
         at += parsed;
 
-        switch(dmtp_command_end_check(command, at)) {
+        switch(dmtp_command_end_check(comm_line, at)) {
 
         case -1:
             PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
-            goto cleanup_result;
+            result = DMTP_PARSE_COMMAND_ERROR;
+            goto cleanup_comm_struct;
         case 0:
             break;
         case 1:
@@ -660,23 +680,26 @@ dmtp_command_parse(
 
         }
 
-        if((ws_count = dmtp_command_whitespace_parse(command, at)) < 0) {
+        if((ws_count = dmtp_command_whitespace_parse(comm_line, at)) < 0) {
             PUSH_ERROR(ERR_UNSPEC, "an error occurred while parsing whitespace");
-            goto cleanup_result;
+            result = DMTP_PARSE_COMMAND_ERROR;
+            goto cleanup_comm_struct;
         }
         else if(!ws_count) {
             PUSH_ERROR(ERR_UNSPEC, "expected at least a single white space after command name");
-            goto cleanup_result;
+            result = DMTP_PARSE_COMMAND_ERROR;
+            goto cleanup_comm_struct;
         }
         else {
             at += ws_count;
         }
 
-        switch(dmtp_command_end_check(command, at)) {
+        switch(dmtp_command_end_check(comm_line, at)) {
 
         case -1:
             PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
-            goto cleanup_result;
+            result = DMTP_PARSE_COMMAND_ERROR;
+            goto cleanup_comm_struct;
         case 0:
             break;
         case 1:
@@ -687,31 +710,34 @@ dmtp_command_parse(
     }
 
 // We need to check for ending characters here one more time, because if they're not found it is an error.
-    switch(dmtp_command_end_check(command, at)) {
+    switch(dmtp_command_end_check(comm_line, at)) {
 
     case -1:
         PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     case 0:
         PUSH_ERROR(ERR_UNSPEC, "no ending characters were found at the end of the command string");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     case 1:
         break;
 
     }
 
 out:
-    if(!(dmtp_command_is_valid(result))) {
+    if(!(dmtp_command_is_valid(*comm_struct))) {
         PUSH_ERROR(ERR_UNSPEC, "invalid dmtp command");
-        goto cleanup_result;
+        result = DMTP_PARSE_COMMAND_ERROR;
+        goto cleanup_comm_struct;
     }
 
-    return result;
+    return DMTP_PARSE_SUCCESS;
 
-cleanup_result:
-    dmtp_command_destroy(result);
+cleanup_comm_struct:
+    dmtp_command_destroy(*comm_struct);
 error:
-    return NULL;
+    return result;
 }
 
 
@@ -1103,11 +1129,12 @@ dime_dmtp_command_format(
  * @free_using
  * dime_dmtp_command_destroy
 */
-dmtp_command_t *
+dmtp_parse_state_t
 dime_dmtp_command_parse(
-    sds command)
+    sds comm_line,
+    dmtp_command_t **comm_struct)
 {
-    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_parse, command);
+    PUBLIC_FUNCTION_IMPLEMENT(dmtp_command_parse, comm_line, comm_struct);
 }
 
 
