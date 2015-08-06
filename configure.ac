@@ -46,6 +46,9 @@ AC_PROG_LIBTOOL
 # Find awk
 AC_PROG_AWK
 
+# Check which version of strerror_r the system has
+AC_FUNC_STRERROR_R
+
 # Handle pthreads
 AX_PTHREAD(
     [AC_SUBST(GTEST_HAS_PTHREAD, [1])],

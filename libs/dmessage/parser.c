@@ -1,4 +1,3 @@
-#include "dime/core/magma.h"
 #include "dime/common/misc.h"
 #include "dime/dmessage/parse.h"
 
