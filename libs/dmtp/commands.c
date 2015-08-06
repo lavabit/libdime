@@ -11,12 +11,14 @@
 static int                  dmtp_command_argument_parse(const char *line, size_t insize, unsigned int arg_index, size_t *parsed, dmtp_command_t *command);
 static dmtp_command_t *     dmtp_command_create(dmtp_command_type_t type);
 static void                 dmtp_command_destroy(dmtp_command_t *command);
+static int                  dmtp_command_end_check(sds line, size_t at);
 static sds                  dmtp_command_format(dmtp_command_t *command);
 static int                  dmtp_command_is_valid(dmtp_command_t *command);
 static dmtp_command_key_t * dmtp_command_key_get(dmtp_command_type_t type);
 static dmtp_command_t *     dmtp_command_parse(sds command);
 static int                  dmtp_command_type_cmp(sds command, dmtp_command_type_t type);
 static dmtp_command_type_t  dmtp_command_type_get(sds command);
+static int                  dmtp_command_whitespace_parse(sds line, size_t at);
 
 
 
@@ -200,6 +202,69 @@ error:
     return NULL;
 }
 
+
+/**
+ * @brief
+ * Is the command string at the ending character(s).
+ * @param sds
+ * sds command string.
+ * @param at
+ * Current place in the string.
+ * @return
+ * 1 if true (at the end) 0 if false, -1 if an error occurred.
+*/
+static int
+dmtp_command_end_check(
+    sds line,
+    size_t at)
+{
+
+    int result = 0;
+
+    if(!line) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(at >= sdslen(line)) {
+        PUSH_ERROR(ERR_UNSPEC, "command string is too short to contain ending character(s)");
+        goto error;
+    }
+
+    if(line[at] == '\n') {
+
+        if(sdslen(line) - 1 > at) {
+            PUSH_ERROR(ERR_UNSPEC, "the command string did not end after the ending character was found");
+            goto error;
+        }
+
+        result = 1;
+        goto out;
+    }
+
+    if((sdslen(line) - 1) == at) {
+        PUSH_ERROR(ERR_UNSPEC, "the command string is too short to contain the ending characters");
+        goto error;
+    }
+
+    if(memcmp(line+at, "\r\n", 2) == 0) {
+
+        if(sdslen(line) - 2 > at) {
+            PUSH_ERROR(ERR_UNSPEC, "the command string did not end after the ending characters were found");
+            goto error;
+        }
+
+        result = 1;
+        goto out;
+    }
+
+out:
+    return result;
+error:
+    return -1;
+}
+
+
 /**
  * @brief
  * Destroy a dmtp command structure.
@@ -335,7 +400,7 @@ dmtp_command_format(
 
     }
 
-    if(!(result = sdscatlen(result, "\r\n", 2))) {
+    if(!(result = sdscatlen(result, "\n", 1))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to concatenate end of command line characters");
         goto cleanup_result;
     }
@@ -497,7 +562,7 @@ dmtp_command_parse(
     dmtp_command_t *result;
     dmtp_command_type_t type;
     size_t at = 0, len, parsed;
-    int i = 0;
+    int i = 0, ws_count;
 
     if(!command) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -526,45 +591,41 @@ dmtp_command_parse(
         goto error;
     }
 
-    if(at + 2 > len) {
-        PUSH_ERROR(ERR_UNSPEC, "command string is too short to contain valid ending characters");
+    switch(dmtp_command_end_check(command, at)) {
+
+    case -1:
+        PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
         goto cleanup_result;
-    }
-
-    if(memcmp(command+at, "\r\n", 2) == 0) {
-
-        if(at + 2 != len) {
-            PUSH_ERROR(ERR_UNSPEC, "command string does not end after the ending characters");
-            goto cleanup_result;
-        }
-
+    case 0:
+        break;
+    case 1:
         goto out;
+
     }
 
-    if(command[at++] != ' ') {
-        PUSH_ERROR(ERR_UNSPEC, "arguments must be separated by white space");
+    if((ws_count = dmtp_command_whitespace_parse(command, at)) < 0) {
+        PUSH_ERROR(ERR_UNSPEC, "an error occurred while parsing whitespace");
         goto cleanup_result;
     }
-
-    while( (command[at] == ' ' || command[at] == '\t') && (at < len) ) {
-        ++at;
-    }
-
-    if(at + 2 > len) {
-        PUSH_ERROR(ERR_UNSPEC, "command string is too short to contain valid ending characters");
+    else if(!ws_count) {
+        PUSH_ERROR(ERR_UNSPEC, "expected at least a single white space after command name");
         goto cleanup_result;
     }
+    else {
+        at += ws_count;
+    }
 
-    if(memcmp(command+at, "\r\n", 2) == 0) {
+    switch(dmtp_command_end_check(command, at)) {
 
-        if(at + 2 != len) {
-            PUSH_ERROR(ERR_UNSPEC, "command string does not end after the ending characters");
-            goto cleanup_result;
-        }
-
+    case -1:
+        PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
+        goto cleanup_result;
+    case 0:
+        break;
+    case 1:
         goto out;
-    }
 
+    }
 
     while(i < DMTP_MAX_ARGUMENT_NUM) {
 
@@ -580,50 +641,56 @@ dmtp_command_parse(
 
         at += parsed;
 
-        if(at + 2 > len) {
-            PUSH_ERROR(ERR_UNSPEC, "command string is too short to contain valid ending characters");
+        switch(dmtp_command_end_check(command, at)) {
+
+        case -1:
+            PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
             goto cleanup_result;
-        }
-
-        if(memcmp(command+at, "\r\n", 2) == 0) {
-
-            if(at + 2 != len) {
-                PUSH_ERROR(ERR_UNSPEC, "command string does not end after the ending characters");
-                goto cleanup_result;
-            }
-
+        case 0:
+            break;
+        case 1:
             goto out;
+
         }
 
-        if(command[at++] != ' ') {
-            PUSH_ERROR(ERR_UNSPEC, "arguments must be separated by white space");
+        if((ws_count = dmtp_command_whitespace_parse(command, at)) < 0) {
+            PUSH_ERROR(ERR_UNSPEC, "an error occurred while parsing whitespace");
             goto cleanup_result;
         }
-
-        while( (command[at] == ' ' || command[at] == '\t') && (at < len) ) {
-            ++at;
-        }
-
-        if(at + 2 > len) {
-            PUSH_ERROR(ERR_UNSPEC, "command string is too short to contain valid ending characters");
+        else if(!ws_count) {
+            PUSH_ERROR(ERR_UNSPEC, "expected at least a single white space after command name");
             goto cleanup_result;
         }
+        else {
+            at += ws_count;
+        }
 
-        if(memcmp(command+at, "\r\n", 2) == 0) {
+        switch(dmtp_command_end_check(command, at)) {
 
-            if(at + 2 != len) {
-                PUSH_ERROR(ERR_UNSPEC, "command string does not end after the ending characters");
-                goto cleanup_result;
-            }
-
+        case -1:
+            PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
+            goto cleanup_result;
+        case 0:
+            break;
+        case 1:
             goto out;
+
         }
 
     }
 
-    if(memcmp(command + sdslen(command) - 2, "\r\n", 2) != 0) {
-        PUSH_ERROR(ERR_UNSPEC, "command did not end with required ending characters");
+// We need to check for ending characters here one more time, because if they're not found it is an error.
+    switch(dmtp_command_end_check(command, at)) {
+
+    case -1:
+        PUSH_ERROR(ERR_UNSPEC, "an error occurred while checking for ending characters");
         goto cleanup_result;
+    case 0:
+        PUSH_ERROR(ERR_UNSPEC, "no ending characters were found at the end of the command string");
+        goto cleanup_result;
+    case 1:
+        break;
+
     }
 
 out:
@@ -925,6 +992,51 @@ error:
 }
 
 
+/**
+ * @brief
+ * Parse the white space in the command string.
+ * @param line
+ * sds command string.
+ * @param at
+ * Current position in the command string.
+ * @return
+ * Number of whitespace parsed. -1 if an error occurred. only ' ' and '\t' count as whitespaces.
+*/
+static int
+dmtp_command_whitespace_parse(
+    sds line,
+    size_t at)
+{
+
+    int result = 0;
+
+    if(!line) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(at >= sdslen(line)) {
+        PUSH_ERROR(ERR_UNSPEC, "current position in string is outside the command line bounds");
+        goto error;
+    }
+
+    while(at < sdslen(line)) {
+
+        if((line[at] == ' ') || (line[at] == '\t')) {
+            ++result;
+            ++at;
+        }
+        else {
+            break;
+        }
+
+    }
+
+    return result;
+
+error:
+    return -1;
+}
 
 
 /**
