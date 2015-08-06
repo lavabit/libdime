@@ -98,7 +98,8 @@ signetresolverinclude_HEADERS = \
 
 bin_PROGRAMS = \
 	dime \
-	signet
+	signet \
+	genrec
 
 noinst_LTLIBRARIES = \
 	libsds.la \
@@ -133,6 +134,21 @@ signet_LDADD = \
 	@PTHREAD_LIBS@
 signet_SOURCES = \
 	tools/signet/signet.c
+
+genrec_CPPFLAGS = \
+	$(COMMON_CPPFLAGS) \
+	$(DONNA_CPPFLAGS)
+genrec_CFLAGS = \
+	$(AM_CFLAGS) \
+	@OPENSSL_CFLAGS@ \
+	@PTHREAD_CFLAGS@
+genrec_LDADD = \
+	libdime.la \
+	-lresolv \
+	@OPENSSL_LIBS@ \
+	@PTHREAD_LIBS@
+genrec_SOURCES = \
+	tools/genrec/genrec.c
 
 libsds_la_CPPFLAGS = \
 	$(COMMON_CPPFLAGS) \
