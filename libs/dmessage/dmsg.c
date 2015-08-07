@@ -387,7 +387,8 @@ dmsg_treesig_data_get(
  * @param   len     the number of times to write the value of the byte repeatedly to block.
  * @return  a pointer to the block of memory passed to the function.
  */
-void *mm_set(void *block, unsigned char set, size_t len) {
+void *
+mm_set(void *block, unsigned char set, size_t len) {
     volatile char *ptr = block;
 
     asm ("");
@@ -754,7 +755,6 @@ dmsg_chunk_headers_other_encode(dmime_object_t *object)
     return result;
 }
 
-
 /**
  * @brief
  *  Takes a dmime object and encodes the display chunk into an array of dmime
@@ -1055,7 +1055,6 @@ dmsg_message_chunks_sign(
     return 0;
 }
 
-
 /**
  * @brief
  *  uses the signet passed to function and an ec key to create
@@ -1070,7 +1069,8 @@ dmsg_message_chunks_sign(
  * @param kekbuf
  *  key encryption key buffer tha will be set to the resulting 16 byte iv and
  *  32 byte aes256 key
- * @return  0 on success, -1 on failure.
+ * @return
+ *  0 on success, -1 on failure.
 */
 static int
 dmsg_kek_out_derive(
@@ -1102,7 +1102,6 @@ dmsg_kek_out_derive(
 
     return 0;
 }
-
 
 /**
  * @brief
@@ -5184,7 +5183,6 @@ dmsg_object_dump(dmime_object_t *object)
     return 0;
 }
 
-
 /**
  * @brief
  *  retrieves pointer to the specified chunk type key from the global chunk key
@@ -5199,7 +5197,6 @@ dmsg_chunk_type_key_get(dmime_chunk_type_t type)
 {
     return &(dmime_chunk_keys[type]);
 }
-
 
 /**
  * @brief
@@ -5255,7 +5252,6 @@ dmsg_chunk_padlen_get(
     return 0;
 }
 
-
 /**
  * @brief
  *  returns the payload of the specified dmime message chunk.
@@ -5294,7 +5290,6 @@ dmsg_chunk_payload_get(dmime_message_chunk_t *chunk)
 
     return &(chunk->data[0]);
 }
-
 
 /**
  * @brief
@@ -5424,11 +5419,13 @@ dmsg_message_chunk_create(
     // dmime_message_chunk_t structure
     // serial_size is the size of the serialized result, corresponds to
     // result->serial_size
-    size_t total_size = 0, serial_size = CHUNK_HEADER_SIZE;
+    size_t total_size = 0;
+    size_t serial_size = CHUNK_HEADER_SIZE;
     // payload_size needs to be less than or equal to UNSIGNED_MAX_3_BYTE,
     // corresponds to result->payload_size
     // data_size is specific only to the standard payload, corresponds to
-    uint32_t payload_size = 0, data_size = 0;
+    uint32_t payload_size = 0;
+    uint32_t data_size = 0;
     unsigned char padbyte = 0;
     unsigned int num_keyslots = 0, padlen = 0;
 
@@ -5931,7 +5928,6 @@ dmsg_chunk_data_padded_get(
     return result;
 }
 
-
 /**
  * @brief
  *  returns the pointer to the plaintext signature of a standard payload chunk.
@@ -6041,7 +6037,6 @@ dmsg_actor_to_string(dmime_actor_t actor)
 
 }
 
-
 /**
  * @brief
  *  returns a string from dmime_object_state_t.
@@ -6075,7 +6070,6 @@ dmsg_object_state_to_string(dmime_object_state_t state)
     }
 
 }
-
 
 /* public functions */
 
@@ -6461,23 +6455,29 @@ dime_dmsg_object_state_to_string(dmime_object_state_t state)
 }
 
 // TODO - not implemented yet
-/*
-int
-dime_dmsg_file_create(
-    dmime_message_t const *msg,
-    char const *filename);
-
-dmime_message_t *
-dime_dmsg_file_to_message(
-    const char *filename);
-*/
+//int
+//dime_dmsg_file_create(
+//    dmime_message_t const *msg,
+//    char const *filename);
+//
+//dmime_message_t *
+//dime_dmsg_file_to_message(
+//    const char *filename);
 
 
 //{
-//  .required .unique .encrypted .sequential
-//  .section, .payload,
-//  .auth_keyslot, .orig_keyslot, .dest_keyslot, .recp_keyslot,
-//  .name, .description
+//  .required,
+//  .unique,
+//  .encrypted,
+//  .sequential,
+//  .section,
+//  .payload,
+//  .auth_keyslot,
+//  .orig_keyslot,
+//  .dest_keyslot,
+//  .recp_keyslot,
+//  .name,
+//  .description
 //}
 #define CKEY_EMPTY { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL }
 // TODO - add display_multi, display_alt, attach_multi, attach_alt chunks
