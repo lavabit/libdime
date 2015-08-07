@@ -2569,7 +2569,7 @@ dmsg_message_encrypt(
         RET_ERROR_PTR(ERR_UNSPEC, "could not sign message chunks");
     }
 
-    if (!(ephemeral = _generate_ec_keypair(0))) {
+    if (!(ephemeral = _generate_ec_keypair())) {
         dmsg_message_destroy(result);
         RET_ERROR_PTR(ERR_UNSPEC, "could not generate ephemeral encryption key");
     }

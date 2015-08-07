@@ -9,7 +9,6 @@
 #include "dime/common/misc.h"
 #include "dime/common/error.h"
 
-static EC_GROUP *_signing_group = NULL;
 static EC_GROUP *_encryption_group = NULL;
 static EVP_MD const *_ecies_envelope_evp = NULL;
 
@@ -26,16 +25,8 @@ _crypto_init(void)
     SSL_library_init();
     OPENSSL_add_all_algorithms_noconf();
 
-    // This has been indefinitely obviated by the fact that we're using ED25519
-    // as a signing curve, via an external provider other than openssl.
-    //if (!(_signing_group = EC_GROUP_new_by_curve_name(EC_SIGNING_CURVE))) {
-    //    PUSH_ERROR_OPENSSL();
-    //    RET_ERROR_INT(ERR_UNSPEC, "could not initialize signing curve");
-    //}
-
     if (!(_encryption_group = EC_GROUP_new_by_curve_name(EC_ENCRYPT_CURVE))) {
         PUSH_ERROR_OPENSSL();
-        //EC_GROUP_free(_signing_group);
         RET_ERROR_INT(ERR_UNSPEC, "could not initialize encryption curve");
     }
 
@@ -56,11 +47,6 @@ _crypto_init(void)
 void
 _crypto_shutdown(void)
 {
-    if (_signing_group) {
-        EC_GROUP_clear_free(_signing_group);
-        _signing_group = NULL;
-    }
-
     if (_encryption_group) {
         EC_GROUP_clear_free(_encryption_group);
         _encryption_group = NULL;
@@ -550,24 +536,16 @@ _load_ec_pubkey(char const *filename)
 /**
  * @brief
  *  Generate an EC key pair.
- * @param signing
- *  if set, generate a key from the pre-defined EC signing curve; if zero, the
- *  default encryption curve will be used instead.
  * @return
  *  a newly allocated and generated EC key pair on success, or NULL on failure.
  */
 EC_KEY *
-_generate_ec_keypair(int signing)
+_generate_ec_keypair(void)
 {
     EC_GROUP *group;
     EC_KEY *result;
 
-    // Temporarily disabled; see _crypto_init().
-    if (signing) {
-        RET_ERROR_PTR(ERR_BAD_PARAM, "generation of signing keys is not supported");
-    }
-
-    group = signing ? _signing_group : _encryption_group;
+    group = _encryption_group;
 
     if (!group) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not determine curve group for operation");

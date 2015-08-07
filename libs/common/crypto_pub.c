@@ -49,8 +49,8 @@ EC_KEY *load_ec_pubkey(const char *filename) {
     PUBLIC_FUNC_IMPL(load_ec_pubkey, filename);
 }
 
-EC_KEY *generate_ec_keypair(int signing) {
-    PUBLIC_FUNC_IMPL(generate_ec_keypair, signing);
+EC_KEY *generate_ec_keypair(void) {
+    PUBLIC_FUNC_IMPL(generate_ec_keypair);
 }
 
 void free_ec_key(EC_KEY *key) {

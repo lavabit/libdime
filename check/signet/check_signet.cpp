@@ -577,7 +577,7 @@ TEST(DIME, check_signet_multi_signkey)
         keys[i] = generate_ed25519_keypair();
     }
 
-    eckey = generate_ec_keypair(0);
+    eckey = generate_ec_keypair();
 
     signet = dime_sgnt_signet_create(SIGNET_TYPE_ORG);
     ASSERT_TRUE(signet != NULL) << "Failed to create organizational signet.";

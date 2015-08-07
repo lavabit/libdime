@@ -16,7 +16,7 @@ TEST(DIME, check_keys_file_handling)
 
     _crypto_init();
 
-    enckey = _generate_ec_keypair(0);
+    enckey = _generate_ec_keypair();
     signkey = _generate_ed25519_keypair();
 
     ser_enc1 = _serialize_ec_privkey(enckey, &enc1_size);

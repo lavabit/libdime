@@ -35,7 +35,7 @@ PUBLIC_FUNC_DECL(void,            crypto_shutdown,          void);
 // Generating, loading, and freeing elliptical curve keys.
 PUBLIC_FUNC_DECL(EC_KEY *,        load_ec_privkey,          const char *filename);
 PUBLIC_FUNC_DECL(EC_KEY *,        load_ec_pubkey,           const char *filename);
-PUBLIC_FUNC_DECL(EC_KEY *,        generate_ec_keypair,      int signing);
+PUBLIC_FUNC_DECL(EC_KEY *,        generate_ec_keypair, void);
 PUBLIC_FUNC_DECL(void,            free_ec_key,              EC_KEY *key);
 
 // EC signature routines.

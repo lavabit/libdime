@@ -1121,7 +1121,7 @@ static signet_t *sgnt_signet_create_w_keys(signet_type_t type, const char *keysf
         RET_ERROR_PTR(ERR_UNSPEC, "could not generate ed25519 key pair");
     }
 
-    if(!(enc_key = _generate_ec_keypair(0))) {
+    if(!(enc_key = _generate_ec_keypair())) {
         _free_ed25519_key(sign_key);
         RET_ERROR_PTR(ERR_UNSPEC, "could not generate elliptic curve key pair");
     }

@@ -47,7 +47,7 @@ TEST(DIME, check_ec_signatures)
     res = crypto_init();
     ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
-    key = generate_ec_keypair(0);
+    key = generate_ec_keypair();
     ASSERT_TRUE(key != NULL) << "EC signature/verification check failed: could not generate key pair.";
 
     for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
@@ -86,7 +86,7 @@ TEST(DIME, check_ec_sha_signatures)
     res = crypto_init();
     ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
-    key = generate_ec_keypair(0);
+    key = generate_ec_keypair();
     ASSERT_TRUE(key != NULL) << "EC SHA signature/verification check failed: could not generate key pair.";
 
     for (size_t i = 0; i < (sizeof(dlens) / sizeof(dlens[0])); i++) {
@@ -138,7 +138,7 @@ TEST(DIME, load_ec_key_file)
     ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
     for (size_t i = 0; i < 5; ++i) {
-        key = _generate_ec_keypair(0);
+        key = _generate_ec_keypair();
         snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
         serial = _serialize_ec_privkey(key, &size);
         b64key = _b64encode(serial, size);
@@ -179,7 +179,7 @@ TEST(DIME, check_ec_serialization)
     ASSERT_TRUE(!res) << "Crypto initialization routine failed.";
 
     for (size_t i = 0; i < N_SERIALIZATION_TESTS; i++) {
-        pair = _generate_ec_keypair(0);
+        pair = _generate_ec_keypair();
         ASSERT_TRUE(pair != NULL) << "EC serialization check failed: could not generate key pair.";
 
         sbuf = _serialize_ec_pubkey(pair, &ssize);
@@ -234,8 +234,8 @@ TEST(DIME, check_ecdh_kdf)
 
     res = crypto_init();
 
-    ec1 = _generate_ec_keypair(0);
-    ec2 = _generate_ec_keypair(0);
+    ec1 = _generate_ec_keypair();
+    ec2 = _generate_ec_keypair();
 
     ASSERT_TRUE(ec1 != NULL) << "EC key generation failed.";
     ASSERT_TRUE(ec2 != NULL) << "EC key generation failed.";
