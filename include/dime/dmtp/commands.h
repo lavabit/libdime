@@ -28,8 +28,8 @@ typedef enum {
 typedef enum {
     DMTP_ARG_NONE = 0,
     DMTP_ARG_PLAIN,
-    DMTP_ARG_REQ_STR,
-    DMTP_ARG_OPT_STR
+    DMTP_ARG_ANGULAR_BRCKT,
+    DMTP_ARG_SQUARE_BRCKT
 } dmtp_argument_type_t;
 
 typedef enum {
