@@ -13,24 +13,40 @@
 
 int _verbose = 0;
 
-static const unsigned char _base64_chars[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static const unsigned char _base64_vals[128] =
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62,
-  0, 0, 0, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-  17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
-  46, 47, 48, 49, 50, 51, 0, 0, 0, 0, 0 };
-
+static const unsigned char
+_base64_chars[64] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const unsigned char
+_base64_vals[128] =
+{
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 63, 52, 53,
+  54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7,
+  8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 0,
+  0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+  42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 0, 0, 0, 0, 0
+};
 
 /**
- * @brief   Return the base64-encoded string of a data buffer without padding.
- * @note    This function ensures the smallest possible output length with no trailing '=' characters.
- * @param   buf a pointer to the data buffer to be base-64 encoded.
- * @param   len the length, in bytes, of the buffer to be encoded.
- * @return  a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
+ * @brief
+ *  Return the base64-encoded string of a data buffer without padding.
+ * @note
+ *  This function ensures the smallest possible output length with no trailing
+ *  '=' characters.
+ * @param buf
+ *  a pointer to the data buffer to be base-64 encoded.
+ * @param len
+ *  the length, in bytes, of the buffer to be encoded.
+ * @return
+ *  a pointer to a newly allocated null-terminated string containing the
+ *  base64-encoded data, or NULL on failure.
  * @free_using{free}
  */
-char *_b64encode_nopad(const unsigned char *buf, size_t len) {
-
+char *
+_b64encode_nopad(
+    unsigned char const *buf,
+    size_t len)
+{
     char *result, *ptr;
 
     if (!buf || !len) {
@@ -52,15 +68,26 @@ char *_b64encode_nopad(const unsigned char *buf, size_t len) {
 
 
 /**
- * @brief   Decode a base64-encoded string without any padding characters and return the result.
- * @param   buf a pointer to a buffer containing the data to be decoded.
- * @param   len the length, in bytes, of the buffer to be decoded.
- * @param   outlen  a pointer to a variable to receive the length of the decoded data.
- * @return  a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
+ * @brief
+ *  Decode a base64-encoded string without any padding characters and return
+ *  the result.
+ * @param buf
+ *  a pointer to a buffer containing the data to be decoded.
+ * @param len
+ *  the length, in bytes, of the buffer to be decoded.
+ * @param outlen
+ *  a pointer to a variable to receive the length of the decoded data.
+ * @return
+ *  a pointer to a newly allocated buffer containing the base64-decoded, or
+ *  NULL on failure.
  * @free_using{free}
  */
-unsigned char *_b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
-
+unsigned char *
+_b64decode_nopad(
+    char const *buf,
+    size_t len,
+    size_t *outlen)
+{
     unsigned char *result;
     char *padded;
     size_t padlen;
@@ -92,12 +119,17 @@ unsigned char *_b64decode_nopad(const char *buf, size_t len, size_t *outlen) {
 
 
 /**
- * @brief   Store a 4-byte value in a buffer in network byte order.
- * @param   buf a pointer to the data buffer where the value will be inserted.
- * @param   val the 4 byte value to be placed in the specified buffer, in network byte order.
+ * @brief
+ *  Store a 4-byte value in a buffer in network byte order.
+ * @param buf
+ *  a pointer to the data buffer where the value will be inserted.
+ * @param val
+ *  the 4 byte value to be placed in the specified buffer, in network byte
+ *  order.
  */
-void _int_no_put_4b(void *buf, uint32_t val) {
-
+void
+_int_no_put_4b(void *buf, uint32_t val)
+{
     unsigned char *bptr = (unsigned char *)buf;
 
     if (!buf) {
@@ -108,17 +140,21 @@ void _int_no_put_4b(void *buf, uint32_t val) {
     bptr[1] = (val & 0x00ff0000) >> 16;
     bptr[2] = (val & 0x0000ff00) >> 8;
     bptr[3] = val & 0x000000ff;
-
 }
 
 
 /**
- * @brief   Store a 3-byte value in a buffer in network byte order.
- * @param   buf a pointer to the data buffer where the value will be inserted.
- * @param   val the 3 byte value to be placed in the specified buffer, in network byte order.
+ * @brief
+ *  Store a 3-byte value in a buffer in network byte order.
+ * @param buf
+ *  a pointer to the data buffer where the value will be inserted.
+ * @param val
+ *  the 3 byte value to be placed in the specified buffer, in network byte
+ *  order.
  */
-void _int_no_put_3b(void *buf, uint32_t val) {
-
+void
+_int_no_put_3b(void *buf, uint32_t val)
+{
     unsigned char *bptr = (unsigned char *)buf;
 
     if (!buf) {
@@ -128,17 +164,21 @@ void _int_no_put_3b(void *buf, uint32_t val) {
     bptr[0] = (val & 0x00ff0000) >> 16;
     bptr[1] = (val & 0x0000ff00) >> 8;
     bptr[2] = val & 0x000000ff;
-
 }
 
 
 /**
- * @brief   Store a 2-byte value in a buffer in network byte order.
- * @param   buf a pointer to the data buffer where the value will be inserted.
- * @param   val the 2 byte value to be placed in the specified buffer, in network byte order.
+ * @brief
+ *  Store a 2-byte value in a buffer in network byte order.
+ * @param buf
+ *  a pointer to the data buffer where the value will be inserted.
+ * @param val
+ *  the 2 byte value to be placed in the specified buffer, in network byte
+ *  order.
  */
-void _int_no_put_2b(void *buf, uint16_t val) {
-
+void
+_int_no_put_2b(void *buf, uint16_t val)
+{
     unsigned char *bptr = (unsigned char *)buf;
 
     if (!buf) {
@@ -147,17 +187,19 @@ void _int_no_put_2b(void *buf, uint16_t val) {
 
     bptr[0] = (val & 0x0000ff00) >> 8;
     bptr[1] = val & 0x000000ff;
-
 }
 
-
 /**
- * @brief   Fetch a 4 byte value from a buffer and return it in host byte order.
- * @param   buf a pointer to the data buffer from which the bytes will be read.
- * @return  the value of the first 4 bytes in the buffer in host byte order.
+ * @brief
+ *  Fetch a 4 byte value from a buffer and return it in host byte order.
+ * @param buf
+ *  a pointer to the data buffer from which the bytes will be read.
+ * @return
+ *  the value of the first 4 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_4b(const void *buf) {
-
+uint32_t
+_int_no_get_4b(const void *buf)
+{
     uint32_t result = 0;
     unsigned char *sptr = (unsigned char *)buf;
 
@@ -173,14 +215,17 @@ uint32_t _int_no_get_4b(const void *buf) {
     return result;
 }
 
-
 /**
- * @brief   Fetch a 3 byte value from a buffer and return it in host byte order.
- * @param   buf a pointer to the data buffer from which the bytes will be read.
- * @return  the value of the first 3 bytes in the buffer in host byte order.
+ * @brief
+ *  Fetch a 3 byte value from a buffer and return it in host byte order.
+ * @param buf
+ *  a pointer to the data buffer from which the bytes will be read.
+ * @return
+ *  the value of the first 3 bytes in the buffer in host byte order.
  */
-uint32_t _int_no_get_3b(const void *buf) {
-
+uint32_t
+_int_no_get_3b(const void *buf)
+{
     uint32_t result = 0;
     unsigned char *sptr = (unsigned char *)buf;
 
@@ -197,12 +242,16 @@ uint32_t _int_no_get_3b(const void *buf) {
 
 
 /**
- * @brief   Fetch a 2 byte value from a buffer and return it in host byte order.
- * @param   buf a pointer to the data buffer from which the bytes will be read.
- * @return  the value of the first 2 bytes in the buffer in host byte order.
+ * @brief
+ *  Fetch a 2 byte value from a buffer and return it in host byte order.
+ * @param buf
+ *  a pointer to the data buffer from which the bytes will be read.
+ * @return
+ *  the value of the first 2 bytes in the buffer in host byte order.
  */
-uint16_t _int_no_get_2b(const void *buf) {
-
+uint16_t
+_int_no_get_2b(const void *buf)
+{
     uint16_t result = 0;
     unsigned char *sptr = (unsigned char *)buf;
 
@@ -218,14 +267,20 @@ uint16_t _int_no_get_2b(const void *buf) {
 
 
 /**
- * @brief   Return a simple hex string representing a data buffer.
- * @param   buf a pointer to the data buffer to be encoded as a hex string.
- * @param   len the size, in bytes, of the buffer to be processed.
- * @return  NULL on failure, or a newly allocated null-terminated string containing the hex encoded input on success.
+ * @brief
+ *  Return a simple hex string representing a data buffer.
+ * @param buf
+ *  a pointer to the data buffer to be encoded as a hex string.
+ * @param len
+ *  the size, in bytes, of the buffer to be processed.
+ * @return
+ *  NULL on failure, or a newly allocated null-terminated string containing the
+ *  hex encoded input on success.
  * @free_using{free}
  */
-char *_hex_encode(const unsigned char *buf, size_t len) {
-
+char *
+_hex_encode(unsigned char const *buf, size_t len)
+{
     char *result;
     size_t newlen;
 
@@ -249,35 +304,44 @@ char *_hex_encode(const unsigned char *buf, size_t len) {
     return result;
 }
 
-
 /**
- * @brief   Set the debugging level of the current process.
- * @note    The debugging level determines which debug strings are displayed to the console.
- *              If a debug string is printed with a level equal to or higher than the debugging level, it will be
- *              displayed to the user; otherwise it will be suppressed.
- * @param   level   the value of the new debugging level to be set.
+ * @brief
+ *  Set the debugging level of the current process.
+ * @note
+ *  The debugging level determines which debug strings are displayed to the
+ *  console.  If a debug string is printed with a level equal to or higher than
+ *  the debugging level, it will be displayed to the user; otherwise it will be
+ *  suppressed.
+ * @param level
+ *  the value of the new debugging level to be set.
  */
-void _set_dbg_level(unsigned int level) {
-
+void
+_set_dbg_level(unsigned int level)
+{
     _verbose = level;
 }
 
 
 /**
- * @brief   Get the debugging level of the current process.
- * @return  the current value of the debugging level.
+ * @brief
+ *  Get the debugging level of the current process.
+ * @return
+ *  the current value of the debugging level.
  */
-unsigned int _get_dbg_level(void) {
-
+unsigned int
+_get_dbg_level(void)
+{
     return _verbose;
 }
 
-
 /**
- * @brief   Append variable-argument formatted data to a dynamically allocated null-terminated string.
+ * @brief
+ *  Append variable-argument formatted data to a dynamically allocated
+ *  null-terminated string.
  */
-int _str_printf(char **sbuf, const char *fmt, ...) {
-
+int
+_str_printf(char **sbuf, const char *fmt, ...)
+{
     va_list ap;
     int result;
 
@@ -288,12 +352,17 @@ int _str_printf(char **sbuf, const char *fmt, ...) {
     return result;
 }
 
-
 /**
- * @brief   Append variable-argument formatted data to a dynamically allocated null-terminated string.
+ * @brief
+ *  Append variable-argument formatted data to a dynamically allocated
+ *  null-terminated string.
  */
-int __str_printf(char **sbuf, const char *fmt, va_list ap) {
-
+int
+__str_printf(
+    char **sbuf,
+    const char *fmt,
+    va_list ap)
+{
     va_list copy;
     char *result, *endptr, tmp;
     size_t total, more;
@@ -336,19 +405,32 @@ int __str_printf(char **sbuf, const char *fmt, va_list ap) {
     return retval;
 }
 
-
 /**
- * @brief   Append data to a dynamically allocated buffer.
- * @note    This function should be called for the first time with *buf set to NULL.
- * @param   buf a pointer to the address of the output buffer that will be resized to hold the result, or NULL to allocate one.
- * @param   blen    a pointer to a variable that holds the buffer's current size and will receive the
- *                      size of the newly resized output buffer.
- * @param   data    a pointer to a buffer holding the data that will be appended to the end of the output buffer.
- * @param   dlen    the size, in bytes, of the data buffer to be appended to the output buffer.
- * @return  the new size of the (re)allocated output buffer, or 0 on failure.
+ * @brief
+ *  Append data to a dynamically allocated buffer.
+ * @note
+ *  This function should be called for the first time with *buf set to NULL.
+ * @param buf
+ *  a pointer to the address of the output buffer that will be resized to hold
+ *  the result, or NULL to allocate one.
+ * @param blen
+ *  a pointer to a variable that holds the buffer's current size and will
+ *  receive the size of the newly resized output buffer.
+ * @param data
+ *  a pointer to a buffer holding the data that will be appended to the end of
+ *  the output buffer.
+ * @param dlen
+ *  the size, in bytes, of the data buffer to be appended to the output buffer.
+ * @return
+ *  the new size of the (re)allocated output buffer, or 0 on failure.
  */
-size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data, size_t dlen) {
-
+size_t
+_mem_append(
+    unsigned char **buf,
+    size_t *blen,
+    unsigned char const *data,
+    size_t dlen)
+{
     void *obuf;
 
     if (!buf || !blen || !data) {
@@ -364,7 +446,9 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
 
         if (!(*buf = malloc(dlen))) {
             PUSH_ERROR_SYSCALL("malloc");
-            RET_ERROR_UINT(ERR_NOMEM, "unable to allocate memory for buffer expansion");
+            RET_ERROR_UINT(
+                ERR_NOMEM,
+                "unable to allocate memory for buffer expansion");
         }
 
         memcpy(*buf, data, dlen);
@@ -374,7 +458,9 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
         if (!(*buf = realloc((obuf = *buf), *blen + dlen))) {
             PUSH_ERROR_SYSCALL("realloc");
             free(obuf);
-            RET_ERROR_UINT(ERR_NOMEM, "unable to reallocate memory for buffer expansion");
+            RET_ERROR_UINT(
+                ERR_NOMEM,
+                "unable to reallocate memory for buffer expansion");
         }
 
         memcpy(*buf + *blen, data, dlen);
@@ -384,14 +470,18 @@ size_t _mem_append(unsigned char **buf, size_t *blen, const unsigned char *data,
     return *blen;
 }
 
-
 /**
- * @brief   Free a pointer chain and all its member elements.
- * @note    All pointers in the chain will be free()'ed. To avoid this behavior, call free() on the pointer chain instead.
- * @param   buf the address of the pointer chain to be freed.
+ * @brief
+ *  Free a pointer chain and all its member elements.
+ * @note
+ *  All pointers in the chain will be free()'ed. To avoid this behavior, call
+ *  free() on the pointer chain instead.
+ * @param
+ *  buf the address of the pointer chain to be freed.
  */
-void _ptr_chain_free(void *buf) {
-
+void
+_ptr_chain_free(void *buf)
+{
     unsigned char **memptr = (unsigned char **)buf;
 
     if (!buf) {
@@ -404,17 +494,20 @@ void _ptr_chain_free(void *buf) {
     }
 
     free(buf);
-
 }
 
-
 /**
- * @brief   Append an address to the end of a pointer chain.
- * @param   buf the address of the target pointer chain. If NULL, allocate a new one for the caller.
- * @param   addr    the address to be appended to the pointer chain.
+ * @brief
+ *  Append an address to the end of a pointer chain.
+ * @param buf
+ *  the address of the target pointer chain. If NULL, allocate a new one for
+ *  the caller.
+ * @param addr
+ *  the address to be appended to the pointer chain.
  */
-void *_ptr_chain_add(void *buf, const void *addr) {
-
+void *
+_ptr_chain_add(void *buf, const void *addr)
+{
     unsigned char **newbuf, **ptr = (unsigned char **)buf, **obuf;
     size_t bufsize = sizeof(unsigned char *);
 
@@ -443,24 +536,31 @@ void *_ptr_chain_add(void *buf, const void *addr) {
     if (!buf) {
         ptr = (unsigned char **)newbuf;
     } else {
-        ptr = (unsigned char **)((unsigned char *)newbuf + bufsize - sizeof(unsigned char *));
+        ptr =
+            (unsigned char **)((unsigned char *)newbuf
+            + bufsize
+            - sizeof(unsigned char *));
     }
 
-    // Replace the next-to-last entry in the new pointer chain with our address, then follow it with a terminating NULL pointer.
+    // Replace the next-to-last entry in the new pointer chain with our
+    // address, then follow it with a terminating NULL pointer.
     *ptr++ = (unsigned char *)addr;
     *ptr = NULL;
 
     return newbuf;
 }
 
-
 /**
- * @brief   Count the number of elements in a pointer chain.
- * @param   buf the address of the pointer chain to be counted.
- * @return  the number of elements in the pointer chain, or -1 on general error.
+ * @brief
+ *  Count the number of elements in a pointer chain.
+ * @param buf
+ *  the address of the pointer chain to be counted.
+ * @return
+ *  the number of elements in the pointer chain, or -1 on general error.
  */
-int _count_ptr_chain(void *buf) {
-
+int
+_count_ptr_chain(void *buf)
+{
     unsigned char **memptr = (unsigned char **)buf;
     unsigned int result = 0;
 
@@ -477,13 +577,17 @@ int _count_ptr_chain(void *buf) {
 }
 
 /**
- * @brief   Clone a pointer chain.
- * @param   buf a pointer to the pointer chain to be cloned.
- * @return  a pointer to the cloned pointer chain on success, or NULL on failure.
+ * @brief
+ *  Clone a pointer chain.
+ * @param buf
+ *  a pointer to the pointer chain to be cloned.
+ * @return
+ *  a pointer to the cloned pointer chain on success, or NULL on failure.
  * @free_usingref{ptr_chain_free}
  */
-void *_ptr_chain_clone(void *buf) {
-
+void *
+_ptr_chain_clone(void *buf)
+{
     unsigned char **result, **inptr = (unsigned char **)buf;
     size_t totsize;
     int nitems;
@@ -514,19 +618,26 @@ void *_ptr_chain_clone(void *buf) {
     return result;
 }
 
-
 /**
- * @brief   Get the human-readable, US-specific representation of a specified UNIX time.
- * @param   time    the time to be converted to a human-readable string.
- * @param   local   if set, return the time string as a local time; if not, as UTC.
- * @return  a string containing the formatted date-time; or NULL on errors.
+ * @brief
+ *  Get the human-readable, US-specific representation of a specified UNIX
+ *  time.
+ * @param time
+ *  the time to be converted to a human-readable string.
+ * @param local
+ *  if set, return the time string as a local time; if not, as UTC.
+ * @return
+ *  a string containing the formatted date-time; or NULL on errors.
  * @free_using{free}
  */
-char *_get_chr_date(time_t time, int local) {
-
+char *
+_get_chr_date(time_t time, int local)
+{
     struct tm tmr;
-    char tbuf[64], *result;
-    const char *local_fmt = "%H:%M:%S %a %b %d %Y", *utc_fmt = "%H:%M:%S %a %b %d %Y (UTC)";
+    char tbuf[64];
+    char *result;
+    const char *local_fmt = "%H:%M:%S %a %b %d %Y";
+    char const *utc_fmt = "%H:%M:%S %a %b %d %Y (UTC)";
 
     if (local && (!localtime_r(&time, &tmr))) {
         RET_ERROR_PTR(ERR_UNSPEC, "error occurred formatting local date-time");
@@ -542,23 +653,34 @@ char *_get_chr_date(time_t time, int local) {
 
     if (!(result = strdup(tbuf))) {
         PUSH_ERROR_SYSCALL("strdup");
-        RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for date-time string");
+        RET_ERROR_PTR(
+            ERR_NOMEM,
+            "could not allocate space for date-time string");
     }
 
     return result;
 }
 
-
 /**
- * @brief   Perform base64-decoding on a string and return the result.
- * @param   buf a pointer to a buffer containing the data to be decoded.
- * @param   len the length, in bytes, of the buffer to be decoded.
- * @param   outlen  a pointer to a variable to receive the length of the decoded data.
- * @return  a pointer to a newly allocated buffer containing the base64-decoded, or NULL on failure.
+ * @brief
+ *  Perform base64-decoding on a string and return the result.
+ * @param buf
+ *  a pointer to a buffer containing the data to be decoded.
+ * @param len
+ *  the length, in bytes, of the buffer to be decoded.
+ * @param outlen
+ *  a pointer to a variable to receive the length of the decoded data.
+ * @return
+ *  a pointer to a newly allocated buffer containing the base64-decoded, or
+ *  NULL on failure.
  * @free_using{free}
  */
-unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
-
+unsigned char *
+_b64decode(
+    char const *buf,
+    size_t len,
+    size_t *outlen)
+{
     unsigned char *o, *result;
     const char *p;
     size_t new_len, written = 0;
@@ -572,7 +694,9 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
 
     if (!(result = malloc(new_len))) {
         PUSH_ERROR_SYSCALL("malloc");
-        RET_ERROR_PTR(ERR_NOMEM, "unable to allocate buffer for base64 decoded data");
+        RET_ERROR_PTR(
+            ERR_NOMEM,
+            "unable to allocate buffer for base64 decoded data");
     }
 
     memset(result, 0, new_len);
@@ -584,8 +708,12 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
     for (size_t i = 0; i < len; i++) {
 
         // Only process legit base64 characters.
-        if ((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '+' || *p == '/') {
-
+        if ((*p >= 'A' && *p <= 'Z')
+            || (*p >= 'a' && *p <= 'z')
+            || (*p >= '0' && *p <= '9')
+            || *p == '+'
+            || *p == '/')
+        {
             // Do the appropriate operation.
             switch (loop) {
 
@@ -613,7 +741,9 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
                 break;
             default:
                 free(result);
-                RET_ERROR_PTR(ERR_UNSPEC, "an unexpected error occurred during base64 decoding");
+                RET_ERROR_PTR(
+                    ERR_UNSPEC,
+                    "an unexpected error occurred during base64 decoding");
                 break;
             }
 
@@ -632,14 +762,20 @@ unsigned char *_b64decode(const char *buf, size_t len, size_t *outlen) {
 
 
 /**
- * @brief   Return the base64-encoded string of a data buffer.
- * @param   buf a pointer to the data buffer to be base-64 encoded.
- * @param   len the length, in bytes, of the buffer to be encoded.
- * @return  a pointer to a newly allocated null-terminated string containing the base64-encoded data, or NULL on failure.
+ * @brief
+ *  Return the base64-encoded string of a data buffer.
+ * @param buf
+ *  a pointer to the data buffer to be base-64 encoded.
+ * @param len
+ *  the length, in bytes, of the buffer to be encoded.
+ * @return
+ *  a pointer to a newly allocated null-terminated string containing the
+ *  base64-encoded data, or NULL on failure.
  * @free_using{free}
  */
-char *_b64encode(const unsigned char *buf, size_t len) {
-
+char *
+_b64encode(unsigned char const *buf, size_t len)
+{
     unsigned char *o;
     const unsigned char *p;
     char *result;
@@ -650,12 +786,13 @@ char *_b64encode(const unsigned char *buf, size_t len) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-
     new_len = B64_ENCODED_LEN(len) + 4;
 
     if (!(result = malloc(new_len))) {
         PUSH_ERROR_SYSCALL("malloc");
-        RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for base64-encoded string");
+        RET_ERROR_PTR(
+            ERR_NOMEM,
+            "could not allocate space for base64-encoded string");
     }
 
     memset(result, 0, new_len);
@@ -696,9 +833,10 @@ char *_b64encode(const unsigned char *buf, size_t len) {
         break;
     default:
         free(result);
-        RET_ERROR_PTR(ERR_UNSPEC, "an unexpected error occurred during base64 encoding");
+        RET_ERROR_PTR(
+            ERR_UNSPEC,
+            "an unexpected error occurred during base64 encoding");
         break;
-
     }
 
     return result;
@@ -706,18 +844,29 @@ char *_b64encode(const unsigned char *buf, size_t len) {
 
 
 /**
- * @brief   Dump a data buffer to the console for debugging purposes.
- * @param   buf     a pointer to the data buffer to have its contents dumped.
- * @param   len     the size, in bytes, of the data buffer to be dumped.
- * @param   all_hex     if set, print all characters as hex codes - even printable ones.
+ * @brief
+ *  Dump a data buffer to the console for debugging purposes.
+ * @param buf
+ *  a pointer to the data buffer to have its contents dumped.
+ * @param len
+ *  the size, in bytes, of the data buffer to be dumped.
+ * @param all_hex
+ *  if set, print all characters as hex codes - even printable ones.
  */
-void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
-
+void
+_dump_buf(
+    unsigned char const *buf,
+    size_t len,
+    int all_hex)
+{
     if (!buf) {
         return;
     }
 
-    fprintf(stderr, "Dumping buf of size %u bytes ...: |", (unsigned int)len);
+    fprintf(
+        stderr,
+        "Dumping buf of size %u bytes ...: |",
+        (unsigned int)len);
 
     for(size_t i = 0; i < len; i++) {
 
@@ -740,15 +889,27 @@ void _dump_buf(const unsigned char *buf, size_t len, int all_hex) {
 
 
 /**
- * @brief   Dump a data buffer to the console in abbreviated format for debugging purposes.
- * @note    At most, only the first nouter leading and trailing bytes will be dumped.
- * @param   buf     a pointer to the data buffer to have its contents dumped.
- * @param   len     the size, in bytes, of the data buffer to be dumped.
- * @param   nouter      the number of outer (leading and trailing) bytes to be dumped.
- * @param   all_hex     if set, print all characters as hex codes - even printable ones.
+ * @brief
+ *  Dump a data buffer to the console in abbreviated format for debugging
+ *  purposes.
+ * @note
+ *  At most, only the first nouter leading and trailing bytes will be dumped.
+ * @param buf
+ *  a pointer to the data buffer to have its contents dumped.
+ * @param len
+ *  the size, in bytes, of the data buffer to be dumped.
+ * @param nouter
+ *  the number of outer (leading and trailing) bytes to be dumped.
+ * @param all_hex
+ *  if set, print all characters as hex codes - even printable ones.
  */
-void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int all_hex) {
-
+void
+_dump_buf_outer(
+    unsigned char const *buf,
+    size_t len,
+    size_t nouter,
+    int all_hex)
+{
     if (!buf) {
         return;
     }
@@ -759,7 +920,10 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
         return;
     }
 
-    fprintf(stderr, "Dumping buf of size %u bytes ...: |", (unsigned int)len);
+    fprintf(
+        stderr,
+        "Dumping buf of size %u bytes ...: |",
+        (unsigned int)len);
 
     for (size_t i = 0; i < nouter; i++) {
 
@@ -788,27 +952,40 @@ void _dump_buf_outer(const unsigned char *buf, size_t len, size_t nouter, int al
 
 
 /**
- * @brief   Print a debug string to the console.
- * @param   dbglevel    the minimum necessary debugging level to be active in order for the data to be displayed.
- * @param   fmt     the format string specifier to be used to display the user data.
- * @param   ...     the variable argument list specified by the format string.
+ * @brief
+ *  Print a debug string to the console.
+ * @param dbglevel
+ *  the minimum necessary debugging level to be active in order for the data to
+ *  be displayed.
+ * @param fmt
+ *  the format string specifier to be used to display the user data.
+ * @param ...
+ *  the variable argument list specified by the format string.
  */
-void _dbgprint(unsigned int dbglevel, const char *fmt, ...) {
-
+void
+_dbgprint(
+    unsigned int dbglevel,
+    const char *fmt,
+    ...)
+{
     va_list ap;
 
     va_start(ap, fmt);
     __dbgprint(dbglevel, fmt, ap);
     va_end(ap);
-
 }
 
 
 /**
- * @brief   Print a debug string to the console.
+ * @brief
+ *  Print a debug string to the console.
  */
-void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
-
+void
+__dbgprint(
+    unsigned int dbglevel,
+    char const *fmt,
+    va_list ap)
+{
     if ((unsigned int)_verbose < dbglevel) {
         return;
     }
@@ -826,18 +1003,29 @@ void __dbgprint(unsigned int dbglevel, const char *fmt, va_list ap) {
 
 }
 
-
 /**
- * @brief       Compute an SHA1, SHA256, or SHA512 hash of a block of data.
- * @param   nbits   specifies the number of bits for the hash operation (160, 256, and 512 are accepted values).
- * @param   buf a pointer to a data buffer containing the data to be hashed.
- * @param   blen    the size, in bytes, of the buffer to be hashed.
- * @param   outbuf  a buffer that will contain the output of the hash operation (the caller is responsible for
- *                      allocating the correct amount of space).
- * @return  0 on success or < 0 if an error was encountered.
+ * @brief
+ *  Compute an SHA1, SHA256, or SHA512 hash of a block of data.
+ * @param nbits
+ *  specifies the number of bits for the hash operation (160, 256, and 512 are
+ *  accepted values).
+ * @param buf
+ *  a pointer to a data buffer containing the data to be hashed.
+ * @param blen
+ *  the size, in bytes, of the buffer to be hashed.
+ * @param outbuf
+ *  a buffer that will contain the output of the hash operation (the caller is
+ *  responsible for allocating the correct amount of space).
+ * @return
+ *  0 on success or < 0 if an error was encountered.
  */
-int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsigned char *outbuf) {
-
+int
+_compute_sha_hash(
+    size_t nbits,
+    unsigned char const *buf,
+    size_t blen,
+    unsigned char *outbuf)
+{
     SHA512_CTX ctx512;
     SHA256_CTX ctx256;
     SHA_CTX ctx160;
@@ -848,28 +1036,44 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
 
     if (nbits == 160) {
 
-        if (!SHA1_Init(&ctx160) || !SHA1_Update(&ctx160, buf, blen) || !SHA1_Final(outbuf, &ctx160)) {
+        if (!SHA1_Init(&ctx160)
+            || !SHA1_Update(&ctx160, buf, blen)
+            || !SHA1_Final(outbuf, &ctx160))
+        {
             PUSH_ERROR_OPENSSL();
-            RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA1 hash operation");
+            RET_ERROR_INT(
+                ERR_UNSPEC,
+                "error occurred in SHA1 hash operation");
         }
 
     } else if (nbits == 256) {
 
-        if (!SHA256_Init(&ctx256) || !SHA256_Update(&ctx256, buf, blen) || !SHA256_Final(outbuf, &ctx256)) {
+        if (!SHA256_Init(&ctx256)
+            || !SHA256_Update(&ctx256, buf, blen)
+            || !SHA256_Final(outbuf, &ctx256))
+        {
             PUSH_ERROR_OPENSSL();
-            RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA-256 hash operation");
+            RET_ERROR_INT(
+                ERR_UNSPEC,
+                "error occurred in SHA-256 hash operation");
         }
-
 
     } else if (nbits == 512) {
 
-        if (!SHA512_Init(&ctx512) || !SHA512_Update(&ctx512, buf, blen) || !SHA512_Final(outbuf, &ctx512)) {
+        if (!SHA512_Init(&ctx512)
+            || !SHA512_Update(&ctx512, buf, blen)
+            || !SHA512_Final(outbuf, &ctx512))
+        {
             PUSH_ERROR_OPENSSL();
-            RET_ERROR_INT(ERR_UNSPEC, "error occurred in SHA-512 hash operation");
+            RET_ERROR_INT(
+                ERR_UNSPEC,
+                "error occurred in SHA-512 hash operation");
         }
 
     } else {
-        RET_ERROR_INT(ERR_BAD_PARAM, "SHA hash requested against unsupported bit size");
+        RET_ERROR_INT(
+            ERR_BAD_PARAM,
+            "SHA hash requested against unsupported bit size");
     }
 
     return 0;
@@ -877,15 +1081,25 @@ int _compute_sha_hash(size_t nbits, const unsigned char *buf, size_t blen, unsig
 
 
 /**
- * @brief       Compute an SHA1, SHA256, or SHA512 hash of a block of data.
- * @param   nbits   specifies the number of bits for the hash operation (160, 256, and 512 are accepted values).
- * @param   bufs    a pointer to a data buffer containing the data to be hashed.
- * @param   outbuf  a buffer that will contain the output of the hash operation (the caller is responsible for
- *                      allocating the correct amount of space).
- * @return  0 on success or < 0 if an error was encountered.
+ * @brief
+ *  Compute an SHA1, SHA256, or SHA512 hash of a block of data.
+ * @param nbits
+ *  specifies the number of bits for the hash operation (160, 256, and 512 are
+ *  accepted values).
+ * @param bufs
+ *  a pointer to a data buffer containing the data to be hashed.
+ * @param outbuf
+ *  a buffer that will contain the output of the hash operation (the caller is
+ *  responsible for allocating the correct amount of space).
+ * @return
+ *  0 on success or < 0 if an error was encountered.
  */
-int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char *outbuf) {
-
+int
+_compute_sha_hash_multibuf(
+    size_t nbits,
+    sha_databuf_t *bufs,
+    unsigned char *outbuf)
+{
     SHA512_CTX ctx512;
     SHA256_CTX ctx256;
     SHA_CTX ctx160;
@@ -897,7 +1111,9 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
     }
 
     if ((nbits != 160) && (nbits != 256) && (nbits != 512)) {
-        RET_ERROR_INT(ERR_BAD_PARAM, "SHA multi-buffer hash requested against unsupported bit size");
+        RET_ERROR_INT(
+            ERR_BAD_PARAM,
+            "SHA multi-buffer hash requested against unsupported bit size");
     }
 
     switch(nbits) {
@@ -956,7 +1172,9 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 
     if (!res) {
         PUSH_ERROR_OPENSSL();
-        RET_ERROR_INT(ERR_UNSPEC, "error finalizing multi-buffer SHA operation");
+        RET_ERROR_INT(
+            ERR_UNSPEC,
+            "error finalizing multi-buffer SHA operation");
     }
 
     return 0;
@@ -964,15 +1182,23 @@ int _compute_sha_hash_multibuf(size_t nbits, sha_databuf_t *bufs, unsigned char 
 
 
 /**
- * @brief   Decode an RSA public key from a buffer.
- * @note    This format is identical to the wire format of RSA public keys used for DNSSEC validation.
- * @param   data    a pointer to the data buffer that stores the encoded RSA public key in binary form.
- * @param   dlen    the length, in bytes, of the data buffer.
- * @return  a pointer to an RSA public key structure on success, or NULL on failure.
+ * @brief
+ *  Decode an RSA public key from a buffer.
+ * @note
+ *  This format is identical to the wire format of RSA public keys used for
+ *  DNSSEC validation.
+ * @param data
+ *  a pointer to the data buffer that stores the encoded RSA public key in
+ *  binary form.
+ * @param dlen
+ *  the length, in bytes, of the data buffer.
+ * @return
+ *  a pointer to an RSA public key structure on success, or NULL on failure.
  * @free_using{RSA_free}
  */
-RSA *_decode_rsa_pubkey(unsigned char *data, size_t dlen) {
-
+RSA *
+_decode_rsa_pubkey(unsigned char *data, size_t dlen)
+{
     RSA *result;
     BIGNUM *mod, *exp;
     unsigned char *ptr = data + 1;
@@ -983,10 +1209,10 @@ RSA *_decode_rsa_pubkey(unsigned char *data, size_t dlen) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    // If this first byte is > 0, then it's the entire length as a one byte field.
-    // Otherwise, if it's zero, the following 2 bytes store the exponent length.
+    // If this first byte is > 0, then it's the entire length as a one byte
+    // field.  Otherwise, if it's zero, the following 2 bytes store the
+    // exponent length.
     if (!*data) {
-
         if (left < sizeof(explen)) {
             RET_ERROR_PTR(ERR_UNSPEC, "RSA key buffer underflow");
         }
@@ -1035,14 +1261,21 @@ RSA *_decode_rsa_pubkey(unsigned char *data, size_t dlen) {
 
 
 /**
- * @brief   Encode and store an RSA public key into a buffer.
- * @param   pubkey  a pointer to the RSA public key to be encoded.
- * @param   enclen  a pointer to a size_t that will receive the total size of the encoded public key on completion.
- * @return  a pointer to a buffer containing the encoded RSA public key as binary data on success, or NULL on failure.
+ * @brief
+ *  Encode and store an RSA public key into a buffer.
+ * @param pubkey
+ *  a pointer to the RSA public key to be encoded.
+ * @param enclen
+ *  a pointer to a size_t that will receive the total size of the encoded
+ *  public key on completion.
+ * @return
+ *  a pointer to a buffer containing the encoded RSA public key as binary data
+ *  on success, or NULL on failure.
  * @free_using{free}
  */
-unsigned char *_encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
-
+unsigned char *
+_encode_rsa_pubkey(RSA *pubkey, size_t *enclen)
+{
     unsigned char *result = NULL, *rptr;
     unsigned short explen;
     unsigned char byte = 0;
@@ -1062,7 +1295,9 @@ unsigned char *_encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
 
     if (!(result = malloc(*enclen))) {
         PUSH_ERROR_SYSCALL("malloc");
-        RET_ERROR_PTR(ERR_NOMEM, "could not allocate space for encoded RSA public key");
+        RET_ERROR_PTR(
+            ERR_NOMEM,
+            "could not allocate space for encoded RSA public key");
     }
 
     memset(result, 0, *enclen);
@@ -1094,15 +1329,25 @@ unsigned char *_encode_rsa_pubkey(RSA *pubkey, size_t *enclen) {
 
 
 /**
- * @brief   Get the SHA signature of an x509 certificate in DER format.
- * @param   cert    a pointer to the x509 certificate to be hashed.
- * @param   nbits   the number of bits in the SHA operation (160, 256, and 512 are valid values).
- * @param   out a pointer to a data buffer to receive the output (which the caller is
- *                      responsible for allocating properly depending on the hash size).
- * @return  0 if the hash operation was completed successfully, or < 0 on error.
+ * @brief
+ *  Get the SHA signature of an x509 certificate in DER format.
+ * @param cert
+ *  a pointer to the x509 certificate to be hashed.
+ * @param nbits
+ *  the number of bits in the SHA operation (160, 256, and 512 are valid
+ *  values).
+ * @param out
+ *  a pointer to a data buffer to receive the output (which the caller is
+ *  responsible for allocating properly depending on the hash size).
+ * @return
+ *  0 if the hash operation was completed successfully, or < 0 on error.
  */
-int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
-
+int
+_get_x509_cert_sha_hash(
+    X509 *cert,
+    size_t nbits,
+    unsigned char *out)
+{
     unsigned char *buf = NULL;
     int blen;
 
@@ -1126,15 +1371,22 @@ int _get_x509_cert_sha_hash(X509 *cert, size_t nbits, unsigned char *out) {
     return 0;
 }
 
-
 /**
- * @brief   Check to see if a buffer is filled with null bytes.
- * @param   buf a pointer to the data buffer to be scanned.
- * @param   len the size, in bytes, of the data buffer to be scanned.
- * @return  1 if the buffer was filled exclusively with null bytes, 0 if it was not, or -1 on general error.
+ * @brief
+ *  Check to see if a buffer is filled with null bytes.
+ * @param buf
+ *  a pointer to the data buffer to be scanned.
+ * @param len
+ *  the size, in bytes, of the data buffer to be scanned.
+ * @return
+ *  1 if the buffer was filled exclusively with null bytes, 0 if it was not, or
+ *  -1 on general error.
  */
-int _is_buf_zeroed(void *buf, size_t len) {
-
+int
+_is_buf_zeroed(
+    void *buf,
+    size_t len)
+{
     unsigned char *ptr = (unsigned char *)buf;
 
     if (!buf || !len) {
@@ -1154,14 +1406,23 @@ int _is_buf_zeroed(void *buf, size_t len) {
 
 
 /**
- * @brief   Create a pem file with specified tags and filename.
- * @param   b64_data    Null terminated base64 encoded data.
- * @param   tag     Null terminated ASCII string containing the desired PEM tag.
- * @param   filename    Null terminated string containing the desired filename.
- * @return  0 on success, -1 on failure.
+ * @brief
+ *  Create a pem file with specified tags and filename.
+ * @param b64_data
+ *  Null terminated base64 encoded data.
+ * @param tag
+ *  Null terminated ASCII string containing the desired PEM tag.
+ * @param filename
+ *  Null terminated string containing the desired filename.
+ * @return
+ *  0 on success, -1 on failure.
  */
-int _write_pem_data(const char *b64_data, const char *tag, const char *filename) {
-
+int
+_write_pem_data(
+    char const *b64_data,
+    char const *tag,
+    char const *filename)
+{
     FILE *fp;
     char fbuf[BUFSIZ];
     size_t data_size;
@@ -1199,14 +1460,24 @@ int _write_pem_data(const char *b64_data, const char *tag, const char *filename)
 
 
 /**
- * @brief   Read the raw contents of a file into a buffer.
- * @param   filename    a null-terminated string with the name of the file to have its contents read into memory.
- * @param   fsize       a pointer to a variable that will receive the length, in bytes, of the read data.
- * @return  a pointer to a buffer containing the raw contents of the specified file, or NULL on failure.
+ * @brief
+ *  Read the raw contents of a file into a buffer.
+ * @param filename
+ *  a null-terminated string with the name of the file to have its contents
+ *  read into memory.
+ * @param fsize
+ *  a pointer to a variable that will receive the length, in bytes, of the read
+ *  data.
+ * @return
+ *  a pointer to a buffer containing the raw contents of the specified file, or
+ *  NULL on failure.
  * @free_using{free}
  */
-unsigned char *_read_file_data(const char *filename, size_t *fsize) {
-
+unsigned char *
+_read_file_data(
+    char const *filename,
+    size_t *fsize)
+{
     unsigned char *result;
     struct stat sb;
     int fd, nread;
@@ -1229,7 +1500,10 @@ unsigned char *_read_file_data(const char *filename, size_t *fsize) {
     if (!(result = malloc(sb.st_size))) {
         PUSH_ERROR_SYSCALL("malloc");
         close(fd);
-        RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not allocate space for file contents: %s", filename);
+        RET_ERROR_PTR_FMT(
+            ERR_UNSPEC,
+            "could not allocate space for file contents: %s",
+            filename);
     }
 
     if ((nread = read(fd, result, sb.st_size)) < 0) {
@@ -1243,7 +1517,10 @@ unsigned char *_read_file_data(const char *filename, size_t *fsize) {
 
     if (nread != sb.st_size) {
         free(result);
-        RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not read entire contents of file: %s", filename);
+        RET_ERROR_PTR_FMT(
+            ERR_UNSPEC,
+            "could not read entire contents of file: %s",
+            filename);
     }
 
     *fsize = sb.st_size;
@@ -1253,16 +1530,27 @@ unsigned char *_read_file_data(const char *filename, size_t *fsize) {
 
 
 /**
- * @brief   Read the contents of a specified tag inside a PEM file into a buffer.
- * @note    This function will remove all newline characters inside the tag being read.
- * @param   pemfile the name of the PEM file to be parsed.
- * @param   tag the name of a tag in the file to have its contents read into memory.
- * @param   nospace     if set, strip all whitespace from the PEM file content.
- * @return  a pointer to a buffer containing the contents of the specified PEM file tag, or NULL on failure.
+ * @brief
+ *  Read the contents of a specified tag inside a PEM file into a buffer.
+ * @note
+ *  This function will remove all newline characters inside the tag being read.
+ * @param pemfile
+ *  the name of the PEM file to be parsed.
+ * @param tag
+ *  the name of a tag in the file to have its contents read into memory.
+ * @param nospace
+ *  if set, strip all whitespace from the PEM file content.
+ * @return
+ *  a pointer to a buffer containing the contents of the specified PEM file
+ *  tag, or NULL on failure.
  * @free_using{free}
  */
-char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
-
+char *
+_read_pem_data(
+    char const *pemfile,
+    char const *tag,
+    int nospace)
+{
     FILE *fp;
     const char *hyphens = "-----", *begin = "BEGIN ", *end = "END ";
     char line[4096], *result = NULL, *ptr;
@@ -1276,12 +1564,16 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
     if (!(fp = fopen(pemfile, "r"))) {
         PUSH_ERROR_SYSCALL("fopen");
-        RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not open PEM file for reading: %s", pemfile);
+        RET_ERROR_PTR_FMT(
+            ERR_UNSPEC,
+            "could not open PEM file for reading: %s",
+            pemfile);
     }
 
     while (!feof(fp)) {
 
-        // If we're in the tag and just read a line of data, it needs to be appended to the result.
+        // If we're in the tag and just read a line of data, it needs to be
+        // appended to the result.
         if ((in_tag > 1) && strlen(line)) {
             ptr = line;
 
@@ -1299,7 +1591,9 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
             if (!_str_printf(&result, line)) {
                 fclose(fp);
-                RET_ERROR_PTR(ERR_NOMEM, "unable to allocate space for PEM file contents");
+                RET_ERROR_PTR(
+                    ERR_NOMEM,
+                    "unable to allocate space for PEM file contents");
             }
 
         }
@@ -1314,7 +1608,10 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
             break;
         }
 
-        if ((slen = strlen(line)) && ((line[slen - 1] == '\n') || (line[slen - 1] == '\r'))) {
+        if ((   slen = strlen(line))
+                && ((line[slen - 1] == '\n')
+            || (line[slen - 1] == '\r')))
+        {
             line[slen - 1] = 0;
         }
 
@@ -1354,7 +1651,8 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
         ptr += strlen(hyphens);
 
-        // The trailing hyphens shouldn't be followed by anything other than whitespace.
+        // The trailing hyphens shouldn't be followed by anything other than
+        // whitespace.
         while (*ptr && isspace(*(unsigned char *)ptr)) {
             ptr++;
         }
@@ -1373,7 +1671,8 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
         in_tag = 1;
     }
 
-    // If we got this far, we never correctly parsed (all) the data we expected to read.
+    // If we got this far, we never correctly parsed (all) the data we expected
+    // to read.
     if (result) {
         free(result);
     }
@@ -1389,12 +1688,16 @@ char *_read_pem_data(const char *pemfile, const char *tag, int nospace) {
 
 
 /**
- * @brief   Securely wipe a memory buffer, in preparation for deallocation.
- * @param   buf a pointer to the data buffer to be wiped.
- * @param   len the size, in bytes, of the data buffer to be wiped.
+ * @brief
+ *  Securely wipe a memory buffer, in preparation for deallocation.
+ * @param buf
+ *  a pointer to the data buffer to be wiped.
+ * @param len
+ *  the size, in bytes, of the data buffer to be wiped.
  */
-void _secure_wipe(void *buf, size_t len) {
-
+void
+_secure_wipe(void *buf, size_t len)
+{
     if (!buf || !len) {
         return;
     }
@@ -1403,5 +1706,4 @@ void _secure_wipe(void *buf, size_t len) {
     memset(buf, 0xaa, len);
     memset(buf, 0x55, len);
     memset(buf, 0, len);
-
 }

@@ -1,14 +1,14 @@
 #include <openssl/buffer.h>
 #include <openssl/pem.h>
 
-#include <common/network.h>
-#include <common/misc.h>
-#include <common/dcrypto.h>
+#include <dime/common/network.h>
+#include <dime/common/misc.h>
+#include <dime/common/dcrypto.h>
 
-#include <signet-resolver/cache.h>
-#include <signet-resolver/dmtp.h>
-#include <signet-resolver/mrec.h>
-#include <signet-resolver/signet-ssl.h>
+#include <dime/signet-resolver/cache.h>
+#include <dime/signet-resolver/dmtp.h>
+#include <dime/signet-resolver/mrec.h>
+#include <dime/signet-resolver/signet-ssl.h>
 
 static void usage(const char *progname) {
 
@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
 			if (!(key = load_ed25519_privkey(optarg))) {
 				_clear_error_stack();
 
-				if (!(key = keys_file_fetch_sign_key(optarg))) {
+				//if (!(key = keys_file_fetch_sign_key(optarg))) {
 					fprintf(stderr, "Error: could not read ed25519 POK from keyfile.\n");
 					exit(EXIT_FAILURE);
-				}
+				//}
 
 			}
 

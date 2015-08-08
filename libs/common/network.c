@@ -6,17 +6,30 @@
 #include "dime/common/network.h"
 #include "dime/common/misc.h"
 
-#define CONNECT_TIMEOUT 5               /* the timeout value for connection attempts, in seconds */
+//the timeout value for connection attempts, in seconds
+#define CONNECT_TIMEOUT 5
 
 /**
- * @brief   Connect to a host/tcp port in an address-independent manner, and return a file descriptor.
- * @param   hostname    the hostname of the server to connect to.
- * @param   port        the TCP port number to which the connection should be made.
- * @param   force_family    an optional address family to force the connection to (AF_INET or AF_INET6), or 0 to ignore).
- * @return  -1 on general failure or the file descriptor of the socket connection on success.
+ * @brief
+ *  Connect to a host/tcp port in an address-independent manner, and return a
+ *  file descriptor.
+ * @param hostname
+ *  the hostname of the server to connect to.
+ * @param port
+ *  the TCP port number to which the connection should be made.
+ * @param force_family
+ *  an optional address family to force the connection to (AF_INET or
+ *  AF_INET6), or 0 to ignore).
+ * @return
+ *  -1 on general failure or the file descriptor of the socket connection on
+ *  success.
  */
-int _connect_host(const char *hostname, unsigned short port, int force_family) {
-
+int
+_connect_host(
+    char const *hostname,
+    unsigned short port,
+    int force_family)
+{
     struct addrinfo hints, *address;
     char pstr[16];
     int result, fd = -1;
@@ -33,7 +46,10 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
     hints.ai_socktype = SOCK_STREAM;
 
     if ((result = getaddrinfo(hostname, pstr, &hints, &address))) {
-        RET_ERROR_INT_FMT(ERR_UNSPEC, "failed to resolve host address: %s", gai_strerror(result));
+        RET_ERROR_INT_FMT(
+            ERR_UNSPEC,
+            "failed to resolve host address: %s",
+            gai_strerror(result));
     }
 
     for (struct addrinfo *aptr = address; aptr; aptr = aptr->ai_next) {
@@ -43,10 +59,26 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
             continue;
         }
 
-        if ((fd = socket(aptr->ai_family, aptr->ai_socktype, aptr->ai_protocol)) < 0) {
+        if ((fd = socket(
+                aptr->ai_family,
+                aptr->ai_socktype,
+                aptr->ai_protocol))
+            < 0)
+        {
             continue;
-        } else if (_connect_timeout(fd, aptr->ai_addr, aptr->ai_addrlen) > 0) {
-            _dbgprint(3, "Established TCP connection (%s) to %s:%s.\n", (aptr->ai_family == AF_INET ? "IPV4" : "IPV6"), hostname, pstr);
+        } else if (
+            _connect_timeout(
+                fd,
+                aptr->ai_addr,
+                aptr->ai_addrlen)
+            > 0)
+        {
+            _dbgprint(
+                3,
+                "Established TCP connection (%s) to %s:%s.\n",
+                (aptr->ai_family == AF_INET ? "IPV4" : "IPV6"),
+                hostname,
+                pstr);
             break;
         }
 
@@ -63,16 +95,26 @@ int _connect_host(const char *hostname, unsigned short port, int force_family) {
     return fd;
 }
 
-
 /**
- * @brief   Attempt a TCP connection with a time-out mechanism.
- * @param   fd      the open socket descriptor across which the connection will be attempted.
- * @param   addr        a pointer to the prepared sockaddr structure that is the target of the connection.
- * @param   addrlen     the size of the supplied sockaddr structure.
- * @return  -1 on general error, 0 if the connection failed or timed out, and 1 on success.
+ * @brief
+ *  Attempt a TCP connection with a time-out mechanism.
+ * @param fd
+ *  the open socket descriptor across which the connection will be attempted.
+ * @param addr
+ *  a pointer to the prepared sockaddr structure that is the target of the
+ *  connection.
+ * @param addrlen
+ *  the size of the supplied sockaddr structure.
+ * @return
+ *  -1 on general error, 0 if the connection failed or timed out, and 1 on
+ *  success.
  */
-int _connect_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen) {
-
+int
+_connect_timeout(
+    int fd,
+    struct sockaddr const *addr,
+    socklen_t addrlen)
+{
     fd_set fds;
     struct timeval tv;
     socklen_t slen;
