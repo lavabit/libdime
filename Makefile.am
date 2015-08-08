@@ -1,5 +1,6 @@
 # Add/remove libdime source files here!
 LIBDIME_SOURCES = \
+	libs/error_codes.c \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
 	libs/common/error.c \
