@@ -98,11 +98,11 @@ dmtp_command_argument_parse(
 
    switch(key->args[arg_num].type) {
 
-   case DMTP_ARG_REQ_STR:
+   case DMTP_ARG_ANGULAR_BRCKT:
        arg_start = "=<";
        arg_end = '>';
        break;
-   case DMTP_ARG_OPT_STR:
+   case DMTP_ARG_SQUARE_BRCKT:
        arg_start = "=[";
        arg_end = ']';
        break;
@@ -355,7 +355,7 @@ dmtp_command_format(
                 goto cleanup_result;
             }
 
-            if(key->args[i].type == DMTP_ARG_REQ_STR) {
+            if(key->args[i].type == DMTP_ARG_ANGULAR_BRCKT) {
 
                 if(!(result = sdscatlen(result, "<", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate angular bracket");
@@ -364,7 +364,7 @@ dmtp_command_format(
 
             }
 
-            if(key->args[i].type == DMTP_ARG_OPT_STR) {
+            if(key->args[i].type == DMTP_ARG_SQUARE_BRCKT) {
 
                 if(!(result = sdscatlen(result, "[", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate square bracket");
@@ -378,7 +378,7 @@ dmtp_command_format(
                 goto cleanup_result;
             }
 
-            if(key->args[i].type == DMTP_ARG_REQ_STR) {
+            if(key->args[i].type == DMTP_ARG_ANGULAR_BRCKT) {
 
                 if(!(result = sdscatlen(result, ">", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate angular bracket");
@@ -387,7 +387,7 @@ dmtp_command_format(
 
             }
 
-            if(key->args[i].type == DMTP_ARG_OPT_STR) {
+            if(key->args[i].type == DMTP_ARG_SQUARE_BRCKT) {
 
                 if(!(result = sdscatlen(result, "]", 1))) {
                     PUSH_ERROR(ERR_UNSPEC, "failed to concatenate square bracket");
@@ -2021,7 +2021,7 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "STARTTLS",  8,
         {
-            { "HOST",           4,             DMTP_ARG_REQ_STR, 0 },
+            { "HOST",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
             { "MODE",           4,             DMTP_ARG_PLAIN,   0 },
             DMTP_EMPTY_ARG
         }
@@ -2030,7 +2030,7 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "HELO",      4,
         {
-            { "HOST",           4,             DMTP_ARG_REQ_STR, 0 },
+            { "HOST",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
             DMTP_EMPTY_ARG,
             DMTP_EMPTY_ARG
         }
@@ -2039,7 +2039,7 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "EHLO",      4,
         {
-            { "HOST",           4,             DMTP_ARG_REQ_STR, 0 },
+            { "HOST",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
             DMTP_EMPTY_ARG,
             DMTP_EMPTY_ARG
         }
@@ -2093,8 +2093,8 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "MAIL",      4,
         {
-            { "FROM",           4,             DMTP_ARG_REQ_STR, 0 },
-            { "FINGERPRINT",   11,             DMTP_ARG_OPT_STR, 0 },
+            { "FROM",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "FINGERPRINT",   11,             DMTP_ARG_SQUARE_BRCKT, 0 },
             DMTP_EMPTY_ARG
         }
     },
@@ -2102,8 +2102,8 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "RCPT",      4,
         {
-            { "TO",             2,             DMTP_ARG_REQ_STR, 0 },
-            { "FINGERPRINT",   11,             DMTP_ARG_OPT_STR, 0 },
+            { "TO",             2,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "FINGERPRINT",   11,             DMTP_ARG_SQUARE_BRCKT, 0 },
             DMTP_EMPTY_ARG
         }
     },
@@ -2120,27 +2120,27 @@ dmtp_command_key_t dmtp_command_list[DMTP_COMMANDS_NUM] = {
     {
         "SGNT",      4,
         {
-            { "USER",           4,             DMTP_ARG_REQ_STR, 0 },
-            { "DOMAIN",         6,             DMTP_ARG_REQ_STR, 0 },
-            { "FINGERPRINT",   11,             DMTP_ARG_OPT_STR, 0 }
+            { "USER",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "DOMAIN",         6,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "FINGERPRINT",   11,             DMTP_ARG_SQUARE_BRCKT, 0 }
         }
     },
 
     {
         "HIST",      4,
         {
-            { "USER",           4,             DMTP_ARG_REQ_STR, 0 },
-            { "START",          5,             DMTP_ARG_OPT_STR, 0 },
-            { "STOP",           4,             DMTP_ARG_OPT_STR, 0 }
+            { "USER",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "START",          5,             DMTP_ARG_SQUARE_BRCKT, 0 },
+            { "STOP",           4,             DMTP_ARG_SQUARE_BRCKT, 0 }
         }
     },
 
     {
         "VRFY",      4,
         {
-            { "USER",           4,             DMTP_ARG_REQ_STR, 0 },
-            { "DOMAIN",         6,             DMTP_ARG_REQ_STR, 0 },
-            { "FINGERPRINT",   11,             DMTP_ARG_OPT_STR, 0 }
+            { "USER",           4,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "DOMAIN",         6,             DMTP_ARG_ANGULAR_BRCKT, 0 },
+            { "FINGERPRINT",   11,             DMTP_ARG_SQUARE_BRCKT, 0 }
         }
     }
 
