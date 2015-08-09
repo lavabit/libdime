@@ -11,7 +11,9 @@ typedef struct {
   char const * message;
 } error_t;
 
-extern error_t const *ERR_CRYPTO;
-extern error_t const *ERR_NOMEM;
+extern error_t const * const
+ERR_CRYPTO;
+extern error_t const * const
+ERR_NOMEM;
 
 #endif
