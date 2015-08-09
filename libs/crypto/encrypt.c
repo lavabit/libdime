@@ -79,35 +79,35 @@ get_openssl_error(
  */
 derror_t const *
 encrypt_ctx_new(
-    dime_ctx_t *dime_ctx,
-    encrypt_ctx_t *result)
+    dime_ctx_t const *dime_ctx,
+    encrypt_ctx_t **result)
 {
     derror_t const *err = NULL;
     char openssl_error[512];
 
-    result = malloc(sizeof(encrypt_ctx_t));
-    if (result == NULL) {
+    *result = malloc(sizeof(encrypt_ctx_t));
+    if (*result == NULL) {
         err = ERR_NOMEM;
-        goto out;
+        goto error;
     }
-    memset(result, 0, sizeof(encrypt_ctx_t));
+    memset(*result, 0, sizeof(encrypt_ctx_t));
 
     SSL_load_error_strings();
     SSL_library_init();
     OPENSSL_add_all_algorithms_noconf();
 
-    result->encryption_group =
+    (*result)->encryption_group =
         EC_GROUP_new_by_curve_name(NID_secp256k1);
-    if (result->encryption_group == NULL) {
+    if ((*result)->encryption_group == NULL) {
         get_openssl_error(openssl_error, sizeof(openssl_error));
         LOG_ERROR(dime_ctx, openssl_error);
         err = ERR_CRYPTO;
         goto cleanup_evp;
     }
 
-    result->ecies_envelope_evp =
+    (*result)->ecies_envelope_evp =
         EVP_get_digestbyname(OBJ_nid2sn(NID_sha512));
-    if (result->ecies_envelope_evp == NULL) {
+    if ((*result)->ecies_envelope_evp == NULL) {
         get_openssl_error(openssl_error, sizeof(openssl_error));
         LOG_ERROR(dime_ctx, openssl_error);
         err = ERR_CRYPTO;
@@ -116,14 +116,16 @@ encrypt_ctx_new(
 
     //EC_GROUP_set_point_conversion_form(group, POINT_CONVERSION_COMPRESSED);
 
-    goto out;
+    return NULL;
 
 cleanup_group:
-    EC_GROUP_clear_free(result->encryption_group);
+    EC_GROUP_clear_free((*result)->encryption_group);
 cleanup_evp:
     EVP_cleanup();
     ERR_free_strings();
-out:
+    free(*result);
+    *result = NULL;
+error:
     return err;
 }
 
@@ -142,6 +144,60 @@ encrypt_ctx_free(encrypt_ctx_t *ctx)
     ERR_free_strings();
 
     free(ctx);
+}
+
+/**
+ * @brief
+ *  Generate an EC key pair.
+ * @return
+ *  a newly allocated and generated EC key pair on success, or NULL on failure.
+ */
+derror_t const *
+encrypt_keypair_generate(
+    dime_ctx_t const *dime_ctx,
+    encrypt_ctx_t const *encrypt_ctx,
+    encrypt_keypair_t **result)
+{
+    derror_t const *err = NULL;
+    EC_KEY **ec_key = (EC_KEY **)result;
+    char openssl_error[512];
+
+    *ec_key = EC_KEY_new();
+    if (*ec_key == NULL) {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "unable to allocate new EC key pair for generation");
+        err = ERR_CRYPTO;
+        goto error;
+    }
+
+    if (EC_KEY_set_group(*ec_key, encrypt_ctx->encryption_group) != 1) {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "unable to associate curve group with new EC key pair");
+        err = ERR_CRYPTO;
+        goto cleanup_ec_key;
+    }
+
+    if (EC_KEY_generate_key(*ec_key) != 1) {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "unable to generate new EC key pair");
+        err = ERR_CRYPTO;
+        goto cleanup_ec_key;
+    }
+
+cleanup_ec_key:
+    EC_KEY_free(*ec_key);
+    *ec_key = NULL;
+error:
+    return err;
 }
 
 ///**
@@ -616,44 +672,6 @@ encrypt_ctx_free(encrypt_ctx_t *ctx)
 //        RET_ERROR_PTR(
 //            ERR_UNSPEC,
 //            "could not deserialize binary ec pubkey");
-//    }
-//
-//    return result;
-//}
-//
-///**
-// * @brief
-// *  Generate an EC key pair.
-// * @return
-// *  a newly allocated and generated EC key pair on success, or NULL on failure.
-// */
-//EC_KEY *
-//_generate_ec_keypair(void)
-//{
-//    EC_GROUP *group;
-//    EC_KEY *result;
-//
-//    group = _encryption_group;
-//
-//    if (!group) {
-//        RET_ERROR_PTR(ERR_UNSPEC, "could not determine curve group for operation");
-//    }
-//
-//    if (!(result = EC_KEY_new())) {
-//        PUSH_ERROR_OPENSSL();
-//        RET_ERROR_PTR(ERR_UNSPEC, "unable to allocate new EC key pair for generation");
-//    }
-//
-//    if (EC_KEY_set_group(result, group) != 1) {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(ERR_UNSPEC, "unable to associate curve group with new EC key pair");
-//    }
-//
-//    if (EC_KEY_generate_key(result) != 1) {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(ERR_UNSPEC, "unable to generate new EC key pair");
 //    }
 //
 //    return result;
