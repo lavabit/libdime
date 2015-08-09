@@ -1,5 +1,6 @@
 # Add/remove libdime source files here!
 LIBDIME_SOURCES = \
+	libs/dime_ctx.c \
 	libs/error_codes.c \
 	libs/common/crypto.c \
 	libs/common/crypto_pub.c \
@@ -8,6 +9,7 @@ LIBDIME_SOURCES = \
 	libs/common/misc_pub.c \
 	libs/common/network.c \
 	libs/common/network_pub.c \
+	libs/crypto/encrypt.c \
 	libs/dmessage/dmsg.c \
 	libs/dmessage/parser.c \
 	libs/dmtp/commands.c \

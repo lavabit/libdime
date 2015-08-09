@@ -9,11 +9,11 @@ typedef enum {
 typedef struct {
   errcode_t code;
   char const * message;
-} error_t;
+} derror_t;
 
-extern error_t const * const
+extern derror_t const * const
 ERR_CRYPTO;
-extern error_t const * const
+extern derror_t const * const
 ERR_NOMEM;
 
 #endif
