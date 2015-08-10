@@ -3,7 +3,8 @@
 
 typedef enum {
   ERRCODE_NOMEM,
-  ERRCODE_CRYPTO
+  ERRCODE_CRYPTO,
+  ERRCODE_BAD_PARAM
 } errcode_t;
 
 typedef struct {
@@ -15,5 +16,7 @@ extern derror_t const * const
 ERR_CRYPTO;
 extern derror_t const * const
 ERR_NOMEM;
+extern derror_t const * const
+ERR_BAD_PARAM;
 
 #endif
