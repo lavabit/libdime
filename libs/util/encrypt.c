@@ -1,4 +1,4 @@
-#include "dime/crypto/encrypt.h"
+#include "dime/util/encrypt.h"
 
 #include <stdio.h>
 #include <string.h>
