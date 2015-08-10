@@ -193,6 +193,82 @@ encrypt_keypair_generate(
         goto cleanup_ec_key;
     }
 
+    return NULL;
+
+cleanup_ec_key:
+    EC_KEY_free(*ec_key);
+    *ec_key = NULL;
+error:
+    return err;
+}
+
+/**
+ * @brief
+ *  Deserialize an EC public key stored in binary format.
+ * @param buf
+ *  a pointer to the buffer holding the EC public key in binary format.
+ * @param blen
+ *  the length, in bytes, of the buffer holding the EC public key.
+ * @param signing
+ *  if set, generate a key from the pre-defined EC signing curve; if zero, the
+ *  default encryption curve will be used instead.
+ * @return
+ *  a pointer to the deserialized EC public key on success, or NULL on failure.
+ */
+derror_t const *
+encrypt_deserialize_pubkey(
+    dime_ctx_t const *dime_ctx,
+    encrypt_keypair_t **result,
+    unsigned char const *buf,
+    size_t blen)
+{
+    derror_t const *err = NULL;
+    EC_KEY **ec_key = (EC_KEY **)result;
+    char openssl_error[512];
+
+    if (!buf || !blen) {
+        err = ERR_BAD_PARAM;
+        goto error;
+    }
+
+    if (!(*ec_key = EC_KEY_new())) {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "could not generate new EC key for deserialization");
+        err = ERR_CRYPTO;
+        goto error;
+    }
+
+    if (EC_KEY_set_group(
+            *ec_key,
+            EC_GROUP_new_by_curve_name(NID_secp256k1))
+        != 1)
+    {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "could not get curve group for deserialization");
+        goto cleanup_ec_key;
+    }
+
+    if (!(*ec_key =
+            o2i_ECPublicKey(
+                ec_key,
+                (const unsigned char **)&buf,
+                blen)))
+    {
+        get_openssl_error(openssl_error, sizeof(openssl_error));
+        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_ERROR(
+            dime_ctx,
+            "deserialization of EC public key portion failed");
+    }
+
+    return NULL;
+
 cleanup_ec_key:
     EC_KEY_free(*ec_key);
     *ec_key = NULL;
@@ -424,69 +500,6 @@ error:
 //    *outsize = bsize;
 //
 //    return buf;
-//}
-//
-///**
-// * @brief
-// *  Deserialize an EC public key stored in binary format.
-// * @param buf
-// *  a pointer to the buffer holding the EC public key in binary format.
-// * @param blen
-// *  the length, in bytes, of the buffer holding the EC public key.
-// * @param signing
-// *  if set, generate a key from the pre-defined EC signing curve; if zero, the
-// *  default encryption curve will be used instead.
-// * @return
-// *  a pointer to the deserialized EC public key on success, or NULL on failure.
-// */
-//EC_KEY *
-//_deserialize_ec_pubkey(
-//    unsigned char const *buf,
-//    size_t blen,
-//    int signing)
-//{
-//    EC_KEY *result;
-//    int nid;
-//
-//    if (!buf || !blen) {
-//        RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-//    } else if (signing) {
-//        RET_ERROR_PTR(
-//            ERR_BAD_PARAM,
-//            "deserialization of signing keys is not supported");
-//    }
-//
-//    nid = signing ? EC_SIGNING_CURVE : EC_ENCRYPT_CURVE;
-//
-//    if (!(result = EC_KEY_new())) {
-//        PUSH_ERROR_OPENSSL();
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not generate new EC key for deserialization");
-//    }
-//
-//    if (EC_KEY_set_group(result, EC_GROUP_new_by_curve_name(nid)) != 1) {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not get curve group for deserialization");
-//    }
-//
-//    if (!(result =
-//            o2i_ECPublicKey(
-//                &result,
-//                (const unsigned char **)&buf,
-//                blen)))
-//    {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "deserialization of EC public key portion failed");
-//    }
-//
-//    return result;
 //}
 //
 ///**

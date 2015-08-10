@@ -21,4 +21,11 @@ encrypt_keypair_generate(
     encrypt_ctx_t const *encrypt_ctx,
     encrypt_keypair_t **result);
 
+derror_t const *
+encrypt_deserialize_pubkey(
+    dime_ctx_t const *dime_ctx,
+    encrypt_keypair_t **result,
+    unsigned char const *buf,
+    size_t blen);
+
 #endif
