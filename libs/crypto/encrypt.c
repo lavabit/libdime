@@ -301,9 +301,6 @@ error:
  *  a pointer to the buffer holding the EC private key in binary format.
  * @param blen
  *  the length, in bytes, of the buffer holding the EC private key.
- * @param signing
- *  if set, generate a key from the pre-defined EC signing curve; if zero, the
- *  default encryption curve will be used instead.
  */
 derror_t const *
 encrypt_deserialize_privkey(
@@ -369,6 +366,64 @@ cleanup_ec_key:
 error:
     return err;
 }
+
+///**
+// * @brief
+// *  Load an EC public key from a file.
+// * @param result
+// *  double pointer to the resulting public key
+// * @param filename
+// *  the name of the file from which the key should be loaded
+// */
+//derror_t const *
+//load_ec_pubkey(
+//    dime_ctx_t const *dime_ctx,
+//    encrypt_keypair_t **result,
+//    char const *filename)
+//{
+//    derror_t const *err;
+//    char *filedata;
+//    unsigned char *bin;
+//    size_t binsize;
+//
+//    if (result == NULL
+//        || *result != NULL
+//        || filename == NULL)
+//    {
+//        err = ERR_BAD_PARAM;
+//        goto out;
+//    }
+//
+//    filedata = _read_pem_data(filename, "PUBLIC KEY", 1)
+//    if (filedata == NULL) {
+//        LOG_ERROR(dime_ctx,
+//            "could not read ec pubkey pem file");
+//        err = ERR_FILE_IO;
+//        goto out;
+//    }
+//
+//    bin = _b64decode(filedata, strlen(filedata), &binsize);
+//    if(bin == NULL) {
+//        LOG_ERROR(dime_ctx,
+//            "could not decode b64 data");
+//        err = ERR_ENCODING;
+//        goto cleanup_filedata;
+//    }
+//
+//    err = encrypt_deserialize_pubkey(
+//        dime_ctx,
+//        result,
+//        bin,
+//        binsize);
+//
+//    _secure_wipe(bin, binsize);
+//    free(bin);
+//cleanup_filedata:
+//    _secure_wipe(filedata, strlen(filedata));
+//    free(filedata);
+//out:
+//    return err;
+//}
 
 ///**
 // * @brief
@@ -663,51 +718,6 @@ error:
 //    free(bin);
 //    if(!result) {
 //        RET_ERROR_PTR(ERR_UNSPEC, "could not deserialize binary ec pubkey");
-//    }
-//
-//    return result;
-//}
-//
-///**
-// * @brief
-// *  Load an EC public key from a file.
-// * @param filename
-// *  the name of the file from which the key should be loaded
-// * @return
-// *  a pointer to the deserialized public key from the the file.
-// */
-//EC_KEY *
-//_load_ec_pubkey(char const *filename)
-//{
-//    char *filedata;
-//    unsigned char *bin;
-//    size_t binsize;
-//    EC_KEY *result;
-//
-//    if(!filename) {
-//        RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-//    }
-//
-//    if(!(filedata = _read_pem_data(filename, "PUBLIC KEY", 1))) {
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not read ec pubkey pem file");
-//    }
-//
-//    bin = _b64decode(filedata, strlen(filedata), &binsize);
-//    _secure_wipe(filedata, strlen(filedata));
-//    free(filedata);
-//    if(!bin) {
-//        RET_ERROR_PTR(ERR_UNSPEC, "could not decode b64 data");
-//    }
-//
-//    result = _deserialize_ec_pubkey(bin, binsize, 0);
-//    _secure_wipe(bin, binsize);
-//    free(bin);
-//    if(!result) {
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not deserialize binary ec pubkey");
 //    }
 //
 //    return result;

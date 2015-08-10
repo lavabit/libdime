@@ -35,4 +35,10 @@ encrypt_deserialize_privkey(
     unsigned char const *buf,
     size_t blen);
 
+//derror_t const *
+//load_ec_pubkey(
+//    dime_ctx_t const *dime_ctx,
+//    encrypt_keypair_t **result,
+//    char const *filename);
+
 #endif
