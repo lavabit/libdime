@@ -54,26 +54,17 @@ include/ | The header files provided by the library components.
 
 ##Compiling
 
-First, build the third-party libraries
+First, produce the build files from the autotools files:
 
-    (cd deps && ./build.sh)
+    autoreconf --install
 
 Then:
 
-    make all
-
-or
-
-    make libs
-    make tools
-    make clean
+    ./configure
+    make
 
 The specific make targets:
 
-    make libcore
-    make libcommon
-    make libsignet
-    make libsignet-resolver
     make signet
     make dime
 
