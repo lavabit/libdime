@@ -28,4 +28,11 @@ encrypt_deserialize_pubkey(
     unsigned char const *buf,
     size_t blen);
 
+derror_t const *
+encrypt_deserialize_privkey(
+    dime_ctx_t const *dime_ctx,
+    encrypt_keypair_t **result,
+    unsigned char const *buf,
+    size_t blen);
+
 #endif

@@ -71,9 +71,18 @@ get_openssl_error(
     }
 }
 
+#define LOG_OPENSSL_ERROR(ctx, buf, msg) do {\
+    get_openssl_error(buf, sizeof(buf)); \
+    LOG_ERROR(dime_ctx, buf); \
+    LOG_ERROR(dime_ctx, msg); \
+} while (0)
+
 /**
  * @brief
  *  Initialize the cryptographic subsystem.
+ * @note
+ *  This is currently NOT reentrant.  (Apparently OpenSSL likes global state
+ *  :P)
  * @return
  *  -1 if any part of the initialization process failed, or 0 on success.
  */
@@ -83,7 +92,15 @@ encrypt_ctx_new(
     encrypt_ctx_t **result)
 {
     derror_t const *err = NULL;
-    char openssl_error[512];
+    char errbuf[512];
+
+    if (dime_ctx == NULL
+        || result == NULL
+        || *result != NULL)
+    {
+        err = ERR_BAD_PARAM;
+        goto error;
+    }
 
     *result = malloc(sizeof(encrypt_ctx_t));
     if (*result == NULL) {
@@ -99,8 +116,10 @@ encrypt_ctx_new(
     (*result)->encryption_group =
         EC_GROUP_new_by_curve_name(NID_secp256k1);
     if ((*result)->encryption_group == NULL) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_OPENSSL_ERROR(
+            dime_ctx,
+            errbuf,
+            "couldn't create EC_GROUP object");
         err = ERR_CRYPTO;
         goto cleanup_evp;
     }
@@ -108,8 +127,10 @@ encrypt_ctx_new(
     (*result)->ecies_envelope_evp =
         EVP_get_digestbyname(OBJ_nid2sn(NID_sha512));
     if ((*result)->ecies_envelope_evp == NULL) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
+        LOG_OPENSSL_ERROR(
+            dime_ctx,
+            errbuf,
+            "couldn't get ecies envelope");
         err = ERR_CRYPTO;
         goto cleanup_group;
     }
@@ -160,34 +181,34 @@ encrypt_keypair_generate(
 {
     derror_t const *err = NULL;
     EC_KEY **ec_key = (EC_KEY **)result;
-    char openssl_error[512];
+    char errbuf[512];
+
+    if (dime_ctx == NULL
+        || encrypt_ctx == NULL
+        || result == NULL
+        || *result != NULL)
+    {
+        err = ERR_BAD_PARAM;
+        goto error;
+    }
 
     *ec_key = EC_KEY_new();
     if (*ec_key == NULL) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "unable to allocate new EC key pair for generation");
         err = ERR_CRYPTO;
         goto error;
     }
 
     if (EC_KEY_set_group(*ec_key, encrypt_ctx->encryption_group) != 1) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "unable to associate curve group with new EC key pair");
         err = ERR_CRYPTO;
         goto cleanup_ec_key;
     }
 
     if (EC_KEY_generate_key(*ec_key) != 1) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "unable to generate new EC key pair");
         err = ERR_CRYPTO;
         goto cleanup_ec_key;
@@ -224,18 +245,20 @@ encrypt_deserialize_pubkey(
 {
     derror_t const *err = NULL;
     EC_KEY **ec_key = (EC_KEY **)result;
-    char openssl_error[512];
+    char errbuf[512];
 
-    if (!buf || !blen) {
+    if (dime_ctx == NULL
+        || result == NULL
+        || *result != NULL
+        || buf == NULL
+        || blen == 0)
+    {
         err = ERR_BAD_PARAM;
         goto error;
     }
 
     if (!(*ec_key = EC_KEY_new())) {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "could not generate new EC key for deserialization");
         err = ERR_CRYPTO;
         goto error;
@@ -246,11 +269,9 @@ encrypt_deserialize_pubkey(
             EC_GROUP_new_by_curve_name(NID_secp256k1))
         != 1)
     {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "could not get curve group for deserialization");
+        err = ERR_CRYPTO;
         goto cleanup_ec_key;
     }
 
@@ -260,11 +281,10 @@ encrypt_deserialize_pubkey(
                 (const unsigned char **)&buf,
                 blen)))
     {
-        get_openssl_error(openssl_error, sizeof(openssl_error));
-        LOG_ERROR(dime_ctx, openssl_error);
-        LOG_ERROR(
-            dime_ctx,
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
             "deserialization of EC public key portion failed");
+        err = ERR_CRYPTO;
+        goto cleanup_ec_key;
     }
 
     return NULL;
@@ -272,6 +292,85 @@ encrypt_deserialize_pubkey(
 cleanup_ec_key:
     EC_KEY_free(*ec_key);
     *ec_key = NULL;
+error:
+    return err;
+}
+
+/**
+ * @brief
+ *  Deserialize an EC private key stored in binary format.
+ * @param buf
+ *  a pointer to the buffer holding the EC private key in binary format.
+ * @param blen
+ *  the length, in bytes, of the buffer holding the EC private key.
+ * @param signing
+ *  if set, generate a key from the pre-defined EC signing curve; if zero, the
+ *  default encryption curve will be used instead.
+ * @return
+ *  a pointer to the deserialized EC private key on success, or NULL on
+ *  failure.
+ */
+derror_t const *
+encrypt_deserialize_privkey(
+    dime_ctx_t const *dime_ctx,
+    encrypt_keypair_t **result,
+    unsigned char const *buf,
+    size_t blen)
+{
+    derror_t const *err = NULL;
+    EC_KEY **result_key = (EC_KEY **)result;
+    const unsigned char *bufptr = buf;
+    char errbuf[512];
+
+    if (dime_ctx == NULL
+        || result == NULL
+        || *result != NULL
+        || buf == NULL
+        || blen == 0)
+    {
+        err = ERR_BAD_PARAM;
+        goto error;
+    }
+
+    *result_key = EC_KEY_new();
+    if (*result_key == NULL) {
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
+            "could not generate new EC key for deserialization");
+        err = ERR_CRYPTO;
+        goto error;
+    }
+
+    if (EC_KEY_set_group(
+            *result_key,
+            EC_GROUP_new_by_curve_name(NID_secp256k1))
+        != 1)
+    {
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
+            "could not get curve group for deserialization");
+        err = ERR_CRYPTO;
+        goto cleanup_ec_key;
+    }
+
+    *result_key = d2i_ECPrivateKey(result_key, &bufptr, blen);
+    if (*result_key == NULL) {
+        LOG_OPENSSL_ERROR(dime_ctx, errbuf,
+            "deserialization of EC public key portion failed");
+        err = ERR_CRYPTO;
+        goto cleanup_ec_key;
+    }
+
+    /*
+     * At this point, in most cases bufptr == buf + blen. There may be cases
+     * though where the private key is shorter than the provided buffer. This
+     * is because DER is a variable-length encoding. Parsing any field behind
+     * the privkey must take this into account.
+     */
+
+    return NULL;
+
+cleanup_ec_key:
+    EC_KEY_free(*result_key);
+    *result_key = NULL;
 error:
     return err;
 }
@@ -531,77 +630,6 @@ error:
 //    *outsize = bsize;
 //
 //    return buf;
-//}
-//
-///**
-// * @brief
-// *  Deserialize an EC private key stored in binary format.
-// * @param buf
-// *  a pointer to the buffer holding the EC private key in binary format.
-// * @param blen
-// *  the length, in bytes, of the buffer holding the EC private key.
-// * @param signing
-// *  if set, generate a key from the pre-defined EC signing curve; if zero, the
-// *  default encryption curve will be used instead.
-// * @return
-// *  a pointer to the deserialized EC private key on success, or NULL on
-// *  failure.
-// */
-//EC_KEY *
-//_deserialize_ec_privkey(
-//    unsigned char const *buf,
-//    size_t blen,
-//    int signing)
-//{
-//    EC_KEY *result;
-//    int nid;
-//    const unsigned char *bufptr = buf;
-//
-//    if (!buf || !blen) {
-//        RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
-//    } else if (signing) {
-//        RET_ERROR_PTR(
-//            ERR_BAD_PARAM,
-//            "deserialization of signing keys is not supported");
-//    }
-//
-//    nid = signing ? EC_SIGNING_CURVE : EC_ENCRYPT_CURVE;
-//
-//    if (!(result = EC_KEY_new())) {
-//        PUSH_ERROR_OPENSSL();
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not generate new EC key for deserialization");
-//    }
-//
-//    if (EC_KEY_set_group(
-//            result,
-//            EC_GROUP_new_by_curve_name(nid))
-//        != 1)
-//    {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "could not get curve group for deserialization");
-//    }
-//
-//    if (!(result = d2i_ECPrivateKey(&result, &bufptr, blen))) {
-//        PUSH_ERROR_OPENSSL();
-//        EC_KEY_free(result);
-//        RET_ERROR_PTR(
-//            ERR_UNSPEC,
-//            "deserialization of EC public key portion failed");
-//    }
-//
-//    /*
-//     * At this point, in most cases bufptr == buf + blen. There may be cases
-//     * though where the private key is shorter than the provided buffer. This
-//     * is because DER is a variable-length encoding. Parsing any field behind
-//     * the privkey must take this into account.
-//     */
-//
-//    return result;
 //}
 //
 ///**
