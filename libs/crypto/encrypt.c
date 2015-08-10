@@ -83,8 +83,6 @@ get_openssl_error(
  * @note
  *  This is currently NOT reentrant.  (Apparently OpenSSL likes global state
  *  :P)
- * @return
- *  -1 if any part of the initialization process failed, or 0 on success.
  */
 derror_t const *
 encrypt_ctx_new(
@@ -170,7 +168,7 @@ encrypt_ctx_free(encrypt_ctx_t *ctx)
 /**
  * @brief
  *  Generate an EC key pair.
- * @return
+ * @param result
  *  a newly allocated and generated EC key pair on success, or NULL on failure.
  */
 derror_t const *
@@ -226,15 +224,12 @@ error:
 /**
  * @brief
  *  Deserialize an EC public key stored in binary format.
+ * @param result
+ *  a pointer to the deserialized EC public key on success, or NULL on failure.
  * @param buf
  *  a pointer to the buffer holding the EC public key in binary format.
  * @param blen
  *  the length, in bytes, of the buffer holding the EC public key.
- * @param signing
- *  if set, generate a key from the pre-defined EC signing curve; if zero, the
- *  default encryption curve will be used instead.
- * @return
- *  a pointer to the deserialized EC public key on success, or NULL on failure.
  */
 derror_t const *
 encrypt_deserialize_pubkey(
@@ -299,6 +294,9 @@ error:
 /**
  * @brief
  *  Deserialize an EC private key stored in binary format.
+ * @param result
+ *  a pointer to the deserialized EC private key on success, or NULL on
+ *  failure.
  * @param buf
  *  a pointer to the buffer holding the EC private key in binary format.
  * @param blen
@@ -306,9 +304,6 @@ error:
  * @param signing
  *  if set, generate a key from the pre-defined EC signing curve; if zero, the
  *  default encryption curve will be used instead.
- * @return
- *  a pointer to the deserialized EC private key on success, or NULL on
- *  failure.
  */
 derror_t const *
 encrypt_deserialize_privkey(
