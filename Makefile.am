@@ -25,6 +25,7 @@ LIBDIME_SOURCES = \
 	libs/signet-resolver/mrec_pub.c \
 	libs/signet-resolver/ssl.c \
 	libs/signet-resolver/ssl_pub.c \
+	libs/util/encoding.c \
 	libs/util/encrypt.c
 
 # Add/remove test source files here!
