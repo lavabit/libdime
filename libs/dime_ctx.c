@@ -60,21 +60,26 @@ struct dime_ctx {
 
 derror_t const *
 dime_ctx_new(
-    dime_ctx_t *result,
+    dime_ctx_t **result,
     log_function_t log_callback)
 {
     derror_t const *err = NULL;
 
-    result = malloc(sizeof(dime_ctx_t));
-    if (result == NULL) {
+    if (*result == NULL) {
+        err = ERR_BAD_PARAM;
+        goto out;
+    }
+
+    *result = malloc(sizeof(dime_ctx_t));
+    if (*result == NULL) {
         err = ERR_NOMEM;
         goto out;
     }
 
     if (log_callback == NULL) {
-        result->log_callback = default_log_callback;
+        (*result)->log_callback = default_log_callback;
     } else {
-        result->log_callback = log_callback;
+        (*result)->log_callback = log_callback;
     }
 
 out:

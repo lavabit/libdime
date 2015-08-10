@@ -38,7 +38,7 @@ typedef struct dime_ctx dime_ctx_t;
 
 derror_t const *
 dime_ctx_new(
-    dime_ctx_t *result,
+    dime_ctx_t **result,
     log_function_t log_callback);
 
 void
