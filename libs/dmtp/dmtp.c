@@ -2459,6 +2459,14 @@ error:
 }
 
 
+/**
+ * @brief
+ * Receive response from server and parse it.
+ * @param session
+ * DMTP session.
+ * @return
+ * DMTP response, NULL on error.
+*/
 dmtp_response_t *
 dime_dmtp_client_recv_response(
     dmtp_session_t *session)
@@ -2481,11 +2489,20 @@ dime_dmtp_client_recv_response(
 
     if(!(result = dime_dmtp_response_parse(lines))) {
         PUSH_ERROR(ERR_UNSPEC, "failed to parse received response");
-        goto error;
+        goto cleanup_lines;
     }
 
     return result;
 
+cleanup_lines:
+    if(lines) {
+
+        for(size_t i = 0; lines[i]; ++i) {
+            sdsfree(lines[i]);
+        }
+
+        free(lines);
+    }
 error:
     return NULL;
 }
