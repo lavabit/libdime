@@ -689,38 +689,186 @@ dime_record_t *_get_dime_record_from_file(const char *filename, const char *doma
     return result;
 }
 
-
+/**
+ * @brief
+ * Destroy dime management record structure.
+*/
 void
 dime_mrec_record_destroy(
     dime_record_t *record)
 {
 
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!record) {
+        goto out;
+    }
+
+    mrec_record_destroy(record);
+
+out:
+    goto out;
 }
 
 
+/**
+ * @brief
+ * Load dime management record structure from file.
+ * @param domain
+ * Domain name of the the management record being loaded.
+ * @param filename
+ * sds containing the filename.
+ * @return
+ * dime management record structure or NULL on failure.
+*/
 dime_record_t *
 dime_mrec_record_load(
     sds domain,
     sds filename)
 {
 
+    dime_record_t *result;
+    sds record;
+    size_t size;
+    unsigned char *filedata;
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!domain) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!filename) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!(filedata = read_file_data(filename, &size))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to read dime management record file data");
+        goto error;
+    }
+
+    record = sdsnewlen(filedata, size);
+    free(filedata);
+
+    if(!record) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to create new sds to store file data");
+        goto error;
+    }
+
+    result = mrec_record_parse(sds record);
+    sdsfree(record);
+
+    if(!result) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to parse dime management record");
+        goto error;
+    }
+
+    return result;
+
+error:
+    return NULL;
 }
 
-
+/**
+ * @brief
+ * Look up the dime management record for the specified domain name.
+ * @param domain
+ * domain name for which the mrec will be looked up.
+ * @param ttl
+ * Pointer to a time to live variable to be updated.
+ * @return
+ * dime management record structure on success, NULL on failure.
+*/
 dime_record_t *
 dime_mrec_record_lookup(
     sds domain,
     unsigned long *ttl)
 {
 
+    dime_record_t *result;
+    sds record;
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!domain) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!ttl) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!(record = mrec_record_lookup(domain, ttl))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to look up dime management record");
+        goto error;
+    }
+
+    result = mrec_record_parse(sds record);
+    sdsfree(record);
+
+    if(!result) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to parse dime management record");
+        goto error;
+    }
+
+    return result;
+
+error:
+    return NULL;
 }
 
-
+/**
+ * @brief
+ * Store the provided dime management record in the a file with the specified name.
+ * @param record
+ * record to be stored.
+ * @param filename
+ * name of the file into which the record will be stored.
+ * @return
+ * 0 on success, -1 on failure.
+*/
 int
 dime_mrec_record_store(
     dime_record_t *record,
     sds filename)
 {
 
+    int res;
+    size_t size;
+    unsigned char *serial;
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!record) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!filename) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!(record = mrec_record_serialize(serial, &size))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to serialize dime management record");
+        goto error;
+    }
+
+    res = mrec_record_store_serial(serial, size);
+    free(serial);
+
+    if(!res) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to store serialized dime management record to file");
+        goto error;
+    }
+
+    return 0;
+
+error:
+    return -1;
 }
 
