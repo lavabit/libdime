@@ -43,9 +43,9 @@ typedef struct {
 
 
 dime_record_t * dime_mrec_record_lookup(sds domain, unsigned long *ttl);
-dime_record_t * dime_mrec_record_load(sds filename, sds domain);
-
-
+dime_record_t * dime_mrec_record_load(sds domain, sds filename);
+int             dime_mrec_record_store(dime_record_t *record, sds filename);
+void            dime_mrec_record_destroy(dime_record_t *record);
 
 
 

@@ -37,21 +37,9 @@ typedef struct {
 } dmtp_session_t;
 
 
-typedef enum {
-    return_type_default = 0,
-    return_type_full = 1,
-    return_type_display = 2,
-    return_type_header = 3
-} dmtp_mail_rettype_t;
-
-typedef enum {
-    data_type_default = 0,
-    data_type_7bit = 1,
-    data_type_8bit = 2
-} dmtp_mail_datatype_t;
-
-int   dime_dmtp_session_send(dmtp_session_t *session, sds line);
-sds * dime_dmtp_session_recv(dmtp_session_t *session);
+dmtp_session_t * dime_dmtp_session_create(sds domain, int force_family);
+sds *            dime_dmtp_session_recv(dmtp_session_t *session);
+int              dime_dmtp_session_send(dmtp_session_t *session, sds line);
 
 
 #endif
