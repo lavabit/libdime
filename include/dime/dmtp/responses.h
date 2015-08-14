@@ -36,6 +36,10 @@ typedef enum {
     DMTP_586        //INVALID RECIPIENT SIGNET
 } dmtp_response_type_t;
 
+typedef struct {
+    dmtp_response_type_t type;
+    sds *data;
+} dmtp_response_t;
 
 
 #endif
