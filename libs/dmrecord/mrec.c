@@ -690,6 +690,22 @@ dime_record_t *_get_dime_record_from_file(const char *filename, const char *doma
 }
 
 
+void
+dime_mrec_record_destroy(
+    dime_record_t *record)
+{
+
+}
+
+
+dime_record_t *
+dime_mrec_record_load(
+    sds domain,
+    sds filename)
+{
+
+}
+
 
 dime_record_t *
 dime_mrec_record_lookup(
@@ -700,10 +716,10 @@ dime_mrec_record_lookup(
 }
 
 
-dime_record_t *
-dime_mrec_record_load(
-    sds filename,
-    sds domain)
+int
+dime_mrec_record_store(
+    dime_record_t *record,
+    sds filename)
 {
 
 }
