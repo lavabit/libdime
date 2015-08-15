@@ -97,3 +97,138 @@ dmtp_session_t *dime_dmtp_session_create(const char *domain, int force_family) {
 
     return result;
 }
+
+
+
+dmtp_session_t *
+dime_dmtp_session_create(
+    sds domain,
+    dime_record_t *record,
+    int force_family)
+{
+
+    char **dxptr;
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!domain) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!record) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if (record->validated < 0) {
+        PUSH_ERROR(ERR_UNSPEC, "could not establish DMTP connection to host: DIME management record DNSSEC signature was invalid");
+        goto error;
+    }
+
+    // There are 3 possible ways this will turn out.
+    // 1. The DIME management record has a dx field and we will connect to this server on the standard DMTP port.
+    // 2. There is no dx field but the domain has an MX record. We will attempt to connect to this host first
+    //    over standard DMTP, and then fall back to dual mode on the SMTP port if unsuccessful.
+    // 3. There is no DX field or MX record for the domain. We make an attempt to connect to the standard DMTP port.
+
+    // Case 1: Our record has a DX field.
+    if (record->dx) {
+        size_t i = 1;
+        dxptr = record->dx;
+
+        /* We must try each possible DX server in order. */
+        while (*dxptr) {
+            _dbgprint(1, "Attempting DMTP connection to DIME record-supplied DX server #%u at %s:%u ...\n", i, *dxptr, DMTP_PORT);
+
+            if ((result = _dx_connect_standard(*dxptr, domain, force_family, record))) {
+                break;
+            }
+
+            dxptr++, i++;
+        }
+
+        // Case 2: There are MX record(s) for our domain.
+    } else {
+
+        if ((mxptr = mxs = _get_mx_records(domain))) {
+
+            // Try a maximum of the first 3 MX records.
+            for (int i = 0; (i < DMTP_MAX_MX_RETRIES) && *mxptr; i++, mxptr++) {
+                _dbgprint(1, "Attempting DMTP connection to MX hostname at %s:%u [pref %u] ...\n", (*mxptr)->name, DMTP_PORT, (*mxptr)->pref);
+
+                if (!(result = _dx_connect_standard((*mxptr)->name, domain, force_family, drec))) {
+                    _dbgprint(1, "Re-attempting dual-mode DMTP connection to MX hostname at %s:%u ...\n", (*mxptr)->name, DMTP_PORT_DUAL);
+                    result = _dx_connect_dual((*mxptr)->name, domain, force_family, drec, 1);
+                }
+
+                if (result) {
+                    break;
+                }
+
+            }
+
+            free(mxs);
+        }
+
+        // Case 3 (final): There is no DX field or MX record for this domain. We try a standard DMTP connection.
+        // This is actually executed as failover from Case #2 if it completes unsuccessfully.
+        if (!result) {
+            _dbgprint(1, "Attempting DMTP connection to assumed DX server at %s:%u ...\n", domain, DMTP_PORT);
+            result = _dx_connect_standard(domain, domain, force_family, drec);
+        }
+
+    }
+
+    if (!result) {
+        RET_ERROR_PTR(ERR_UNSPEC, "connection to DX server failed");
+    }
+
+    return result;
+
+
+error:
+    return NULL;
+}
+
+
+sds *
+dime_dmtp_session_recv(
+    dmtp_session_t *session)
+{
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!session) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+error:
+    return NULL;
+}
+
+
+int
+dime_dmtp_session_send(
+    dmtp_session_t *session,
+    sds line)
+{
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!session) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!line) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+error:
+    return -1;
+}
+
+
