@@ -6,6 +6,8 @@
 #include "dime/common/error.h"
 
 
+
+
 /**
  * @brief   Destroy a DIME management record and its underlying data.
  * @param   record  a pointer to the DIME management record object to be destroyed.
@@ -688,6 +690,7 @@ dime_record_t *_get_dime_record_from_file(const char *filename, const char *doma
 
     return result;
 }
+
 
 /**
  * @brief

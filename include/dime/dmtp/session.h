@@ -4,8 +4,9 @@
 #include "sds.h"
 #include "dime/dmrecord/mrec.h"
 
-#define DMTP_PORT      26
-#define DMTP_PORT_DUAL 25
+#define DMTP_PORT           26
+#define DMTP_PORT_DUAL      25
+#define DMTP_PORT_DUAL_AUX  587
 
 #define DMTP_V1_CIPHER_LIST "ECDHE-RSA-AES256-GCM-SHA384"
 
@@ -37,7 +38,8 @@ typedef struct {
 } dmtp_session_t;
 
 
-dmtp_session_t * dime_dmtp_session_create(sds domain, int force_family);
+dmtp_session_t * dime_dmtp_session_standard_create(
+dmtp_session_t * dime_dmtp_session_dual_create(sds domain, int force_family);
 sds *            dime_dmtp_session_recv(dmtp_session_t *session);
 int              dime_dmtp_session_send(dmtp_session_t *session, sds line);
 
