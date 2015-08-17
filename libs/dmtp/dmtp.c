@@ -1848,6 +1848,132 @@ int _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen) {
 }
 
 
+/**
+ * @brief
+ * Create a config structure to be used for connecting to DMTP a server.
+ * @param attempts_standard
+ * Maximum number of attempts in standard mode.
+ * @param attempts_dual
+ * Maximum number of attempts in dual mode.
+ * @param try_aux_port
+ * Should the auxillary port also be used to connect in dual mode.
+ * @param force_family
+ * Force connection to an IP address family (AF_INET or AF_INET6 or 0 to ignore);
+ * @return
+ * Pointer to a dmtp connection config structure, NULL on failure.
+ * @free_using
+ * dime_dmtp_client_config_destroy()
+*/
+dmtp_client_config_t *
+dime_dmtp_client_config_create(
+    unsigned int attempts_standard,
+    unsigned int attempts_dual,
+    int try_aux_port,
+    int force_family)
+{
+
+    dmtp_client_config_t *result;
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(!(result = malloc(sizeof(dmtp_client_config_t)))) {
+        PUSH_ERROR_SYSCALL("malloc");
+        PUSH_ERROR(ERR_NOMEM, "failed to allocate memory for dmtp config struct");
+        goto error;
+    }
+
+    result->attempts_standard = (attempts_standard > 3 ? attempts_standard : 3); 
+    result->attempts_dual = (attempts_dual > 3 ? attempts_dual : 3);
+    result->try_aux_port = try_aux_port;
+    result->force_family = force_family;
+
+error:
+    return NULL;
+}
+
+
+/**
+ * @brief
+ * Destroy the connection config structure.
+ * @param config
+ * Pointer to the config structure to be destroyed.
+*/
+void
+dime_dmtp_client_config_destroy(
+    dmtp_client_config_t *config)
+{
+
+    PUBLIC_FUNC_PROLOGUE();
+
+    if(config) {
+        free(config);
+    }
+
+}
+
+
+dmtp_session_t *
+dime_dmtp_client_connect(
+    dmtp_client_connfig_t *config,
+    sds domain,
+    dime_record_t *record)
+{
+
+    dmtp_session_t *result;
+    unsigned char *track_attempts;
+    sds *dx, *mx;
+    size_t num_dx = 0, num_mx = 0;
+
+    if(!config) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!domain) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!record) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    //First we try to connect to the domains on port 26 listed in the DX records
+    //the number of times specified by the config struct
+
+    if((dx = record->dx) != NULL) {
+
+        while(dx[num_dx]) {
+            ++num_dx;
+        }
+
+        if(!(track_attempts = malloc(num_dx))) {
+            PUSH_ERROR_SYSCALL("malloc");
+            PUSH_ERROR(ERR_NOMEM, "failed to allocate memory to track connection attempts");
+            goto error;
+        }
+
+    }
+
+    //If we failed to make a connection to a DMTP port, we now try to connect to
+    //the 
+
+    if((mx = record->mx) != NULL) {
+
+
+
+    }
+
+out:
+    return result;
+
+error:
+    return NULL;
+}
+
+
+
 
 /**
  * @brief
