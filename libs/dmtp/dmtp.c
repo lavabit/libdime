@@ -1869,6 +1869,7 @@ dime_dmtp_client_config_create(
     unsigned int attempts_standard,
     unsigned int attempts_dual,
     int try_aux_port,
+    int use_domain,
     int force_family)
 {
 
@@ -1882,10 +1883,12 @@ dime_dmtp_client_config_create(
         goto error;
     }
 
-    result->attempts_standard = (attempts_standard > 3 ? attempts_standard : 3); 
-    result->attempts_dual = (attempts_dual > 3 ? attempts_dual : 3);
-    result->try_aux_port = try_aux_port;
-    result->force_family = force_family;
+    memset(result, 0, sizeof(dmtp_client_config_t));
+    result->connect.attempts_standard = (attempts_standard > 3 ? attempts_standard : 3); 
+    result->connect.attempts_dual = (attempts_dual > 3 ? attempts_dual : 3);
+    result->connect.aux_port = aux_port;
+    result->connect.use_domain = use_domain;
+    result->connect.force_family = force_family;
 
 error:
     return NULL;
@@ -1912,17 +1915,31 @@ dime_dmtp_client_config_destroy(
 }
 
 
+/**
+ * @brief
+ * Establish a dmtp connection with the specified domain.
+ * @param config
+ * Our client-config structure.
+ * @param domain
+ * sds string containing the target dmtp server domain name.
+ * @return
+ * A dmtp session on success, NULL on error.
+ * @free_using
+ * dime_dmtp_session_destroy()
+*/
 dmtp_session_t *
 dime_dmtp_client_connect(
-    dmtp_client_connfig_t *config,
-    sds domain,
-    dime_record_t *record)
+    dmtp_client_config_t *config,
+    sds domain)
 {
 
+    dime_record_t *dx_rec;
     dmtp_session_t *result;
-    unsigned char *track_attempts;
+    mx_record_t **mx_rec;
     sds *dx, *mx;
-    size_t num_dx = 0, num_mx = 0;
+    size_t num_dx = 0, num_mx = 0, attempts;
+    unsigned int *track_attempts;
+    unsigned long ttl;
 
     if(!config) {
         PUSH_ERROR(ERR_BAD_PARAM, NULL);
@@ -1934,40 +1951,61 @@ dime_dmtp_client_connect(
         goto error;
     }
 
-    if(!record) {
-        PUSH_ERROR(ERR_BAD_PARAM, NULL);
-        goto error;
-    }
+    //First we need to try to retrieve the DX record.
+    dx_rec = dime_mrec_record_lookup(domain, &ttl);
 
-    //First we try to connect to the domains on port 26 listed in the DX records
-    //the number of times specified by the config struct
-
-    if((dx = record->dx) != NULL) {
+    //Now we attempt the correct number of DMTP connections using standard mode.
+    if(dx_rec && (dx = dx_rec->dx)) {
 
         while(dx[num_dx]) {
             ++num_dx;
         }
 
-        if(!(track_attempts = malloc(num_dx))) {
-            PUSH_ERROR_SYSCALL("malloc");
-            PUSH_ERROR(ERR_NOMEM, "failed to allocate memory to track connection attempts");
-            goto error;
+        attempts = num_dx > config->connect.attempts_standard ? config->connect.attempts_standard : num_dx;
+
+        if(!(track_attempts = dmtp_client_connect_permute(attempts))) {
+            PUSH_ERROR(ERR_UNSPEC, "failed to permute connection attempts");
+            goto cleanup_dx_rec;
         }
+
+        for(size_t i = 0; i < attempts; ++i) {
+
+            if((result = dmtp_session_standard_init(dx[track_attempts[i]], domain, config->connect.force_family)) != NULL) {
+                result->drec = dx_rec;
+                break;
+            }
+        }
+
+        free(track_attempts);
+    }
+
+    //If we either were not able to connect to the DMTP server using standard
+    //mode, or we could not find the dx record we need to pull up the mx record.
+    mx_rec = dime_dns_mx_lookup(domain);
+
+    //Now we attempt the correct number of DMTP connections using dual mode.
+    if(mx_rec) {
+
+        while(dx[num_mx]) {
+            ++num_mx;
+        }
+
+        attempts = num_mx > config->connect.attempts_dual ? config->connect.attempts_dual : num_mx;
+
 
     }
 
-    //If we failed to make a connection to a DMTP port, we now try to connect to
-    //the 
-
-    if((mx = record->mx) != NULL) {
-
-
+    //If we have still not succeeded, we will try to connect to the domain
+    //directly if the our config allows it.
+    if(config->connect.use_domain) {
 
     }
 
 out:
     return result;
 
+cleanup_dx_rec:
+    dime_mrec_record_destroy(dx_rec);
 error:
     return NULL;
 }

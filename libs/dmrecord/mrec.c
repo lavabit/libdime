@@ -12,7 +12,7 @@
  * @brief   Destroy a DIME management record and its underlying data.
  * @param   record  a pointer to the DIME management record object to be destroyed.
  */
-void _destroy_dime_record(dime_record_t *record) {
+static void mrec_record_destroy(dime_record_t *record) {
 
     if (!record) {
         _dbgprint(0, "Attempted to destroy NULL DIME record.\n");
@@ -703,14 +703,10 @@ dime_mrec_record_destroy(
 
     PUBLIC_FUNC_PROLOGUE();
 
-    if(!record) {
-        goto out;
+    if(record) {
+        mrec_record_destroy(record);
     }
 
-    mrec_record_destroy(record);
-
-out:
-    goto out;
 }
 
 

@@ -37,9 +37,9 @@ typedef struct {
     size_t _inpos;
 } dmtp_session_t;
 
-
-dmtp_session_t * dime_dmtp_session_standard_create(
-dmtp_session_t * dime_dmtp_session_dual_create(sds domain, int force_family);
+void             dime_dmtp_session_destroy(dmtp_session_t *session);
+dmtp_session_t * dime_dmtp_session_dual_init(sds domain, );
+dmtp_session_t * dime_dmtp_session_standard_init();
 sds *            dime_dmtp_session_recv(dmtp_session_t *session);
 int              dime_dmtp_session_send(dmtp_session_t *session, sds line);
 
