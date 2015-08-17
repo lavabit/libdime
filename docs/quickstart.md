@@ -5,10 +5,10 @@
 ###System
 * libdl [TLDP tutorial](http://www.tldp.org/HOWTO/Program-Library-HOWTO/dl-libraries.html)
 * pthread [LLNL pthread tutorial](https://computing.llnl.gov/tutorials/pthreads/)
+* openssl [openssl site](http://www.openssl.org) and [linux tutorial](http://tldp.org/LDP/LG/issue87/vinayak.html)
 
 ###Bundled
 * zlib [zlib site](http://www.zlib.org)
-* openssl [openssl site](http://www.openssl.org) and [linux tutorial](http://tldp.org/LDP/LG/issue87/vinayak.html)
 * donna
 
 ###Unit Testing
@@ -40,34 +40,17 @@ include/ | The header files provided by the library components.
 
 ##Compiling
 
-First, build the third-party libraries
+First, produce the build files from the autotools files:
 
-```sh
-    (cd deps && ./build.sh)
-```
+    autoreconf --install
 
 Then:
 
-```sh
-    make all
-    make check
-```
-
-or
-
-```sh
-    make libs
-    make tools
-    make clean
-```
+    ./configure
+    make
 
 The specific make targets:
 
-```sh
-    make libcore
-    make libcommon
-    make libsignet
-    make libsignet-resolver
     make signet
     make dime
-```
+
