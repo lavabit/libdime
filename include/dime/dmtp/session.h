@@ -41,7 +41,7 @@ typedef struct {
 
 void             dime_dmtp_session_destroy(dmtp_session_t *session);
 dmtp_session_t * dime_dmtp_session_connect_dual(sds host, unsigned short port, int force_family);
-dmtp_session_t * dime_dmtp_session_connect_standard(sds host);
+dmtp_session_t * dime_dmtp_session_connect_standard(sds host, int force_family);
 sds *            dime_dmtp_session_recv(dmtp_session_t *session);
 int              dime_dmtp_session_send(dmtp_session_t *session, sds line);
 sds              dime_dmtp_session_dual_starttls(dmtp_session_t *session, sds host, dmtp_mode_type_t mode);

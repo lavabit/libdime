@@ -34,6 +34,9 @@ typedef enum {
     data_type_8bit = 2
 } dmtp_mail_datatype_t;
 
+
+
+/** TODO FIXME this stuff is better left to the implementation.
 // connection configuration structure
 typedef struct {
     unsigned int attempts_standard;     // Number of standard connection attempts to be made. (If < 3, then up to 3 will be perfomed.)
@@ -63,6 +66,10 @@ typedef struct {
 
 dmtp_client_config_t * dime_dmtp_client_config_create(unsigned int attempts_standard, unsigned int attempts_dual, int aux_port, int use_domain, int force_family);
 void                   dime_dmtp_client_config_destroy(dmtp_client_config_t *config);
+
+*/
+
+
 dmtp_response_t *      dime_dmtp_client_recv_response(dmtp_session_t *session);
 int                    dime_dmtp_client_send_helo(dmtp_session_t *session, sds host);
 int				       dime_dmtp_client_send_ehlo(dmtp_session_t *session, sds host);
