@@ -75,7 +75,7 @@ dmsg_chunk_deserialize(
     size_t *read);
 
 static int
-dmsg_chunk_encode(
+dmsg_chunk_encrypt(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks);
 
@@ -1236,7 +1236,7 @@ dmsg_keyslot_encrypt(
  *  0 on success, -1 on failure.
 */
 static int
-dmsg_chunk_encode(
+dmsg_chunk_encrypt(
     dmime_message_chunk_t *chunk,
     dmime_kekset_t *keks)
 {
@@ -1509,25 +1509,25 @@ dmsg_chunks_message_encrypt(
             "the message chunks must be signed before they can be encrypted");
     }
 
-    if (dmsg_chunk_encode(message->origin, keks)) {
+    if (dmsg_chunk_encrypt(message->origin, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt origin chunk");
     }
 
-    if (dmsg_chunk_encode(message->destination, keks)) {
+    if (dmsg_chunk_encrypt(message->destination, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt destination chunk");
     }
 
-    if (dmsg_chunk_encode(message->common_headers, keks)) {
+    if (dmsg_chunk_encrypt(message->common_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt common headers chunk");
     }
 
-    if (dmsg_chunk_encode(message->other_headers, keks)) {
+    if (dmsg_chunk_encrypt(message->other_headers, keks)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not encrypt other headers chunk");
     }
 
     if (message->display) {
         for (size_t i = 0; message->display[i]; i++) {
-            if(dmsg_chunk_encode(message->display[i], keks)) {
+            if(dmsg_chunk_encrypt(message->display[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt display chunks");
             }
         }
@@ -1535,7 +1535,7 @@ dmsg_chunks_message_encrypt(
 
     if(message->attach) {
         for (size_t i = 0; message->attach[i]; i++) {
-            if(dmsg_chunk_encode(message->attach[i], keks)) {
+            if(dmsg_chunk_encrypt(message->attach[i], keks)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not encrypt attachment chunks");
             }
         }
@@ -2379,7 +2379,7 @@ dmsg_chunks_sig_author_sign(
             "could not create author tree signature chunk");
     }
 
-    if (dmsg_chunk_encode(message->author_tree_sig, keks)) {
+    if (dmsg_chunk_encrypt(message->author_tree_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author tree signature chunk");
@@ -2414,7 +2414,7 @@ dmsg_chunks_sig_author_sign(
             "could not not create author full signature chunk");
     }
 
-    if (dmsg_chunk_encode(message->author_full_sig, keks)) {
+    if (dmsg_chunk_encrypt(message->author_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt author full signature chunk");
@@ -2470,7 +2470,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin meta bounce signature chunk");
     }
 
-    if (dmsg_chunk_encode(message->origin_meta_bounce_sig, keks)) {
+    if (dmsg_chunk_encrypt(message->origin_meta_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin meta bounce signature chunk");
@@ -2488,7 +2488,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin display bounce signature chunk");
     }
 
-    if (dmsg_chunk_encode(message->origin_display_bounce_sig, keks)) {
+    if (dmsg_chunk_encrypt(message->origin_display_bounce_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin display bounce signature chunk");
@@ -2506,7 +2506,7 @@ dmsg_encode_origin_sig_chunks(
             "could not create an origin full signature chunk");
     }
 
-    if(dmsg_chunk_encode(message->origin_full_sig, keks)) {
+    if(dmsg_chunk_encrypt(message->origin_full_sig, keks)) {
         RET_ERROR_INT(
             ERR_UNSPEC,
             "could not encrypt the origin full signature chunk");
@@ -4748,6 +4748,8 @@ dmsg_chunks_sig_origin_sign(
  * @return
  *  0 on success, -1 on failure.
  */
+// TODO Change the signature verification to use the routine from
+// dime/sgnt/signet.h like in dmsg_chunks_sig_author_validate()
 static int
 dmsg_chunks_sig_origin_validate(
     dmime_object_t *object,
@@ -4787,7 +4789,7 @@ dmsg_chunks_sig_origin_validate(
                         | CHUNK_SECTION_METADATA),
                     &data_size)))
         {
-            free_ed25519_key(signkey);
+            _free_ed25519_key(signkey);
             RET_ERROR_INT(
                 ERR_UNSPEC,
                 "could not serialize envelope and metadata message chunks");
@@ -5004,12 +5006,7 @@ dmsg_message_decrypt_as_dest(
             ERR_UNSPEC, "could not load destination chunk contents");
     }
 
-    // TODO this needs to be changed for when not the entire message was
-    // downloaded. author/recipient needs to be able to request the combined
-    // hashes of all the chunks from their domain to verify the tree signature,
-    // but the full author signature can't always be verified.
-    // TODO technically author/recipients should only have to verify the tree
-    // signature.
+    // TODO Handle cases where the message is a bounce.
     if(dmsg_chunks_sig_origin_validate(obj, msg, kek)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not verify origin signature chunks");
     }
@@ -5075,6 +5072,16 @@ dmsg_message_decrypt_as_recp(
 
     if(dmsg_chunk_destination_decrypt(obj, msg, kek)) {
         RET_ERROR_INT(ERR_UNSPEC, "could not load destination chunk contents");
+    }
+
+    // TODO this needs to be changed for when not the entire message was
+    // downloaded. author/recipient needs to be able to request the combined
+    // hashes of all the chunks from their domain to verify the tree signature,
+    // but the full author signature can't always be verified.
+    // TODO technically author/recipients should only have to verify the tree
+    // signature.
+    if (dmsg_chunks_sig_author_validate(obj, msg, kek)) {
+        RET_ERROR_INT(ERR_UNSPEC, "could not verify author signature chunks");
     }
 
     if(dmsg_chunks_sig_origin_validate(obj, msg, kek)) {

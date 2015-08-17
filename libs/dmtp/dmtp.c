@@ -9,6 +9,65 @@
 #include "dime/common/misc.h"
 #include "dime/common/error.h"
 
+static size_t * dmtp_client_connect_permute(size_t n, size_t k);
+
+
+
+
+static size_t *
+dmtp_client_connect_permute(
+    size_t n,
+    size_t k)
+{
+
+    size_t *result, i = 0, num_perm = 1, rnd, temp;
+
+    if(!n) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(!k) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if(k > n) {
+        PUSH_ERROR(ERR_UNSPEC, "k is greater than n when trying to compute nPk");
+        goto error;
+    }
+
+    if(!(result = malloc(sizeof(size_t) * k))) {
+        PUSH_ERROR_SYSCALL("malloc");
+        PUSH_ERROR(ERR_NOMEM, "failed to allocate memory for attempts array");
+        goto error;
+    }
+
+    memset(result, 0, sizeof(size_t) * num);
+
+    for(size_t i = 1; i <= n; ++i) {
+
+        if(i > (n-k)) {
+            num_perm *= i;
+        }
+
+    }
+
+    rnd = 1 + (rand() % num_perm);
+
+    for(size_t i = n; i > (n-k); --i) {
+
+        
+
+    }
+
+    
+
+
+error:
+    return NULL;
+}
+
 
 signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) {
 
@@ -1937,8 +1996,7 @@ dime_dmtp_client_connect(
     dmtp_session_t *result;
     mx_record_t **mx_rec;
     sds *dx, *mx;
-    size_t num_dx = 0, num_mx = 0, attempts;
-    unsigned int *track_attempts;
+    size_t num_dx = 0, num_mx = 0, attempts, *track_attempts;
     unsigned long ttl;
 
     if(!config) {
@@ -1963,7 +2021,7 @@ dime_dmtp_client_connect(
 
         attempts = num_dx > config->connect.attempts_standard ? config->connect.attempts_standard : num_dx;
 
-        if(!(track_attempts = dmtp_client_connect_permute(attempts))) {
+        if(!(track_attempts = dmtp_client_connect_permute(num_dx, attempts))) {
             PUSH_ERROR(ERR_UNSPEC, "failed to permute connection attempts");
             goto cleanup_dx_rec;
         }
