@@ -1,5 +1,6 @@
 #include "dime/dmtp/network.h"
 
+
 static void  dmtp_session_destroy(dmtp_session_t *session);
 static sds * dmtp_session_recv(dmtp_session_t *session);
 static int   dmtp_session_send(dmtp_session_t *session, sds line);
@@ -15,6 +16,18 @@ static void
 dmtp_session_destroy(
     dmtp_session_t *session)
 {
+
+    if(session) {
+
+        sdsfree(session->dx);
+
+        if (session->con) {
+            _ssl_disconnect(session->con);
+        }
+
+        free(session);
+    }
+
 }
 
 
@@ -31,6 +44,7 @@ static sds *
 dmtp_session_recv(
     dmtp_session_t *session)
 {
+
 }
 
 
@@ -49,6 +63,7 @@ dmtp_session_send(
     dmtp_session_t *session,
     sds line)
 {
+
 }
 
 
@@ -87,6 +102,49 @@ dmtp_session_t * dime_dmtp_session_connect_dual(
     int force_family)
 {
 
+    dmtp_session_t *result;
+    int fd;
+
+    if(!host) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    if((port != DMTP_PORT_DUAL) && (port != DMTP_PORT_DUAL_AUX)) {
+        PUSH_ERROR(ERR_BAD_PARAM, NULL);
+        goto error;
+    }
+
+    // Connect to the remote end and set up a stub DMTP session.
+    if ((fd = _connect_host(host, port, force_family)) < 0) {
+        PUSH_ERROR(ERR_UNSPEC, "unable to connect to dual mode DMTP server  at %s:%u", host, port);
+        goto error;
+    }
+
+    if (!(result = malloc(sizeof(dmtp_session_t)))) {
+        PUSH_ERROR_SYSCALL("malloc");
+        PUSH_ERROR(ERR_NOMEM, "could not establish DMTP session because of memory allocation problem");
+        goto cleanup_fd;
+    }
+
+    memset(result, 0, sizeof(dmtp_session_t));
+    result->_fd = fd;
+    result->mode = dmtp_mode_dual;
+    result->active = 1;
+
+    if(!(result->dx = sdsdup(host))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to copy sds containing dmtp hostname");
+        goto cleanup_result;
+    }
+
+    return result;
+
+cleanup_result;
+    dmtp_session_destroy(result);
+cleanup_fd:
+    close(fd);
+error:
+    return NULL;
 }
 
 
@@ -124,7 +182,6 @@ dime_dmtp_session_connect_standard(
     if (!(result = malloc(sizeof(dmtp_session_t)))) {
         PUSH_ERROR_SYSCALL("malloc");
         PUSH_ERROR(ERR_NOMEM, "could not establish DMTP session because of memory allocation problem");
-        _ssl_disconnect(connection);
         goto cleanup_connection;
     }
 
@@ -133,6 +190,15 @@ dime_dmtp_session_connect_standard(
     result->mode = dmtp_mode_dmtp;
     result->_fd = -1;
 
+    if(!(result->dx = sdsdup(host))) {
+        PUSH_ERROR(ERR_UNSPEC, "failed to copy sds containing dmtp server hostname");
+        goto cleanup_result;
+    }
+
+    return result;
+
+cleanup_result:
+    dmtp_session_destroy(result);
 cleanup_connection:
     _ssl_disconnect(connection);
 error:
@@ -157,7 +223,7 @@ int
 dime_dmtp_session_dual_starttls(
     dmtp_session_t *session,
     sds host,
-    dmtp_mode_type_t mode)
+    dmtp_mode_t mode)
 {
 
     sds command;

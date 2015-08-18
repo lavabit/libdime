@@ -36,7 +36,7 @@ typedef enum {
     DMTP_MODE_DMTP,
     DMTP_MODE_SMTP,
     DMTP_MODE_NONE
-} dmtp_mode_type_t;
+} dmtp_mode_t;
 
 typedef enum {
     DMTP_PARSE_SUCCESS,
@@ -74,7 +74,7 @@ sds                  dime_dmtp_command_format(dmtp_command_t *command);
 dmtp_parse_state_t   dime_dmtp_command_parse(sds comm_line, dmtp_command_t **comm_struct);
 
 //command specific formatting functions
-sds dime_dmtp_command_starttls(sds host, dmtp_mode_type_t mode);
+sds dime_dmtp_command_starttls(sds host, dmtp_mode_t mode);
 sds dime_dmtp_command_helo(sds host);
 sds dime_dmtp_command_ehlo(sds host);
 sds dime_dmtp_command_mode(void);

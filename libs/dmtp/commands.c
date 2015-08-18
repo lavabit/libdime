@@ -1153,7 +1153,7 @@ dime_dmtp_command_parse(
 sds
 dime_dmtp_command_starttls(
     sds host,
-    dmtp_mode_type_t mode)
+    dmtp_mode_t mode)
 {
 
     dmtp_command_t *command;
