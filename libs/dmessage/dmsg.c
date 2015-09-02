@@ -1034,10 +1034,13 @@ dmsg_message_chunks_sign(
 
     if(message->display) {
         for (size_t i = 0; message->display[i]; i++) {
+
             if(dmsg_chunk_sign(message->display[i], signkey)) {
                 RET_ERROR_INT(ERR_UNSPEC, "could not sign display chunk");
             }
+
         }
+
     }
 
     if(message->attach) {
@@ -1048,6 +1051,7 @@ dmsg_message_chunks_sign(
             }
 
         }
+
     }
 
     message->state = MESSAGE_STATE_CHUNKS_SIGNED;
@@ -1133,7 +1137,6 @@ dmsg_kek_out_derive_all(
             object->signet_author,
             &((*kekset)[id_author])))
     {
-        _free_ec_key(ephemeral);
         RET_ERROR_INT(ERR_UNSPEC, "could not set author kek");
     }
 
@@ -1142,7 +1145,6 @@ dmsg_kek_out_derive_all(
             object->signet_origin,
             &((*kekset)[id_origin])))
     {
-        _free_ec_key(ephemeral);
         RET_ERROR_INT(ERR_UNSPEC, "could not set recipient kek");
     }
 
@@ -1151,7 +1153,6 @@ dmsg_kek_out_derive_all(
             object->signet_destination,
             &((*kekset)[id_destination])))
     {
-        _free_ec_key(ephemeral);
         RET_ERROR_INT(ERR_UNSPEC, "could not set origin kek");
     }
 
@@ -1160,7 +1161,6 @@ dmsg_kek_out_derive_all(
             object->signet_recipient,
             &((*kekset)[id_recipient])))
     {
-        _free_ec_key(ephemeral);
         RET_ERROR_INT(ERR_UNSPEC, "could not set destination kek");
     }
 
@@ -2685,7 +2685,7 @@ dmsg_message_serialize(
 
     total_size = MESSAGE_HEADER_SIZE + msg_size;
 
-    if (tracing) {
+    if (tracing && msg->tracing) {
         total_size += TRACING_HEADER_SIZE + trc_size;
     }
 
@@ -2707,7 +2707,7 @@ dmsg_message_serialize(
         memcpy(
             result + at,
             (unsigned char *)msg->tracing,
-            trc_size + TRACING_HEADER_SIZE);
+            trc_size + TRACING_LENGTH_SIZE);
         at += trc_size + TRACING_LENGTH_SIZE;
     }
 
@@ -2818,11 +2818,10 @@ dmsg_section_deserialize(
             + num_keyslots * sizeof(dmime_keyslot_t);
         at += serial_size;
 
-        if(serial_size > insize) {
+        if(at > insize) {
             RET_ERROR_PTR(ERR_UNSPEC, "invalid chunk size");
         }
 
-        at += serial_size;
         ++num_chunks;
     }
 
@@ -5496,7 +5495,8 @@ dmsg_message_chunk_create(
     }
 
     // if the payload size is greater than the largest number that can be
-    // represented by 3 bytes, it's too big
+    // represented by 3 bytes, it's too big //TODO FIXME what if the padding
+    // made it too big?
     if(payload_size > UNSIGNED_MAX_3_BYTE) {
         RET_ERROR_PTR(ERR_UNSPEC, "chunk size is too large");
     }
