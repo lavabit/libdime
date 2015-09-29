@@ -13,7 +13,7 @@ identity guarantees which prevent the impersonation of senders.
 
 The Dark Internet Mail Environment (DIME) achieves this level of privacy with core protocols
 using multiple layers of key management and multiple layers of message encryption.
-The [DIME Protocol Specifications](https://darkmail.info/downloads/dark-internet-mail-environment-december-2014.pdf)
+The [DIME Protocol Specifications](https://darkmail.info/spec)
 contain the full technical details of the DIME.
 
 The **libdime** project holds the DIME libraries and related command line utilities.
@@ -23,10 +23,10 @@ The **libdime** project holds the DIME libraries and related command line utilit
 Please see the [Quick Start Guide](docs/quickstart.md).
 
 System:
-c dl rt pthread resolv
+c dl rt pthread resolv openssl
 
 Bundled:
-zlib openssl donna
+zlib donna
 
 Unit Tests:
 python check
