@@ -136,7 +136,6 @@ cleanup_result:
     free(*result);
     *result = NULL;
 error:
-    *result_length = 0;
     return err;
 }
 
