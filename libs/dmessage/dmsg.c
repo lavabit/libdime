@@ -1353,8 +1353,8 @@ dmsg_chunk_encrypt(
                 (unsigned char *)&temp,
                 sizeof(temp));
             _secure_wipe(
-                (unsigned char *)keyslot,
-                sizeof(keyslot));
+                keyslot,
+                sizeof(*keyslot));
             RET_ERROR_INT(ERR_UNSPEC, "could not encrypt keyslot");
         }
 
