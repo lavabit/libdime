@@ -7,10 +7,10 @@ typedef enum {
   ERRCODE_BAD_PARAM,
   ERRCODE_FILE_IO,
   ERRCODE_ENCODING
-} errcode_t;
+} dime_errcode_t;
 
 typedef struct {
-  errcode_t code;
+  dime_errcode_t code;
   char const * message;
 } derror_t;
 
