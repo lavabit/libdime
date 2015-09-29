@@ -3868,7 +3868,7 @@ sgnt_id_fetch(signet_t *signet)
     if(!(result = malloc(id_size + 1))) {
         PUSH_ERROR(ERR_NOMEM, "failed to allocate memory for signet id");
         PUSH_ERROR_SYSCALL("malloc");
-        goto error;
+        goto cleanup_bin_id;
     }
 
     memset(result, 0, id_size + 1);
@@ -3876,7 +3876,9 @@ sgnt_id_fetch(signet_t *signet)
     free(bin_id);
 
     return result;
-
+    
+cleanup_bin_id:
+    free(bin_id);
 error:
     return NULL;
 }
