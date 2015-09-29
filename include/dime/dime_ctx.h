@@ -67,7 +67,7 @@ dime_ctx_log(
         ctx, \
         __FILE__, \
         __LINE__, \
-        LOG_LEVEL_DEBUG, \
+        LOG_LEVEL_INFO, \
         __VA_ARGS__)
 
 #define LOG_ERROR(ctx, ...) \
@@ -75,7 +75,7 @@ dime_ctx_log(
         ctx, \
         __FILE__, \
         __LINE__, \
-        LOG_LEVEL_DEBUG, \
+        LOG_LEVEL_ERROR, \
         __VA_ARGS__)
 
 #endif
