@@ -8,7 +8,7 @@ AC_INIT([libdime], [0.1])
 AC_CONFIG_MACRO_DIR([m4])
 
 # TODO - pin down min supported openssl version
-PKG_CHECK_MODULES([OPENSSL], [openssl >= 0.9.8])
+PKG_CHECK_MODULES([OPENSSL], [openssl >= 1.0.1])
 
 # Sanity check to make sure the specified srcdir actually contains the source
 AC_CONFIG_SRCDIR([include/dime/signet/signet.h])
