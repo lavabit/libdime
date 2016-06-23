@@ -29,10 +29,16 @@
 
 
 #ifndef T_DNSKEY
-
-#define T_DS     43
-#define T_RRSIG  46
 #define T_DNSKEY 48
+#endif
+
+#ifndef T_DS
+#define T_DS     43
+#endif
+
+#ifndef T_RRSIG
+#define T_RRSIG  46
+#endif
 
 #define DNSKEY_RR_LEN      4
 #define DNSKEY_RR_FLAG_ZK  0x100
@@ -80,7 +86,6 @@ typedef struct {
     unsigned char digest;           ///< A digest of this RR's referenced DNSKEY.
 } __attribute__((__packed__)) ds_rr_t;
 
-#endif
 
 typedef struct ds ds_t;
 typedef struct dnskey dnskey_t;

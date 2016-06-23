@@ -26,13 +26,17 @@
 
 #define IS_ROOT_LABEL(lname) (!lname || !strlen(lname) || *lname == '.')
 
-
-
 #ifndef T_DNSKEY
-
-#define T_DS     43
-#define T_RRSIG  46
 #define T_DNSKEY 48
+#endif
+
+#ifndef T_DS
+#define T_DS     43
+#endif
+
+#ifndef T_RRSIG
+#define T_RRSIG  46
+#endif
 
 #define DNSKEY_RR_LEN      4
 #define DNSKEY_RR_FLAG_ZK  0x100
