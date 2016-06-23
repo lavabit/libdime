@@ -7,8 +7,9 @@ AC_INIT([libdime], [0.1])
 # Look for macros in the m4 directory
 AC_CONFIG_MACRO_DIR([m4])
 
-# TODO - pin down min supported openssl version
-PKG_CHECK_MODULES([OPENSSL], [openssl >= 1.0.1])
+# The X509_check_host() function was added to OpenSSL in v1.0.2. So you need
+# that version or you need to apply the patch to OpenSSL v1.0.1.
+PKG_CHECK_MODULES([OPENSSL], [openssl >= 1.0.2])
 
 # Sanity check to make sure the specified srcdir actually contains the source
 AC_CONFIG_SRCDIR([include/dime/signet/signet.h])
