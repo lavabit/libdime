@@ -158,7 +158,7 @@ base64_encode(
     unsigned char const *buf,
     size_t len)
 {
-    derror_t const *err;
+    derror_t const *err = NULL;
     unsigned char *o;
     const unsigned char *p;
     size_t new_len;
