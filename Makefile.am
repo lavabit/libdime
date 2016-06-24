@@ -46,7 +46,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 EXTRA_DIST = m4/NOTES
 
 AM_CFLAGS = @WARNINGS@ @CWARNINGS@ -std=gnu99
-AM_CXXFLAGS = @WARNINGS@ -std=c++11
+AM_CXXFLAGS = @WARNINGS@ 
 
 COMMON_CPPFLAGS = \
 	-DDIME_BUILD="\"$(shell cat .dime_build)\"" \
