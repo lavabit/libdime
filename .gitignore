@@ -3,8 +3,15 @@
 .deps/
 .objs/
 
+# Bundled Dependency Directories
+lib/logs/
+lib/local/
+lib/objects/
+lib/sources/
 
 # Compiled Binaries
 /libdime.a
 /libdime.so
+/libdime-dependencies.a
+/libdime-dependencies.so
 /dime
