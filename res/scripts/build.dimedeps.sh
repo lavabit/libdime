@@ -187,7 +187,7 @@ openssl() {
 
 }
 
-googtest() {
+googtap() {
 
 	echo "Incomplete."
 	return $?	
