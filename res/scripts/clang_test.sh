@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example usage: scripts/test.sh -j4
 

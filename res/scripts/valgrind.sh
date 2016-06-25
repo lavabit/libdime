@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example usage: scripts/test.sh -j4
 
@@ -13,4 +13,6 @@ else
 		CFLAGS="-O0 -g" \
 		CXXFLAGS="-O0 -g"
 fi
-make "$@" check
+make "$@" check TESTS_ENVIRONMENT=true
+valgrind --leak-check=yes --log-file="$DEBUG_DIR/valgrind.log" ./gtest
+cat "$DEBUG_DIR/valgrind.log"

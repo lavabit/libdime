@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example usage: ./coverage.sh -j4
 

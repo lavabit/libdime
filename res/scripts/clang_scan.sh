@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example usage: scripts/clang_scan.sh -j4
 
