@@ -6,7 +6,7 @@ BASE=`dirname $LINK`
 cd $BASE/../../lib/
 
 M_ROOT=`pwd`
-M_BUILD=`../res/scripts/build.lib.sh`
+M_BUILD=`readlink -f $0`
 
 # Set parent directory as project root by default (used to find scripts,
 # bundled tarballs, patches, etc.)
@@ -15,7 +15,7 @@ if [ -z "$M_PROJECT_ROOT" ]; then
 fi
 
 # Read in the build parameters.
-. "$M_PROJECT_ROOT/res/scripts/build.lib.params.sh"
+. "$M_PROJECT_ROOT/res/scripts/build.dimedeps.params.sh"
 
 error() {
 	if [ $? -ne 0 ]; then
@@ -36,8 +36,6 @@ extract() {
 	mv "$M_SOURCES/$1" "$M_SOURCES/$2"; error
 }
 
-
-
 zlib() {
 
 	if [[ $1 == "zlib-extract" ]]; then
@@ -51,17 +49,7 @@ zlib() {
 			extract $ZLIB "zlib" &>> "$M_LOGS/zlib.txt"
 		;;
 		zlib-prep)
-			# Apply RHEL zlib prep steps.
 			cd "$M_SOURCES/zlib"; error
-			if [[ $ZLIB == "1.2.3" ]]; then
-				chmod -Rf a+rX,u+w,g-w,o-w . &>> "$M_LOGS/zlib.txt"; error
-				cat "$M_PATCHES/zlib/"zlib-1.2.3-autotools.patch | patch -p1 -b --suffix .atools --fuzz=0 &>> "$M_LOGS/zlib.txt"; error
-				mkdir m4 &>> "$M_LOGS/zlib.txt"; error
-				cat "$M_PATCHES/zlib/"minizip-1.2.3-malloc.patch | patch -p1 -b --suffix .mal --fuzz=0 &>> "$M_LOGS/zlib.txt"; error
-				iconv -f windows-1252 -t utf-8 <ChangeLog >ChangeLog.tmp &>> "$M_LOGS/zlib.txt"; error
-				mv ChangeLog.tmp ChangeLog &>> "$M_LOGS/zlib.txt"; error
-				cp Makefile Makefile.old &>> "$M_LOGS/zlib.txt"; error
-			fi
 		;;
 		zlib-build)
 			cd "$M_SOURCES/zlib"; error
@@ -199,39 +187,74 @@ openssl() {
 
 }
 
-combine() {
+googtest() {
 
-	rm -f "$M_SO" &>> "$M_LOGS/combine.txt"; error
+	echo "Incomplete."
+	return $?	
+}
 
+googtest() {
 
-	rm -rf "$M_OBJECTS/zlib" &>> "$M_LOGS/combine.txt"; error
-	mkdir "$M_OBJECTS/zlib" &>> "$M_LOGS/combine.txt"; error
-	cd "$M_OBJECTS/zlib" &>> "$M_LOGS/combine.txt"; error
-
-	if [[ $ZLIB == "1.2.3" ]]; then
-		ar xv "$M_SOURCES/zlib/.libs/libz.a" &>> "$M_LOGS/combine.txt"; error
-	else
-		ar xv "$M_SOURCES/zlib/libz.a" &>> "$M_LOGS/combine.txt"; error
+	if [[ $1 == "googtest-extract" ]]; then
+		rm -f "$M_LOGS/googtest.txt"; error
+	elif [[ $1 != "googtest-log" ]]; then
+		date +"%n%nStarted $1 at %r on %x%n%n" &>> "$M_LOGS/googtest.txt"
 	fi
 
-	rm -rf "$M_OBJECTS/crypto" &>> "$M_LOGS/combine.txt"; error
-	mkdir "$M_OBJECTS/crypto" &>> "$M_LOGS/combine.txt"; error
-	cd "$M_OBJECTS/crypto" &>> "$M_LOGS/combine.txt"; error
-	ar xv "$M_SOURCES/openssl/libcrypto.a" &>> "$M_LOGS/combine.txt"; error
+	case "$1" in
+		googtest-extract)
+			extract $GOOGTEST "googtest" &>> "$M_LOGS/googtest.txt"
+		;;
+		googtest-prep)
+			cd "$M_SOURCES/googtest"; error
+		;;
+		googtest-build)
+			cd "$M_SOURCES/googtest"; error
+			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			export CPPFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			./configure --prefix="$M_LOCAL" &>> "$M_LOGS/googtest.txt"; error
+			unset CFLAGS; unset CPPFLAGS
 
-	rm -rf "$M_OBJECTS/ssl" &>> "$M_LOGS/combine.txt"; error
-	mkdir "$M_OBJECTS/ssl" &>> "$M_LOGS/combine.txt"; error
-	cd "$M_OBJECTS/ssl" &>> "$M_LOGS/combine.txt"; error
-	ar xv "$M_SOURCES/openssl/libssl.a" &>> "$M_LOGS/combine.txt"; error
-	
-	gcc -Wl,-Bsymbolic -g3 -fPIC -rdynamic -shared -o "$M_SO" "$M_OBJECTS"/zlib/*.o "$M_OBJECTS"/crypto/*.o "$M_OBJECTS"/ssl/*.o \
-		-lm -lrt -ldl -lnsl -lresolv -lpthread -lstdc++ &>> "$M_LOGS/combine.txt"; error
+			make &>> "$M_LOGS/googtest.txt"; error
+			make install &>> "$M_LOGS/googtest.txt"; error
+		;;
+		googtest-check)
+			cd "$M_SOURCES/googtest"; error
+			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			make check &>> "$M_LOGS/googtest.txt"; error
+		;;
+		googtest-check-full)
+			cd "$M_SOURCES/googtest"; error
+			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			make check &>> "$M_LOGS/googtest.txt"; error
+		;;
+		googtest-clean)
+			cd "$M_SOURCES/googtest"; error
+			make clean &>> "$M_LOGS/googtest.txt"; error
+		;;
+		googtest-tail)
+			tail --lines=30 --follow=name --retry "$M_LOGS/googtest.txt"; error
+		;;
+		googtest-log)
+			cat "$M_LOGS/googtest.txt"; error
+		;;
+		googtest)
+			googtest "googtest-extract"
+			googtest "googtest-prep"
+			googtest "googtest-build"
+			googtest "googtest-check"
+		;;
+		*)
+			printf "\nUnrecognized request.\n"
+			exit 2
+		;;
+	esac
 
-	# Commands for creating a static version of the library.
-	rm -f "$M_AR"; error
-	ar -r "$M_AR" "$M_OBJECTS"/zlib/*.o "$M_OBJECTS"/crypto/*.o "$M_OBJECTS"/ssl/*.o &>> "$M_LOGS/combine.txt"; error
-	
-	date +"Finished creating the shared object at %r on %x"
+	date +"Finished $1 at %r on %x"
+	date +"%n%nFinished $1 at %r on %x%n%n" &>> "$M_LOGS/googtest.txt"
+
+	return $?
+
 }
 
 combo() {
@@ -243,19 +266,25 @@ combo() {
 	
 	($0 "openssl-$1") & OPENSSL_PID=$!
 	wait $OPENSSL_PID; error
-
+	
+	($0 "googtest-$1") & GOOGTEST_PID=$!
+	wait $GOOGTEST_PID; error
+	
+	($0 "googtap-$1") & GOOGTAP_PID=$!
+	wait $GOOGTAP_PID; error
+	
 	date +"%nFinished $1 at %r on %x%n"
 	date +"%nFinished $1 at %r on %x%n" &>> "$M_LOGS/build.txt"
 }
 
 follow() {
 	# Note that the build.txt and combo.txt log files are intentionally excluded from this list because they don't belong to a bundled package file.
-	tail -n 0 -F "$M_LOGS/openssl.txt" "$M_LOGS/zlib.txt"
+	tail -n 0 -F "$M_LOGS/googtest.txt" "$M_LOGS/googtap.txt" "$M_LOGS/openssl.txt" "$M_LOGS/zlib.txt"
 }
 
 log() {
 	# Note that the build.txt and combo.txt log files are intentionally excluded from this list because they don't belong to a bundled package file.
-	cat "$M_LOGS/zlib.txt" "$M_LOGS/openssl.txt"
+	cat "$M_LOGS/zlib.txt" "$M_LOGS/openssl.txt" "$M_LOGS/googtap.txt" "$M_LOGS/googtest.txt"
 }
 
 advance() {
@@ -303,9 +332,6 @@ all() {
 	$M_BUILD "extract"
 	$M_BUILD "prep"
 	$M_BUILD "build"
-	$M_BUILD "combine"
-	$M_BUILD "load"
-	$M_BUILD "keys"
 	$M_BUILD "check"
 	date +"%nFinished at %r on %x%n"
 	date +"Finished at %r on %x" &>> "$M_LOGS/build.txt"
@@ -320,10 +346,10 @@ if [[ "$PARENT" == "" ]]; then
 fi
 
 # Setup
-if [ ! -d "$M_SOURCES" ]; then mkdir "$M_SOURCES"; error; fi
-if [ ! -d "$M_LOGS" ]; then mkdir "$M_LOGS"; error; fi
-if [ ! -d "$M_OBJECTS" ]; then mkdir "$M_OBJECTS"; error; fi
-if [ ! -d "$M_LOCAL" ]; then mkdir "$M_LOCAL"; error; fi
+if [ ! -d "$M_SOURCES" ]; then mkdir -p "$M_SOURCES"; error; fi
+if [ ! -d "$M_LOGS" ]; then mkdir -p "$M_LOGS"; error; fi
+if [ ! -d "$M_OBJECTS" ]; then mkdir -p "$M_OBJECTS"; error; fi
+if [ ! -d "$M_LOCAL" ]; then mkdir -p "$M_LOCAL"; error; fi
 
 # Aggregations
 if [[ $1 == "extract" ]]; then combo "$1"
@@ -336,9 +362,10 @@ elif [[ $1 == "clean" ]]; then combo "$1"
 # Libraries
 elif [[ $1 =~ "zlib" ]]; then (zlib "$1") & ZLIB_PID=$!; wait $ZLIB_PID
 elif [[ $1 =~ "openssl" ]]; then (openssl "$1") & OPENSSL_PID=$!; wait $OPENSSL_PID
+elif [[ $1 =~ "googtap" ]]; then (googtap "$1") & GOOGTAP_PID=$!; wait $GOOGTAP_PID
+elif [[ $1 =~ "googtest" ]]; then (googtest "$1") & GOOGTEST_PID=$!; wait $GOOGTEST_PID
 
 # Globals
-elif [[ $1 == "combine" ]]; then combine
 elif [[ $1 == "status" ]]; then status
 elif [[ $1 == "follow" ]]; then follow
 elif [[ $1 == "log" ]]; then log
@@ -351,13 +378,13 @@ elif [[ $1 == "tail" ]]; then follow
 else
 	echo ""
 	echo " Libraries"
-	echo $"  `basename $0` {zlib|openssl} and/or "
+	echo $"  `basename $0` {zlib|openssl|googtest|googtap} and/or "
 	echo ""
 	echo " Stages (which may be combined via a dash with the above)"
 	echo $"  `basename $0` {extract|prep|build|check|check-full|clean|tail|log} or "
 	echo ""
 	echo " Global Commands"
-	echo $"  `basename $0` {combine|follow|log|status|all}"
+	echo $"  `basename $0` {follow|log|status|all}"
 	echo ""
 	echo " Please specify a library, a stage, a global command or a combination of library and stage."
 	echo ""
