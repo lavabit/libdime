@@ -12,6 +12,4 @@ lib/sources/
 # Compiled Binaries
 /libdime.a
 /libdime.so
-/libdime-dependencies.a
-/libdime-dependencies.so
 /dime

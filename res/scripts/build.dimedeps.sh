@@ -189,8 +189,65 @@ openssl() {
 
 googtap() {
 
-	echo "Incomplete."
-	return $?	
+	if [[ $1 == "googtap-extract" ]]; then
+		rm -f "$M_LOGS/googtap.txt"; error
+	elif [[ $1 != "googtap-log" ]]; then
+		date +"%n%nStarted $1 at %r on %x%n%n" &>> "$M_LOGS/googtap.txt"
+	fi
+
+	case "$1" in
+		googtap-extract)
+			extract $GOOGTAP "googtap" &>> "$M_LOGS/googtap.txt"
+		;;
+		googtap-prep)
+			cd "$M_SOURCES/googtap"; error
+		;;
+		googtap-build)
+			cd "$M_SOURCES/googtap"; error
+			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			export CXXFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			
+			#autoreconf --install &>> "$M_LOGS/googtap.txt"; error
+			./configure --prefix="$M_LOCAL" &>> "$M_LOGS/googtap.txt"; error
+			unset CFLAGS; unset CXXFLAGS
+			
+			make &>> "$M_LOGS/googtap.txt"; error
+		;;
+		googtap-check)
+			cd "$M_SOURCES/googtap"; error
+			make check &>> "$M_LOGS/googtap.txt"; error
+		;;
+		googtap-check-full)
+			cd "$M_SOURCES/googtap"; error
+			make check &>> "$M_LOGS/googtap.txt"; error
+		;;
+		googtap-clean)
+			cd "$M_SOURCES/googtap"; error
+			make clean &>> "$M_LOGS/googtap.txt"; error
+		;;
+		googtap-tail)
+			tail --lines=30 --follow=name --retry "$M_LOGS/googtap.txt"; error
+		;;
+		googtap-log)
+			cat "$M_LOGS/googtap.txt"; error
+		;;
+		googtap)
+			googtap "googtap-extract"
+			googtap "googtap-prep"
+			googtap "googtap-build"
+			googtap "googtap-check"
+		;;
+		*)
+			printf "\nUnrecognized request.\n"
+			exit 2
+		;;
+	esac
+
+	date +"Finished $1 at %r on %x"
+	date +"%n%nFinished $1 at %r on %x%n%n" &>> "$M_LOGS/googtap.txt"
+
+	return $?
+	
 }
 
 googtest() {
@@ -211,22 +268,49 @@ googtest() {
 		googtest-build)
 			cd "$M_SOURCES/googtest"; error
 			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
-			export CPPFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			export CXXFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
+			
+			autoreconf --install &>> "$M_LOGS/googtest.txt"; error
 			./configure --prefix="$M_LOCAL" &>> "$M_LOGS/googtest.txt"; error
-			unset CFLAGS; unset CPPFLAGS
-
+			unset CFLAGS; unset CXXFLAGS
+			
 			make &>> "$M_LOGS/googtest.txt"; error
-			make install &>> "$M_LOGS/googtest.txt"; error
 		;;
 		googtest-check)
 			cd "$M_SOURCES/googtest"; error
-			export LD_LIBRARY_PATH="$M_LDPATH"; error
 			make check &>> "$M_LOGS/googtest.txt"; error
+			
+			mkdir build && cd build; error
+			cmake -Dgtest_build_samples=ON "$M_SOURCES/googtest" &>> "$M_LOGS/googtest.txt"; error
+			make &>> "$M_LOGS/googtest.txt"; error
+			./sample1_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample2_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample3_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample4_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample5_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample6_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample7_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample8_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample9_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample10_unittest &>> "$M_LOGS/googtest.txt"; error
 		;;
 		googtest-check-full)
 			cd "$M_SOURCES/googtest"; error
-			export LD_LIBRARY_PATH="$M_LDPATH"; error
 			make check &>> "$M_LOGS/googtest.txt"; error
+			
+			mkdir build && cd build; error
+			cmake -Dgtest_build_samples=ON "$M_SOURCES/googtest" &>> "$M_LOGS/googtest.txt"; error
+			make &>> "$M_LOGS/googtest.txt"; error
+			./sample1_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample2_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample3_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample4_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample5_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample6_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample7_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample8_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample9_unittest &>> "$M_LOGS/googtest.txt"; error
+			./sample10_unittest &>> "$M_LOGS/googtest.txt"; error
 		;;
 		googtest-clean)
 			cd "$M_SOURCES/googtest"; error
