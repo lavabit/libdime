@@ -1,0 +1,10 @@
+
+# Build Directories
+.deps/
+.objs/
+
+
+# Compiled Binaries
+/libdime.a
+/libdime.so
+/dime

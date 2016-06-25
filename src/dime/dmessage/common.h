@@ -1,7 +1,7 @@
 #ifndef DIME_DMSG_COMMON_H
 #define DIME_DMSG_COMMON_H
 
-#include "sds.h"
+#include "dime/sds/sds.h" 
 
 #define DMIME_NUM_COMMON_HEADERS 7
 #define CHUNK_LENGTH_SIZE 3

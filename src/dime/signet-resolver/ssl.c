@@ -358,7 +358,7 @@ int _do_x509_hostname_check(X509 *cert, const char *domain) {
         RET_ERROR_INT(ERR_BAD_PARAM, NULL);
     }
 
-    return (X509_check_host(cert, (unsigned char *)domain, strlen(domain), 0, NULL));
+    return (X509_check_host(cert, domain, strlen(domain), 0, NULL));
 
 /*  if (!(xname = X509_get_subject_name(cert))) {
                 PUSH_ERROR_OPENSSL();

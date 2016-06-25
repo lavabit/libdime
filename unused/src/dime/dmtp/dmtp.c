@@ -9,7 +9,6 @@
 #include "dime/common/misc.h"
 #include "dime/common/error.h"
 
-
 /**
  * @brief
  * Create a config structure to be used for connecting to DMTP a server.
@@ -46,7 +45,7 @@ dime_dmtp_client_config_create(
     }
 
     memset(result, 0, sizeof(dmtp_client_config_t));
-    result->connect.attempts_standard = (attempts_standard > 3 ? attempts_standard : 3); 
+    result->connect.attempts_standard = (attempts_standard > 3 ? attempts_standard : 3);
     result->connect.attempts_dual = (attempts_dual > 3 ? attempts_dual : 3);
     result->connect.aux_port = aux_port;
     result->connect.use_domain = use_domain;

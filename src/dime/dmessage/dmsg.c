@@ -3526,7 +3526,7 @@ dmsg_message_envelope_decrypt(
 
         if (!(parsed =
                 dime_prsr_envelope_parse(
-                    chunk_data,
+                    (char *)chunk_data,
                     size,
                     CHUNK_TYPE_ORIGIN)))
         {
@@ -3558,7 +3558,7 @@ dmsg_message_envelope_decrypt(
 
         if (!(parsed =
                 dime_prsr_envelope_parse(
-                    chunk_data,
+                    (char *)chunk_data,
                     size,
                     CHUNK_TYPE_DESTINATION)))
         {

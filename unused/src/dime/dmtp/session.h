@@ -1,7 +1,7 @@
 #ifndef DIME_DMTP_NETWORK_H
 #define DIME_DMTP_NETWORK_H
 
-#include "sds.h"
+#include "dime/sds/sds.h" 
 #include "dime/dmrecord/mrec.h"
 #include "dime/dmtp/commands.h"
 #include "dime/dmtp/responses.h"

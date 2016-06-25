@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#include "dime/sds/sds.h"
 #include <openssl/rsa.h>
 #include "dime/common/dcrypto.h"
 #include "dime/common/error.h"

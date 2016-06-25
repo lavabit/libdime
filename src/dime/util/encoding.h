@@ -4,7 +4,7 @@
 #include "dime/dime_ctx.h"
 #include "dime/error_codes.h"
 
-#include "sds.h"
+#include "dime/sds/sds.h" 
 
 #include <stddef.h>
 #include <stdlib.h>

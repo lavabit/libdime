@@ -2,7 +2,7 @@
 #define DIME_DMTP_RESPONSES
 
 #include <stdlib.h>
-#include "sds.h"
+#include "dime/sds/sds.h" 
 
 typedef enum {
     DMTP_214 = 0,   //in response to HELP
