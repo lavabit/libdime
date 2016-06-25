@@ -1,3 +1,4 @@
+
 #if defined(_WIN32)
 	#include <windows.h>
 	#include <wincrypt.h>
@@ -9,8 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "ed25519-donna.h"
-#include "ed25519-ref10.h"
+#include "../../ed25519/fuzz/ed25519-donna.h"
+#include "../../ed25519/fuzz/ed25519-ref10.h"
 
 static void
 print_diff(const char *desc, const unsigned char *a, const unsigned char *b, size_t len) {

@@ -14,10 +14,10 @@
 #define ED25519_FN2(fn,suffix) ED25519_FN3(fn,suffix)
 #define ED25519_FN(fn)         ED25519_FN2(fn,ED25519_SUFFIX)
 
-#include "ed25519-donna.h"
-#include "ed25519.h"
-#include "ed25519-randombytes.h"
-#include "ed25519-hash.h"
+#include "../ed25519/ed25519-donna.h"
+#include "../ed25519/ed25519.h"
+#include "../ed25519/ed25519-randombytes.h"
+#include "../ed25519/ed25519-hash.h"
 
 /*
 	Generates a (extsk[0..31]) and aExt (extsk[32..63])
@@ -115,7 +115,7 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 	return ed25519_verify(RS, checkR, 32) ? 0 : -1;
 }
 
-#include "ed25519-donna-batchverify.h"
+#include "../ed25519/ed25519-donna-batchverify.h"
 
 /*
 	Fast Curve25519 basepoint scalar multiplication

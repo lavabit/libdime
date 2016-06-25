@@ -1,4 +1,4 @@
-#include "ed25519-donna-portable-identify.h"
+#include "../ed25519/ed25519-donna-portable-identify.h"
 
 /* ticks - not tested on anything other than x86 */
 static uint64_t

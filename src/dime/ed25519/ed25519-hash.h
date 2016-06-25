@@ -187,7 +187,7 @@ ed25519_hash(uint8_t *hash, const uint8_t *in, size_t inlen) {
 
 #elif defined(ED25519_CUSTOMHASH)
 
-#include "ed25519-hash-custom.h"
+#include "../ed25519/ed25519-hash-custom.h"
 
 #else
 

@@ -5,9 +5,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "ed25519.h"
-
 #include "test-ticks.h"
+
+#include "../ed25519/ed25519.h"
+#include "../ed25519/test-ticks.h"
 
 static void
 edassert(int check, int round, const char *failreason) {
@@ -53,7 +54,7 @@ typedef struct test_data_t {
 
 
 test_data dataset[] = {
-#include "regression.h"
+#include "../ed25519/regression.h"
 };
 
 /* result of the curve25519 scalarmult ((|255| * basepoint) * basepoint)... 1024 times */

@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "ed25519-donna.h"
+
+#include "../ed25519/ed25519-donna.h"
 
 static int
 test_adds() {

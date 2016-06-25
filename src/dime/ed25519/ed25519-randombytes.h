@@ -1,3 +1,4 @@
+
 #if defined(ED25519_TEST)
 /*
 	ISAAC+ "variant", the paper is not clear on operator precedence and other
@@ -76,7 +77,7 @@ ED25519_FN(ed25519_randombytes_unsafe) (void *p, size_t len) {
 }
 #elif defined(ED25519_CUSTOMRANDOM)
 
-#include "ed25519-randombytes-custom.h"
+#include "../ed25519/ed25519-randombytes-custom.h"
 
 #else
 
