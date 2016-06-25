@@ -204,26 +204,15 @@ googtap() {
 		;;
 		googtap-build)
 			cd "$M_SOURCES/googtap"; error
-			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
-			export CXXFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
-			
-			#autoreconf --install &>> "$M_LOGS/googtap.txt"; error
-			./configure --prefix="$M_LOCAL" &>> "$M_LOGS/googtap.txt"; error
-			unset CFLAGS; unset CXXFLAGS
-			
-			make &>> "$M_LOGS/googtap.txt"; error
 		;;
 		googtap-check)
 			cd "$M_SOURCES/googtap"; error
-			make check &>> "$M_LOGS/googtap.txt"; error
 		;;
 		googtap-check-full)
 			cd "$M_SOURCES/googtap"; error
-			make check &>> "$M_LOGS/googtap.txt"; error
 		;;
 		googtap-clean)
 			cd "$M_SOURCES/googtap"; error
-			make clean &>> "$M_LOGS/googtap.txt"; error
 		;;
 		googtap-tail)
 			tail --lines=30 --follow=name --retry "$M_LOGS/googtap.txt"; error
