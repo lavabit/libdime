@@ -33,23 +33,11 @@ AC_CONFIG_FILES([Makefile])
 # Find and probe C compiler (use "current" standard)
 #AC_PROG_CC_STDC
 
-
-
 # Set the C compiler
 AC_PROG_CC_C99
-AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
 
 # Find and probe C++ compiler
 AC_PROG_CXX
-
-# Set the C++ standard
-AC_DEFUN([CHECK_CXX0X],[
-          AC_LANG_PUSH([C++])
-          AX_CHECK_COMPILE_FLAG([-std=c++0x],[
-                                 CXX="$CXX -std=c++0x"])
-          AC_LANG_POP([C++])
-          ])
-CHECK_CXX0X
 
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE Must be
 # called before any macros that run the compiler (like AC_PROG_LIBTOOL) to
@@ -118,5 +106,29 @@ fi
 
 AC_SUBST(WARNINGS)
 AC_SUBST(CWARNINGS)
+
+# Set the C++ standard
+AC_DEFUN([CHECK_CXX0X],[
+          AC_LANG_PUSH([C++])
+          AX_CHECK_COMPILE_FLAG([-std=c++0x],[
+                                 CXX="$CXX -std=c++0x"])
+          AC_LANG_POP([C++])
+          ])
+CHECK_CXX0X
+
+AC_DEFUN([AM_SET_DEPDIR],
+[AC_REQUIRE([AM_SET_LEADING_DOT])
+AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
+])
+AM_SET_DEPDIR
+
+AC_DEFUN([AM_SET_OBJDIR],
+[AC_REQUIRE([AM_SET_LEADING_DOT])
+AC_SUBST([OBJDIR], ["${am__leading_dot}objs"])
+])
+AM_SET_OBJDIR
+
+AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
+
 
 AC_OUTPUT
