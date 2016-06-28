@@ -22,3 +22,7 @@ lib/sources/
 /dime-stripped
 /signet-stripped
 /genrec-stripped
+
+# Unit Test Files
+/dime.check
+.out/
