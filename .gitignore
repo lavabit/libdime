@@ -1,41 +1,28 @@
-.deps
-Makefile
-config.log
-config.status
-*.o
-*.pem
-*.a
-.dirstamp
-*.keys
-gtest
-gtest.log
-gtest.trs
-check.signet
-test-suite.log
-/.dime_stamp
-/.dime_build
-/check/**/checks
-/doxygen-doc
-core.[1-9]*
-/build
-/build-aux
-/Makefile.in
-/aclocal.m4
-/autom4te.cache
-/configure
 
-# Libtool
+# Build Directories
+.deps/
+.objs/
 
-/m4/pkg.m4
-/m4/libtool.m4
-/m4/ltoptions.m4
-/m4/ltsugar.m4
-/m4/ltversion.m4
-/m4/lt~obsolete.m4
-*.lo
-*.la
-/.libs
+# Bundled Dependency Directories
+lib/logs/
+lib/local/
+lib/objects/
+lib/sources/
+
+# Debug Binaries
+/libdime.a
+/libdime.so
 /dime
-/genrec
-/libtool
 /signet
+/genrec
+
+# Stripped Binaries
+/libdime-stripped.a
+/libdime-stripped.so
+/dime-stripped
+/signet-stripped
+/genrec-stripped
+
+# Unit Test Files
+/dime.check
+.out/
