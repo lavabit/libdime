@@ -35,7 +35,7 @@ LIBDIME_STATIC			= libdime$(STATLIBEXT)
 LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools)) $(call OBJFILES, $(call CPPFILES, src check tools))
 LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools)) $(call DEPFILES, $(call CPPFILES, src check tools))
 LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
-LIBDIME_STRIPPED		= libdime-stripped$(DYNLIBEXT) libdime-stripped$(STATLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
+LIBDIME_STRIPPED		= libdime-stripped$(STATLIBEXT) libdime-stripped$(DYNLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
 LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
 
 # Because the ed25519 folder has been dropped into the src tree, we need to explicitly exclude the fuzz files from compilation.
@@ -178,7 +178,8 @@ endif
 
 # Delete the compiled program along with the generated object and dependency files
 clean:
-	$(RUN)$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	$(RUN)$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	$(RUN)$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC)
 	$(RUN)$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
@@ -192,13 +193,14 @@ else
 endif
 	$(RUN)res/scripts/build.dimedeps.sh all
 
-%-stripped$(EXEEXT) %-stripped$(DYNLIBEXT) %-stripped$(STATLIBEXT): $(LIBDIME_PROGRAMS) $(LIBDIME_SHARED) $(LIBDIME_STATIC)
+$(LIBDIME_STRIPPED): $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS)
 ifeq ($(VERBOSE),no)
 	@echo 'Creating' $(RED)$@$(NORMAL)
 else
 	@echo 
 endif
-	$(RUN)$(STRIP) $(STRIPFLAGS) --output-format=$(shell objdump -p "$(subst -stripped,,$@)" | grep "file format" | head -1 | awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
+	$(RUN)$(STRIP) $(STRIPFLAGS) --output-format=$(shell objdump -p "$(subst -stripped,,$@)" | grep "file format" | head -1 | \
+	awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
 $(DIME_CHECK_PROGRAM): $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
@@ -290,7 +292,7 @@ endif
 
 # Special Make Directives
 .SUFFIXES: .c .cc .cpp .o 
-.NOTPARALLEL: warning conifg
+.NOTPARALLEL: warning conifg $(LIBDIME_DEPENDENCIES)
 .PHONY: warning config finished all check stripped
 
 
