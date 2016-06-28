@@ -9,7 +9,16 @@ lib/local/
 lib/objects/
 lib/sources/
 
-# Compiled Binaries
+# Debug Binaries
 /libdime.a
 /libdime.so
 /dime
+/signet
+/genrec
+
+# Stripped Binaries
+/libdime-stripped.a
+/libdime-stripped.so
+/dime-stripped
+/signet-stripped
+/genrec-stripped
