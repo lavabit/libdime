@@ -1,8 +1,11 @@
 #include <unistd.h>
 extern "C" {
+#include "dime/common/misc.h"
 #include "dime/signet/keys.h"
+#include "dime/signet/signet.h"
 }
 #include "gtest/gtest.h"
+
 
 TEST(DIME, check_keys_file_handling)
 {
