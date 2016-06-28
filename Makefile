@@ -38,6 +38,7 @@ LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
 LIBDIME_STRIPPED		= libdime-stripped$(DYNLIBEXT) libdime-stripped$(STATLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
 LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
 
+# Because the ed25519 folder has been dropped into the src tree, we need to explicitly exclude the fuzz files from compilation.
 LIBDIME_FILTERED		= src/dime/ed25519/test.c src/dime/ed25519/test-internals.c src/dime/ed25519/fuzz/curve25519-ref10.c \
  src/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/dime/ed25519/fuzz/fuzz-curve25519.c src/dime/ed25519/fuzz/ed25519-donna.c \
  src/dime/ed25519/fuzz/ed25519-ref10.c       src/dime/ed25519/fuzz/fuzz-ed25519.c
@@ -137,7 +138,11 @@ endif
 
 all: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) finished
 
-check: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(DIME_CHECK_PROGRAM) finished
+check: config warning $(DIME_CHECK_PROGRAM)
+	@./dime.check
+ifeq ($(VERBOSE),no)
+	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
+endif
 
 warning:
 ifeq ($(VERBOSE),no)

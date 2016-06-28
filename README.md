@@ -23,10 +23,10 @@ The **libdime** project holds the DIME libraries and related command line utilit
 Please see the [Quick Start Guide](docs/quickstart.md).
 
 System:
-c dl rt pthread resolv openssl
+c dl rt pthread resolv 
 
 Bundled:
-zlib donna
+zlib openssl donna
 
 Unit Tests:
 python check
