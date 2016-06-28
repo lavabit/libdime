@@ -321,7 +321,7 @@ int main(int argc, char *argv[]) {
 
 	} else {
 		fprintf(stderr, "Establishing connection to DX server...\n");
-		session = dmtp_connect(domain, family);
+		session = sgnt_resolv_dmtp_connect(domain, family);
 	}
 
 	if (!session) {
@@ -358,10 +358,10 @@ exit(0); */
 	if (do_vrfy) {
 		dbgprint(1, "Attempting to verify fingerprint (%s) for signet: %s\n", fingerprint, signame);
 
-		if ((result = dmtp_verify_signet(session, signame, fingerprint, &newprint)) < 0) {
+		if ((result = sgnt_resolv_dmtp_verify_signet(session, signame, fingerprint, &newprint)) < 0) {
 			fprintf(stderr, "Error: signet verification failed.\n");
 			dump_error_stack();
-			destroy_dmtp_session(session);
+			sgnt_resolv_destroy_dmtp_session(session);
 			exit(EXIT_FAILURE);
 		}
 
@@ -371,19 +371,19 @@ exit(0); */
 			printf("Signet fingerprint is out of date. The most recent fingerprint is: %s\n", newprint);
 		}
 
-		destroy_dmtp_session(session);
+		sgnt_resolv_destroy_dmtp_session(session);
 		return 0;
 	} else if (do_hist) {
 		dbgprint(1, "Attempting to retrieve the CoC history between (%s) and (%s) for signet: %s\n", fingerprint,
 		         (endfp ? endfp : "[current]"), signame);
 
-		if (!(line = dmtp_history(session, signame, fingerprint, endfp))) {
+		if (!(line = sgnt_resolv_dmtp_history(session, signame, fingerprint, endfp))) {
 			fprintf(stderr, "Signet history command failed.\n");
 		} else {
 			show_coc(line);
 		}
 
-		destroy_dmtp_session(session);
+		sgnt_resolv_destroy_dmtp_session(session);
 		return 0;
 	} else {
 		dbgprint(1, "Attempting to retrieve data for signet: %s\n", signame);
@@ -392,7 +392,7 @@ exit(0); */
 		if (!is_org) {
 			dbgprint(1, "Fetching org signature for domain: %s\n", domain);
 
-			if (!(line = dmtp_get_signet(session, domain, NULL))) {
+			if (!(line = sgnt_resolv_dmtp_get_signet(session, domain, NULL))) {
 				fprintf(stderr, "Error: org signet retrieval failed.\n");
 				dump_error_stack();
 				exit(EXIT_FAILURE);
@@ -416,10 +416,10 @@ exit(0); */
 			dbgprint(1, "Org signet validation succeeded for: %s\n", domain);
 		}
 
-		if (!(line = dmtp_get_signet(session, signame, fingerprint))) {
+		if (!(line = sgnt_resolv_dmtp_get_signet(session, signame, fingerprint))) {
 			fprintf(stderr, "Error: signet retrieval failed.\n");
 			dump_error_stack();
-			destroy_dmtp_session(session);
+			sgnt_resolv_destroy_dmtp_session(session);
 			exit(EXIT_FAILURE);
 		}
 
@@ -464,7 +464,7 @@ exit(0); */
 	}
 
 	// TODO: need to incorporate this into code branch where the app exits.
-	destroy_dmtp_session(session);
+	sgnt_resolv_destroy_dmtp_session(session);
 
 
 /*	printf("Entering loop...\n");

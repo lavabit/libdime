@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
 
 	} else {
 		fprintf(stderr, "Establishing connection to DX server...\n");
-		session = dmtp_connect(destination, family);
+		session = libdime_dmtp_connect(destination, family);
 	}
 
 	if (!session) {
@@ -225,7 +225,7 @@ int main(int argc, char *argv[]) {
 
 	dbgprint(1, "DX certificate successfully verified.\n");
 
-	if (dmtp_ehlo(session, origin) < 0) {
+	if (libdime_dmtp_ehlo(session, origin) < 0) {
 		fprintf(stderr, "Error: EHLO command failed.\n");
 		dump_error_stack();
 		exit(EXIT_FAILURE);

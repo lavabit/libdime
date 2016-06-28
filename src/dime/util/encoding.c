@@ -33,7 +33,7 @@ base64_vals[128] =
  * @free_using{free}
  */
 derror_t const *
-base64_decode(
+libdime_base64_decode(
     dime_ctx_t const *dime_ctx,
     unsigned char **result,
     size_t *result_length,
@@ -152,7 +152,7 @@ error:
  * @free_using{sdsfree}
  */
 derror_t const *
-base64_encode(
+libdime_base64_encode(
     dime_ctx_t const *dime_ctx,
     sds *result,
     unsigned char const *buf,

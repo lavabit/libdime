@@ -52,50 +52,50 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
     }
 
     // If not, we have to do a lookup via DMTP.
-    if (!(session = _dmtp_connect(org, 0))) {
+    if (!(session = _sgnt_resolv_dmtp_connect(org, 0))) {
         RET_ERROR_PTR(ERR_UNSPEC, "unable to connect to DX server");
     }
 
     if ((res = _verify_dx_certificate(session)) < 0) {
-        _destroy_dmtp_session(session);
+        _sgnt_resolv_destroy_dmtp_session(session);
         RET_ERROR_PTR(ERR_UNSPEC, "error encoutered during the DX certificate verification process");
     } else if (!res) {
-        _destroy_dmtp_session(session);
+        _sgnt_resolv_destroy_dmtp_session(session);
         RET_ERROR_PTR(ERR_UNSPEC, "DX certificate verification failed");
     }
 
     // If we're requesting a user signet, then we need to fetch the org signet first and verify against it.
     if (!is_org) {
 
-        if (!(line = _dmtp_get_signet(session, org, NULL))) {
-            _destroy_dmtp_session(session);
+        if (!(line = _sgnt_resolv_dmtp_get_signet(session, org, NULL))) {
+            _sgnt_resolv_destroy_dmtp_session(session);
             RET_ERROR_PTR(ERR_UNSPEC, "org signet retrieval for user signet verification failed");
         }
 
         if (!(org_signet = dime_sgnt_signet_b64_deserialize(line))) {
             free(line);
-            _destroy_dmtp_session(session);
+            _sgnt_resolv_destroy_dmtp_session(session);
             RET_ERROR_PTR(ERR_UNSPEC, "org signet deserialization for user signet verification failed");
         }
 
         free(line);
 
         if (dime_sgnt_validate_all(org_signet, NULL, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL) {
-            _destroy_dmtp_session(session);
+            _sgnt_resolv_destroy_dmtp_session(session);
             RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
         }
 
         _dbgprint(1, "Org signet validation succeeded for: %s\n", org);
     }
 
-    if (!(line = _dmtp_get_signet(session, name, fingerprint))) {
-        _destroy_dmtp_session(session);
+    if (!(line = _sgnt_resolv_dmtp_get_signet(session, name, fingerprint))) {
+        _sgnt_resolv_destroy_dmtp_session(session);
         RET_ERROR_PTR(ERR_UNSPEC, "signet retrieval failed");
     }
 
     if (!(result = dime_sgnt_signet_b64_deserialize(line))) {
         free(line);
-        _destroy_dmtp_session(session);
+        _sgnt_resolv_destroy_dmtp_session(session);
         RET_ERROR_PTR(ERR_UNSPEC, "unable to decode signet received from server");
     }
 
@@ -103,13 +103,13 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
 
 //  if (is_org && (sig_pok_compare(result, (const unsigned char **)session->drec->pubkey) < 0)) {
     if (is_org && (dime_sgnt_validate_all(result, NULL, NULL, (const unsigned char **)session->drec->pubkey) != SS_FULL)) {
-        _destroy_dmtp_session(session);
+        _sgnt_resolv_destroy_dmtp_session(session);
         dime_sgnt_signet_destroy(result);
         RET_ERROR_PTR(ERR_UNSPEC, "org signet could not be verified against DIME management record POK");
     } else if (is_org) {
         _dbgprint(1, "Org signet validation succeeded for: %s\n", name);
     } else if (!is_org && (dime_sgnt_validate_all(result, NULL, org_signet, NULL) != SS_FULL)) {
-        _destroy_dmtp_session(session);
+        _sgnt_resolv_destroy_dmtp_session(session);
         dime_sgnt_signet_destroy(result);
         dime_sgnt_signet_destroy(org_signet);
         RET_ERROR_PTR(ERR_UNSPEC, "user signet could not be verified against org signet");
@@ -117,7 +117,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
         _dbgprint(1, "User signet validation succeeded for: %s\n", name);
     }
 
-    _destroy_dmtp_session(session);
+    _sgnt_resolv_destroy_dmtp_session(session);
 
     if (org_signet) {
         dime_sgnt_signet_destroy(org_signet);
@@ -144,8 +144,6 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
     return result;
 }
 
-
-
 /**
  * @brief   Establish a DMTP connection to the DX server of a provided dark domain.
  * @note    This function automatically queries the DIME management record of the domain to determine
@@ -155,7 +153,7 @@ signet_t *_get_signet(const char *name, const char *fingerprint, int use_cache) 
  * @param   force_family an optional address family (AF_INET or AF_INET6) to force the TCP connection to take.
  * @return  NULL if unable to establish a DMTP connection successfully, or a pointer to the DMTP session on success.
  */
-dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
+dmtp_session_t *_sgnt_resolv_dmtp_connect(const char *domain, int force_family) {
 
     dmtp_session_t *result = NULL;
     dime_record_t *drec;
@@ -239,12 +237,11 @@ dmtp_session_t *_dmtp_connect(const char *domain, int force_family) {
     return result;
 }
 
-
 /**
  * @brief   Destroy a DMTP session and its underlying data.
  * @param   session     a pointer to the DMTP session to be destroyed/disconnected.
  */
-void _destroy_dmtp_session(dmtp_session_t *session) {
+void _sgnt_resolv_destroy_dmtp_session(dmtp_session_t *session) {
 
     if (!session) {
         return;
@@ -277,7 +274,6 @@ void _destroy_dmtp_session(dmtp_session_t *session) {
     free(session);
 
 }
-
 
 /**
  * @brief   Establish (force) a DMTP connection to a specified DX server on tcp port 26/ssl.
@@ -315,18 +311,17 @@ dmtp_session_t *_dx_connect_standard(const char *host, const char *domain, int f
 
     if ((!(result->domain = strdup(domain))) || (!(result->dx = strdup(host)))) {
         PUSH_ERROR_SYSCALL("strdup");
-        _destroy_dmtp_session(result);
+        _sgnt_resolv_destroy_dmtp_session(result);
         RET_ERROR_PTR(ERR_NOMEM, "could not establish DMTP session because of memory allocation problem");
     }
 
-    if (_dmtp_expect_banner(result) < 0) {
-        _destroy_dmtp_session(result);
+    if (_sgnt_resolv_dmtp_expect_banner(result) < 0) {
+        _sgnt_resolv_destroy_dmtp_session(result);
         RET_ERROR_PTR(ERR_UNSPEC, "received incompatible DMTP banner from server");
     }
 
     return result;
 }
-
 
 /**
  * @brief   Establish a DMTP connection to a specified DX server that is running DMTP in dual mode (port 25).
@@ -372,20 +367,20 @@ dmtp_session_t *_dx_connect_dual(const char *host, const char *domain, int force
 
     if ((!(result->domain = strdup(domain))) || (!(result->dx = strdup(host)))) {
         PUSH_ERROR_SYSCALL("strdup");
-        _destroy_dmtp_session(result);
+        _sgnt_resolv_destroy_dmtp_session(result);
         RET_ERROR_PTR(ERR_NOMEM, "could not establish DMTP session because of memory allocation problem");
     }
 
     result->mode = dmtp_mode_dual;
 
     // Read in the DMTP banner and make sure everything is good.
-    if (_dmtp_expect_banner(result) < 0) {
-        _destroy_dmtp_session(result);
+    if (_sgnt_resolv_dmtp_expect_banner(result) < 0) {
+        _sgnt_resolv_destroy_dmtp_session(result);
         RET_ERROR_PTR(ERR_UNSPEC, "received incompatible DMTP banner from server");
     }
 
-    if (_dmtp_initiate_starttls(result, host) != dmtp_mode_dmtp) {
-        _destroy_dmtp_session(result);
+    if (_sgnt_resolv_dmtp_initiate_starttls(result, host) != dmtp_mode_dmtp) {
+        _sgnt_resolv_destroy_dmtp_session(result);
         RET_ERROR_PTR(ERR_UNSPEC, "failed to initiate TLS session over dual mode server");
     }
 
@@ -394,7 +389,6 @@ dmtp_session_t *_dx_connect_dual(const char *host, const char *domain, int force
 
     return result;
 }
-
 
 /**
  * @brief   Compare the TLS certificate presented by a remote host against the TLS certificate signature field of a DIME management record.
@@ -545,7 +539,6 @@ int _verify_dx_certificate(dmtp_session_t *session) {
     return 1;
 }
 
-
 /**
  * @brief   Look up a named user or organizational signet.
  * @note    If the fingerprint parameter is omitted, the signet record returned by the
@@ -554,7 +547,7 @@ int _verify_dx_certificate(dmtp_session_t *session) {
  * @param   signame     the name of the requested organizational or user signet.
  * @param   fingerprint if not NULL, an optional fingerprint that the returned signet MUST match.
  */
-char *_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
+char *_sgnt_resolv_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char *fingerprint) {
 
     char *response, *request, *rptr, *result;
     size_t reqlen;
@@ -579,7 +572,7 @@ char *_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char 
         snprintf(request, reqlen, "SGNT <%s>\r\n", signame);
     }
 
-    response = _dmtp_send_and_read(session, request, &rcode);
+    response = _sgnt_resolv_dmtp_send_and_read(session, request, &rcode);
     free(request);
 
     // We can get two sorts of failures: a lower-level networking failure, or a response code from the DMTP server that indicates failure.
@@ -626,14 +619,13 @@ char *_dmtp_get_signet(dmtp_session_t *session, const char *signame, const char 
     return result;
 }
 
-
 /**
  * @brief   Issue an EHLO command to the remote DMTP server.
  * @param   session     a pointer to the DMTP session across which the EHLO command will be issued.
  * @param   domain      a null-terminated string containing the domain name that is the parameter to the EHLO command.
  * @return  0 if the EHLO command was issued and received successfully, or -1 on failure.
  */
-int _dmtp_ehlo(dmtp_session_t *session, const char *domain) {
+int _sgnt_resolv_dmtp_ehlo(dmtp_session_t *session, const char *domain) {
 
     char *cmd = NULL;
     char *response;
@@ -648,14 +640,14 @@ int _dmtp_ehlo(dmtp_session_t *session, const char *domain) {
     }
 
     // This command can result in a multi-line response.
-    if (_dmtp_issue_command(session, cmd) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, cmd) < 0) {
         free(cmd);
         RET_ERROR_INT(ERR_UNSPEC, "EHLO command failed on remote server");
     }
 
     free(cmd);
 
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_INT(ERR_UNSPEC, "EHLO command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "EHLO command returned error: %u: %s", rcode, response);
@@ -668,11 +660,10 @@ int _dmtp_ehlo(dmtp_session_t *session, const char *domain) {
     return 0;
 }
 
-
 /**
  * @brief   Issue a MAIL FROM command to the remote DMTP server.
  */
-int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype) {
+int _sgnt_resolv_dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype) {
 
     char *cmd = NULL;
     const char *retstr, *datastr;
@@ -722,7 +713,7 @@ int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize,
         RET_ERROR_INT(ERR_NOMEM, "unable to construct MAIL FROM request");
     }
 
-    response = _dmtp_send_and_read(session, cmd, &rcode);
+    response = _sgnt_resolv_dmtp_send_and_read(session, cmd, &rcode);
     free(cmd);
 
     if (!response) {
@@ -738,14 +729,13 @@ int _dmtp_mail_from(dmtp_session_t *session, const char *origin, size_t msgsize,
     return 0;
 }
 
-
 /**
  * @brief   Issue an RCPT TO command to the remote DMTP server.
  * @param   session     a pointer to the DMTP session across which the RCPT TO command will be issued.
  * @param   domain      a null-terminated string containing the domain name that is the parameter to the RCPT TO command.
  * @return  0 if the RCPT TO command was issued and received successfully, or -1 on failure.
  */
-int _dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
+int _sgnt_resolv_dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
 
     char *cmd = NULL;
     char *response;
@@ -759,7 +749,7 @@ int _dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
         RET_ERROR_INT(ERR_NOMEM, "unable to construct RCPT TO request");
     }
 
-    response = _dmtp_send_and_read(session, cmd, &rcode);
+    response = _sgnt_resolv_dmtp_send_and_read(session, cmd, &rcode);
     free(cmd);
 
     if (!response) {
@@ -778,7 +768,7 @@ int _dmtp_rcpt_to(dmtp_session_t *session, const char *domain) {
 /**
  * @brief   Issue an DATA command to the remote DMTP server.
  */
-char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
+char *_sgnt_resolv_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
 
     char cmd[128];
     char *response, *token, *tokens, *commit_hash, *result;
@@ -792,7 +782,7 @@ char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
     snprintf(cmd, sizeof(cmd), "DATA [%s]\r\n", "fingerprint");
 
     // The DATA command is special because the first response is expected to be in the 3xx numeric code range.
-    if (!(response = _dmtp_send_and_read(session, cmd, &rcode))) {
+    if (!(response = _sgnt_resolv_dmtp_send_and_read(session, cmd, &rcode))) {
         RET_ERROR_PTR(ERR_UNSPEC, "DATA command failed on remote server");
     } else if ((rcode < 300) || (rcode >= 400)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "DATA command returned error: %u: %s", rcode, response);
@@ -823,13 +813,13 @@ char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
     free(response);
 
     // Write the raw data in our message.
-    if ((_dmtp_write_data(session, msg, msglen) < 0) || (_dmtp_write_data(session, "\r\n", 2) < 0)) {
+    if ((_sgnt_resolv_dmtp_write_data(session, msg, msglen) < 0) || (_sgnt_resolv_dmtp_write_data(session, "\r\n", 2) < 0)) {
         free(commit_hash);
         RET_ERROR_PTR(ERR_UNSPEC, "unable to write DATA buffer to remote server");
     }
 
     // Now we get the final server response, which is hopefully an "OK" accompanied by a transaction ID.
-    if (!(response = _read_dmtp_line(session, NULL, &rcode, 0))) {
+    if (!(response = _sgnt_resolv_read_dmtp_line(session, NULL, &rcode, 0))) {
         free(commit_hash);
         RET_ERROR_PTR(ERR_UNSPEC, "DATA command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
@@ -867,7 +857,6 @@ char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
     return result;
 }
 
-
 /**
  * @brief   Verify whether a named user or org signet is current or not, given both its name and fingerprint.
  * @param   session     a pointer to the DMTP session across which the VRFY command will be issued.
@@ -877,7 +866,7 @@ char *_dmtp_data(dmtp_session_t *session, void *msg, size_t msglen) {
  *                              fingerprint of the specified signet, if it is out of date.
  * @return  -1 on general failure, 0 if the signet fingerprint was out of date, or 1 if it is the most current one.
  */
-int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char *fingerprint, char **newprint) {
+int _sgnt_resolv_dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char *fingerprint, char **newprint) {
 
     char *response, *request, *status, *tokens, *nfp;
     size_t reqlen;
@@ -897,7 +886,7 @@ int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char
     memset(request, 0, reqlen);
     snprintf(request, reqlen, "VRFY <%s> [%s]\r\n", signame, fingerprint);
 
-    response = _dmtp_send_and_read(session, request, &rcode);
+    response = _sgnt_resolv_dmtp_send_and_read(session, request, &rcode);
     free(request);
 
     // We can get two sorts of failures: a lower-level networking failure, or a response code from the DMTP server that indicates failure.
@@ -940,7 +929,6 @@ int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char
     return 0;
 }
 
-
 /**
  * @brief   Retrieve the history (key chain) of a named user or organizational signet.
  * @param   session     a pointer to the DMTP session across which the HIST command will be issued.
@@ -949,7 +937,7 @@ int _dmtp_verify_signet(dmtp_session_t *session, const char *signame, const char
  * @param   endfp       the ending fingerprint of the signet in the queried chain of custody.
  * @return  NULL on failure, or a pointer to a string containing the signet's history on success.
  */
-char *_dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
+char *_sgnt_resolv_dmtp_history(dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp) {
 
     char *response, *request;
     unsigned short rcode;
@@ -981,14 +969,14 @@ char *_dmtp_history(dmtp_session_t *session, const char *signame, const char *st
 
     strcat(request, "\r\n");
 
-    if (_dmtp_issue_command(session, request) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, request) < 0) {
         free(request);
         RET_ERROR_PTR(ERR_UNSPEC, "HIST command failed on remote server");
     }
 
     free(request);
 
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_PTR(ERR_UNSPEC, "HIST command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "HIST command returned error: %u: %s", rcode, response);
@@ -999,8 +987,7 @@ char *_dmtp_history(dmtp_session_t *session, const char *signame, const char *st
     return response;
 }
 
-
-char *_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribute__((__unused__))) {
+char *_sgnt_resolv_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribute__((__unused__))) {
 
     const char *stats_cmd = "STATS\r\n";
     char *response, *rptr, *endptr, *nonce_req = NULL;
@@ -1010,11 +997,11 @@ char *_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribu
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (_dmtp_issue_command(session, stats_cmd) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, stats_cmd) < 0) {
         RET_ERROR_PTR(ERR_UNSPEC, "STATS command failed on remote server");
     }
 
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_PTR(ERR_UNSPEC, "STATS command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "STATS command returned error: %u: %s", rcode, response);
@@ -1069,14 +1056,14 @@ char *_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribu
 
     free(response);
 
-    if (_dmtp_issue_command(session, nonce_req) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, nonce_req) < 0) {
         free(nonce_req);
         RET_ERROR_PTR(ERR_UNSPEC, "STATS command with nonce failed on remote server");
     }
 
     free(nonce_req);
 
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_PTR(ERR_UNSPEC, "STATS command with nonce failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "STATS command with nonce returned error: %u: %s", rcode, response);
@@ -1087,14 +1074,12 @@ char *_dmtp_stats(dmtp_session_t *session, const unsigned char *secret __attribu
     return response;
 }
 
-
-
 /**
  * @brief   Return the DMTP mode corresponding to a DMTP mode string.
  * @param   modestr     a null-terminated string containing the human-readable name of the mode.
  * @return  the DMTP mode type corresponding to the supplied mode string, or dmtp_mode_unknown otherwise.
  */
-dmtp_mode_t _dmtp_str_to_mode(const char *modestr) {
+dmtp_mode_t _sgnt_resolv_dmtp_str_to_mode(const char *modestr) {
 
     if (!modestr) {
         return dmtp_mode_dmtp;
@@ -1111,13 +1096,12 @@ dmtp_mode_t _dmtp_str_to_mode(const char *modestr) {
     return dmtp_mode_unknown;
 }
 
-
 /**
  * @brief   Get the current DMTP server mode.
  * @param   session     a pointer to the DMTP session across which the MODE command will be issued.
  * @return  the value of the current DMTP mode on success, or dmtp_mode_unknown on failure.
  */
-dmtp_mode_t _dmtp_get_mode(dmtp_session_t *session) {
+dmtp_mode_t _sgnt_resolv_dmtp_get_mode(dmtp_session_t *session) {
 
     dmtp_mode_t result = dmtp_mode_unknown;
     const char *mode_cmd = "MODE\r\n";
@@ -1128,7 +1112,7 @@ dmtp_mode_t _dmtp_get_mode(dmtp_session_t *session) {
         RET_ERROR_CUST(dmtp_mode_unknown, ERR_BAD_PARAM, NULL);
     }
 
-    if (!(response = _dmtp_send_and_read(session, mode_cmd, &rcode))) {
+    if (!(response = _sgnt_resolv_dmtp_send_and_read(session, mode_cmd, &rcode))) {
         RET_ERROR_CUST(dmtp_mode_unknown, ERR_UNSPEC, "MODE command failed on remote server");
         return dmtp_mode_unknown;
     } else if ((rcode < 200) || (rcode >= 300)) {
@@ -1152,7 +1136,7 @@ dmtp_mode_t _dmtp_get_mode(dmtp_session_t *session) {
         RET_ERROR_CUST(dmtp_mode_unknown, ERR_UNSPEC, "MODE reply was in unexpected format");
     }
 
-    result = _dmtp_str_to_mode(token);
+    result = _sgnt_resolv_dmtp_str_to_mode(token);
     free(response);
 
     return result;
@@ -1163,7 +1147,7 @@ dmtp_mode_t _dmtp_get_mode(dmtp_session_t *session) {
  * @param   session     a pointer to the DMTP session across which the NOOP command will be issued.
  * @return  -1 on failure or 0 if the command was successfully executed.
  */
-int _dmtp_noop(dmtp_session_t *session) {
+int _sgnt_resolv_dmtp_noop(dmtp_session_t *session) {
 
     const char *noop_cmd = "NOOP\r\n";
     char *response;
@@ -1173,7 +1157,7 @@ int _dmtp_noop(dmtp_session_t *session) {
         RET_ERROR_INT(ERR_BAD_PARAM, NULL);
     }
 
-    if (!(response = _dmtp_send_and_read(session, noop_cmd, &rcode))) {
+    if (!(response = _sgnt_resolv_dmtp_send_and_read(session, noop_cmd, &rcode))) {
         RET_ERROR_INT(ERR_UNSPEC, "NOOP command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "NOOP command returned error: %u: %s", rcode, response);
@@ -1186,13 +1170,12 @@ int _dmtp_noop(dmtp_session_t *session) {
     return 0;
 }
 
-
 /**
  * @brief   Issue a reset command to the remote DMTP server.
  * @param   session     a pointer to the DMTP session across which the RSET command will be issued.
  * @return  -1 on failure or 0 if the command was successfully executed.
  */
-int _dmtp_reset(dmtp_session_t *session) {
+int _sgnt_resolv_dmtp_reset(dmtp_session_t *session) {
 
     const char *noop_cmd = "RSET\r\n";
     char *response;
@@ -1202,7 +1185,7 @@ int _dmtp_reset(dmtp_session_t *session) {
         RET_ERROR_INT(ERR_BAD_PARAM, NULL);
     }
 
-    if (!(response = _dmtp_send_and_read(session, noop_cmd, &rcode))) {
+    if (!(response = _sgnt_resolv_dmtp_send_and_read(session, noop_cmd, &rcode))) {
         RET_ERROR_INT(ERR_UNSPEC, "RSET command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "RSET command returned error: %u: %s", rcode, response);
@@ -1215,13 +1198,12 @@ int _dmtp_reset(dmtp_session_t *session) {
     return 0;
 }
 
-
 /**
  * @brief   Get a list of supported DMTP server commands by issuing the HELP command.
  * @param   session     a pointer to the DMTP session across which the HELP command will be issued.
  * @return  NULL on failure or a pointer to a string containing the full server help table on success.
  */
-char *_dmtp_help(dmtp_session_t *session) {
+char *_sgnt_resolv_dmtp_help(dmtp_session_t *session) {
 
     const char *help_cmd = "HELP\r\n";
     char *response;
@@ -1231,11 +1213,11 @@ char *_dmtp_help(dmtp_session_t *session) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (_dmtp_issue_command(session, help_cmd) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, help_cmd) < 0) {
         RET_ERROR_PTR(ERR_UNSPEC, "HELP command failed on remote server");
     }
 
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_PTR(ERR_UNSPEC, "HELP command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "HELP command returned error: %u: %s", rcode, response);
@@ -1246,14 +1228,13 @@ char *_dmtp_help(dmtp_session_t *session) {
     return response;
 }
 
-
 /**
  * @brief   Terminate an active DMTP session by issuing the QUIT command.
  * @param   session     a pointer to the DMTP session across which the QUIT command will be issued.
  * @param   do_close    currently unused
  * @return  -1 on failure or 0 if the command was successfully executed.
  */
-int _dmtp_quit(dmtp_session_t *session, int do_close) {
+int _sgnt_resolv_dmtp_quit(dmtp_session_t *session, int do_close) {
 
     const char *quit_cmd = "QUIT\r\n";
     char *response;
@@ -1266,7 +1247,7 @@ int _dmtp_quit(dmtp_session_t *session, int do_close) {
         RET_ERROR_INT(ERR_BAD_PARAM, NULL);
     }
 
-    if (!(response = _dmtp_send_and_read(session, quit_cmd, &rcode))) {
+    if (!(response = _sgnt_resolv_dmtp_send_and_read(session, quit_cmd, &rcode))) {
         PUSH_ERROR(ERR_UNSPEC, "QUIT command failed on remote server");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "RSET command returned error: %u: %s\n", rcode, response);
@@ -1295,7 +1276,6 @@ int _dmtp_quit(dmtp_session_t *session, int do_close) {
     return result;
 }
 
-
 /**
  * @brief   Read a CR/LF-terminated line of input from an active DMTP session.
  * @param   session     a pointer to the DMTP session from which the response line will be read.
@@ -1308,7 +1288,7 @@ int _dmtp_quit(dmtp_session_t *session, int do_close) {
  *                              when the function returns, or 0 if there is more content to follow.
  * @return  NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server.
  */
-char *_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline) {
+char *_sgnt_resolv_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline) {
 
     char *result = NULL, *lbreak = NULL, *line;
     size_t nleft;
@@ -1428,7 +1408,7 @@ char *_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rc
         // If the caller requested line code parsing, perform this operation and free the original result.
     } else if (rcode) {
 
-        if (!(line = _parse_line_code(result, rcode, multiline))) {
+        if (!(line = _sgnt_resolv_parse_line_code(result, rcode, multiline))) {
             free(result);
             RET_ERROR_PTR(ERR_UNSPEC, "could not parse DMTP line response code");
         }
@@ -1448,7 +1428,6 @@ char *_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rc
     return result;
 }
 
-
 /**
  * @brief   Read a multiple-line response from the DMTP server.
  * @note    A multiline response is designated by the presence of a hyphen between the response code and the
@@ -1460,7 +1439,7 @@ char *_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rc
  *                              code of the DMTP reply that was just received.
  * @return  NULL on failure or a pointer to a string containing the next response from the DMTP server on success.
  */
-char *_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode) {
+char *_sgnt_resolv_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode) {
 
     char *line, *result = NULL, *reall_res = NULL;
     unsigned short rc, firstrc = 0;
@@ -1471,7 +1450,7 @@ char *_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned shor
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    while ((line = _read_dmtp_line(session, &of, &rc, &ml))) {
+    while ((line = _sgnt_resolv_read_dmtp_line(session, &of, &rc, &ml))) {
 
         // This shouldn't happen, but we need to make sure that all the response codes were of the same sequence.
         if (!first && (firstrc != rc)) {
@@ -1532,7 +1511,6 @@ char *_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned shor
     return result;
 }
 
-
 /**
  * @brief   Parse a DMTP line into a numerical code and the trailing text.
  * @param   line        a pointer to a null-terminated string to be parsed as a DMTP response line or lines.
@@ -1542,7 +1520,7 @@ char *_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned shor
  *                              when the function returns, or 0 if there is more content to follow.
  * @return  NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server.
  */
-char *_parse_line_code(const char *line, unsigned short *rcode, int *multiline) {
+char * _sgnt_resolv_parse_line_code(const char *line, unsigned short *rcode, int *multiline) {
 
     char numbuf[8];
     const char *ptr = line;
@@ -1595,7 +1573,6 @@ char *_parse_line_code(const char *line, unsigned short *rcode, int *multiline) 
     RET_ERROR_PTR(ERR_UNSPEC, NULL);
 }
 
-
 /**
  * @brief   Initiate a DMTP session over a plain TCP connection with the DMTP STARTTLS command.
  * @note    The dxname argument will be used as a parameter to the STARTTLS command for requesting a TLS
@@ -1604,7 +1581,7 @@ char *_parse_line_code(const char *line, unsigned short *rcode, int *multiline) 
  * @param   dxname      the name of the DX server providing the TLS service of this DMTP session.
  * @return  dmtp_mode_unknown on failure or the active mode of the DMTP session as reported by the server on success.
  */
-dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname) {
+dmtp_mode_t _sgnt_resolv_dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname) {
 
     dmtp_mode_t result;
     char cmdbuf[512], *response, *rptr;
@@ -1628,7 +1605,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
     }
 
     // This is one of the odd commands that should be prepared to read a multi-line response.
-    if (!(response = _read_dmtp_multiline(session, NULL, &rcode))) {
+    if (!(response = _sgnt_resolv_read_dmtp_multiline(session, NULL, &rcode))) {
         RET_ERROR_CUST(dmtp_mode_unknown, ERR_UNSPEC, "STARTTLS negotiation received unexpected server response");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "STARTTLS command returned error: %u: %s\n", rcode, response);
@@ -1647,7 +1624,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
     session->mode = dmtp_mode_dmtp;
 
     // Now we need to process the final response to the STARTTLS command and see if the server recognizes it as successful.
-    if (!(response = _read_dmtp_line(session, NULL, &rcode, NULL))) {
+    if (!(response = _sgnt_resolv_read_dmtp_line(session, NULL, &rcode, NULL))) {
         RET_ERROR_CUST(dmtp_mode_unknown, ERR_UNSPEC, "STARTTLS negotiation failed on server for unknown reason");
     } else if ((rcode < 200) || (rcode >= 300)) {
         PUSH_ERROR_FMT(ERR_UNSPEC, "STARTTLS command failed on server with code %u: %s", rcode, response);
@@ -1674,7 +1651,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
         return dmtp_mode_unknown;
     }
 
-    result = _dmtp_str_to_mode(rptr);
+    result = _sgnt_resolv_dmtp_str_to_mode(rptr);
     free(response);
 
     return result;
@@ -1686,7 +1663,7 @@ dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname)
  * @param   session     a pointer to the DMTP session to have the server banner read.
  * @return  -1 on failure or 0 if a banner was succesfully received advertising DMTPv1 compatibility.
  */
-int _dmtp_expect_banner(dmtp_session_t *session) {
+int _sgnt_resolv_dmtp_expect_banner(dmtp_session_t *session) {
 
     char *banner, *token, *tokens;
     unsigned short bcode;
@@ -1696,7 +1673,7 @@ int _dmtp_expect_banner(dmtp_session_t *session) {
         RET_ERROR_INT(ERR_BAD_PARAM, NULL);
     }
 
-    if (!(banner = _read_dmtp_line(session, NULL, &bcode, 0))) {
+    if (!(banner = _sgnt_resolv_read_dmtp_line(session, NULL, &bcode, 0))) {
         RET_ERROR_INT(ERR_UNSPEC, "unable to read DMTP banner");
     }
 
@@ -1728,14 +1705,13 @@ int _dmtp_expect_banner(dmtp_session_t *session) {
     return result;
 }
 
-
 /**
  * @brief   Issue a command to the remote server in a DMTP session.
  * @param   session     a pointer to the DMTP session across which the command will be issued.
  * @param   cmd     a null-terminated string containing the value of the specified DMTP command.
  * @return  -1 on failure or 0 if the command was successfully sent.
  */
-int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
+int _sgnt_resolv_dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
 
     int nwritten;
 
@@ -1769,7 +1745,6 @@ int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
     return 0;
 }
 
-
 /**
  * @brief   Issue a command to a DMTP server and get the response.
  * @param   session     a pointer to the DMTP session across which the command will be issued.
@@ -1777,7 +1752,7 @@ int _dmtp_issue_command(dmtp_session_t *session, const char *cmd) {
  * @param   rcode
  * @return  NULL on failure or a pointer to a string containing the next line(s) of output from the DMTP server on success.
  */
-char *_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode) {
+char *_sgnt_resolv_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode) {
 
     char *result;
 
@@ -1785,11 +1760,11 @@ char *_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned sho
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if (_dmtp_issue_command(session, cmd) < 0) {
+    if (_sgnt_resolv_dmtp_issue_command(session, cmd) < 0) {
         RET_ERROR_PTR(ERR_UNSPEC, "unable to issue DMTP command");
     }
 
-    if (!(result = _read_dmtp_line(session, NULL, rcode, 0))) {
+    if (!(result = _sgnt_resolv_read_dmtp_line(session, NULL, rcode, 0))) {
         RET_ERROR_PTR(ERR_UNSPEC, NULL);
     }
 
@@ -1804,7 +1779,7 @@ char *_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned sho
  * @param   buflen      the size, in bytes, of the data buffer to be written to the DMTP session.
  * @return  0 if all requested bytes were written successfully to the connection, or -1 on failure.
  */
-int _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen) {
+int _sgnt_resolv_dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen) {
 
     unsigned char *dataptr = (unsigned char *)buf;
     int nwritten;

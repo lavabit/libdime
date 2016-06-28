@@ -58,42 +58,42 @@ typedef enum {
 PUBLIC_FUNC_DECL(signet_t *,       get_signet,            const char *name, const char *fingerprint, int use_cache);
 
 // General session control routines.
-PUBLIC_FUNC_DECL(dmtp_session_t *, dmtp_connect,          const char *domain, int force_family);
-PUBLIC_FUNC_DECL(void,             destroy_dmtp_session,  dmtp_session_t *session);
+PUBLIC_FUNC_DECL(dmtp_session_t *, sgnt_resolv_dmtp_connect,          const char *domain, int force_family);
+PUBLIC_FUNC_DECL(void,             sgnt_resolv_destroy_dmtp_session,  dmtp_session_t *session);
 PUBLIC_FUNC_DECL(dmtp_session_t *, dx_connect_standard,   const char *host, const char *domain, int force_family, dime_record_t *dimerec);
 PUBLIC_FUNC_DECL(dmtp_session_t *, dx_connect_dual,       const char *host, const char *domain, int force_family, dime_record_t *dimerec, int failover);
 PUBLIC_FUNC_DECL(int,              verify_dx_certificate, dmtp_session_t *session);
 
 // Message flow.
-PUBLIC_FUNC_DECL(int,              dmtp_ehlo,             dmtp_session_t *session, const char *domain);
-PUBLIC_FUNC_DECL(int,              dmtp_mail_from,        dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype);
-PUBLIC_FUNC_DECL(int,              dmtp_rcpt_to,          dmtp_session_t *session, const char *domain);
-PUBLIC_FUNC_DECL(char *,           dmtp_data,             dmtp_session_t *session, void *msg, size_t msglen);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_ehlo,             dmtp_session_t *session, const char *domain);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_mail_from,        dmtp_session_t *session, const char *origin, size_t msgsize, dmtp_mail_rettype_t rettype, dmtp_mail_datatype_t dtype);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_rcpt_to,          dmtp_session_t *session, const char *domain);
+PUBLIC_FUNC_DECL(char *,           sgnt_resolv_dmtp_data,             dmtp_session_t *session, void *msg, size_t msglen);
 
 // DMTP-protocol specific client commands.
-PUBLIC_FUNC_DECL(char *,           dmtp_get_signet,       dmtp_session_t *session, const char *signame, const char *fingerprint);
-PUBLIC_FUNC_DECL(int,              dmtp_verify_signet,    dmtp_session_t *session, const char *signame, const char *fingerprint, char **newprint);
-PUBLIC_FUNC_DECL(char *,           dmtp_history,          dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp);
-PUBLIC_FUNC_DECL(char *,           dmtp_stats,            dmtp_session_t *session, const unsigned char *secret);
+PUBLIC_FUNC_DECL(char *,           sgnt_resolv_dmtp_get_signet,       dmtp_session_t *session, const char *signame, const char *fingerprint);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_verify_signet,    dmtp_session_t *session, const char *signame, const char *fingerprint, char **newprint);
+PUBLIC_FUNC_DECL(char *,           sgnt_resolv_dmtp_history,          dmtp_session_t *session, const char *signame, const char *startfp, const char *endfp);
+PUBLIC_FUNC_DECL(char *,           sgnt_resolv_dmtp_stats,            dmtp_session_t *session, const unsigned char *secret);
 
 // Dual mode/SMTP helper commands.
-PUBLIC_FUNC_DECL(dmtp_mode_t,      dmtp_str_to_mode,      const char *modestr);
-PUBLIC_FUNC_DECL(dmtp_mode_t,      dmtp_get_mode,         dmtp_session_t *session);
-PUBLIC_FUNC_DECL(int,              dmtp_noop,             dmtp_session_t *session);
-PUBLIC_FUNC_DECL(int,              dmtp_reset,            dmtp_session_t *session);
-PUBLIC_FUNC_DECL(char *,           dmtp_help,             dmtp_session_t *session);
-PUBLIC_FUNC_DECL(int,              dmtp_quit,             dmtp_session_t *session, int do_close);
+PUBLIC_FUNC_DECL(dmtp_mode_t,      sgnt_resolv_dmtp_str_to_mode,      const char *modestr);
+PUBLIC_FUNC_DECL(dmtp_mode_t,      sgnt_resolv_dmtp_get_mode,         dmtp_session_t *session);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_noop,             dmtp_session_t *session);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_reset,            dmtp_session_t *session);
+PUBLIC_FUNC_DECL(char *,           sgnt_resolv_dmtp_help,             dmtp_session_t *session);
+PUBLIC_FUNC_DECL(int,              sgnt_resolv_dmtp_quit,             dmtp_session_t *session, int do_close);
 
 
 // Internal network and parsing functions.
-char *      _read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline);
-char *      _read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode);
-char *      _parse_line_code(const char *line, unsigned short *rcode, int *multiline);
-dmtp_mode_t _dmtp_str_to_mode(const char *modestr);
-dmtp_mode_t _dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname);
-int         _dmtp_expect_banner(dmtp_session_t *session);
-int         _dmtp_issue_command(dmtp_session_t *session, const char *cmd);
-char *      _dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode);
-int         _dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen);
+char *      _sgnt_resolv_read_dmtp_line(dmtp_session_t *session, int *overflow, unsigned short *rcode, int *multiline);
+char *      _sgnt_resolv_read_dmtp_multiline(dmtp_session_t *session, int *overflow, unsigned short *rcode);
+char *      _sgnt_resolv_parse_line_code(const char *line, unsigned short *rcode, int *multiline);
+dmtp_mode_t _sgnt_resolv_dmtp_str_to_mode(const char *modestr);
+dmtp_mode_t _sgnt_resolv_dmtp_initiate_starttls(dmtp_session_t *session, const char *dxname);
+int         _sgnt_resolv_dmtp_expect_banner(dmtp_session_t *session);
+int         _sgnt_resolv_dmtp_issue_command(dmtp_session_t *session, const char *cmd);
+char *      _sgnt_resolv_dmtp_send_and_read(dmtp_session_t *session, const char *cmd, unsigned short *rcode);
+int         _sgnt_resolv_dmtp_write_data(dmtp_session_t *session, const void *buf, size_t buflen);
 
 #endif
