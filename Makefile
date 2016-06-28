@@ -4,10 +4,6 @@
 #
 #########################################################################
 
-TOPDIR					= $(realpath .)
-MFLAGS					=
-MAKEFLAGS				= --output-sync=target --jobs=6
-
 # Identity of this package.
 PACKAGE_NAME			= libdime
 PACKAGE_TARNAME			= libdime
@@ -16,8 +12,33 @@ PACKAGE_STRING			= $(PACKAGE_NAME) $(PACKAGE_VERSION)
 PACKAGE_BUGREPORT		= support@lavabit.com
 PACKAGE_URL				= https://lavabit.com
 
-#MAGMA_PROGRAM			= $(addsuffix $(EXEEXT), magmad)
-#CHECK_PROGRAM			= $(addsuffix $(EXEEXT), magmad.check)
+TOPDIR					= $(realpath .)
+
+DIME_SRCDIR				= tools/dime
+DIME_PROGRAM			= dime$(EXEEXT)
+
+SIGNET_SRCDIR			= tools/signet
+SIGNET_PROGRAM			= signet$(EXEEXT)
+
+GENREC_SRCDIR			= tools/genrec
+GENREC_PROGRAM			= genrec$(EXEEXT)
+
+DIME_CHECK_SRCDIR		= check/dime
+DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
+
+LIBDIME_SRCDIR			= src/dime
+LIBDIME_SHARED			= libdime$(DYNLIBEXT)
+LIBDIME_STATIC			= libdime$(STATLIBEXT)
+
+LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools))
+LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools))
+LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
+LIBDIME_STRIPPED		= libdime-stripped$(DYNLIBEXT) libdime-stripped$(STATLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
+LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
+
+LIBDIME_FILTERED		= src/dime/ed25519/test.c src/dime/ed25519/test-internals.c src/dime/ed25519/fuzz/curve25519-ref10.c \
+ src/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/dime/ed25519/fuzz/fuzz-curve25519.c src/dime/ed25519/fuzz/ed25519-donna.c \
+ src/dime/ed25519/fuzz/ed25519-ref10.c       src/dime/ed25519/fuzz/fuzz-ed25519.c
 
 LIBDIME_REPO				= $(shell which git &> /dev/null && git log &> /dev/null && echo 1) 
 ifneq ($(strip $(LIBDIME_REPO)),1)
@@ -28,75 +49,6 @@ else
 	LIBDIME_COMMIT			:= $(shell git log --format="%H" -n 1 | cut -c33-40)
 endif
 LIBDIME_TIMESTAMP			= $(shell date +'%Y%m%d.%H%M')
-
-# Source Files
-#MAGMA_SRCDIRS			= $(shell find src -type d -print)
-#MAGMA_SRCFILES			= $(filter-out src/engine/status/build.c, $(foreach dir,$(MAGMA_SRCDIRS), $(wildcard $(dir)/*.c)))
-
-#CHECK_SRCDIRS			= $(shell find check -type d -print)
-#CHECK_SRCFILES			= $(foreach dir,$(CHECK_SRCDIRS), $(wildcard $(dir)/*.c))
-
-# Bundled Dependency Include Paths
-#MAGMA_INCDIRS			= spf2/src/include clamav/libclamav mysql/include openssl/include lzo/include xml2/include \
-		zlib bzip2 tokyocabinet memcached dkim/libopendkim dspam/src jansson/src gd png jpeg freetype/include \
-		utf8proc
-#CHECK_INCDIRS			= checker/src
-
-CFLAGS					= -std=gnu99 -O0 -fPIC -fmessage-length=0 -ggdb3 -rdynamic -c $(CFLAGS_WARNINGS) -MMD 
-CFLAGS_WARNINGS			= -Wall -Werror -Winline -Wformat-security -Warray-bounds
-CFLAGS_PEDANTIC			= -Wextra -Wpacked -Wunreachable-code -Wformat=2
-
-#MAGMA_CINCLUDES			= -Isrc $(addprefix -I,$(MAGMA_INCLUDE_ABSPATHS))
-#CHECK_CINCLUDES			= -Icheck -Isrc -I$(TOPDIR)/lib/local/include $(addprefix -I,$(MAGMA_INCLUDE_ABSPATHS)) 
-
-
-#MAGMA_DYNAMIC			= -lrt -ldl -lpthread
-#CHECK_DYNAMIC			= $(MAGMA_DYNAMIC) -lm
-
-#MAGMA_STATIC			= 
-#CHECK_STATIC			= $(TOPDIR)/lib/local/lib/libcheck.a
-
-#INCDIR					= $(TOPDIR)/lib/sources
-
-
-# Resolve the External Include Directory Paths
-INCLUDE_DIR_VPATH		= $(INCDIR) /usr/include /usr/local/include
-INCLUDE_DIR_SEARCH 		= $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(INCLUDE_DIR_VPATH)))))
-
-# Generate the Absolute Directory Paths for Include
-MAGMA_INCLUDE_ABSPATHS	+= $(foreach target,$(MAGMA_INCDIRS), $(call INCLUDE_DIR_SEARCH,$(target)))
-CHECK_INCLUDE_ABSPATHS	+= $(foreach target,$(CHECK_INCDIRS), $(call INCLUDE_DIR_SEARCH,$(target)))
-
-DIME_SRCDIR				= tools/dime
-DIME_PROGRAM			= dime$(EXEEXT)
-DIME_PROGRAM_STRIP		= dime-stripped$(EXEEXT)
-
-SIGNET_SRCDIR			= tools/signet
-SIGNET_PROGRAM			= signet$(EXEEXT)
-SIGNET_PROGRAM_STRIP	= signet-stripped$(EXEEXT)
-
-GENREC_SRCDIR			= tools/genrec
-GENREC_PROGRAM			= genrec$(EXEEXT)
-GENREC_PROGRAM_STRIP	= genrec-stripped$(EXEEXT)
-
-DIME_CHECK_SRCDIR		= check/dime
-DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
-
-LIBDIME_SHARED			= libdime$(DYNLIBEXT)
-LIBDIME_SHARED_STRIP	= libdime-stripped$(DYNLIBEXT)
-LIBDIME_STATIC			= libdime$(STATLIBEXT)
-LIBDIME_STATIC_STRIP	= libdime-stripped$(STATLIBEXT)
-LIBDIME_SRCDIR			= src/dime
-
-LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools))
-LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools))
-LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
-LIBDIME_STRIPPED		= $(LIBDIME_SHARED_STRIP) $(LIBDIME_STATIC_STRIP) $(DIME_PROGRAM_STRIP) $(SIGNET_PROGRAM_STRIP) $(GENREC_PROGRAM_STRIP)
-LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
-
-LIBDIME_FILTERED		= src/dime/ed25519/test.c src/dime/ed25519/test-internals.c src/dime/ed25519/fuzz/curve25519-ref10.c \
- src/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/dime/ed25519/fuzz/fuzz-curve25519.c src/dime/ed25519/fuzz/ed25519-donna.c \
- src/dime/ed25519/fuzz/ed25519-ref10.c       src/dime/ed25519/fuzz/fuzz-ed25519.c
 
 # Dependency Files
 DEPDIR					= .deps
@@ -109,6 +61,10 @@ OBJFILES				= $(patsubst %.c,$(OBJDIR)/%.o,$(1))
 # Source Files
 SRCDIRS					= $(shell find $(1) -type d -print)
 SRCFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.c))
+
+# Resolve the External Include Directory Paths
+#INCLUDE_DIR_VPATH		= $(INCDIR) /usr/include /usr/local/include
+#INCLUDE_DIR_SEARCH 		= $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(INCLUDE_DIR_VPATH)))))
 
 # Setup the Defines
 DEFINES					+= "-D_REENTRANT "
@@ -223,16 +179,17 @@ ifeq ($(VERBOSE),no)
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 endif
 	
-# Alias the target names on Windows to the equivalent without the exe extension.
+# Alias the target names on Windows to the equivalent target without the exe extension.
 ifeq ($(HOSTTYPE),Windows)
 
-#$(basename $(MAGMA_PROGRAM)): $(MAGMA_PROGRAM)
+$(basename %): $(LIBDIME_PROGRAMS)
 
 endif
 
 # Delete the compiled program along with the generated object and dependency files
 clean:
-	@$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STATIC) $(LIBDIME_SHARED) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
+	@$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	@$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
