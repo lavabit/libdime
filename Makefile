@@ -90,7 +90,7 @@ ARFLAGS					= rcs
 
 # Strip Parameters
 STRIP					= strip
-STRIPFLAGS				= --strip-unneeded --strip-debug
+STRIPFLAGS				= --strip-debug
 
 # Other External programs
 MV						= mv --force
@@ -137,6 +137,8 @@ TARGETGOAL				= $(.DEFAULT_GOAL)
 endif
 
 all: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) finished
+
+stripped: config warning $(LIBDIME_STRIPPED) finished
 
 check: config warning $(DIME_CHECK_PROGRAM)
 	@./dime.check
@@ -190,13 +192,13 @@ else
 endif
 	$(RUN)res/scripts/build.dimedeps.sh all
 
-%-stripped$(DYNLIBEXT) %-stripped$(STATLIBEXT) %-stripped$(EXEEXT): $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS)
+%-stripped$(EXEEXT) %-stripped$(DYNLIBEXT) %-stripped$(STATLIBEXT): $(LIBDIME_PROGRAMS) $(LIBDIME_SHARED) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
 	@echo 'Creating' $(RED)$@$(NORMAL)
 else
 	@echo 
 endif
-	$(RUN)$(STRIP) $(STRIPFLAGS) -o "$@" "$<"
+	$(RUN)$(STRIP) $(STRIPFLAGS) --output-format=$(shell objdump -p "$(subst -stripped,,$@)" | grep "file format" | head -1 | awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
 $(DIME_CHECK_PROGRAM): $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
@@ -289,6 +291,7 @@ endif
 # Special Make Directives
 .SUFFIXES: .c .cc .cpp .o 
 .NOTPARALLEL: warning conifg
-.PHONY: warning config finished all check
+.PHONY: warning config finished all check stripped
+
 
 # vim:set softtabstop=4 shiftwidth=4 tabstop=4:
