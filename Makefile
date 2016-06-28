@@ -25,13 +25,15 @@ GENREC_PROGRAM			= genrec$(EXEEXT)
 
 DIME_CHECK_SRCDIR		= check/dime
 DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
+DIME_CHECK_GTEST		= lib/sources/googtest/lib/.libs/libgtest.a
+DIME_CHECK_INCLUDES		= -Icheck/dime -Isrc/dime -Ilib/sources/googtest/include/ -Ilib/sources/googtest/ -Ilib/sources/googtap/src/
 
 LIBDIME_SRCDIR			= src/dime
 LIBDIME_SHARED			= libdime$(DYNLIBEXT)
 LIBDIME_STATIC			= libdime$(STATLIBEXT)
 
-LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools))
-LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools))
+LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools)) $(call OBJFILES, $(call CPPFILES, src check tools))
+LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools)) $(call DEPFILES, $(call CPPFILES, src check tools))
 LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
 LIBDIME_STRIPPED		= libdime-stripped$(DYNLIBEXT) libdime-stripped$(STATLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
 LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
@@ -52,41 +54,22 @@ LIBDIME_TIMESTAMP			= $(shell date +'%Y%m%d.%H%M')
 
 # Dependency Files
 DEPDIR					= .deps
-DEPFILES				= $(patsubst %.c,$(DEPDIR)/%.d,$(1))
+DEPFILES				= $(patsubst %.cpp, $(DEPDIR)/%.d, $(patsubst %.cc, $(DEPDIR)/%.d, $(patsubst %.c, $(DEPDIR)/%.d, $(1))))
 
 # Object Files
 OBJDIR					= .objs
-OBJFILES				= $(patsubst %.c,$(OBJDIR)/%.o,$(1))
+OBJFILES				= $(patsubst %.cpp, $(OBJDIR)/%.o, $(patsubst %.cc, $(OBJDIR)/%.o, $(patsubst %.c, $(OBJDIR)/%.o, $(1))))
 
 # Source Files
 SRCDIRS					= $(shell find $(1) -type d -print)
 SRCFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.c))
-
-# Resolve the External Include Directory Paths
-#INCLUDE_DIR_VPATH		= $(INCDIR) /usr/include /usr/local/include
-#INCLUDE_DIR_SEARCH 		= $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(INCLUDE_DIR_VPATH)))))
+CPPFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.cpp))
 
 # Setup the Defines
-DEFINES					+= "-D_REENTRANT "
-DEFINES					+= "-DFORTIFY_SOURCE=2 "
-DEFINES					+= "-DDIME_BUILD=$(LIBDIME_VERSION)"
-DEFINES					+= "-DDIME_STAMP=$(LIBDIME_TIMESTAMP)" 
-
-# Setup the Compiler Warnings
-#WARNINGS				+= "-Wall "
-#WARNINGS				+= "-Wextra "
-#WARNINGS				+= "-Werror "
-#WARNINGS				+= "-Wfatal-errors "
-#WARNINGS				+= "-Wformat=2 "
-#WARNINGS				+= "-Wwrite-strings "
-#WARNINGS				+= "-Wno-format-nonliteral "
-#WARNINGS				+= "-fmessage-length=0 "
-#CWARNINGS				+= "-Wstrict-prototypes "
-#CWARNINGS				+= "-Wmissing-prototypes "
-#CWARNINGS				+= "-Wno-pointer-sign "
+DEFINES					+= -D_REENTRANT -DFORTIFY_SOURCE=2 -DDIME_BUILD=$(LIBDIME_VERSION) -DDIME_STAMP=$(LIBDIME_TIMESTAMP)
 
 INCLUDES				= -Isrc -Ilib/local/include -I/usr/include
-WARNINGS				= -Werror -Wall -Wextra -Wfatal-errors -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
+WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra  -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
 
 # C Compiler
 CC						= gcc
@@ -94,7 +77,7 @@ CFLAGS					= $(DEFINES) $(CWARNINGS) $(WARNINGS) -std=gnu99 -O0 -ggdb3 -rdynamic
 
 # CPP Compiler
 CPP						= g++
-CPPFLAGS				= $(DEFINES) $(WARNINGS) -std=c++0x -O0 -ggdb3 -rdynamic -fPIC -c -MMD 
+CPPFLAGS				= -std=c++0x $(WARNINGS) -Wno-unused-parameter $(DEFINES) -DGTEST_TAP_PRINT_TO_STDOUT -DGTEST_HAS_PTHREAD=1 -pthread -g3 
 
 # Linker
 LD						= gcc
@@ -188,8 +171,8 @@ endif
 
 # Delete the compiled program along with the generated object and dependency files
 clean:
-	@$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
-	@$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
+	$(RUN)$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	$(RUN)$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
@@ -209,6 +192,17 @@ else
 	@echo 
 endif
 	$(RUN)$(STRIP) $(STRIPFLAGS) -o "$@" "$<"
+
+# Construct the dime check executable
+$(DIME_CHECK_PROGRAM): $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+ifeq ($(VERBOSE),no)
+	@echo 'Constructing' $(RED)$@$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) \
+	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) $(DIME_CHECK_GTEST) -Wl,--no-whole-archive,--end-group \
+	-lresolv -ldl -lm -lstdc++ -lpthread
 
 # Construct the dime executable
 $(DIME_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
@@ -260,7 +254,7 @@ endif
 	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Compile Source
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/src/%.o: src/%.c
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
@@ -268,10 +262,27 @@ endif
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
+$(OBJDIR)/tools/%.o: tools/%.c
+ifeq ($(VERBOSE),no)
+	@echo 'Building' $(YELLOW)$<$(NORMAL)
+endif
+	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
+	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
+	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
+
+$(OBJDIR)/%.o: %.cpp 
+ifeq ($(VERBOSE),no)
+	@echo 'Building' $(YELLOW)$<$(NORMAL)
+endif
+	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
+	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
+	$(RUN)$(CPP) $(CPPFLAGS) $(CPPFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) $(DIME_CHECK_INCLUDES) -MF"$(<:%.cpp=$(DEPDIR)/%.d)" -MD -MP  -MT"$@" -c -o"$@" "$<"
+
 # If we've already generated dependency files, use them to see if a rebuild is required
 -include $(LIBDIME_DEPFILES)
 
 # Special Make Directives
+.SUFFIXES: .c .cc .cpp .o 
 .NOTPARALLEL: warning conifg
 .PHONY: warning config finished all check
 

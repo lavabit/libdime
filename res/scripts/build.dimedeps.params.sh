@@ -2,7 +2,7 @@
 
 ZLIB="zlib-1.2.8"
 OPENSSL="openssl-1.0.2h"
-GOOGTAP="gtest-tap-listener-0.4"
+GOOGTAP="gtest-tap-listener-0.5"
 GOOGTEST="googletest-release-1.7.0"
 
 M_LOGS="$M_ROOT/logs"
