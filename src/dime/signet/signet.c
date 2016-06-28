@@ -1176,7 +1176,8 @@ static signet_t *sgnt_signet_load(const char *filename) {
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if(!(b64_signet = _read_pem_data(filename, SIGNET_PEM_TAG, 1))) {
+    if(!(b64_signet = _read_pem_data(filename, SIGNET_USER, 1)) &&
+    	!(b64_signet = _read_pem_data(filename, SIGNET_ORG, 1))) {
         RET_ERROR_PTR_FMT(ERR_UNSPEC, "could not load signet from file: %s", filename);
     }
 
@@ -1209,7 +1210,8 @@ static int sgnt_file_create(signet_t *signet, const char *filename) {
         RET_ERROR_INT(ERR_UNSPEC, "could not serialize armored signet");
     }
 
-    if(_write_pem_data(armored, SIGNET_PEM_TAG, filename) < 0) {
+
+    if(_write_pem_data(armored, signet->type == SIGNET_TYPE_USER ? SIGNET_USER : SIGNET_ORG, filename) < 0) {
         free(armored);
         RET_ERROR_INT(ERR_UNSPEC, "could not write signet to PEM file");
     }
@@ -3876,7 +3878,7 @@ sgnt_id_fetch(signet_t *signet)
     free(bin_id);
 
     return result;
-    
+
 cleanup_bin_id:
     free(bin_id);
 error:

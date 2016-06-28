@@ -372,7 +372,7 @@ TEST(DIME, check_signet_parsing)
     res = dime_sgnt_file_create(sigtwo, filename);
     ASSERT_EQ(0, res) << "Failure to re-write signet to file.";
 
-    b64_sigtwo = _read_pem_data(filename, SIGNET_PEM_TAG, 1);
+    b64_sigtwo = _read_pem_data(filename, SIGNET_ORG, 1);
     ASSERT_TRUE(b64_sigtwo != NULL) << "Failure to read b64 string from signet file.";
     ASSERT_EQ(0, strcmp(b64_sigone, b64_sigtwo)) << "Corrupted signet file data.";
 

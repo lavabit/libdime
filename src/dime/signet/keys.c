@@ -265,7 +265,8 @@ keys_file_serialize(
         RET_ERROR_PTR(ERR_BAD_PARAM, NULL);
     }
 
-    if(!(b64_keys = _read_pem_data(filename, SIGNET_PRIVATE_KEYCHAIN, 1))) {
+    if(!(b64_keys = _read_pem_data(filename, SIGNET_KEY_USER, 1)) &&
+    	!(b64_keys = _read_pem_data(filename, SIGNET_KEY_ORG, 1))) {
         RET_ERROR_PTR(ERR_UNSPEC, "could not retrieve keys from PEM file");
     }
 
@@ -372,7 +373,7 @@ keys_file_create(
         RET_ERROR_INT(ERR_UNSPEC, "could not base64 encode the keys");
     }
 
-    res = _write_pem_data(b64_keys, SIGNET_PRIVATE_KEYCHAIN, filename);
+    res = _write_pem_data(b64_keys, type == KEYS_TYPE_USER ? SIGNET_KEY_USER : SIGNET_KEY_ORG, filename);
     _secure_wipe(b64_keys, strlen(b64_keys));
     free(b64_keys);
 
