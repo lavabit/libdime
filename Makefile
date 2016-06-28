@@ -141,7 +141,7 @@ all: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LI
 stripped: config warning $(LIBDIME_STRIPPED) finished
 
 check: config warning $(DIME_CHECK_PROGRAM)
-	@./dime.check
+	@./dime.check --gtest_output=xml:res/test.xml
 ifeq ($(VERBOSE),no)
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 endif
