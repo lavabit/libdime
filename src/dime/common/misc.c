@@ -1443,7 +1443,7 @@ _write_pem_data(
 
     for(size_t i = 0; i < data_size; ++i) {
 
-        if(i % 128 == 0 && i) {
+        if(i % 64 == 0 && i) {
             fprintf(fp, "\n");
         }
 

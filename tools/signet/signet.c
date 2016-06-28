@@ -351,22 +351,22 @@ static void dump_signet(const char *signet_file) {                      // TODO 
 
 	if(type == SIGNET_TYPE_SSR || type == SIGNET_TYPE_USER) {
 		fingerprint = dime_sgnt_fingerprint_ssr(signet);
-		fprintf(stderr, "*** SSR fingerprint:  \t\t     %s\n", fingerprint);
+		fprintf(stderr, "%-34.34s :  %s\n", "*** SSR fingerprint", fingerprint);
 		free(fingerprint);
 	}
 
 	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
 		fingerprint = dime_sgnt_fingerprint_crypto(signet);
-		fprintf(stderr, "*** Cryptographic fingerprint:  %s\n", fingerprint);
+		fprintf(stderr, "%-34.34s :  %s\n", "*** Cryptographic fingerprint", fingerprint);
 		free(fingerprint);
 	}
 
 	if(type == SIGNET_TYPE_USER || type == SIGNET_TYPE_ORG) {
 		fingerprint = dime_sgnt_fingerprint_full(signet);
-		fprintf(stderr, "*** Full fingerprint: \t\t     %s\n", fingerprint);
+		fprintf(stderr, "%-34.34s :  %s\n", "*** Full fingerprint", fingerprint);
 		free(fingerprint);
 		fingerprint = dime_sgnt_fingerprint_id(signet);
-		fprintf(stderr, "*** ID fingerprint: \t\t     %s\n", fingerprint);
+		fprintf(stderr, "%-34.34s :  %s\n", "*** ID fingerprint", fingerprint);
 		free(fingerprint);
 	}
 
