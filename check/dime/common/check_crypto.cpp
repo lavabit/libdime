@@ -139,14 +139,14 @@ TEST(DIME, load_ec_key_file)
 
     for (size_t i = 0; i < 5; ++i) {
         key = _generate_ec_keypair();
-        snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
+        snprintf(filename, sizeof(filename), ".out/ec-key-%zu-priv.pem", i + 1);
         serial = _serialize_ec_privkey(key, &size);
         b64key = _b64encode(serial, size);
         free(serial);
         _write_pem_data(b64key, "EC PRIVATE KEY", filename);
         free(b64key);
 
-        snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i + 1);
+        snprintf(filename, sizeof(filename), ".out/ec-key-%zu-pub.pem", i + 1);
         serial = _serialize_ec_pubkey(key, &size);
         free_ec_key(key);
         b64key = _b64encode(serial, size);
@@ -156,12 +156,12 @@ TEST(DIME, load_ec_key_file)
     }
 
     for (size_t i = 0; i < 5; i++) {
-        snprintf(filename, sizeof(filename), "ec-key-%zu-priv.pem", i + 1);
+        snprintf(filename, sizeof(filename), ".out/ec-key-%zu-priv.pem", i + 1);
         result = _load_ec_privkey(filename);
         ASSERT_TRUE(result != NULL) << "load_ec_privkey failed for " << filename;
         free_ec_key(result);
 
-        snprintf(filename, sizeof(filename), "ec-key-%zu-pub.pem", i + 1);
+        snprintf(filename, sizeof(filename), ".out/ec-key-%zu-pub.pem", i + 1);
         result = _load_ec_pubkey(filename);
         ASSERT_TRUE(result != NULL) << "load_ec_pubkey failed for " << filename;
         free_ec_key(result);

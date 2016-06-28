@@ -7,7 +7,7 @@ extern "C" {
 TEST(DIME, check_keys_file_handling)
 {
 
-    const char *filename_u = "keys_user.keys", *filename_o = "keys_org.keys", *filename_w = "keys_wrong.keys";
+    const char *filename_u = ".out/keys_user.keys", *filename_o = ".out/keys_org.keys", *filename_w = ".out/keys_wrong.keys";
     EC_KEY *enckey, *enckey2;
     ED25519_KEY *signkey, *signkey2;
     int res;

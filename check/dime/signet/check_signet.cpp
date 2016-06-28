@@ -44,8 +44,8 @@ TEST(DIME, check_signet_creation)
 
 TEST(DIME, check_signet_keys_pairing)
 {
-    const char *filename_u = "keys_user.keys", *filename_o = "keys_org.keys",
-               *filename_s = "keys_ssr.keys", *filename_w = "keys_wrong.keys",
+    const char *filename_u = ".out/keys_user.keys", *filename_o = ".out/keys_org.keys",
+               *filename_s = ".out/keys_ssr.keys", *filename_w = ".out/keys_wrong.keys",
                *to_sign = "AbcDEFghijKLMNOpqrstuVWXYZ";
     EC_KEY *priv_enckey, *pub_enckey;
     ED25519_KEY *priv_signkey, *pub_signkey;
@@ -318,7 +318,7 @@ static void signet_dump(const signet_t *signet) {
 TEST(DIME, check_signet_parsing)
 {
     char *b64_sigone, *b64_sigtwo;
-    const char *filename = "check.signet", *name = "some name",
+    const char *filename = ".out/check.signet", *name = "some name",
                *phone1 = "phonenum1", *phone2 = "someotherphone",
                *name1 = "field name", *name2 = "other field name",
                *name3 = "last name of field", *data1 = "some field",
@@ -384,7 +384,7 @@ TEST(DIME, check_signet_parsing)
 
 TEST(DIME, check_signet_validation)
 {
-    const char *org_keys = "check_org.keys", *user_keys = "check_user.keys", *newuser_keys = "check_newuser.keys";
+    const char *org_keys = ".out/check_org.keys", *user_keys = ".out/check_user.keys", *newuser_keys = ".out/check_newuser.keys";
     ED25519_KEY *orgkey, *userkey, **keys_obj;
     int res;
     signet_state_t state;
@@ -678,7 +678,7 @@ TEST(DIME, check_signet_fingerprint)
 
     _crypto_init();
 
-    signet = dime_sgnt_signet_create_w_keys(SIGNET_TYPE_USER, "fp_test.keys");
+    signet = dime_sgnt_signet_create_w_keys(SIGNET_TYPE_USER, ".out/fp_test.keys");
     ASSERT_TRUE(signet != NULL) << "Failed to create signet with keys.";
 
     fp1 = dime_sgnt_fingerprint_ssr(signet);
@@ -743,7 +743,7 @@ TEST(DIME, check_signet_fingerprint)
 TEST(DIME, check_signet_signature_verification)
 {
     char *fp;
-    const char *org_keys = "check_org.keys";
+    const char *org_keys = ".out/check_org.keys";
     unsigned char signature[ED25519_SIG_SIZE];
     ED25519_KEY *orgkey;
     int res;
