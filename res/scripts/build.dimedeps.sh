@@ -2,11 +2,10 @@
 
 LINK=`readlink -f $0`
 BASE=`dirname $LINK`
+M_BUILD=`readlink -f $0`
 
 cd $BASE/../../lib/
-
 M_ROOT=`pwd`
-M_BUILD=`readlink -f $0`
 
 # Set parent directory as project root by default (used to find scripts,
 # bundled tarballs, patches, etc.)
@@ -334,16 +333,15 @@ combo() {
 
 	date +"%nStarting $1 at %r on %x%n" &>> "$M_LOGS/build.txt"
 
-	($0 "zlib-$1") & ZLIB_PID=$!
+	# OpenSSL needs zlib to finish or it won't configure/build correctly.
+	($M_BUILD "zlib-$1") & ZLIB_PID=$!
 	wait $ZLIB_PID; error
 	
-	($0 "openssl-$1") & OPENSSL_PID=$!
+	($M_BUILD "openssl-$1") & OPENSSL_PID=$!
+	($M_BUILD "googtest-$1") & GOOGTEST_PID=$!
+	($M_BUILD "googtap-$1") & GOOGTAP_PID=$!
 	wait $OPENSSL_PID; error
-	
-	($0 "googtest-$1") & GOOGTEST_PID=$!
 	wait $GOOGTEST_PID; error
-	
-	($0 "googtap-$1") & GOOGTAP_PID=$!
 	wait $GOOGTAP_PID; error
 	
 	date +"%nFinished $1 at %r on %x%n"
@@ -433,10 +431,10 @@ elif [[ $1 == "check-full" ]]; then combo "$1"
 elif [[ $1 == "clean" ]]; then combo "$1"
 
 # Libraries
-elif [[ $1 =~ "zlib" ]]; then (zlib "$1") & ZLIB_PID=$!; wait $ZLIB_PID
-elif [[ $1 =~ "openssl" ]]; then (openssl "$1") & OPENSSL_PID=$!; wait $OPENSSL_PID
-elif [[ $1 =~ "googtap" ]]; then (googtap "$1") & GOOGTAP_PID=$!; wait $GOOGTAP_PID
-elif [[ $1 =~ "googtest" ]]; then (googtest "$1") & GOOGTEST_PID=$!; wait $GOOGTEST_PID
+elif [[ $1 =~ "zlib" ]]; then zlib "$1"
+elif [[ $1 =~ "openssl" ]]; then openssl "$1"
+elif [[ $1 =~ "googtap" ]]; then googtap "$1"
+elif [[ $1 =~ "googtest" ]]; then googtest "$1"
 
 # Globals
 elif [[ $1 == "status" ]]; then status

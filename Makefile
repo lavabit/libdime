@@ -67,46 +67,36 @@ INCLUDE_DIR_SEARCH 		= $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(IN
 MAGMA_INCLUDE_ABSPATHS	+= $(foreach target,$(MAGMA_INCDIRS), $(call INCLUDE_DIR_SEARCH,$(target)))
 CHECK_INCLUDE_ABSPATHS	+= $(foreach target,$(CHECK_INCDIRS), $(call INCLUDE_DIR_SEARCH,$(target)))
 
-
-DIME_PROGRAM			= dime$(EXEEXT)
 DIME_SRCDIR				= tools/dime
+DIME_PROGRAM			= dime$(EXEEXT)
+DIME_PROGRAM_STRIP		= dime-stripped$(EXEEXT)
 
-#DIME_SRCDIRS			= $(shell find tools/dime -type d -print)
-#DIME_SRCFILES			= $(foreach dir,$(DIME_SRCDIRS), $(wildcard $(dir)/*.c))
-
-SIGNET_PROGRAM			= signet$(EXEEXT)
 SIGNET_SRCDIR			= tools/signet
+SIGNET_PROGRAM			= signet$(EXEEXT)
+SIGNET_PROGRAM_STRIP	= signet-stripped$(EXEEXT)
 
-#SIGNET_SRCDIRS			= $(shell find tools/signet -type d -print)
-#SIGNET_SRCFILES			= $(foreach dir,$(SIGNET_SRCDIRS), $(wildcard $(dir)/*.c))
-
-GENREC_PROGRAM			= genrec$(EXEEXT)
 GENREC_SRCDIR			= tools/genrec
+GENREC_PROGRAM			= genrec$(EXEEXT)
+GENREC_PROGRAM_STRIP	= genrec-stripped$(EXEEXT)
 
-#GENREC_SRCDIRS			= $(shell find tools/genrec -type d -print)
-#GENREC_SRCFILES			= $(foreach dir,$(GENREC_SRCDIRS), $(wildcard $(dir)/*.c))
-
-DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
 DIME_CHECK_SRCDIR		= check/dime
-
-#DIME_CHECK_SRCDIRS		= $(shell find check/dime -type d -print)
-#DIME_CHECK_SRCFILES		= $(foreach dir,$(DIME_CHECK_SRCDIRS), $(wildcard $(dir)/*.c))
+DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
 
 LIBDIME_SHARED			= libdime$(DYNLIBEXT)
+LIBDIME_SHARED_STRIP	= libdime-stripped$(DYNLIBEXT)
 LIBDIME_STATIC			= libdime$(STATLIBEXT)
+LIBDIME_STATIC_STRIP	= libdime-stripped$(STATLIBEXT)
 LIBDIME_SRCDIR			= src/dime
 
-#LIBDIME_SRCDIRS			= $(shell find src/dime -type d -print)
-#LIBDIME_SRCFILES		= $(foreach dir,$(LIBDIME_SRCDIRS), $(wildcard $(dir)/*.c))
-
-LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check))
-LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check))
+LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools))
+LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools))
 LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
+LIBDIME_STRIPPED		= $(LIBDIME_SHARED_STRIP) $(LIBDIME_STATIC_STRIP) $(DIME_PROGRAM_STRIP) $(SIGNET_PROGRAM_STRIP) $(GENREC_PROGRAM_STRIP)
+LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
 
 LIBDIME_FILTERED		= src/dime/ed25519/test.c src/dime/ed25519/test-internals.c src/dime/ed25519/fuzz/curve25519-ref10.c \
  src/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/dime/ed25519/fuzz/fuzz-curve25519.c src/dime/ed25519/fuzz/ed25519-donna.c \
  src/dime/ed25519/fuzz/ed25519-ref10.c       src/dime/ed25519/fuzz/fuzz-ed25519.c
-
 
 # Dependency Files
 DEPDIR					= .deps
@@ -139,8 +129,8 @@ DEFINES					+= "-DDIME_STAMP=$(LIBDIME_TIMESTAMP)"
 #CWARNINGS				+= "-Wmissing-prototypes "
 #CWARNINGS				+= "-Wno-pointer-sign "
 
-INCLUDES				= -Isrc -I/home/ladar/Lavabit/magma/lib/local/include -I/usr/include
-WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
+INCLUDES				= -Isrc -Ilib/local/include -I/usr/include
+WARNINGS				= -Werror -Wall -Wextra -Wfatal-errors -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
 
 # C Compiler
 CC						= gcc
@@ -157,6 +147,10 @@ LDFLAGS					= -rdynamic
 # Archiver Parameters
 AR						= ar
 ARFLAGS					= rcs
+
+# Strip Parameters
+STRIP					= strip
+STRIPFLAGS				= --strip-unneeded --strip-debug
 
 # Other External programs
 MV						= mv --force
@@ -202,9 +196,9 @@ else
 TARGETGOAL				= $(.DEFAULT_GOAL)
 endif
 
-all: config warning $(LIBDIME_PROGRAMS) $(LIBDIME_SHARED) $(LIBDIME_STATIC) finished
+all: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) finished
 
-check: config warning $(LIBDIME_PROGRAMS) $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(DIME_CHECK_PROGRAM) finished
+check: config warning $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(DIME_CHECK_PROGRAM) finished
 
 warning:
 ifeq ($(VERBOSE),no)
@@ -238,30 +232,75 @@ endif
 
 # Delete the compiled program along with the generated object and dependency files
 clean:
-	@$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STATIC) $(LIBDIME_SHARED) $(DIME_CHECK_PROGRAM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
+	@$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STATIC) $(LIBDIME_SHARED) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
-# Construct an Executable
-$(DIME_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC)
+$(LIBDIME_DEPENDENCIES): res/scripts/build.dimedeps.sh res/scripts/build.dimedeps.params.sh
+ifeq ($(VERBOSE),no)
+	@echo 'Running' $(RED)$(<F)$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)res/scripts/build.dimedeps.sh all
+
+%-stripped$(DYNLIBEXT) %-stripped$(STATLIBEXT) %-stripped$(EXEEXT): $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS)
+ifeq ($(VERBOSE),no)
+	@echo 'Creating' $(RED)$@$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)$(STRIP) $(STRIPFLAGS) -o "$@" "$<"
+
+# Construct the dime executable
+$(DIME_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) \
-	-Wl,--start-group,--whole-archive $(LIBDIME_STATIC) /home/ladar/Lavabit/magma/lib/local/lib/libssl.a \
-	/home/ladar/Lavabit/magma/lib/local/lib/libcrypto.a /home/ladar/Lavabit/magma/lib/local/lib/libz.a -Wl,--no-whole-archive,--end-group -lresolv -ldl
+	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
-# Create the Static Archive
-$(LIBDIME_STATIC): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
+# Construct the signet executable
+$(SIGNET_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+ifeq ($(VERBOSE),no)
+	@echo 'Constructing' $(RED)$@$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) \
+	-Wl,--start-group,--whole-archive  $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+
+# Construct the genrec executable
+$(GENREC_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+ifeq ($(VERBOSE),no)
+	@echo 'Constructing' $(RED)$@$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) \
+	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+
+# Create the static libdime archive
+$(LIBDIME_STATIC): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
 	@echo 
 endif
 	$(RUN)$(AR) $(ARFLAGS) '$@' $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
+
+# Create the libdime shared object
+$(LIBDIME_SHARED): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES)
+ifeq ($(VERBOSE),no)
+	@echo 'Constructing' $(RED)$@$(NORMAL)
+else
+	@echo 
+endif
+	$(RUN)$(LD) $(LDFLAGS) -o '$@' -shared $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) \
+	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Compile Source
 $(OBJDIR)/%.o: %.c
