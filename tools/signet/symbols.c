@@ -259,7 +259,7 @@ void (*ERR_clear_error_d)(void) = NULL;
 void (*ERR_put_error_d)(int lib, int func, int reason, const char *file, int line) = NULL;
 
 typedef struct {
-	char * name;
+	const char * name;
 	void **pointer;
 } symbol_t;
 
@@ -268,6 +268,12 @@ typedef bool bool_t;
 void *dynamic_lib_handle = NULL;
 
 #define log_critical(...) printf (__VA_ARGS__)
+
+// Our macro for declaring external symbol binding points
+#define M_BIND(x) 		{ \
+                        .name = #x, \
+                        .pointer = (void *)&x##_d \
+                        }
 
 /**
  * @brief	Initialize and bind an import symbol table.

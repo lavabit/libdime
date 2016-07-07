@@ -1,16 +1,15 @@
-#include <signet-resolver/dmtp.h>
-#include <signet-resolver/cache.h>
-#include <signet-resolver/dns.h>
-#include <signet-resolver/mrec.h>
-#include <signet-resolver/signet-ssl.h>
-
+#include "../../src/providers/dime/signet-resolver/dmtp.h"
 #include <signet/keys.h>
 
-#include <common/misc.h>
-#include <common/network.h>
-#include <common/error.h>
-
 #include <dmessage/dmsg.h>
+#include "../../src/providers/dime/common/error.h"
+#include "../../src/providers/dime/common/misc.h"
+#include "../../src/providers/dime/common/network.h"
+#include "../../src/providers/dime/signet/keys.h"
+#include "../../src/providers/dime/signet-resolver/cache.h"
+#include "../../src/providers/dime/signet-resolver/dns.h"
+#include "../../src/providers/dime/signet-resolver/mrec.h"
+#include "../../src/providers/dime/signet-resolver/signet-ssl.h"
 
 static void usage(const char *progname) {
 

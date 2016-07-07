@@ -28,7 +28,7 @@ DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
 DIME_CHECK_GTEST		= lib/sources/googtest/lib/.libs/libgtest.a
 DIME_CHECK_INCLUDES		= -Icheck/dime -Isrc/dime -Ilib/sources/googtest/include/ -Ilib/sources/googtest/ -Ilib/sources/googtap/src/
 
-LIBDIME_SRCDIR			= src/dime
+LIBDIME_SRCDIR			= src/providers
 LIBDIME_SHARED			= libdime$(DYNLIBEXT)
 LIBDIME_STATIC			= libdime$(STATLIBEXT)
 
@@ -39,9 +39,9 @@ LIBDIME_STRIPPED		= libdime-stripped$(STATLIBEXT) libdime-stripped$(DYNLIBEXT) d
 LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
 
 # Because the ed25519 folder has been dropped into the src tree, we need to explicitly exclude the fuzz files from compilation.
-LIBDIME_FILTERED		= src/dime/ed25519/test.c src/dime/ed25519/test-internals.c src/dime/ed25519/fuzz/curve25519-ref10.c \
- src/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/dime/ed25519/fuzz/fuzz-curve25519.c src/dime/ed25519/fuzz/ed25519-donna.c \
- src/dime/ed25519/fuzz/ed25519-ref10.c       src/dime/ed25519/fuzz/fuzz-ed25519.c
+LIBDIME_FILTERED		= src/providers/dime/ed25519/test.c src/providers/dime/ed25519/test-internals.c src/providers/dime/ed25519/fuzz/curve25519-ref10.c \
+ src/providers/dime/ed25519/fuzz/ed25519-donna-sse2.c  src/providers/dime/ed25519/fuzz/fuzz-curve25519.c src/providers/dime/ed25519/fuzz/ed25519-donna.c \
+ src/providers/dime/ed25519/fuzz/ed25519-ref10.c       src/providers/dime/ed25519/fuzz/fuzz-ed25519.c
 
 LIBDIME_REPO				= $(shell which git &> /dev/null && git log &> /dev/null && echo 1) 
 ifneq ($(strip $(LIBDIME_REPO)),1)
@@ -69,7 +69,7 @@ CPPFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.cpp))
 # Setup the Defines
 DEFINES					+= -D_REENTRANT -DFORTIFY_SOURCE=2 -DDIME_BUILD=$(LIBDIME_VERSION) -DDIME_STAMP=$(LIBDIME_TIMESTAMP)
 
-INCLUDES				= -Isrc -Ilib/local/include -I/usr/include
+INCLUDES				= -Isrc -Isrc/providers -Ilib/local/include -I/usr/include
 WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra  -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
 
 # C Compiler
