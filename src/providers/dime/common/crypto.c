@@ -620,6 +620,7 @@ _generate_ed25519_keypair(void)
         PUSH_ERROR_OPENSSL();
         _secure_wipe(result, sizeof(ED25519_KEY));
         free(result);
+        result = NULL;
         RET_ERROR_PTR(ERR_UNSPEC, "could not generate ed25519 secret key");
     }
 
