@@ -203,9 +203,9 @@ endif
 	awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
-$(DIME_CHECK_PROGRAM): $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+$(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
-	@echo 'Constructing' $(RED)$@$(NORMAL)
+	@echo 'Constructing' $(RED)$@$(NORMAL)DEPENDENCIES
 else
 	@echo 
 endif
@@ -214,7 +214,7 @@ endif
 	-lresolv -ldl -lm -lstdc++ -lpthread
 
 # Construct the dime executable
-$(DIME_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+$(DIME_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -224,7 +224,7 @@ endif
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Construct the signet executable
-$(SIGNET_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+$(SIGNET_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -234,7 +234,7 @@ endif
 	-Wl,--start-group,--whole-archive  $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Construct the genrec executable
-$(GENREC_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES)
+$(GENREC_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -244,7 +244,7 @@ endif
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Create the static libdime archive
-$(LIBDIME_STATIC): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES)
+$(LIBDIME_STATIC): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -253,7 +253,7 @@ endif
 	$(RUN)$(AR) $(ARFLAGS) '$@' $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
 
 # Create the libdime shared object
-$(LIBDIME_SHARED): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES)
+$(LIBDIME_SHARED): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
