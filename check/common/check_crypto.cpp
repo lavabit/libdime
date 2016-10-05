@@ -132,7 +132,7 @@ TEST(DIME, load_ec_key_file)
     char filename[256], *b64key;
     EC_KEY *result, *key;
     size_t size;
-    uint32_t crc;
+    long crc;
     char *b64_crc_keys, holder[16];
     unsigned char *serial;
     int res;
@@ -149,6 +149,7 @@ TEST(DIME, load_ec_key_file)
 
 		crc = _compute_crc24_checksum(serial, size);
 		b64_crc_keys = _b64encode((unsigned char *)&crc, (size_t)3);
+		printf("{ crc = %li / b64 = %s }\n", crc, b64_crc_keys);
 
 		if (snprintf(holder, 16, "\n=%s", b64_crc_keys) != 6) {
 			free(b64_crc_keys);
@@ -170,6 +171,8 @@ TEST(DIME, load_ec_key_file)
 
         crc = _compute_crc24_checksum(serial, size);
 		b64_crc_keys = _b64encode((unsigned char *)&crc, (size_t)3);
+
+		printf("{ crc = %li / b64 = %s }\n", crc, b64_crc_keys);
 
 		if (snprintf(holder, 16, "\n=%s", b64_crc_keys) != 6) {
 			free(b64_crc_keys);
