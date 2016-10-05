@@ -63,8 +63,9 @@ OBJFILES				= $(patsubst %.cpp, $(OBJDIR)/%.o, $(patsubst %.cc, $(OBJDIR)/%.o, $
 
 # Source Files
 SRCDIRS					= $(shell find $(1) -type d -print)
-SRCFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.c))
+CCFILES					= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.cc))
 CPPFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.cpp))
+SRCFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.c))
 
 # Setup the Defines
 DEFINES					+= -D_REENTRANT -DFORTIFY_SOURCE=2 -DDIME_BUILD=$(LIBDIME_VERSION) -DDIME_STAMP=$(LIBDIME_TIMESTAMP)
@@ -203,13 +204,14 @@ endif
 	awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
-$(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
+$(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
 ifeq ($(VERBOSE),no)
-	@echo 'Constructing' $(RED)$@$(NORMAL)DEPENDENCIES
+	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) \
+	 $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) \
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) $(DIME_CHECK_GTEST) -Wl,--no-whole-archive,--end-group \
 	-lresolv -ldl -lm -lstdc++ -lpthread
 
@@ -263,7 +265,15 @@ endif
 	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -ldl
 
 # Compile Source
-$(OBJDIR)/src/%.o: src/%.c
+$(OBJDIR)/src/%.o: src/%.c 
+ifeq ($(VERBOSE),no)
+	@echo 'Building' $(YELLOW)$<$(NORMAL)
+endif
+	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
+	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
+	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
+
+$(OBJDIR)/check/dime/%.o: check/dime/%.c
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
