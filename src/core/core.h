@@ -38,7 +38,6 @@
 #include <sys/utsname.h>
 #include <sys/resource.h>
 
-
 /**
  * The type definitions used by Magma that are not defined by the system headers.
  * The bool type requires the inclusion of stdbool.h and the use of the C99.
