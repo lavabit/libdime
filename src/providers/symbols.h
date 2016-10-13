@@ -26,6 +26,9 @@
 #include <openssl/err.h>
 #include <openssl/ocsp.h>
 
+// UTF8
+#include <utf8proc.h>
+
 //! OPENSSL
 extern DH * (*DH_new_d)(void);
 extern char **SSL_version_str_d;
@@ -247,6 +250,7 @@ extern void (*ERR_load_crypto_strings_d)(void);
 extern void (*ERR_print_errors_fp_d)(FILE *fp);
 extern void (*EVP_CIPHER_CTX_free_d)(EVP_CIPHER_CTX *a);
 extern void (*OCSP_REQUEST_free_d)(OCSP_REQUEST *a);
+extern const EVP_CIPHER * (*EVP_aes_256_gcm_d)(void);
 extern void (*OCSP_RESPONSE_free_d)(OCSP_RESPONSE *a);
 extern void (*RSA_free_d)(RSA *r);
 extern void (*SSL_CTX_set_verify_d)(SSL_CTX *ctx, int mode, int (*cb) (int, X509_STORE_CTX *));
@@ -266,6 +270,14 @@ extern X509_STORE * (*X509_STORE_new_d)(void);
 extern X509_STORE_CTX * (*X509_STORE_CTX_new_d)(void);
 extern void (*ERR_clear_error_d)(void);
 extern void (*ERR_put_error_d)(int lib, int func, int reason, const char *file, int line);
+
+//! UTF8
+extern const char * (*utf8proc_version_d)(void);
+extern const char * (*utf8proc_errmsg_d)(utf8proc_ssize_t errcode);
+extern const char * (*utf8proc_category_string_d)(utf8proc_int32_t c);
+extern utf8proc_category_t (*utf8proc_category_d)(utf8proc_int32_t c);
+extern const utf8proc_property_t * (*utf8proc_get_property_d)(utf8proc_int32_t uc);
+extern utf8proc_ssize_t (*utf8proc_iterate_d)(const utf8proc_uint8_t *str, utf8proc_ssize_t strlen, utf8proc_int32_t *codepoint_ref);
 
 /// symbols.c
 int      lib_load(void);

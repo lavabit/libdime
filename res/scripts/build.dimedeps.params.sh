@@ -2,8 +2,11 @@
 
 ZLIB="zlib-1.2.8"
 OPENSSL="openssl-1.0.2j"
+UTF8PROC="utf8proc-2.0.1"
 GOOGTAP="gtest-tap-listener-0.5"
 GOOGTEST="googletest-release-1.7.0"
+
+UTF8PROCTEST="utf8proc-data-2.0.1"
 
 M_LOGS="$M_ROOT/logs"
 M_ARCHIVES="$M_ROOT/archives"
