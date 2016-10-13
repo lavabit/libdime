@@ -119,15 +119,12 @@ typedef enum {
 	M_LOG_STACK_TRACE_DISABLE
 } M_LOG_OPTIONS;
 
-void log_core (const char *format, ...) __attribute__((format (printf, 1, 2)));
-
-#define log_pedantic(...) log_core(__VA_ARGS__)
+#define log_pedantic(...) printf(__VA_ARGS__)
 #define log_check(expr) do {} while (0)
-#define log_info(...) log_core(__VA_ARGS__)
-#define log_error(...) log_core(__VA_ARGS__)
-#define log_critical(...) log_core(__VA_ARGS__)
-#define log_options(options, ...) log_pedantic (__VA_ARGS__)
-
+#define log_info(...) printf(__VA_ARGS__)
+#define log_error(...) printf(__VA_ARGS__)
+#define log_critical(...) printf(__VA_ARGS__)
+#define log_options(options, ...) printf(__VA_ARGS__)
 
 typedef struct {
 
@@ -150,6 +147,10 @@ typedef struct {
 } core_t;
 
 extern core_t core;
+
+extern __thread char threadBuffer[1024];
+#define bufptr (char *)&(threadBuffer)
+#define buflen sizeof(threadBuffer)
 
 #include "memory/memory.h"
 #include "strings/strings.h"

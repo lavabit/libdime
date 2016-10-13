@@ -14,12 +14,10 @@
 uint64_t host_limit_cur(int_t resource) {
 
 	int_t ret;
-	char errbuf[256];
 	struct rlimit64 limits = { 0, 0 };
 
 	if ((ret = getrlimit64(resource, &limits))) {
-		strerror_r(errno, errbuf, 256);
-		log_info("Unable to retrieve the resource limit. {resource = %i / return = %i / error = %s}", resource, ret, errbuf);
+		log_info("Unable to retrieve the resource limit. {resource = %i / return = %i / error = %s}", resource, ret, strerror_r(errno, bufptr, buflen));
 		return -1;
 	}
 

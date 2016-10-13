@@ -11,7 +11,7 @@
  */
 
 #include "core/core.h"
-uint64_t rand_get_uint64(void);
+#include "providers/cryptography/cryptography.h"
 
 /**
  * @note	We have to track errors locally so these functions can be used during startup and shutdown when the global statistics system may not be available.
@@ -187,8 +187,6 @@ int_t spool_mktemp(int_t spool, chr_t *prefix) {
  */
 int_t spool_check_file(const char *file, const struct stat *info, int type) {
 
-	char errbuf[256];
-
 	// Development builds should overlook the ".empty" files used to force Mercurial into creating the spool directory structure.
 #ifdef MAGMA_PEDANTIC
 	if (type == FTW_F && !st_cmp_cs_eq(NULLER(basename(file)), PLACER(".empty", 6)) && info->st_size == 0) {
@@ -200,7 +198,7 @@ int_t spool_check_file(const char *file, const struct stat *info, int type) {
 
 	if (type == FTW_F) {
 		if (unlink(file)) {
-			log_error("An error occurred while trying to unlink a temporary file inside the spool. {%s / %s}", strerror_r(errno, errbuf, 256), file);
+			log_error("An error occurred while trying to unlink a temporary file inside the spool. {%s / %s}", strerror_r(errno, bufptr, buflen), file);
 			mutex_lock(&spool_error_lock);
 			spool_errors++;
 			mutex_unlock(&spool_error_lock);
