@@ -36,7 +36,7 @@ LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools)) $(call O
 LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools)) $(call DEPFILES, $(call CPPFILES, src check tools))
 LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
 LIBDIME_STRIPPED		= libdime-stripped$(STATLIBEXT) libdime-stripped$(DYNLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
-LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
+LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT) lib/local/lib/libutf8proc$(STATLIBEXT)
 
 # Because the ed25519 folder has been dropped into the src tree, we need to explicitly exclude the fuzz files from compilation.
 LIBDIME_FILTERED		= src/providers/dime/ed25519/test.c src/providers/dime/ed25519/test-internals.c src/providers/dime/ed25519/fuzz/curve25519-ref10.c \
@@ -76,7 +76,6 @@ WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra  -Wformat-security -Warray-bo
 # C Compiler
 CC						= gcc
 CFLAGS					= $(DEFINES) $(WARNINGS) -std=gnu99 -O0 -ggdb3 -rdynamic -fPIC -c -MMD 
-
 
 # CPP Compiler
 CPP						= g++
