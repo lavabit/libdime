@@ -1,7 +1,12 @@
 
+#include "core/core.h"
+
 #include "dime/common/misc.h"
 #include "dime/signet/keys.h"
 #include "dime/signet/signet.h"
+#include "providers/cryptography/cryptography.h"
+#include "prime/prime.h"
+#include "providers/symbols.h"
 
 static EC_KEY * keys_enckey_fetch(char const *filename);
 
@@ -390,11 +395,44 @@ static int keys_generate(keys_type_t type, char **signet_pem, char **key_pem) {
 	*signet_pem = result;
 	result = NULL;
 
+	serial_enc = _serialize_ec_pubkey(enc_key, &enc_size);
+	stringer_t *h_pub = hex_encode_st(PLACER(serial_enc, enc_size), MANAGEDBUF(1024));
+	log_pedantic("\npubkey (%zu) = %.*s\n", st_length_get(h_pub), st_length_int(h_pub), st_char_get(h_pub));
+	free(serial_enc);
+	enc_size = 0;
+
+	stringer_t *binkey = secp256k1_private_get(enc_key, NULL);
+	EC_KEY *privkey = secp256k1_private_set(binkey);
+
+	serial_enc = _serialize_ec_pubkey(privkey, &enc_size);
+	h_pub = hex_encode_st(PLACER(serial_enc, enc_size), MANAGEDBUF(1024));
+	log_pedantic("pubkey (%zu) = %.*s\n", st_length_get(h_pub), st_length_int(h_pub), st_char_get(h_pub));
+	free(serial_enc);
+	enc_size = 0;
+
+	binkey = secp256k1_private_get(privkey, NULL);
+	privkey = secp256k1_private_set(binkey);
+
+	serial_enc = _serialize_ec_pubkey(privkey, &enc_size);
+	h_pub = hex_encode_st(PLACER(serial_enc, enc_size), MANAGEDBUF(1024));
+	log_pedantic("pubkey (%zu) = %.*s\n", st_length_get(h_pub), st_length_int(h_pub), st_char_get(h_pub));
+	free(serial_enc);
+	enc_size = 0;
+
 	memcpy(serial_sign, sign_key->private_key, ED25519_KEY_SIZE);
 	if (!(serial_enc = _serialize_ec_privkey(enc_key, &enc_size))) {
 		_secure_wipe(serial_sign, ED25519_KEY_SIZE);
 		RET_ERROR_INT(ERR_UNSPEC, "could not serialize private key");
 	}
+
+
+
+
+	//stringer_t *h_priv = hex_encode_st(PLACER(serial_enc, enc_size), MANAGEDBUF(1024));
+	stringer_t *h_priv2 = hex_encode_st(secp256k1_private_get(enc_key, NULL), MANAGEDBUF(128));
+	//log_pedantic("privkey (%zu) = %.*s\n", st_length_get(h_priv), st_length_int(h_priv), st_char_get(h_priv));
+	log_pedantic("privkey (%zu) = %.*s\n", st_length_get(h_priv2), st_length_int(h_priv2), st_char_get(h_priv2));
+
 	serial_size = KEYS_HEADER_SIZE + 1 + 1 + ED25519_KEY_SIZE + 1 + 2 + enc_size;
 	if (!(serial_keys = malloc(serial_size))) {
 		PUSH_ERROR_SYSCALL("malloc");

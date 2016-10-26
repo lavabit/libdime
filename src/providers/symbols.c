@@ -32,6 +32,7 @@ void (*RAND_cleanup_d)(void) = NULL;
 void (*SSL_free_d)(SSL *ssl) = NULL;
 int (*SSL_accept_d)(SSL *ssl) = NULL;
 void *(*sk_pop_d)(_STACK *st) = NULL;
+BN_CTX * (*BN_CTX_new_d)(void) = NULL;
 int (*SSL_connect_d)(SSL *ssl) = NULL;
 EC_KEY * (*EC_KEY_new_d)(void) = NULL;
 void (*CRYPTO_free_d) (void *) = NULL;
@@ -52,10 +53,12 @@ const EVP_MD * (*EVP_md5_d)(void) = NULL;
 const EVP_MD * (*EVP_sha_d)(void) = NULL;
 void (*COMP_zlib_cleanup_d)(void) = NULL;
 int (*SSL_get_fd_d)(const SSL *s) = NULL;
+void (*BN_CTX_free_d)(BN_CTX *ctx) = NULL;
 int (*SSL_get_rfd_d)(const SSL *s) = NULL;
 const EVP_MD * (*EVP_sha1_d)(void) = NULL;
 void (*EC_KEY_free_d)(EC_KEY *key) = NULL;
 EVP_PKEY * (*EVP_PKEY_new_d)(void) = NULL;
+void (*BN_CTX_start_d)(BN_CTX *ctx) = NULL;
 const char * (*OBJ_nid2sn_d)(int n) = NULL;
 int (*SHA256_Init_d)(SHA256_CTX *c) = NULL;
 int (*SHA512_Init_d)(SHA512_CTX *c) = NULL;
@@ -70,6 +73,7 @@ int (*SSL_pending_d)(const SSL *ssl) = NULL;
 int	(*BN_num_bits_d)(const BIGNUM *) = NULL;
 int (*X509_get_ext_count_d) (X509 *x) = NULL;
 RSA * (*RSAPublicKey_dup_d)(RSA *rsa) = NULL;
+char * (*BN_bn2dec_d)(const BIGNUM *a) = NULL;
 char * (*BN_bn2hex_d)(const BIGNUM *a) = NULL;
 int (*EVP_MD_size_d)(const EVP_MD *md) = NULL;
 unsigned long (*ERR_get_error_d)(void) = NULL;
@@ -117,6 +121,7 @@ void (*EVP_CIPHER_CTX_init_d)(EVP_CIPHER_CTX *a) = NULL;
 void (*OCSP_BASICRESP_free_d)(OCSP_BASICRESP *a) = NULL;
 void (*EVP_CIPHER_CTX_free_d)(EVP_CIPHER_CTX *a) = NULL;
 X509_LOOKUP_METHOD * (*X509_LOOKUP_file_d)(void) = NULL;
+int (*BN_cmp_d)(const BIGNUM *a, const BIGNUM *b) = NULL;
 const SSL_METHOD * (*TLSv1_server_method_d)(void) = NULL;
 int (*EVP_CIPHER_nid_d)(const EVP_CIPHER *cipher) = NULL;
 void (*OPENSSL_add_all_algorithms_noconf_d)(void) = NULL;
@@ -149,7 +154,6 @@ const char * (*X509_verify_cert_error_string_d)(long n) = NULL;
 int (*SHA256_Final_d)(unsigned char *md, SHA256_CTX *c) = NULL;
 int (*SHA512_Final_d)(unsigned char *md, SHA512_CTX *c) = NULL;
 int (*X509_check_issued_d)(X509 *issuer, X509 *subject) = NULL;
-char * (*ERR_error_string_d)(unsigned long e, char *buf) = NULL;
 int (*EVP_CIPHER_block_size_d)(const EVP_CIPHER *cipher) = NULL;
 int (*EVP_CIPHER_key_length_d)(const EVP_CIPHER *cipher) = NULL;
 void * (*OCSP_response_get1_basic_d)(OCSP_RESPONSE *resp) = NULL;
@@ -242,6 +246,7 @@ int (*SSL_CTX_load_verify_locations_d)(SSL_CTX *ctx, const char *CAfile, const c
 OCSP_RESPONSE * (*d2i_OCSP_RESPONSE_d)(OCSP_RESPONSE **a, const unsigned char **in, long len) = NULL;
 int (*OCSP_parse_url_d)(const char *url, char **phost, char **pport, char **ppath, int *pssl) = NULL;
 int (*HMAC_Init_ex_d)(HMAC_CTX *ctx, const void *key, int len, const EVP_MD *md, ENGINE *impl) = NULL;
+int (*EC_POINT_cmp_d)(const EC_GROUP *group, const EC_POINT *a, const EC_POINT *b, BN_CTX *ctx) = NULL;
 void (*SSL_CTX_set_tmp_dh_callback_d)(SSL_CTX *ctx, DH *(*dh)(SSL *ssl,int is_export, int keylength))  = NULL;
 int (*ECDSA_do_verify_d)(const unsigned char *dgst, int dgst_len, const ECDSA_SIG *sig, EC_KEY *eckey) = NULL;
 int (*X509_check_host_d)(X509 *x, const char *chk, size_t chklen, unsigned int flags, char **peername) = NULL;
@@ -259,6 +264,7 @@ int (*EC_POINT_oct2point_d)(const EC_GROUP *group, EC_POINT *p, const unsigned c
 int (*EVP_Digest_d)(const void *data, size_t count, unsigned char *md, unsigned int *size, const EVP_MD *type, ENGINE *impl) = NULL;
 int (*EVP_DecryptInit_ex_d)(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key, const unsigned char *iv) = NULL;
 int (*EVP_EncryptInit_ex_d)(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key, const unsigned char *iv) = NULL;
+int (*EC_POINT_mul_d)(const EC_GROUP *group, EC_POINT *r, const BIGNUM *g_scalar, const EC_POINT *point, const BIGNUM *p_scalar, BN_CTX *ctx) = NULL;
 size_t (*EC_POINT_point2oct_d)(const EC_GROUP *group, const EC_POINT *p, point_conversion_form_t form, unsigned char *buf, size_t len, BN_CTX *ctx) = NULL;
 int (*ECDH_compute_key_d)(void *out, size_t outlen, const EC_POINT *pub_key, EC_KEY *ecdh, void *(*KDF)(const void *in, size_t inlen, void *out, size_t *outlen)) = NULL;
 int (*OCSP_resp_find_status_d)(void *bs, void *id, int *status, int *reason, ASN1_GENERALIZEDTIME **revtime, ASN1_GENERALIZEDTIME **thisupd, ASN1_GENERALIZEDTIME **nextupd) = NULL;
@@ -278,7 +284,7 @@ typedef struct {
 
 typedef bool bool_t;
 
-void *dynamic_lib_handle = NULL;
+void *lib_magma = NULL;
 
 #define log_critical(...) printf (__VA_ARGS__)
 
@@ -297,7 +303,7 @@ void *dynamic_lib_handle = NULL;
  */
 bool_t lib_symbols(size_t count, symbol_t symbols[]) {
 
-	if (!count || !dynamic_lib_handle) {
+	if (!count || !lib_magma) {
 		log_critical("An invalid request was made.\n");
 		return false;
 	}
@@ -318,7 +324,7 @@ bool_t lib_symbols(size_t count, symbol_t symbols[]) {
 
 	// Loop through and setup the function pointers.
 	for (size_t i = 0; i < count; i++) {
-		if ((*(symbols[i].pointer) = dlsym(dynamic_lib_handle, symbols[i].name)) == NULL) {
+		if ((*(symbols[i].pointer) = dlsym(lib_magma, symbols[i].name)) == NULL) {
 			log_critical("Unable to establish a pointer to the function %s.\n", symbols[i].name);
 			return false;
 		}
@@ -343,7 +349,7 @@ bool_t lib_load_openssl(void) {
 		M_BIND(EC_KEY_get0_group),M_BIND(EC_KEY_get0_private_key), M_BIND(EC_KEY_get0_public_key), M_BIND(EC_KEY_new),
 		M_BIND(EC_KEY_new_by_curve_name), M_BIND(EC_KEY_set_group), M_BIND(EC_KEY_set_private_key), M_BIND(EC_KEY_set_public_key),
 		M_BIND(EC_POINT_free), M_BIND(EC_POINT_hex2point), M_BIND(EC_POINT_new), M_BIND(EC_POINT_oct2point), M_BIND(EC_POINT_point2hex),
-		M_BIND(EC_POINT_point2oct),	M_BIND(ENGINE_cleanup),	M_BIND(ERR_error_string), M_BIND(ERR_error_string_n), M_BIND(ERR_free_strings),
+		M_BIND(EC_POINT_point2oct),	M_BIND(ENGINE_cleanup), M_BIND(ERR_error_string_n), M_BIND(ERR_free_strings),
 		M_BIND(ERR_get_error), M_BIND(ERR_remove_thread_state), M_BIND(EVP_CIPHER_block_size),	M_BIND(EVP_CIPHER_CTX_block_size),
 		M_BIND(EVP_CIPHER_CTX_cleanup),	M_BIND(EVP_CIPHER_CTX_init), M_BIND(EVP_CIPHER_CTX_iv_length), M_BIND(EVP_CIPHER_CTX_key_length),
 		M_BIND(EVP_CIPHER_CTX_set_padding),	M_BIND(EVP_CIPHER_iv_length), M_BIND(EVP_CIPHER_key_length), M_BIND(EVP_CIPHER_nid),
@@ -384,7 +390,8 @@ bool_t lib_load_openssl(void) {
 		M_BIND(OCSP_cert_to_id), M_BIND(OCSP_request_add0_id), M_BIND(OCSP_response_get1_basic), M_BIND(sk_value), M_BIND(X509_STORE_CTX_get_current_cert),
 		M_BIND(X509_STORE_add_lookup), M_BIND(X509_LOOKUP_file), M_BIND(X509_NAME_get_entry), M_BIND(X509_STORE_new), M_BIND(ERR_clear_error),
 		M_BIND(ERR_put_error), M_BIND(EVP_aes_256_gcm), M_BIND(EC_KEY_get_conv_form), M_BIND(EC_KEY_set_conv_form), M_BIND(BN_bn2mpi),
-		M_BIND(BN_mpi2bn)
+		M_BIND(BN_mpi2bn), M_BIND(BN_bn2dec), M_BIND(EC_POINT_mul), M_BIND(BN_CTX_new), M_BIND(BN_CTX_start), M_BIND(BN_CTX_free),
+		M_BIND(EC_POINT_cmp), M_BIND(BN_cmp)
 	};
 
 	if (!lib_symbols(sizeof(openssl) / sizeof(symbol_t), openssl)) {
@@ -414,7 +421,7 @@ bool_t lib_load_utf8proc(void) {
  */
 void lib_unload(void) {
 
-	dlclose(dynamic_lib_handle);
+	dlclose(lib_magma);
 
 	return;
 }
@@ -426,8 +433,8 @@ void lib_unload(void) {
 int lib_load(void) {
 
 	char *lib_error = NULL;
-	dynamic_lib_handle = dlopen(NULL, RTLD_NOW | RTLD_GLOBAL);
-	if (!dynamic_lib_handle || (lib_error = dlerror())) {
+	lib_magma = dlopen(NULL, RTLD_NOW | RTLD_GLOBAL);
+	if (!lib_magma || (lib_error = dlerror())) {
 		if (lib_error) {
 			log_critical("The dlerror() function returned: %s\n", lib_error);
 		}
