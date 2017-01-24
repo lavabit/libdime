@@ -20,7 +20,7 @@ The **libdime** project holds the DIME libraries and related command line utilit
 
 ##Dependencies, Supported Platforms, and Build Instructions
 
-Please see the [Quick Start Guide](docs/quickstart.md).
+Please see the [Quick Start Guide](res/docs/quickstart.md).
 
 System:
 c dl rt pthread resolv 
