@@ -185,6 +185,13 @@ clean:
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
+	
+distclean: 
+	$(RUN)$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	$(RUN)$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC)
+	$(RUN)$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
+	@$(RM) --recursive --force $(DEPDIR) $(OBJDIR) lib/local lib/logs lib/objects lib/sources
+	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 $(LIBDIME_DEPENDENCIES): res/scripts/build.dimedeps.sh res/scripts/build.dimedeps.params.sh
 ifeq ($(VERBOSE),no)

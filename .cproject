@@ -103,19 +103,13 @@
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="0.1231902525">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.cpp.compiler.base.170580350;cdt.managedbuild.tool.gnu.cpp.compiler.input.667867085">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.c.compiler.base.1117531775;cdt.managedbuild.tool.gnu.c.compiler.input.875702072">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.13544684;cdt.managedbuild.toolchain.gnu.base.13544684.9827489;cdt.managedbuild.tool.gnu.cpp.compiler.base.170580350;cdt.managedbuild.tool.gnu.cpp.compiler.input.667867085">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.1458404713.1775323744;cdt.managedbuild.toolchain.gnu.base.1458404713.1775323744.;cdt.managedbuild.tool.gnu.cpp.compiler.base.665086592;cdt.managedbuild.tool.gnu.cpp.compiler.input.1924548032">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.1458404713.1775323744;cdt.managedbuild.toolchain.gnu.base.1458404713.1775323744.;cdt.managedbuild.tool.gnu.c.compiler.base.26510157;cdt.managedbuild.tool.gnu.c.compiler.input.440359959">
+		<scannerConfigBuildInfo instanceId="0.1231902525">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
