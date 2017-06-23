@@ -127,6 +127,9 @@ openssl() {
 		;;
 		openssl-prep)
 			cd "$M_SOURCES/openssl"; error
+			if [[ $OPENSSL =~ "openssl-1.0.2" ]]; then
+				cat "$M_PATCHES/openssl/"1.0.2_curve25519_ed25519.patch | patch -p1 --verbose &>> "$M_LOGS/openssl.txt"; error
+			fi
 		;;
 		openssl-build)
 			# OpenSSL does not use environment variables to pickup additional compiler flags
@@ -134,27 +137,41 @@ openssl() {
 			# See here for reasoning behind openssl-specific linker flags:
 			# https://mta.openssl.org/pipermail/openssl-users/2015-April/001053.html
 			cd "$M_SOURCES/openssl"; error
-        	grep "CentOS Linux release 7" /etc/system-release >& /dev/null
+        	grep -E "CentOS Linux release 7|Red Hat Enterprise.*release 7" /etc/system-release >& /dev/null
         	if [ $? == 0 ]; then
                 	export CONFIGOPTS='-fno-merge-debug-strings '
         	fi
-		    ./config \
-		        -d shared zlib no-asm --openssldir="$M_LOCAL" \
-				-I"$M_LOCAL/zlib" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
-				-L"$M_LOCAL/lib" -Wl,-rpath,"$M_LOCAL/lib" &>> "$M_LOGS/openssl.txt"; error
+#		    ./config \
+#		        -d shared zlib no-asm --openssldir="$M_LOCAL" --libdir="lib" \
+#				-I"$M_SOURCES/zlib" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
+#				-L"$M_SOURCES/openssl" -Wl,-rpath,"$M_SOURCES/openssl" \
+#				-L"$M_SOURCES/zlib" -Wl,-rpath,"$M_SOURCES/zlib" \
+#				&>> "$M_LOGS/openssl.txt"; error
+#				
+			./config \
+		        -d shared zlib no-asm --openssldir="$M_LOCAL" --libdir="lib" \
+				-I"$M_SOURCES/include/" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
+				-L"$M_SOURCES/lib/" -Wl,-rpath,"$M_SOURCES/lib/" \
+				&>> "$M_LOGS/openssl.txt"; error
+			
 
 			make depend &>> "$M_LOGS/openssl.txt"; error
 			make &>> "$M_LOGS/openssl.txt"; error
 			make install &>> "$M_LOGS/openssl.txt"; error
+
+			# Fool autotools checks into thinking this is a normal OpenSSL install (e.g., ClamAV)
+			ln -s `pwd` lib
 		;;
 		openssl-check)
 			cd "$M_SOURCES/openssl"; error
 			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			export PATH="$M_BNPATH:$PATH"; error
 			make test &>> "$M_LOGS/openssl.txt"; error
 		;;
 		openssl-check-full)
 			cd "$M_SOURCES/openssl"; error
 			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			export PATH="$M_BNPATH:$PATH"; error
 			make test &>> "$M_LOGS/openssl.txt"; error
 		;;
 		openssl-clean)
@@ -181,6 +198,71 @@ openssl() {
 
 	date +"Finished $1 at %r on %x"
 	date +"%n%nFinished $1 at %r on %x%n%n" &>> "$M_LOGS/openssl.txt"
+
+	return $?
+
+}
+
+utf8proc() {
+
+	if [[ $1 == "utf8proc-extract" ]]; then
+		rm -f "$M_LOGS/utf8proc.txt"; error
+	elif [[ $1 != "utf8proc-log" ]]; then
+		date +"%n%nStarted $1 at %r on %x%n%n" &>> "$M_LOGS/utf8proc.txt"
+	fi
+
+	case "$1" in
+		utf8proc-extract)
+			extract $UTF8PROC "utf8proc" &>> "$M_LOGS/utf8proc.txt"
+			tar xzvf "$M_ARCHIVES/$UTF8PROCTEST.tar.gz" --directory="$M_SOURCES/utf8proc/data" &>> "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc-prep)
+			cd "$M_SOURCES/utf8proc"; error
+			if [[ $UTF8PROC == "1.3.1" ]]; then
+				cat "$M_PATCHES/utf8proc/"utf8proc.release.version.patch | patch -p1 --verbose &>> "$M_LOGS/utf8proc.txt"; error
+			fi
+		;;
+		utf8proc-build)
+			cd "$M_SOURCES/utf8proc"; error
+			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2 -O2"
+			make prefix="$M_LOCAL" &>> "$M_LOGS/utf8proc.txt"; error
+			make prefix="$M_LOCAL" install &>> "$M_LOGS/utf8proc.txt"; error
+			unset CFLAGS;
+		;;
+		utf8proc-check)
+			cd "$M_SOURCES/utf8proc"; error
+			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			make check &>> "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc-check-full)
+			cd "$M_SOURCES/utf8proc"; error
+			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			make check &>> "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc-clean)
+			cd "$M_SOURCES/utf8proc"; error
+			make clean &>> "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc-tail)
+			tail --lines=30 --follow=name --retry "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc-log)
+			cat "$M_LOGS/utf8proc.txt"; error
+		;;
+		utf8proc)
+			utf8proc "utf8proc-extract"
+			utf8proc "utf8proc-prep"
+			utf8proc "utf8proc-build"
+			utf8proc "utf8proc-check"
+		;;
+		*)
+			printf "\nUnrecognized request.\n"
+			exit 2
+		;;
+	esac
+
+	date +"Finished $1 at %r on %x"
+	date +"%n%nFinished $1 at %r on %x%n%n" &>> "$M_LOGS/spf2.txt"
 
 	return $?
 
@@ -235,7 +317,7 @@ googtap() {
 	date +"%n%nFinished $1 at %r on %x%n%n" &>> "$M_LOGS/googtap.txt"
 
 	return $?
-	
+
 }
 
 googtest() {
@@ -257,17 +339,17 @@ googtest() {
 			cd "$M_SOURCES/googtest"; error
 			export CFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
 			export CXXFLAGS="-fPIC -g3 -rdynamic -D_FORTIFY_SOURCE=2"
-			
+
 			autoreconf --install &>> "$M_LOGS/googtest.txt"; error
 			./configure --prefix="$M_LOCAL" &>> "$M_LOGS/googtest.txt"; error
 			unset CFLAGS; unset CXXFLAGS
-			
+
 			make &>> "$M_LOGS/googtest.txt"; error
 		;;
 		googtest-check)
 			cd "$M_SOURCES/googtest"; error
 			make check &>> "$M_LOGS/googtest.txt"; error
-			
+
 			mkdir build && cd build; error
 			cmake -Dgtest_build_samples=ON "$M_SOURCES/googtest" &>> "$M_LOGS/googtest.txt"; error
 			make &>> "$M_LOGS/googtest.txt"; error
@@ -285,7 +367,7 @@ googtest() {
 		googtest-check-full)
 			cd "$M_SOURCES/googtest"; error
 			make check &>> "$M_LOGS/googtest.txt"; error
-			
+
 			mkdir build && cd build; error
 			cmake -Dgtest_build_samples=ON "$M_SOURCES/googtest" &>> "$M_LOGS/googtest.txt"; error
 			make &>> "$M_LOGS/googtest.txt"; error
@@ -336,26 +418,28 @@ combo() {
 	# OpenSSL needs zlib to finish or it won't configure/build correctly.
 	($M_BUILD "zlib-$1") & ZLIB_PID=$!
 	wait $ZLIB_PID; error
-	
+
 	($M_BUILD "openssl-$1") & OPENSSL_PID=$!
+	($M_BUILD "utf8proc-$1") & UTF8PROC_PID=$!
 	($M_BUILD "googtest-$1") & GOOGTEST_PID=$!
 	($M_BUILD "googtap-$1") & GOOGTAP_PID=$!
 	wait $OPENSSL_PID; error
+	wait $UTF8PROC_PID; error
 	wait $GOOGTEST_PID; error
 	wait $GOOGTAP_PID; error
-	
+
 	date +"%nFinished $1 at %r on %x%n"
 	date +"%nFinished $1 at %r on %x%n" &>> "$M_LOGS/build.txt"
 }
 
 follow() {
 	# Note that the build.txt and combo.txt log files are intentionally excluded from this list because they don't belong to a bundled package file.
-	tail -n 0 -F "$M_LOGS/googtest.txt" "$M_LOGS/googtap.txt" "$M_LOGS/openssl.txt" "$M_LOGS/zlib.txt"
+	tail -n 0 -F "$M_LOGS/googtest.txt" "$M_LOGS/googtap.txt" "$M_LOGS/openssl.txt" "$M_LOGS/utf8proc.txt" "$M_LOGS/zlib.txt"
 }
 
 log() {
 	# Note that the build.txt and combo.txt log files are intentionally excluded from this list because they don't belong to a bundled package file.
-	cat "$M_LOGS/zlib.txt" "$M_LOGS/openssl.txt" "$M_LOGS/googtap.txt" "$M_LOGS/googtest.txt"
+	cat "$M_LOGS/zlib.txt" "$M_LOGS/openssl.txt" "$M_LOGS/utf8proc.txt" "$M_LOGS/googtap.txt" "$M_LOGS/googtest.txt"
 }
 
 advance() {
@@ -433,6 +517,7 @@ elif [[ $1 == "clean" ]]; then combo "$1"
 # Libraries
 elif [[ $1 =~ "zlib" ]]; then zlib "$1"
 elif [[ $1 =~ "openssl" ]]; then openssl "$1"
+elif [[ $1 =~ "utf8proc" ]]; then utf8proc "$1"
 elif [[ $1 =~ "googtap" ]]; then googtap "$1"
 elif [[ $1 =~ "googtest" ]]; then googtest "$1"
 
@@ -449,7 +534,7 @@ elif [[ $1 == "tail" ]]; then follow
 else
 	echo ""
 	echo " Libraries"
-	echo $"  `basename $0` {zlib|openssl|googtest|googtap} and/or "
+	echo $"  `basename $0` {zlib|openssl|utf8proc|googtest|googtap} and/or "
 	echo ""
 	echo " Stages (which may be combined via a dash with the above)"
 	echo $"  `basename $0` {extract|prep|build|check|check-full|clean|tail|log} or "

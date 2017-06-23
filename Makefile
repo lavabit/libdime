@@ -7,7 +7,7 @@
 # Identity of this package.
 PACKAGE_NAME			= libdime
 PACKAGE_TARNAME			= libdime
-PACKAGE_VERSION			= 0.2
+PACKAGE_VERSION			= 0.3
 PACKAGE_STRING			= $(PACKAGE_NAME) $(PACKAGE_VERSION)
 PACKAGE_BUGREPORT		= support@lavabit.com
 PACKAGE_URL				= https://lavabit.com
@@ -28,7 +28,7 @@ DIME_CHECK_PROGRAM		= dime.check$(EXEEXT)
 DIME_CHECK_GTEST		= lib/sources/googtest/lib/.libs/libgtest.a
 DIME_CHECK_INCLUDES		= -Icheck/dime -Isrc/dime -Ilib/sources/googtest/include/ -Ilib/sources/googtest/ -Ilib/sources/googtap/src/
 
-LIBDIME_SRCDIR			= src/providers
+LIBDIME_SRCDIR			= src/providers src/core
 LIBDIME_SHARED			= libdime$(DYNLIBEXT)
 LIBDIME_STATIC			= libdime$(STATLIBEXT)
 
@@ -36,7 +36,7 @@ LIBDIME_OBJFILES		= $(call OBJFILES, $(call SRCFILES, src check tools)) $(call O
 LIBDIME_DEPFILES		= $(call DEPFILES, $(call SRCFILES, src check tools)) $(call DEPFILES, $(call CPPFILES, src check tools))
 LIBDIME_PROGRAMS		= $(DIME_PROGRAM) $(SIGNET_PROGRAM) $(GENREC_PROGRAM)
 LIBDIME_STRIPPED		= libdime-stripped$(STATLIBEXT) libdime-stripped$(DYNLIBEXT) dime-stripped$(EXEEXT) signet-stripped$(EXEEXT) genrec-stripped$(EXEEXT)
-LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT)
+LIBDIME_DEPENDENCIES	= lib/local/lib/libz$(STATLIBEXT) lib/local/lib/libssl$(STATLIBEXT) lib/local/lib/libcrypto$(STATLIBEXT) lib/local/lib/libutf8proc$(STATLIBEXT)
 
 # Because the ed25519 folder has been dropped into the src tree, we need to explicitly exclude the fuzz files from compilation.
 LIBDIME_FILTERED		= src/providers/dime/ed25519/test.c src/providers/dime/ed25519/test-internals.c src/providers/dime/ed25519/fuzz/curve25519-ref10.c \
@@ -68,14 +68,14 @@ CPPFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.cpp))
 SRCFILES				= $(foreach dir, $(call SRCDIRS, $(1)), $(wildcard $(dir)/*.c))
 
 # Setup the Defines
-DEFINES					+= -D_REENTRANT -DFORTIFY_SOURCE=2 -DDIME_BUILD=$(LIBDIME_VERSION) -DDIME_STAMP=$(LIBDIME_TIMESTAMP)
+DEFINES					+= -D_REENTRANT -DFORTIFY_SOURCE=2 -D_GNU_SOURCE -D_LARGEFILE64_SOURCE -DHAVE_NS_TYPE -DDIME_BUILD=$(LIBDIME_VERSION) -DDIME_STAMP=$(LIBDIME_TIMESTAMP)
 
 INCLUDES				= -Isrc -Isrc/providers -Ilib/local/include -I/usr/include
-WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra  -Wformat=2 -Wwrite-strings -Wno-format-nonliteral 
+WARNINGS				= -Wfatal-errors -Werror -Wall -Wextra  -Wformat-security -Warray-bounds  -Wformat=2 -Wno-format-nonliteral 
 
 # C Compiler
 CC						= gcc
-CFLAGS					= $(DEFINES) $(CWARNINGS) $(WARNINGS) -std=gnu99 -O0 -ggdb3 -rdynamic -fPIC -c -MMD 
+CFLAGS					= $(DEFINES) $(WARNINGS) -std=gnu99 -O0 -ggdb3 -rdynamic -fPIC -c -MMD 
 
 # CPP Compiler
 CPP						= g++
@@ -185,6 +185,13 @@ clean:
 	@for d in $(sort $(dir $(LIBDIME_OBJFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@for d in $(sort $(dir $(LIBDIME_DEPFILES))); do if test -d "$$d"; then $(RMDIR) "$$d"; fi; done
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
+	
+distclean: 
+	$(RUN)$(RM) $(LIBDIME_PROGRAMS) $(LIBDIME_STRIPPED) $(DIME_CHECK_PROGRAM) 
+	$(RUN)$(RM) $(LIBDIME_SHARED) $(LIBDIME_STATIC)
+	$(RUN)$(RM) $(LIBDIME_OBJFILES) $(LIBDIME_DEPFILES)
+	@$(RM) --recursive --force $(DEPDIR) $(OBJDIR) lib/local lib/logs lib/objects lib/sources
+	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
 $(LIBDIME_DEPENDENCIES): res/scripts/build.dimedeps.sh res/scripts/build.dimedeps.params.sh
 ifeq ($(VERBOSE),no)
@@ -201,7 +208,7 @@ else
 	@echo 
 endif
 	$(RUN)$(STRIP) $(STRIPFLAGS) --output-format=$(shell objdump -p "$(subst -stripped,,$@)" | grep "file format" | head -1 | \
-	awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
+	awk -F'file format' '{print $$2}' | tr --delete [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
 $(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
@@ -213,7 +220,7 @@ endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) \
 	 $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) \
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) $(DIME_CHECK_GTEST) -Wl,--no-whole-archive,--end-group \
-	-lresolv -ldl -lm -lstdc++ -lpthread
+	-lresolv -lrt -ldl -lm -lstdc++ -lpthread
 
 # Construct the dime executable
 $(DIME_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC)
@@ -223,7 +230,7 @@ else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) \
-	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Construct the signet executable
 $(SIGNET_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC)
@@ -233,7 +240,7 @@ else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) \
-	-Wl,--start-group,--whole-archive  $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+	-Wl,--start-group,--whole-archive  $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Construct the genrec executable
 $(GENREC_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC)
@@ -243,7 +250,7 @@ else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) --output='$@' $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) \
-	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Create the static libdime archive
 $(LIBDIME_STATIC): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
@@ -262,7 +269,7 @@ else
 	@echo 
 endif
 	$(RUN)$(LD) $(LDFLAGS) -o '$@' -shared $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) \
-	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -ldl
+	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Compile Source
 $(OBJDIR)/src/%.o: src/%.c 
