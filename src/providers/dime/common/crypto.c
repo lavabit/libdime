@@ -419,7 +419,7 @@ _deserialize_ec_privkey(
     int signing)
 {
     EC_KEY *result;
-    int nid;
+//    int nid;
     unsigned char *bufp = (unsigned char *)buf;
 
     if (!buf || !blen) {
@@ -430,7 +430,7 @@ _deserialize_ec_privkey(
             "deserialization of signing keys is not supported");
     }
 
-    nid = signing ? EC_SIGNING_CURVE : EC_ENCRYPT_CURVE;
+//    nid = signing ? EC_SIGNING_CURVE : EC_ENCRYPT_CURVE;
 
    result = secp256k1_private_set(PLACER(bufp, blen));
 

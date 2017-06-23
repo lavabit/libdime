@@ -7,7 +7,7 @@
 # Identity of this package.
 PACKAGE_NAME			= libdime
 PACKAGE_TARNAME			= libdime
-PACKAGE_VERSION			= 0.2
+PACKAGE_VERSION			= 0.3
 PACKAGE_STRING			= $(PACKAGE_NAME) $(PACKAGE_VERSION)
 PACKAGE_BUGREPORT		= support@lavabit.com
 PACKAGE_URL				= https://lavabit.com
@@ -208,7 +208,7 @@ else
 	@echo 
 endif
 	$(RUN)$(STRIP) $(STRIPFLAGS) --output-format=$(shell objdump -p "$(subst -stripped,,$@)" | grep "file format" | head -1 | \
-	awk -F'file format' '{print $$2}' | tr --delete  [:space:]) -o "$@" "$(subst -stripped,,$@)"
+	awk -F'file format' '{print $$2}' | tr --delete [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
 $(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
