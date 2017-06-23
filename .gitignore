@@ -25,4 +25,4 @@ lib/sources/
 
 # Unit Test Files
 /dime.check
-.out/
+sandbox/spool/*
