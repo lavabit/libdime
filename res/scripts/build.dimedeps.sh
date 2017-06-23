@@ -127,6 +127,9 @@ openssl() {
 		;;
 		openssl-prep)
 			cd "$M_SOURCES/openssl"; error
+			if [[ $OPENSSL =~ "openssl-1.0.2" ]]; then
+				cat "$M_PATCHES/openssl/"1.0.2_curve25519_ed25519.patch | patch -p1 --verbose &>> "$M_LOGS/openssl.txt"; error
+			fi
 		;;
 		openssl-build)
 			# OpenSSL does not use environment variables to pickup additional compiler flags
@@ -134,27 +137,41 @@ openssl() {
 			# See here for reasoning behind openssl-specific linker flags:
 			# https://mta.openssl.org/pipermail/openssl-users/2015-April/001053.html
 			cd "$M_SOURCES/openssl"; error
-        	grep "CentOS Linux release 7" /etc/system-release >& /dev/null
+        	grep -E "CentOS Linux release 7|Red Hat Enterprise.*release 7" /etc/system-release >& /dev/null
         	if [ $? == 0 ]; then
                 	export CONFIGOPTS='-fno-merge-debug-strings '
         	fi
-		    ./config \
-		        -d shared zlib no-asm --openssldir="$M_LOCAL" \
-				-I"$M_LOCAL/zlib" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
-				-L"$M_LOCAL/lib" -Wl,-rpath,"$M_LOCAL/lib" &>> "$M_LOGS/openssl.txt"; error
+#		    ./config \
+#		        -d shared zlib no-asm --openssldir="$M_LOCAL" --libdir="lib" \
+#				-I"$M_SOURCES/zlib" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
+#				-L"$M_SOURCES/openssl" -Wl,-rpath,"$M_SOURCES/openssl" \
+#				-L"$M_SOURCES/zlib" -Wl,-rpath,"$M_SOURCES/zlib" \
+#				&>> "$M_LOGS/openssl.txt"; error
+#				
+			./config \
+		        -d shared zlib no-asm --openssldir="$M_LOCAL" --libdir="lib" \
+				-I"$M_SOURCES/include/" -O $CONFIGOPTS -g3 -rdynamic -fPIC -DPURIFY -D_FORTIFY_SOURCE=2 \
+				-L"$M_SOURCES/lib/" -Wl,-rpath,"$M_SOURCES/lib/" \
+				&>> "$M_LOGS/openssl.txt"; error
+			
 
 			make depend &>> "$M_LOGS/openssl.txt"; error
 			make &>> "$M_LOGS/openssl.txt"; error
 			make install &>> "$M_LOGS/openssl.txt"; error
+
+			# Fool autotools checks into thinking this is a normal OpenSSL install (e.g., ClamAV)
+			ln -s `pwd` lib
 		;;
 		openssl-check)
 			cd "$M_SOURCES/openssl"; error
 			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			export PATH="$M_BNPATH:$PATH"; error
 			make test &>> "$M_LOGS/openssl.txt"; error
 		;;
 		openssl-check-full)
 			cd "$M_SOURCES/openssl"; error
 			export LD_LIBRARY_PATH="$M_LDPATH"; error
+			export PATH="$M_BNPATH:$PATH"; error
 			make test &>> "$M_LOGS/openssl.txt"; error
 		;;
 		openssl-clean)
@@ -185,7 +202,6 @@ openssl() {
 	return $?
 
 }
-
 
 utf8proc() {
 
