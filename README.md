@@ -23,7 +23,7 @@ the standalone utilities to test, debug, and administer a DIME compatible mail s
 
 ## Dependencies
 
-Please see the [Quick Start Guide](docs/quickstart.md).
+Please see the [Quick Start Guide](res/docs/quickstart.md).
 
 System:
 c dl rt pthread resolv 
