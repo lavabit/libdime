@@ -89,7 +89,7 @@ void st_free(stringer_t *s) {
 }
 
 /**
- * @brief	A checked cleanup function which can be used free a variable number managed strings.
+ * @brief	A checked cleanup function which can be used free a variable number of managed strings.
  * @see		st_free()
  *
  * @param	va_list	a list of managed strings to be freed.
