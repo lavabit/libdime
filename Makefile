@@ -100,16 +100,25 @@ RMDIR					= rmdir --parents --ignore-fail-on-non-empty
 MKDIR					= mkdir --parents
 RANLIB					= ranlib
 
-# Text Coloring
+# Control the Text Color/Weight if the TERM supports it. If no TERM is available, then
+# default to using vt100 as the terminal type.
+ifdef TERM
 RED						= $$(tput setaf 1)
 BLUE					= $$(tput setaf 4)
 GREEN					= $$(tput setaf 2)
 WHITE					= $$(tput setaf 7)
 YELLOW					= $$(tput setaf 3)
-
-# Text Weighting
 BOLD					= $$(tput bold)
 NORMAL					= $$(tput sgr0)
+else
+  RED                           = $$(tput -Tvt100 setaf 1)
+  BLUE                          = $$(tput -Tvt100 setaf 4)
+  GREEN                         = $$(tput -Tvt100 setaf 2)
+  WHITE                         = $$(tput -Tvt100 setaf 7)
+  YELLOW                        = $$(tput -Tvt100 setaf 3)
+  BOLD                          = $$(tput -Tvt100 bold)
+  NORMAL                        = $$(tput -Tvt100 sgr0)
+endif
 
 ifeq ($(OS),Windows_NT)
     HOSTTYPE 			:= Windows
@@ -128,6 +137,11 @@ RUN						=
 else
 RUN						= @
 VERBOSE					= no
+endif
+
+# Quick Dependency Builds
+ifeq ($(patsubst undefined,default,$(origin QUICK)),default)
+QUICK  = yes
 endif
 
 # So we can tell the user what happened
@@ -193,15 +207,7 @@ distclean:
 	@$(RM) --recursive --force $(DEPDIR) $(OBJDIR) lib/local lib/logs lib/objects lib/sources
 	@echo 'Finished' $(BOLD)$(GREEN)$(TARGETGOAL)$(NORMAL)
 
-$(LIBDIME_DEPENDENCIES): res/scripts/build.dimedeps.sh res/scripts/build.dimedeps.params.sh
-ifeq ($(VERBOSE),no)
-	@echo 'Running' $(RED)$(<F)$(NORMAL)
-else
-	@echo 
-endif
-	$(RUN)res/scripts/build.dimedeps.sh all
-
-$(LIBDIME_STRIPPED): $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS)
+$(LIBDIME_STRIPPED): $(LIBDIME_SHARED) $(LIBDIME_STATIC) $(LIBDIME_PROGRAMS) $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Creating' $(RED)$@$(NORMAL)
 else
@@ -211,7 +217,7 @@ endif
 	awk -F'file format' '{print $$2}' | tr --delete [:space:]) -o "$@" "$(subst -stripped,,$@)"
 
 # Construct the dime check executable
-$(DIME_CHECK_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC)
+$(DIME_CHECK_PROGRAM): $(call OBJFILES, $(call CPPFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call CCFILES, $(DIME_CHECK_SRCDIR))) $(call OBJFILES, $(call SRCFILES, $(DIME_CHECK_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES) 
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -223,7 +229,7 @@ endif
 	-lresolv -lrt -ldl -lm -lstdc++ -lpthread
 
 # Construct the dime executable
-$(DIME_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC)
+$(DIME_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(DIME_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES) 
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -233,7 +239,7 @@ endif
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Construct the signet executable
-$(SIGNET_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC)
+$(SIGNET_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(SIGNET_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES) 
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -243,7 +249,7 @@ endif
 	-Wl,--start-group,--whole-archive  $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Construct the genrec executable
-$(GENREC_PROGRAM): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC)
+$(GENREC_PROGRAM): $(call OBJFILES, $(call SRCFILES, $(GENREC_SRCDIR))) $(LIBDIME_STATIC) $(LIBDIME_DEPENDENCIES) 
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -253,7 +259,7 @@ endif
 	-Wl,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) $(LIBDIME_STATIC) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Create the static libdime archive
-$(LIBDIME_STATIC): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
+$(LIBDIME_STATIC): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -262,7 +268,7 @@ endif
 	$(RUN)$(AR) $(ARFLAGS) '$@' $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
 
 # Create the libdime shared object
-$(LIBDIME_SHARED): $(LIBDIME_DEPENDENCIES) $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR))))
+$(LIBDIME_SHARED): $(call OBJFILES, $(filter-out $(LIBDIME_FILTERED), $(call SRCFILES, $(LIBDIME_SRCDIR)))) $(LIBDIME_DEPENDENCIES) 
 ifeq ($(VERBOSE),no)
 	@echo 'Constructing' $(RED)$@$(NORMAL)
 else
@@ -272,7 +278,7 @@ endif
 	-ggdb3 -fPIC -Wl,-Bsymbolic,--start-group,--whole-archive $(LIBDIME_DEPENDENCIES) -Wl,--no-whole-archive,--end-group -lresolv -lrt -ldl -lpthread
 
 # Compile Source
-$(OBJDIR)/src/%.o: src/%.c 
+$(OBJDIR)/src/%.o: src/%.c $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
@@ -280,7 +286,7 @@ endif
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
-$(OBJDIR)/check/dime/%.o: check/dime/%.c
+$(OBJDIR)/check/dime/%.o: check/dime/%.c $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
@@ -288,7 +294,7 @@ endif
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
-$(OBJDIR)/tools/%.o: tools/%.c
+$(OBJDIR)/tools/%.o: tools/%.c $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
@@ -296,13 +302,19 @@ endif
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CC) $(CFLAGS) $(CFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) -MF"$(<:%.c=$(DEPDIR)/%.d)" -MT"$@" -o"$@" "$<"
 
-$(OBJDIR)/%.o: %.cpp 
+$(OBJDIR)/%.o: %.cpp $(LIBDIME_DEPENDENCIES)
 ifeq ($(VERBOSE),no)
 	@echo 'Building' $(YELLOW)$<$(NORMAL)
 endif
 	@test -d $(DEPDIR)/$(dir $<) || $(MKDIR) $(DEPDIR)/$(dir $<)
 	@test -d $(OBJDIR)/$(dir $<) || $(MKDIR) $(OBJDIR)/$(dir $<)
 	$(RUN)$(CPP) $(CPPFLAGS) $(CPPFLAGS.$(<F)) $(DEFINES) $(DEFINES.$(<F)) $(INCLUDES) $(DIME_CHECK_INCLUDES) -MF"$(<:%.cpp=$(DEPDIR)/%.d)" -MD -MP  -MT"$@" -c -o"$@" "$<"
+
+$(LIBDIME_DEPENDENCIES): res/scripts/build.dimedeps.params.sh
+	@echo
+	@echo 'Building the '$(YELLOW)'bundled'$(NORMAL)' dependencies.'
+	@QUICK=$(QUICK) res/scripts/build.dimedeps.sh all
+
 
 # If we've already generated dependency files, use them to see if a rebuild is required
 -include $(LIBDIME_DEPFILES)
