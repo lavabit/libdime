@@ -33,10 +33,10 @@ fi
 
 error() {
   if [ $? -ne 0 ]; then
-    tput sgr0; tput setaf 1
+    ${TPUT} sgr0; ${TPUT} setaf 1
     #printf "\n\n$COMMAND failed...\n\n";
     date +"%n%n$COMMAND failed at %r on %x%n%n"
-    tput sgr0
+    ${TPUT} sgr0
     exit 1
   fi
 }
@@ -476,7 +476,7 @@ status() {
 
   while true; do
     clear
-    tput sgr0;  tput sgr 0 1; tput setaf 6; printf "\n# Commands\n\n"; tput sgr0
+    ${TPUT} sgr0;  ${TPUT} sgr 0 1; ${TPUT} setaf 6; printf "\n# Commands\n\n"; ${TPUT} sgr0
     ps --no-headers -C build.lib -C build.lib.sh -o command:100,etime | grep -v status | cat - |
     while read line; do
       BASE=`echo "$line" | awk '{print $1}'`
@@ -489,11 +489,11 @@ status() {
       fi
       echo "$C $line"
     done
-    tput sgr0;  tput sgr 0 1; tput setaf 6; printf "\n# Load\n\n"; tput sgr0
+    ${TPUT} sgr0;  ${TPUT} sgr 0 1; ${TPUT} setaf 6; printf "\n# Load\n\n"; ${TPUT} sgr0
     uptime | sed "s/^.*load average://" | awk -F',' '{print "avg-load: " $1 ", " $2 ", " $3 }'
-    tput sgr0;  tput sgr 0 1; tput setaf 6; printf "\n# Processor\n\n"; tput sgr0
+    ${TPUT} sgr0;  ${TPUT} sgr 0 1; ${TPUT} setaf 6; printf "\n# Processor\n\n"; ${TPUT} sgr0
     echo "$CPU"
-    tput sgr0;  tput sgr 0 1; tput setaf 6; printf "\n# Disk\n\n"; tput sgr0
+    ${TPUT} sgr0;  ${TPUT} sgr 0 1; ${TPUT} setaf 6; printf "\n# Disk\n\n"; ${TPUT} sgr0
     echo "$DISK"
 
     # Refresh the stats for the next loop; note that this takes 4 seconds to complete.
