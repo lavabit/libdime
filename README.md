@@ -41,7 +41,7 @@ googletest gtest-tap-listener
 
 ## Build Instructions
 
-First, build the bundled dependences:
+First, build the bundled dependencies:
 
     make setup
 
@@ -71,9 +71,9 @@ Or compile the check utility with the make target:
 Directory | Description
 :--- | :---
 checs/ | The DIME unit test source code.
-lib/ | The bundled depedencies. 
+lib/ | The bundled dependencies. 
 res/ | Resource files used by the different components and utilities.
-sandbox/ | Where temporary resources are stored by the unit tests.
+sandbox/ | Where the unit tests store temporary resources..
 src/ | The libdime source code.
 tools/dime/ | Retrieve and validate a signet from a DIME compatible server using DMTP.
 tools/signet/ | Generate, sign, view and verify a signet.
@@ -81,6 +81,6 @@ tools/genrec/ | Generate a DIME management record which must be added to the DNS
 
 ## Video
 
-An slightly outdated video presentation of the DIME standard and the various command line tools:
+A slightly outdated video presentation of the DIME standard and the various command line tools:
 
 https://www.youtube.com/watch?v=TWzvXaxR6us
