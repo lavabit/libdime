@@ -1,6 +1,6 @@
 ##Project status
 
-Right now, the code for the two primary tools (`tools/dime` and `tools/signet`) is finished, but they need much testing to be sure they work correctly.
+Right now, the code for the two primary tools (`tools/dime` and `tools/signet`) is finished, but they a lot more testing before they can be considered production (or end user) ready.
 
 ##Write unit tests in C
 
@@ -36,4 +36,4 @@ If you don't feel too comfortable writing C code, you could help in writing unit
 
 ##Fix bugs
 
-If you know how to fix bugs in C, I can give you an account on https://scan.coverity.com/, a static code analyzer that has found quite a few bugs in the code, which need to be fixed. I already fixed some of the simple ones, and the remaining ones get more and trickier.
+If you know how to fix bugs in C, I can give you an account on https://scan.coverity.com/, a static code analyzer that has found quite a few bugs in the code, which need to be fixed. Some of the simple ones have already been fixed, but a number of more complicated issues remain.
