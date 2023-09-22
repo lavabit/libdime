@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ZLIB="zlib-1.2.11"
-OPENSSL="openssl-1.0.2r"
+OPENSSL="openssl-1.0.2u"
 UTF8PROC="utf8proc-2.1.0"
 GOOGTAP="gtest-tap-listener-0.5"
 GOOGTEST="googletest-release-1.7.0"

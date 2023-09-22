@@ -151,6 +151,7 @@ openssl() {
       cd "$M_SOURCES/openssl"; error
       if [[ $OPENSSL =~ "openssl-1.0.2" ]]; then
         cat "$M_PATCHES/openssl/"1.0.2_curve25519_ed25519.patch | patch -p1 --verbose &>> "$M_LOGS/openssl.txt"; error
+        cat "$M_PATCHES/openssl/"1.0.2_update_expiring_certificates.patch | patch -p1 --verbose &>> "$M_LOGS/openssl.txt"; error
       fi
     ;;
     openssl-build)
